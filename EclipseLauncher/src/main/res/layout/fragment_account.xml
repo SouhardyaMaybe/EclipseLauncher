@@ -167,15 +167,95 @@
                 app:layout_constraintStart_toStartOf="parent"
                 tools:ignore="MissingConstraints" />
 
-            <include
-                android:id="@+id/view_account"
-                layout="@layout/view_account"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/skin_pane"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_margin="@dimen/_8sdp"
+                android:background="@drawable/background_card"
+                android:orientation="vertical"
+                android:padding="@dimen/_8sdp"
                 app:layout_constraintBottom_toTopOf="@id/return_button"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <me.shadow.eclipselauncher.ui.view.PlayerModelView
+                    android:id="@+id/player_model_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:gravity="center"
+                    android:textColor="@color/black_or_white"
+                    android:textSize="@dimen/_16ssp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/account_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textColor="@color/black_or_white"
+                    android:textSize="@dimen/_12ssp"
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <me.shadow.eclipselauncher.ui.view.AnimButton
+                        android:id="@+id/set_skin_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_4sdp"
+                        android:layout_weight="1"
+                        android:text="@string/account_set_skin" />
+
+                    <ImageView
+                        android:id="@+id/delete_skin_button"
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/generic_delete"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/ic_menu_delete_forever" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4sdp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <me.shadow.eclipselauncher.ui.view.AnimButton
+                        android:id="@+id/set_cape_button"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_4sdp"
+                        android:layout_weight="1"
+                        android:text="@string/account_set_cape" />
+
+                    <ImageView
+                        android:id="@+id/delete_cape_button"
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_40sdp"
+                        android:background="?android:attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/generic_delete"
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/ic_menu_delete_forever" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

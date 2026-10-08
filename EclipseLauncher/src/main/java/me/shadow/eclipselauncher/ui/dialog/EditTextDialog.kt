@@ -24,6 +24,9 @@ class EditTextDialog private constructor(
     private val inputType: Int,
     private val cancelListener: View.OnClickListener?,
     private val confirmListener: ConfirmListener?,
+    private val showSkinCape: Boolean,
+    private val skinListener: View.OnClickListener?,
+    private val capeListener: View.OnClickListener?,
     private val required: Boolean
 ) : FullScreenDialog(context),
     DialogInitializationListener {
@@ -49,6 +52,12 @@ class EditTextDialog private constructor(
             editText?.let { textEdit.setText(it) }
             hintText?.let { textEdit.hint = it } ?: run {
                 if (required) textEdit.setHint(R.string.generic_required)
+            }
+
+            if (showSkinCape) {
+                skinCapeRow.visibility = View.VISIBLE
+                skinListener?.let { setSkinButton.setOnClickListener(it) }
+                capeListener?.let { setCapeButton.setOnClickListener(it) }
             }
 
             checkHeight()
@@ -83,6 +92,20 @@ class EditTextDialog private constructor(
         checkHeight(binding.root, binding.contentView, binding.scrollView)
     }
 
+    /** Toggles the "Set Skin" button between its plain and selected states. */
+    fun markSkinSelected(selected: Boolean) {
+        binding.setSkinButton.setText(
+            if (selected) R.string.account_set_skin_selected else R.string.account_set_skin
+        )
+    }
+
+    /** Toggles the "Set Cape" button between its plain and selected states. */
+    fun markCapeSelected(selected: Boolean) {
+        binding.setCapeButton.setText(
+            if (selected) R.string.account_set_cape_selected else R.string.account_set_cape
+        )
+    }
+
     override fun onInit(): Window? = window
 
     fun interface ConfirmListener {
@@ -101,6 +124,9 @@ class EditTextDialog private constructor(
         private var inputType = -1
         private var cancelListener: View.OnClickListener? = null
         private var confirmListener: ConfirmListener? = null
+        private var showSkinCape = false
+        private var skinListener: View.OnClickListener? = null
+        private var capeListener: View.OnClickListener? = null
         private var required = false
 
         /**
@@ -251,6 +277,33 @@ class EditTextDialog private constructor(
         }
 
         /**
+         * Show the "Set Skin" / "Set Cape" row above the confirm buttons
+         */
+        @CheckResult
+        fun setShowSkinCape(show: Boolean): Builder {
+            this.showSkinCape = show
+            return this
+        }
+
+        /**
+         * Set the click listener of the "Set Skin" button (requires [setShowSkinCape])
+         */
+        @CheckResult
+        fun setSkinListener(skinListener: View.OnClickListener): Builder {
+            this.skinListener = skinListener
+            return this
+        }
+
+        /**
+         * Set the click listener of the "Set Cape" button (requires [setShowSkinCape])
+         */
+        @CheckResult
+        fun setCapeListener(capeListener: View.OnClickListener): Builder {
+            this.capeListener = capeListener
+            return this
+        }
+
+        /**
          * Mark it as required; when the user clicks confirm, check whether the input field is empty (including whitespace)
          * If it is, intercept the click event and notify the user
          */
@@ -266,6 +319,7 @@ class EditTextDialog private constructor(
                 title, message, editText, hintText, checkBox, confirm, emptyError,
                 showCheckBox, inputType,
                 cancelListener, confirmListener,
+                showSkinCape, skinListener, capeListener,
                 required
             ).apply {
                 create()

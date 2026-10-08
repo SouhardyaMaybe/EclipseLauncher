@@ -15,7 +15,6 @@ import me.shadow.eclipselauncher.databinding.FragmentSettingsBinding
 import me.shadow.eclipselauncher.event.value.SettingsPageSwapEvent
 import me.shadow.eclipselauncher.setting.Settings
 import me.shadow.eclipselauncher.ui.fragment.settings.ControlSettingsFragment
-import me.shadow.eclipselauncher.ui.fragment.settings.ExperimentalSettingsFragment
 import me.shadow.eclipselauncher.ui.fragment.settings.GameSettingsFragment
 import me.shadow.eclipselauncher.ui.fragment.settings.LauncherSettingsFragment
 import me.shadow.eclipselauncher.ui.fragment.settings.VideoSettingsFragment
@@ -82,13 +81,12 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
     }
 
     private class ViewPagerAdapter(val fragment: FragmentWithAnim): FragmentStateAdapter(fragment.requireActivity()) {
-        override fun getItemCount(): Int = 5
+        override fun getItemCount(): Int = 4
         override fun createFragment(position: Int): Fragment {
             return when(position) {
                 1 -> ControlSettingsFragment(fragment)
                 2 -> GameSettingsFragment()
                 3 -> LauncherSettingsFragment(fragment)
-                4 -> ExperimentalSettingsFragment()
                 else -> VideoSettingsFragment()
             }
         }

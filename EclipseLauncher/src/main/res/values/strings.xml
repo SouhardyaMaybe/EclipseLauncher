@@ -279,6 +279,12 @@
     <string name="account_microsoft_xerr_unauthorized">Your Microsoft account login information seems to be expired, this often happens after the account password is changed. Please remove the current account and log in again to reset your login information.</string>
     <string name="account_local_account">Offline Account</string>
     <string name="account_local_account_empty">Username cannot be empty!</string>
+    <string name="account_set_skin">Set Skin</string>
+    <string name="account_set_cape">Set Cape</string>
+    <string name="account_set_skin_selected">Set Skin \u2713</string>
+    <string name="account_set_cape_selected">Set Cape \u2713</string>
+    <string name="account_texture_invalid">The selected file is not a valid skin or cape image</string>
+    <string name="account_select_account_first">Select an account first</string>
     <string name="account_local_account_invalid">A valid username only supports English letters (both uppercase and lowercase), numbers, and underscores. The username length must be between 3 and 16 characters. [RED;BOLD]Otherwise, the game may fail to function properly.[/RED;BOLD]\nExamples of valid usernames: Name, Name_, Name123\nExamples of invalid usernames: Name@, N ame, name_name_name_name\nHowever, if you are using mods or plugins that remove this restriction, you can continue using this name. Otherwise, please rename it!</string>
     <string name="account_login_local_name">Username</string>
     <string name="account_login_start">Start Login!</string>
@@ -387,8 +393,6 @@
     <string name="setting_category_game">Game Settings</string>
     <string name="setting_category_launcher">Launcher Settings</string>
     <string name="setting_category_game_menu">Game Menu</string>
-    <string name="setting_category_experimental">Experimental Settings</string>
-    <string name="setting_category_experimental_patches">Experimental Patches</string>
     <string name="setting_renderer_title">Renderer</string>
     <string name="setting_renderer_from_plugins">From %s Plugin</string>
     <string name="setting_renderer_local_import_title">Local Renderer Import</string>
@@ -458,10 +462,6 @@
     <string name="setting_java_sandbox_desc">Whether to enable the sandbox security manager when executing .jar files</string>
     <string name="setting_check_libraries_title">Check Libraries After Download</string>
     <string name="setting_check_libraries_desc">This option forces the launcher to check the libraries when the hash is available, preventing download errors</string>
-    <string name="setting_shader_dump_title">Enable Shader Output</string>
-    <string name="setting_shader_dump_desc">Logs converted shaders to a log file</string>
-    <string name="setting_force_big_core_title">Force Renderer to Run on Big Core</string>
-    <string name="setting_force_big_core_desc">Forces the Minecraft rendering thread to run on the highest frequency core</string>
     <string name="setting_verify_manifest_title">Game Version List Check</string>
     <string name="setting_verify_manifest_desc">When enabled, the launcher will check the game version list and libraries</string>
     <string name="setting_resource_image_cache_title">Cache resource images</string>
@@ -494,8 +494,6 @@
     <string name="setting_page_opacity_desc">Set the opacity of the main pages in the launcher</string>
     <string name="setting_quit_launcher_title">Quit Launcher</string>
     <string name="setting_quit_launcher_desc">Whether to quit the launcher when the application officially starts the game</string>
-    <string name="setting_accept_pre_release_updates_title">Receive Pre-release Updates</string>
-    <string name="setting_accept_pre_release_updates_desc">This setting determines whether the launcher can receive pre-release updates</string>
     <string name="setting_ask_for_notification_title">Allow Notifications</string>
     <string name="setting_ask_for_notification_desc">Click to re-request notification permissions, which are necessary for the normal background download of game files</string>
     <string name="setting_game_menu_show_memory_title">Real-time Memory Info Display</string>

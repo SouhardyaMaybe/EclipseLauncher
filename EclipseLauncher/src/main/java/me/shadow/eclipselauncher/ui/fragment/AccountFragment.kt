@@ -1,8 +1,10 @@
 package me.shadow.eclipselauncher.ui.fragment
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableString
 import android.text.Spanned
@@ -16,6 +18,8 @@ import android.view.animation.LayoutAnimationController
 import android.widget.EditText
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -51,11 +55,11 @@ import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
 import me.shadow.eclipselauncher.ui.subassembly.account.AccountAdapter
 import me.shadow.eclipselauncher.ui.subassembly.account.AccountAdapter.AccountUpdateListener
-import me.shadow.eclipselauncher.ui.subassembly.account.AccountViewWrapper
 import me.shadow.eclipselauncher.ui.subassembly.account.SelectAccountListener
 import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.utils.http.NetworkUtils
 import me.shadow.eclipselauncher.utils.path.PathManager
+import me.shadow.eclipselauncher.utils.skin.UserCosmetics
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
 import me.shadow.eclipselauncher.pojav.Tools
 import me.shadow.eclipselauncher.pojav.fragments.MicrosoftLoginFragment
@@ -75,7 +79,18 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
     }
 
     private lateinit var binding: FragmentAccountBinding
-    private lateinit var mAccountViewWrapper: AccountViewWrapper
+
+    // Skins and capes chosen while the offline-account dialog is still open;
+    // they are applied to the account as soon as it has been created
+    private var pendingSkin: Bitmap? = null
+    private var pendingCape: Bitmap? = null
+    private var mLoginDialog: EditTextDialog? = null
+
+    private lateinit var pickDialogSkin: ActivityResultLauncher<Array<String>>
+    private lateinit var pickDialogCape: ActivityResultLauncher<Array<String>>
+    private lateinit var pickPaneSkin: ActivityResultLauncher<Array<String>>
+    private lateinit var pickPaneCape: ActivityResultLauncher<Array<String>>
+
     private val mAccountsData: MutableList<MinecraftAccount> = AccountsManager.allAccounts.toMutableList()
     private val mAccountAdapter = AccountAdapter(mAccountsData)
 
@@ -108,13 +123,28 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
 
     private lateinit var mProgressDialog: AlertDialog
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        pickDialogSkin = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { uri ->
+            onTexturePicked(uri, forDialog = true, skin = true)
+        }
+        pickDialogCape = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { uri ->
+            onTexturePicked(uri, forDialog = true, skin = false)
+        }
+        pickPaneSkin = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { uri ->
+            onTexturePicked(uri, forDialog = false, skin = true)
+        }
+        pickPaneCape = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { uri ->
+            onTexturePicked(uri, forDialog = false, skin = false)
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentAccountBinding.inflate(layoutInflater)
-        mAccountViewWrapper = AccountViewWrapper(binding = binding.viewAccount)
         mProgressDialog = ZHTools.createTaskRunningDialog(binding.root.context)
         return binding.root
     }
@@ -148,10 +178,11 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                     .setConfirmClickListener {
                         val accountFile =
                             File(PathManager.DIR_ACCOUNT_NEW, account.uniqueUUID)
-                        val userSkinFile =
-                            File(PathManager.DIR_USER_SKIN, account.uniqueUUID + ".png")
+                        val userSkinFile = UserCosmetics.skinFile(account)
+                        val userCapeFile = UserCosmetics.capeFile(account)
                         if (accountFile.exists()) FileUtils.deleteQuietly(accountFile)
                         if (userSkinFile.exists()) FileUtils.deleteQuietly(userSkinFile)
+                        if (userCapeFile.exists()) FileUtils.deleteQuietly(userCapeFile)
                         reloadAccounts()
                     }.showDialog()
             }
@@ -168,6 +199,23 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                 )
             )
             accountsRecycler.adapter = mAccountAdapter
+
+            setSkinButton.setOnClickListener {
+                if (AccountsManager.currentAccount == null) {
+                    Toast.makeText(context, R.string.account_select_account_first, Toast.LENGTH_SHORT).show()
+                } else {
+                    pickPaneSkin.launch(arrayOf("image/*"))
+                }
+            }
+            setCapeButton.setOnClickListener {
+                if (AccountsManager.currentAccount == null) {
+                    Toast.makeText(context, R.string.account_select_account_first, Toast.LENGTH_SHORT).show()
+                } else {
+                    pickPaneCape.launch(arrayOf("image/*"))
+                }
+            }
+            deleteSkinButton.setOnClickListener { deleteTexture(skin = true) }
+            deleteCapeButton.setOnClickListener { deleteTexture(skin = false) }
 
             accountTypeTab.observeIndexChange { _, toIndex, _, fromUser ->
                 fun nonMicrosoftLogin(message: Int, login: () -> Unit) {
@@ -225,6 +273,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
             returnButton.setOnClickListener(this@AccountFragment)
         }
 
+        refreshSkinPane()
         reloadAccounts()
         refreshOtherServer()
     }
@@ -243,8 +292,76 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
             AccountsManager.reload()
         }.ended(TaskExecutors.getAndroidUI()) {
             reloadRecyclerView()
-            mAccountViewWrapper.refreshAccountInfo()
+            refreshSkinPane()
         }.execute()
+    }
+
+    /** Refresh the operate pane: name, type, model preview and texture button states */
+    private fun refreshSkinPane() {
+        val account = AccountsManager.currentAccount
+        binding.apply {
+            userName.text = account?.username
+            accountType.text = account?.let { AccountUtils.getAccountTypeName(requireContext(), it) }
+            accountType.visibility = if (account == null) View.GONE else View.VISIBLE
+
+            val enabled = account != null
+            setSkinButton.alpha = if (enabled) 1f else 0.45f
+            deleteSkinButton.alpha = if (enabled) 1f else 0.45f
+            setCapeButton.alpha = if (enabled) 1f else 0.45f
+            deleteCapeButton.alpha = if (enabled) 1f else 0.45f
+
+            // Without a custom texture the model falls back to the bundled skin
+            playerModelView.setSkin(account?.let { UserCosmetics.load(UserCosmetics.skinFile(it)) })
+            playerModelView.setCape(account?.let { UserCosmetics.load(UserCosmetics.capeFile(it)) })
+        }
+    }
+
+    /** Store a picked skin or cape either for the pending dialog account or the selected account */
+    private fun onTexturePicked(uri: Uri?, forDialog: Boolean, skin: Boolean) {
+        if (uri == null) return
+        val texture = UserCosmetics.read(requireContext(), uri)
+        if (texture == null) {
+            Toast.makeText(requireContext(), R.string.account_texture_invalid, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (forDialog) {
+            if (skin) {
+                pendingSkin = texture
+                mLoginDialog?.markSkinSelected(true)
+            } else {
+                pendingCape = texture
+                mLoginDialog?.markCapeSelected(true)
+            }
+            return
+        }
+
+        val account = AccountsManager.currentAccount
+        if (account == null) {
+            Toast.makeText(requireContext(), R.string.account_select_account_first, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val file = if (skin) UserCosmetics.skinFile(account) else UserCosmetics.capeFile(account)
+        runCatching { UserCosmetics.write(texture, file) }.onFailure { e ->
+            Logging.e("AccountFragment", "Failed to save the picked texture", e)
+            Toast.makeText(requireContext(), R.string.account_texture_invalid, Toast.LENGTH_SHORT).show()
+            return
+        }
+        EventBus.getDefault().post(AccountUpdateEvent())
+    }
+
+    /** Delete the stored custom texture of the currently selected account */
+    private fun deleteTexture(skin: Boolean) {
+        val account = AccountsManager.currentAccount
+        if (account == null) {
+            Toast.makeText(requireContext(), R.string.account_select_account_first, Toast.LENGTH_SHORT).show()
+            return
+        }
+        val file = if (skin) UserCosmetics.skinFile(account) else UserCosmetics.capeFile(account)
+        if (file.exists()) {
+            FileUtils.deleteQuietly(file)
+            EventBus.getDefault().post(AccountUpdateEvent())
+        }
     }
 
     private fun SpannableString.spanText(start: Int, end: Int, what: Any) {
@@ -252,15 +369,42 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
     }
 
     private fun localLogin() {
+        pendingSkin = null
+        pendingCape = null
+
         fun startLogin(name: String) {
-            EventBus.getDefault().post(LocalLoginEvent(name.trim()))
+            val trimmed = name.trim()
+            val known = AccountsManager.allAccounts.map { it.uniqueUUID }.toSet()
+            EventBus.getDefault().post(LocalLoginEvent(trimmed))
+
+            // The account exists by now: move any picked skin and cape onto it
+            val skin = pendingSkin
+            val cape = pendingCape
+            pendingSkin = null
+            pendingCape = null
+            if (skin != null || cape != null) {
+                val account = AccountsManager.allAccounts.firstOrNull { it.uniqueUUID !in known }
+                    ?: AccountsManager.allAccounts.firstOrNull { it.username == trimmed }
+                if (account != null) {
+                    runCatching {
+                        skin?.let { UserCosmetics.write(it, UserCosmetics.skinFile(account)) }
+                        cape?.let { UserCosmetics.write(it, UserCosmetics.capeFile(account)) }
+                    }.onFailure { e ->
+                        Logging.e("AccountFragment", "Failed to save the picked texture", e)
+                    }
+                }
+                EventBus.getDefault().post(AccountUpdateEvent())
+            }
         }
 
-        EditTextDialog.Builder(requireActivity())
+        val dialog = EditTextDialog.Builder(requireActivity())
             .setTitle(R.string.account_login_local_name)
             .setConfirmText(R.string.generic_login)
             .setEmptyErrorText(R.string.account_local_account_empty)
             .setAsRequired()
+            .setShowSkinCape(true)
+            .setSkinListener { pickDialogSkin.launch(arrayOf("image/*")) }
+            .setCapeListener { pickDialogCape.launch(arrayOf("image/*")) }
             .setConfirmListener { editText, _ ->
                 val string = editText.text.toString()
                 if (string.length <= 2 || string.length > 16 || mLocalNamePattern.matcher(string).find()) {
@@ -296,7 +440,10 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                 } else startLogin(string)
 
                 true
-            }.showDialog()
+            }.buildDialog()
+
+        mLoginDialog = dialog
+        dialog.show()
     }
 
     private fun otherLogin(index: Int) {
@@ -494,7 +641,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun event(event: AccountUpdateEvent) {
-        mAccountViewWrapper.refreshAccountInfo()
+        refreshSkinPane()
         reloadRecyclerView()
     }
 

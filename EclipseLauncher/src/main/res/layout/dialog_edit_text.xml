@@ -75,6 +75,33 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/skin_cape_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_8sdp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <me.shadow.eclipselauncher.ui.view.AnimButton
+                    android:id="@+id/set_skin_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_2sdp"
+                    android:layout_weight="1"
+                    android:text="@string/account_set_skin" />
+
+                <me.shadow.eclipselauncher.ui.view.AnimButton
+                    android:id="@+id/set_cape_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_weight="1"
+                    android:text="@string/account_set_cape" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_4sdp"

@@ -169,16 +169,6 @@ class AllSettings {
         @JvmStatic
         val quitLauncher = BooleanSettingUnit("quitLauncher", true)
 
-        @JvmStatic
-        val acceptPreReleaseUpdates = BooleanSettingUnit("acceptPreReleaseUpdates", false)
-
-        // Experimental
-        @JvmStatic
-        val dumpShaders = BooleanSettingUnit("dump_shaders", false)
-
-        @JvmStatic
-        val bigCoreAffinity = BooleanSettingUnit("bigCoreAffinity", false)
-
         // Other
         @JvmStatic
         val currentAccount = StringSettingUnit("currentAccount", "")

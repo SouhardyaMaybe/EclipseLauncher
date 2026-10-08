@@ -106,11 +106,7 @@ class UpdateUtils {
                             if (ignore && versionName == ignoreUpdate.getValue()) return  //Ignore this version
 
                             val versionCode = launcherVersion.versionCode
-                            fun checkPreRelease(): Boolean {
-                                return if (!launcherVersion.isPreRelease) true
-                                else ZHTools.isPreRelease() || AllSettings.acceptPreReleaseUpdates.getValue()
-                            }
-                            if (checkPreRelease() && ZHTools.getVersionCode() < versionCode) {
+                            if (ZHTools.getVersionCode() < versionCode) {
                                 runInUIThread {
                                     UpdateDialog(context, launcherVersion).show()
                                 }
