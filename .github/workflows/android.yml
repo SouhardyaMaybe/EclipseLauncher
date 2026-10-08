@@ -7,7 +7,7 @@ on:
 
 jobs:
   BuildRelease:
-    if: github.repository_owner == 'ZalithLauncher' && !startsWith(github.ref, 'refs/pull/') && github.ref_name == 'main'
+    if: github.repository_owner == 'SouhardyaMaybe' && !startsWith(github.ref, 'refs/pull/') && github.ref_name == 'main'
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -49,17 +49,61 @@ jobs:
 
       - name: Build Release ${{ matrix.arch }}
         env:
-          MOVTERY_KEYSTORE_PASSWORD: ${{ secrets.MOVTERY_KEYSTORE_PASSWORD }}
+          ECLIPSE_KEYSTORE_PASSWORD: ${{ secrets.ECLIPSE_KEYSTORE_PASSWORD }}
         run: |
           chmod +x gradlew
-          ./gradlew ZalithLauncher:assemblerelease -Darch=${{ matrix.arch }}
+          ./gradlew EclipseLauncher:assemblerelease -Darch=${{ matrix.arch }}
 
-      - name: Upload Release ${{matrix.arch}}
-        continue-on-error: true
+      - name: Stage APK for release publishing
         uses: actions/upload-artifact@v4
         with:
-          name: ZalithLauncher(Release) ${{ matrix.arch }}
-          path: ZalithLauncher/build/outputs/apk/release/*
+          name: release-${{ matrix.arch }}
+          path: EclipseLauncher/build/outputs/apk/release/*
+          if-no-files-found: error
+
+  PublishRelease:
+    needs: BuildRelease
+    if: github.repository_owner == 'SouhardyaMaybe' && !startsWith(github.ref, 'refs/pull/') && github.ref_name == 'main'
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine release tag
+        run: |
+          VERSION=$(grep '^launcher_version_name=' EclipseLauncher/gradle.properties | cut -d= -f2)
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+
+          if [[ "$COMMIT_MSG" == *"pre-release"* ]]; then
+            echo "tag=v${VERSION}-pre" >> $GITHUB_ENV
+            echo "prerelease=true" >> $GITHUB_ENV
+          elif [[ "$COMMIT_MSG" == *"release"* ]]; then
+            echo "tag=v${VERSION}" >> $GITHUB_ENV
+            echo "prerelease=false" >> $GITHUB_ENV
+          else
+            echo "tag=nightly" >> $GITHUB_ENV
+            echo "prerelease=true" >> $GITHUB_ENV
+          fi
+
+      - name: Download built APKs
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          merge-multiple: true
+          path: dist
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.tag }}
+          name: Eclipse Launcher ${{ env.tag }}
+          prerelease: ${{ env.prerelease == 'true' }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: dist/*
 
   BuildDebug:
     if: startsWith(github.ref, 'refs/pull/') || github.ref_name != 'main'
@@ -88,10 +132,10 @@ jobs:
       - name: Build Debug ${{matrix.arch}}
         run: |
           chmod +x gradlew
-          ./gradlew ZalithLauncher:assembleDebug -Darch=${{ matrix.arch }}
+          ./gradlew EclipseLauncher:assembleDebug -Darch=${{ matrix.arch }}
 
       - name: Upload Debug ${{matrix.arch}}
         uses: actions/upload-artifact@v4
         with:
-          name: ZalithLauncher(Debug) ${{ matrix.arch }}
-          path: ZalithLauncher/build/outputs/apk/debug/*
+          name: EclipseLauncher(Debug) ${{ matrix.arch }}
+          path: EclipseLauncher/build/outputs/apk/debug/*
