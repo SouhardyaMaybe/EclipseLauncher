@@ -47,7 +47,7 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
-            android:screenOrientation="unspecified" >
+            android:screenOrientation="sensorLandscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -58,16 +58,16 @@
             android:name="me.shadow.eclipselauncher.pojav.MissingStorageActivity"
             android:exported="false"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name="me.shadow.eclipselauncher.pojav.LauncherActivity"
             android:windowSoftInputMode="adjustResize"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="sensorLandscape" />
         <activity
             android:name="me.shadow.eclipselauncher.ui.activity.ErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|keyboard|navigation"
-            android:screenOrientation="unspecified" />
+            android:screenOrientation="sensorLandscape" />
         <activity android:name="me.shadow.eclipselauncher.pojav.ShowErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />

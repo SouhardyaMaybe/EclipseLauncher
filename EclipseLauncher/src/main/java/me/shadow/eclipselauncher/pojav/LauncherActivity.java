@@ -7,7 +7,6 @@ import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -390,16 +389,9 @@ public class LauncherActivity extends BaseActivity {
             @Override
             public void handleOnBackPressed() {
                 Fragment currentFragment = getCurrentFragment();
-                if (currentFragment instanceof BaseFragment) {
-                    BaseFragment baseFragment = (BaseFragment) currentFragment;
-                    if (!baseFragment.onBackPressed()) {
-                        //The fragment handled the back event itself
-                        return;
-                    }
-                    if (baseFragment.closeOpenPane()) {
-                        //A portrait pane was open, close it instead of leaving the screen
-                        return;
-                    }
+                if (currentFragment instanceof BaseFragment && !((BaseFragment) currentFragment).onBackPressed()) {
+                    //The fragment handled the back event itself
+                    return;
                 }
 
                 //Exit the launcher when only one or no fragments remain on the stack
@@ -489,19 +481,6 @@ public class LauncherActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(mFragmentCallbackListener, true);
-    }
-
-    @Override
-    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        // Safety net: re-apply the visible fragment's pane state straight from the
-        // activity, so a rotation can never leave a half-applied two-pane layout.
-        // PaneSwitcher.applyOrientation is idempotent, so this is safe to call
-        // right after the fragments' own callbacks.
-        Fragment fragment = getSupportFragmentManager().findFragmentById(binding.containerFragment.getId());
-        if (fragment instanceof BaseFragment) {
-            ((BaseFragment) fragment).reapplyPaneOrientation();
-        }
     }
 
     @Override

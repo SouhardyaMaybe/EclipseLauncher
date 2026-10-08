@@ -2,13 +2,6 @@
 <resources>
     <!-- Eclipse Launcher -->
     <string name="generic_open">Open</string>
-    <string name="pane_menu">Menu</string>
-    <string name="pane_actions">Actions</string>
-    <string name="pane_search">Search</string>
-    <string name="pane_done">Done</string>
-    <string name="pane_options">Options</string>
-    <string name="pane_sections">Sections</string>
-    <string name="pane_details">Details</string>
     <string name="generic_close">Close</string>
     <string name="generic_return">Return</string>
     <string name="generic_edit">Edit</string>

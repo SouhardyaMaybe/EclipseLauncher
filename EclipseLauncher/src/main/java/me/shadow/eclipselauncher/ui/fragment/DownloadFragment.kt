@@ -41,13 +41,9 @@ class DownloadFragment : FragmentWithAnim(R.layout.fragment_download) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewPager()
 
-        // Portrait: the tab rail is a full-screen "headers" list of sections;
-        // tapping one opens its page (no-op in the two-pane landscape layout).
         binding.classifyTab.observeIndexChange { _, toIndex, reselect, fromUser ->
-            if (fromUser) {
-                if (!reselect) binding.downloadViewpager.setCurrentItem(toIndex, false)
-                openPane()
-            }
+            if (reselect) return@observeIndexChange
+            if (fromUser) binding.downloadViewpager.setCurrentItem(toIndex, false)
         }
     }
 

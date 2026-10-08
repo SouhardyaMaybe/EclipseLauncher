@@ -2,7 +2,6 @@ package me.shadow.eclipselauncher.ui.activity
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -10,22 +9,16 @@ import androidx.core.content.ContextCompat
 import me.shadow.eclipselauncher.InfoCenter
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.ActivityErrorBinding
-import me.shadow.eclipselauncher.ui.fragment.PaneSwitcher
 import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.pojav.Tools
 
 class ErrorActivity : BaseActivity() {
-    private var paneSwitcher: PaneSwitcher? = null
     private lateinit var binding: ActivityErrorBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityErrorBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //Portrait single-pane mode: the log stacks on top, the buttons form a bottom bar
-        paneSwitcher = PaneSwitcher(binding.root, R.id.constraintLayout, R.id.constraintLayout2, 0, PaneSwitcher.Mode.STACK_BOTTOM)
-        paneSwitcher?.applyOrientation(resources.configuration)
 
         val extras = intent.extras
         extras ?: run {
@@ -128,10 +121,5 @@ class ErrorActivity : BaseActivity() {
             ctx.startActivity(intent)
         }
 
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        paneSwitcher?.applyOrientation(newConfig)
     }
 }

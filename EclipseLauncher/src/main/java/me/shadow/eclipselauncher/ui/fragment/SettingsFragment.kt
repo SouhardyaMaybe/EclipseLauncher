@@ -40,13 +40,9 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewPager()
 
-        // Portrait: the tab rail is a full-screen "headers" list of section buttons;
-        // tapping one opens its page (no-op in the two-pane landscape layout).
         binding.settingsTab.observeIndexChange { _, toIndex, reselect, fromUser ->
-            if (fromUser) {
-                if (!reselect) binding.settingsViewpager.setCurrentItem(toIndex, false)
-                openPane()
-            }
+            if (reselect) return@observeIndexChange
+            if (fromUser) binding.settingsViewpager.setCurrentItem(toIndex, false)
         }
     }
 

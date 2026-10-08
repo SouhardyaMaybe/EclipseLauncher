@@ -3,7 +3,6 @@ package me.shadow.eclipselauncher.ui.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
@@ -19,7 +18,6 @@ import me.shadow.eclipselauncher.feature.unpack.UnpackJreTask
 import me.shadow.eclipselauncher.feature.unpack.UnpackSingleFilesTask
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.ui.fragment.PaneSwitcher
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
 import me.shadow.eclipselauncher.pojav.LauncherActivity
 import me.shadow.eclipselauncher.pojav.MissingStorageActivity
@@ -27,7 +25,6 @@ import me.shadow.eclipselauncher.pojav.Tools
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
-    private var paneSwitcher: PaneSwitcher? = null
     private var isStarted: Boolean = false
     private lateinit var binding: ActivitySplashBinding
     private lateinit var installableAdapter: InstallableAdapter
@@ -40,10 +37,6 @@ class SplashActivity : BaseActivity() {
 
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //Portrait single-pane mode: the start pane takes over, the component list stays landscape-only
-        paneSwitcher = PaneSwitcher(binding.root, R.id.recycler_view, R.id.operate_layout, 0, PaneSwitcher.Mode.PRIMARY_RIGHT)
-        paneSwitcher?.applyOrientation(resources.configuration)
 
         binding.titleText.text = InfoDistributor.APP_NAME
         binding.recyclerView.apply {
@@ -150,10 +143,5 @@ class SplashActivity : BaseActivity() {
 
     companion object {
         private const val STORAGE_PERMISSION_REQUEST_CODE: Int = 100
-    }
-
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        paneSwitcher?.applyOrientation(newConfig)
     }
 }

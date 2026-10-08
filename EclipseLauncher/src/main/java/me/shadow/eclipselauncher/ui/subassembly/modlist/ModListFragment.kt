@@ -108,8 +108,6 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
             recyclerView.adapter = adapter
             recyclerView.scheduleLayoutAnimation()
             parentAdapter = null
-            // Reveal the restored list again in portrait single-pane mode
-            closeOpenPane()
             false
         } ?: true
     }
@@ -236,8 +234,6 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
                 recyclerView.adapter = adapter
                 recyclerView.scheduleLayoutAnimation()
             }
-            //Reveal the detail pane when running in portrait single-pane mode
-            openPane()
         }
     }
 
