@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.annotation.IdRes
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -323,9 +324,15 @@ class PaneSwitcher(
                         view, lp, lp.marginStart, lp.marginEnd,
                         texts, texts.map { it.visibility },
                         icons,
-                        icons.map { (it.layoutParams as? android.widget.RelativeLayout.LayoutParams)?.alignParentStart ?: false },
-                        icons.map { (it.layoutParams as? android.widget.RelativeLayout.LayoutParams)?.centerHorizontal ?: false },
-                        icons.map { (it.layoutParams as? android.widget.RelativeLayout.LayoutParams)?.marginStart ?: 0 }
+                        icons.map { icon ->
+                            val rl = icon.layoutParams as? RelativeLayout.LayoutParams
+                            rl != null && rl.getRules()[RelativeLayout.ALIGN_PARENT_START] != 0
+                        },
+                        icons.map { icon ->
+                            val rl = icon.layoutParams as? RelativeLayout.LayoutParams
+                            rl != null && rl.getRules()[RelativeLayout.CENTER_HORIZONTAL] != 0
+                        },
+                        icons.map { (it.layoutParams as? RelativeLayout.LayoutParams)?.marginStart ?: 0 }
                     )
                 )
                 return
@@ -341,9 +348,9 @@ class PaneSwitcher(
         entry.layoutParams.marginEnd = railRowMarginPx
         entry.texts.forEach { it.visibility = View.GONE }
         entry.icons.forEach { icon ->
-            (icon.layoutParams as? android.widget.RelativeLayout.LayoutParams)?.apply {
-                alignParentStart = false
-                centerHorizontal = true
+            (icon.layoutParams as? RelativeLayout.LayoutParams)?.apply {
+                removeRule(RelativeLayout.ALIGN_PARENT_START)
+                addRule(RelativeLayout.CENTER_HORIZONTAL)
                 marginStart = 0 // don't let the landscape start-margin skew the centering
             }
         }
@@ -354,9 +361,11 @@ class PaneSwitcher(
         entry.layoutParams.marginEnd = entry.origMarginEnd
         entry.texts.forEachIndexed { i, text -> text.visibility = entry.origTextVisibility[i] }
         entry.icons.forEachIndexed { i, icon ->
-            (icon.layoutParams as? android.widget.RelativeLayout.LayoutParams)?.apply {
-                alignParentStart = entry.origAlignParentStart[i]
-                centerHorizontal = entry.origCenterHorizontal[i]
+            (icon.layoutParams as? RelativeLayout.LayoutParams)?.apply {
+                if (entry.origAlignParentStart[i]) addRule(RelativeLayout.ALIGN_PARENT_START)
+                else removeRule(RelativeLayout.ALIGN_PARENT_START)
+                if (entry.origCenterHorizontal[i]) addRule(RelativeLayout.CENTER_HORIZONTAL)
+                else removeRule(RelativeLayout.CENTER_HORIZONTAL)
                 marginStart = entry.origIconMarginStart[i]
             }
         }
