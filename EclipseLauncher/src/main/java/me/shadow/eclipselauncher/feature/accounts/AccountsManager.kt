@@ -8,9 +8,7 @@ import me.shadow.eclipselauncher.context.ContextExecutor.Companion.showToast
 import me.shadow.eclipselauncher.event.single.AccountUpdateEvent
 import me.shadow.eclipselauncher.feature.accounts.AccountUtils.Companion.isMicrosoftAccount
 import me.shadow.eclipselauncher.feature.accounts.AccountUtils.Companion.isNoLoginRequired
-import me.shadow.eclipselauncher.feature.accounts.AccountUtils.Companion.isOtherLoginAccount
 import me.shadow.eclipselauncher.feature.accounts.AccountUtils.Companion.microsoftLogin
-import me.shadow.eclipselauncher.feature.accounts.AccountUtils.Companion.otherLogin
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.task.TaskExecutors
@@ -69,7 +67,6 @@ object AccountsManager {
     ) {
         when {
             isNoLoginRequired(minecraftAccount) -> doneListener1.onLoginDone(minecraftAccount)
-            isOtherLoginAccount(minecraftAccount) -> otherLogin(context, minecraftAccount, doneListener1, errorListener1)
             isMicrosoftAccount(minecraftAccount) -> microsoftLogin(context, minecraftAccount, doneListener1, errorListener1)
         }
     }

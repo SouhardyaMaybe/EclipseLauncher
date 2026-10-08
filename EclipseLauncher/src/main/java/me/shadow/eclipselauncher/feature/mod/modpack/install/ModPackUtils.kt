@@ -5,7 +5,6 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.utils.LauncherProfiles
 import me.shadow.eclipselauncher.feature.download.item.ModLoaderWrapper
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.feature.mod.models.MCBBSPackMeta
 import me.shadow.eclipselauncher.utils.runtime.SelectRuntimeUtils
 import me.shadow.eclipselauncher.pojav.JavaGUILauncherActivity
 import me.shadow.eclipselauncher.pojav.Tools
@@ -23,20 +22,13 @@ class ModPackUtils {
             runCatching {
                 ZipFile(modpack).use { modpackZipFile ->
                     if (suffix == ".zip") {
-                        val mcbbsEntry = modpackZipFile.getEntry("mcbbs.packmeta")
                         val curseforgeEntry = modpackZipFile.getEntry("manifest.json")
-                        if (mcbbsEntry == null && curseforgeEntry != null) {
+                        if (curseforgeEntry != null) {
                             val curseManifest = Tools.GLOBAL_GSON.fromJson(
                                 Tools.read(modpackZipFile.getInputStream(curseforgeEntry)),
                                 CurseManifest::class.java
                             )
                             if (verifyManifest(curseManifest)) return ModPackInfo(curseManifest.name, ModPackEnum.CURSEFORGE)
-                        } else if (mcbbsEntry != null) {
-                            val mcbbsPackMeta = Tools.GLOBAL_GSON.fromJson(
-                                Tools.read(modpackZipFile.getInputStream(mcbbsEntry)),
-                                MCBBSPackMeta::class.java
-                            )
-                            if (verifyMCBBSPackMeta(mcbbsPackMeta)) return ModPackInfo(mcbbsPackMeta.name, ModPackEnum.MCBBS)
                         }
                     } else if (suffix == ".mrpack") {
                         val entry = modpackZipFile.getEntry("modrinth.index.json")
@@ -73,14 +65,6 @@ class ModPackUtils {
             return modrinthIndex.dependencies != null
         }
 
-        fun verifyMCBBSPackMeta(mcbbsPackMeta: MCBBSPackMeta): Boolean { //Check whether this is an MCBBS modpack (judged by the data in mcbbs.packmeta)
-            if ("minecraftModpack" != mcbbsPackMeta.manifestType) return false
-            if (mcbbsPackMeta.manifestVersion != 2) return false
-            if (mcbbsPackMeta.addons == null) return false
-            if (mcbbsPackMeta.addons[0].id == null) return false
-            return (mcbbsPackMeta.addons[0].version != null)
-        }
-
         @JvmStatic
         @Throws(Throwable::class)
         fun startModLoaderInstall(modLoader: ModLoaderWrapper, activity: Activity, modInstallFile: File, customName: String) {
@@ -95,6 +79,6 @@ class ModPackUtils {
     }
 
     enum class ModPackEnum {
-        UNKNOWN, CURSEFORGE, MCBBS, MODRINTH
+        UNKNOWN, CURSEFORGE, MODRINTH
     }
 }

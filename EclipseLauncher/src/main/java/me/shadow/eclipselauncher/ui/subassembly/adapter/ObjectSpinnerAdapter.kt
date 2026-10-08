@@ -11,7 +11,7 @@ import com.skydoves.powerspinner.PowerSpinnerView
 import com.skydoves.powerspinner.databinding.PowerspinnerItemDefaultPowerBinding
 
 /**
- * Adapted from [com.skydoves.powerspinner.DefaultSpinnerAdapter]
+ * Spinner adapter that renders each item through the caller-supplied name function.
  */
 @SuppressLint("NotifyDataSetChanged")
 class ObjectSpinnerAdapter<T>(

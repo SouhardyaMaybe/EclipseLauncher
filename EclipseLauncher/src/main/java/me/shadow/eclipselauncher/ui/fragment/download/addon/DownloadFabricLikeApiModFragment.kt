@@ -25,7 +25,6 @@ abstract class DownloadFabricLikeApiModFragment(
     private val addon: Addon,
     private val projectId: String,
     private val webUrl: String,
-    private val mcModUrl: String,
     private val icon: Int
 ) : ModListFragment() {
 

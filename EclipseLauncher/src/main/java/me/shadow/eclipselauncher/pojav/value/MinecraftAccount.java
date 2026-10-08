@@ -8,7 +8,6 @@ import me.shadow.eclipselauncher.feature.accounts.AccountsManager;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.utils.path.PathManager;
 import me.shadow.eclipselauncher.utils.skin.SkinFileDownloader;
-import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt;
 
 import me.shadow.eclipselauncher.pojav.Tools;
 
@@ -28,9 +27,6 @@ public class MinecraftAccount {
     public String username = "Steve";
     public String msaRefreshToken = "0";
     public String xuid;
-    public String otherBaseUrl;
-    public String otherAccount;
-    public String otherPassword;
     public String accountType;
     private final String uniqueUUID = UUID.randomUUID().toString().toLowerCase(Locale.ROOT);
 
@@ -38,15 +34,11 @@ public class MinecraftAccount {
         updateSkin("https://sessionserver.mojang.com");
     }
 
-    public void updateOtherSkin() {
-        updateSkin(StringUtilsKt.removeSuffix(otherBaseUrl, "/") + "/sessionserver/");
-    }
-
     private void updateSkin(String url) {
         File skinFile = new File(PathManager.DIR_USER_SKIN, uniqueUUID + ".png");
         if (skinFile.exists()) FileUtils.deleteQuietly(skinFile); //Delete the skin file once
         try {
-            new SkinFileDownloader().yggdrasil(url, skinFile, profileId);
+            new SkinFileDownloader().downloadProfileSkin(url, skinFile, profileId);
             Logging.i("SkinLoader", "Update skin success");
         } catch (Exception e) {
             Logging.i("SkinLoader", "Could not update skin\n" + Tools.printToString(e));

@@ -14,10 +14,10 @@ class SkinFileDownloader {
     private val mClient = UrlManager.createOkHttpClient()
 
     /**
-     * Try to download the Yggdrasil skin
+     * Download the skin of a player profile from its profile endpoint
      */
     @Throws(Exception::class)
-    fun yggdrasil(url: String, skinFile: File, uuid: String) {
+    fun downloadProfileSkin(url: String, skinFile: File, uuid: String) {
         val profileJson = DownloadUtils.downloadString("${url.removeSuffix("/")}/session/minecraft/profile/$uuid")
         val profileObject = Tools.GLOBAL_GSON.fromJson(profileJson, JsonObject::class.java)
         val properties = profileObject.get("properties").asJsonArray

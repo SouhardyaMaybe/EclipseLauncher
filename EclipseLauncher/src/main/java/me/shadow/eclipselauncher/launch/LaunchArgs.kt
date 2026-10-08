@@ -2,7 +2,6 @@ package me.shadow.eclipselauncher.launch
 
 import androidx.collection.ArrayMap
 import me.shadow.eclipselauncher.InfoDistributor
-import me.shadow.eclipselauncher.feature.accounts.AccountUtils
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome.Companion.getLibrariesHome
 import me.shadow.eclipselauncher.feature.version.Version
@@ -15,7 +14,7 @@ import me.shadow.eclipselauncher.pojav.Tools
 import me.shadow.eclipselauncher.pojav.multirt.Runtime
 import me.shadow.eclipselauncher.pojav.utils.JSONUtils
 import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
-import org.jackhuang.hmcl.util.versioning.VersionNumber
+import me.shadow.eclipselauncher.utils.version.VersionNumbers
 import java.io.File
 
 class LaunchArgs(
@@ -50,18 +49,9 @@ class LaunchArgs(
     private fun getJavaArgs(): List<String> {
         val argsList: MutableList<String> = ArrayList()
 
-        if (AccountUtils.isOtherLoginAccount(account)) {
-            if (account.otherBaseUrl.contains("auth.mc-user.com")) {
-                argsList.add("-javaagent:${LibPath.NIDE_8_AUTH.absolutePath}=${account.otherBaseUrl.replace("https://auth.mc-user.com:233/", "")}")
-                argsList.add("-Dnide8auth.client=true")
-            } else {
-                argsList.add("-javaagent:${LibPath.AUTHLIB_INJECTOR.absolutePath}=${account.otherBaseUrl}")
-            }
-        }
-
         argsList.addAll(getCacioJavaArgs(runtime.javaVersion == 8))
 
-        val is7 = VersionNumber.compare(VersionNumber.asVersion(versionInfo.id ?: "0.0").canonical, "1.12") < 0
+        val is7 = VersionNumbers.compare(versionInfo.id ?: "0.0", "1.12") < 0
         val configFilePath = if (is7) LibPath.LOG4J_XML_1_7 else LibPath.LOG4J_XML_1_12
         argsList.add("-Dlog4j.configurationFile=${configFilePath.absolutePath}")
 

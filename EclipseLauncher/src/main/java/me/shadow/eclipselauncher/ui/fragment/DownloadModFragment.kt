@@ -40,7 +40,7 @@ import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt
 import me.shadow.eclipselauncher.pojav.Tools
 import org.greenrobot.eventbus.EventBus
-import org.jackhuang.hmcl.util.versioning.VersionNumber
+import me.shadow.eclipselauncher.utils.version.VersionNumbers
 import java.util.Objects
 import java.util.concurrent.Future
 import java.util.function.Consumer
@@ -163,7 +163,7 @@ class DownloadModFragment : ModListFragment() {
         val mData: MutableList<ModListItemBean> = ArrayList()
         mModVersionsByMinecraftVersion.entries
             .sortedWith { entry1, entry2 ->
-                val mcVersionComparison = -VersionNumber.compare(entry1.key.first, entry2.key.first)
+                val mcVersionComparison = -VersionNumbers.compare(entry1.key.first, entry2.key.first)
                 if (mcVersionComparison != 0) {
                     mcVersionComparison
                 } else {
@@ -181,8 +181,8 @@ class DownloadModFragment : ModListFragment() {
                 val isAdapt: Boolean = when (mInfoItem.classify) {
                     Classify.MODPACK -> false
                     else -> currentVersion?.let { version ->
-                        val itemVersion = VersionNumber.asVersion(entry.key.first).canonical
-                        val currentVersionString = VersionNumber.asVersion(version.getVersionInfo()?.minecraftVersion ?: "").canonical
+                        val itemVersion = VersionNumbers.normalize(entry.key.first)
+                        val currentVersionString = VersionNumbers.normalize(version.getVersionInfo()?.minecraftVersion ?: "")
 
                         if (!Objects.equals(itemVersion, currentVersionString)) return@let false
 

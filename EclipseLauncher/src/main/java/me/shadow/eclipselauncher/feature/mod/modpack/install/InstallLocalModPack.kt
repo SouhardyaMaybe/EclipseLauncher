@@ -7,15 +7,11 @@ import me.shadow.eclipselauncher.feature.download.platform.curseforge.CurseForge
 import me.shadow.eclipselauncher.feature.download.platform.modrinth.ModrinthModPackInstallHelper
 import me.shadow.eclipselauncher.feature.download.utils.PlatformUtils
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.feature.mod.models.MCBBSPackMeta
-import me.shadow.eclipselauncher.feature.mod.modpack.MCBBSModPack
 import me.shadow.eclipselauncher.feature.mod.modpack.install.ModPackUtils.ModPackEnum
 import me.shadow.eclipselauncher.feature.version.VersionConfig
 import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
 import org.apache.commons.io.FileUtils
 import java.io.File
 import java.util.zip.ZipFile
@@ -47,23 +43,6 @@ class InstallLocalModPack {
                         ModPackEnum.CURSEFORGE -> {
                             modLoader = curseforgeModPack(zipFile, versionPath) ?: return null
                             VersionConfig.createIsolation(versionPath).save()
-
-                            return modLoader
-                        }
-
-                        ModPackEnum.MCBBS -> {
-                            val mcbbsEntry = modpackZipFile.getEntry("mcbbs.packmeta")
-
-                            val mcbbsPackMeta = Tools.GLOBAL_GSON.fromJson(
-                                Tools.read(
-                                    modpackZipFile.getInputStream(mcbbsEntry)
-                                ), MCBBSPackMeta::class.java
-                            )
-
-                            modLoader = mcbbsModPack(context, zipFile, versionPath) ?: return null
-                            VersionConfig.createIsolation(versionPath).apply {
-                                setJavaArgs(StringUtils.insertSpace(null, *mcbbsPackMeta.launchInfo.javaArgument))
-                            }.save()
 
                             return modLoader
                         }
@@ -120,12 +99,6 @@ class InstallLocalModPack {
                 zipFile,
                 versionPath
             )
-        }
-
-        @Throws(Exception::class)
-        private fun mcbbsModPack(context: Context, zipFile: File, versionPath: File): ModLoaderWrapper? {
-            val mcbbsModPack = MCBBSModPack(context, zipFile)
-            return mcbbsModPack.install(versionPath)
         }
     }
 }

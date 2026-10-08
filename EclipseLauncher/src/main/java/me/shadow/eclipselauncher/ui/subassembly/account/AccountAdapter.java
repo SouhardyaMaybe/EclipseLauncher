@@ -81,9 +81,6 @@ public class AccountAdapter extends RecyclerView.Adapter<AccountAdapter.Holder> 
             if (AccountUtils.isMicrosoftAccount(account)) {
                 setButtonClickable(binding.refresh, true);
                 loginType = mContext.getString(R.string.account_microsoft_account);
-            } else if (AccountUtils.isOtherLoginAccount(account)) {
-                setButtonClickable(binding.refresh, true);
-                loginType = account.accountType;
             } else {
                 setButtonClickable(binding.refresh, false);
                 loginType = mContext.getString(R.string.account_local_account);

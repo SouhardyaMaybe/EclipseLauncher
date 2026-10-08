@@ -73,7 +73,7 @@ class VersionInfoUtils {
         }
 
         private fun extractMinecraftVersion(json: JsonObject): String {
-            //Try to detect the HMCL version
+            //Try to detect the mod loader patches entry
             if (json.has("patches") && json.get("patches").isJsonArray) {
                 val patches = json.getAsJsonArray("patches")
                 if (patches.size() > 0) {

@@ -1,37 +1,28 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 daimajia
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-
 package me.shadow.eclipselauncher.anim.animations.other
 
 import android.animation.Animator
-import android.animation.ObjectAnimator
 import android.view.View
 import me.shadow.eclipselauncher.anim.animations.BaseAnimator
+import me.shadow.eclipselauncher.anim.animations.MotionCurves
+import kotlin.math.pow
 
-class ShakeAnimator: BaseAnimator() {
-    override fun getAnimators(target: View): Array<Animator> {
-        return arrayOf(ObjectAnimator.ofFloat(target, "translationX", 0f, 15f, -15f, 10f, -10f, 7f, -7f, 4f, -4f, 0f))
+/**
+ * Horizontal shake: eight alternating kicks starting at 15 px, each pair of
+ * swings keeping about 64% of the previous pair's reach, so the last kicks
+ * are roughly 4 px wide before the view comes to rest.
+ */
+class ShakeAnimator : BaseAnimator() {
+    override fun getAnimators(target: View): Array<Animator> = arrayOf(
+        MotionCurves.swing(target, "translationX", extremes = 8, firstSign = 1f, restEarly = false) { kick ->
+            START_KICK * PAIR_DECAY.pow((kick - 1) / 2)
+        }
+    )
+
+    private companion object {
+        /** Width of the first kick in pixels. */
+        const val START_KICK = 15f
+
+        /** Decay applied after every pair of kicks, down to 4 px at the end. */
+        val PAIR_DECAY = (4f / 15f).pow(1f / 3f)
     }
 }

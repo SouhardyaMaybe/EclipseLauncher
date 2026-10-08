@@ -5,8 +5,8 @@ import me.shadow.eclipselauncher.feature.version.Version
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.utils.MCVersionRegex
 import me.shadow.eclipselauncher.utils.ZHTools
-import org.jackhuang.hmcl.util.versioning.VersionNumber
-import org.jackhuang.hmcl.util.versioning.VersionRange
+import me.shadow.eclipselauncher.utils.version.VersionNumbers
+import me.shadow.eclipselauncher.utils.version.VersionRanges
 
 class ProfileLanguageSelector {
     companion object {
@@ -25,7 +25,7 @@ class ProfileLanguageSelector {
 
             val version: String = minecraftVersion.getVersionInfo()?.minecraftVersion ?: "1.11"
 
-            val versionId = VersionNumber.asVersion(version).canonical
+            val versionId = VersionNumbers.normalize(version)
             Logging.i("ProfileLanguageSelector", "Version Id : $versionId")
 
             return when {
@@ -42,11 +42,11 @@ class ProfileLanguageSelector {
         }
 
         private fun isOlderVersionRelease(versionName: String): Boolean {
-            return VersionRange.atMost(VersionNumber.asVersion("1.10.2")).contains(VersionNumber.asVersion(versionName))
+            return VersionRanges.atMost("1.10.2").contains(versionName)
         }
 
         private fun isOlderVersionSnapshot(versionName: String): Boolean {
-            return VersionRange.atMost(VersionNumber.asVersion("16w32a")).contains(VersionNumber.asVersion(versionName))
+            return VersionRanges.atMost("16w32a").contains(versionName)
         }
 
         @JvmStatic

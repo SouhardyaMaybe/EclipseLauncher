@@ -43,7 +43,6 @@ import me.shadow.eclipselauncher.event.value.InstallGameEvent;
 import me.shadow.eclipselauncher.event.value.InstallLocalModpackEvent;
 import me.shadow.eclipselauncher.event.value.LocalLoginEvent;
 import me.shadow.eclipselauncher.event.value.MicrosoftLoginEvent;
-import me.shadow.eclipselauncher.event.value.OtherLoginEvent;
 import me.shadow.eclipselauncher.feature.accounts.AccountType;
 import me.shadow.eclipselauncher.feature.accounts.AccountsManager;
 import me.shadow.eclipselauncher.feature.accounts.LocalAccountUtils;
@@ -213,17 +212,6 @@ public class LauncherActivity extends BaseActivity {
                 AccountsManager.INSTANCE.getDoneListener(),
                 AccountsManager.INSTANCE.getErrorListener()
         );
-    }
-
-    @Subscribe()
-    public void event(OtherLoginEvent event) {
-        Task.runTask(() -> {
-                    event.getAccount().save();
-                    Logging.i("Account", "Saved the account : " + event.getAccount().username);
-                    return null;
-                }).onThrowable(e -> Logging.e("Account", "Failed to save the account : " + e))
-                .finallyTask(() -> AccountsManager.INSTANCE.getDoneListener().onLoginDone(event.getAccount()))
-                .execute();
     }
 
     @Subscribe()

@@ -10,7 +10,7 @@ tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveBaseName.set("lwjgl-glfw-classes")
     destinationDirectory.set(file("../EclipseLauncher/src/main/assets/components/lwjgl3/"))
-    // Auto update the version with a timestamp so the project jar gets updated by Pojav
+    // Auto update the version with a timestamp so the project jar gets updated on each build
     doLast {
         val versionFile = file("../EclipseLauncher/src/main/assets/components/lwjgl3/version")
         versionFile.writeText(System.currentTimeMillis().toString())

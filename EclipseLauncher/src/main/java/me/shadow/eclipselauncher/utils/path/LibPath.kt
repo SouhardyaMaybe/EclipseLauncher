@@ -7,7 +7,6 @@ import java.io.File
 class LibPath {
     companion object {
         private val COMPONENTS_DIR = File(DIR_DATA, "components")
-        private val OTHER_LOGIN_DIR = File(DIR_GAME_HOME, "other_login")
 
         @JvmField val CACIO_8 = File(DIR_GAME_HOME, "caciocavallo")
         @JvmField val CACIO_17 = File(DIR_GAME_HOME, "caciocavallo17")
@@ -18,9 +17,6 @@ class LibPath {
 
         @JvmField val MIO_LIB_PATCHER = File(COMPONENTS_DIR, "MioLibPatcher.jar")
         @JvmField val OPTIFINE_RENAMER = File(COMPONENTS_DIR, "OptiFineRenamer.jar")
-
-        @JvmField val AUTHLIB_INJECTOR = File(OTHER_LOGIN_DIR, "authlib-injector.jar")
-        @JvmField val NIDE_8_AUTH = File(OTHER_LOGIN_DIR, "nide8auth.jar")
 
         @JvmField val JAVA_SANDBOX_POLICY = File(COMPONENTS_DIR, "java_sandbox.policy")
         @JvmField val LOG4J_XML_1_7 = File(COMPONENTS_DIR, "log4j-rce-patch-1.7.xml")

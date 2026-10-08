@@ -30,7 +30,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <unistd.h>
-// Boardwalk: missing include
+// Missing include
 #include <string.h>
 
 #include "log.h"
@@ -40,7 +40,7 @@
 // Uncomment to try redirect signal handling to JVM
 // #define TRY_SIG2JVM
 
-// PojavLancher: fixme: are these wrong?
+// fixme: are these wrong?
 #define FULL_VERSION "1.8.0-internal"
 #define DOT_VERSION "1.8"
 
@@ -135,7 +135,7 @@ static jint launchJVM(int margc, char** margv) {
    }
 
    abort_waiter_setup();
-   // Boardwalk: silence
+   // Silence the debug print for the library handle
    // LOGD("JLI lib = %x", (int)libjli);
    if (NULL == libjli)
    {
@@ -145,7 +145,7 @@ static jint launchJVM(int margc, char** margv) {
    LOGD("Found JLI lib");
 
    JLI_Launch_func *pJLI_Launch = (JLI_Launch_func *)dlsym(libjli, "JLI_Launch");
-    // Boardwalk: silence
+    // Silence the debug print for the launch function address
     // LOGD("JLI_Launch = 0x%x", *(int*)&pJLI_Launch);
 
    if (NULL == pJLI_Launch)

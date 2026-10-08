@@ -39,7 +39,7 @@
                 android:paddingVertical="@dimen/_4sdp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/add_server"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:tab_deselect_color="@color/black_or_white"
                 app:tab_select_color="@color/black_or_white">
 
@@ -92,21 +92,6 @@
                 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
 
             </com.angcyo.tablayout.DslTabLayout>
-
-            <ImageView
-                android:id="@+id/add_server"
-                android:layout_width="@dimen/_24sdp"
-                android:layout_height="@dimen/_24sdp"
-                android:layout_marginEnd="@dimen/_8sdp"
-                android:scaleType="centerCrop"
-                android:scaleX="0.92"
-                android:scaleY="0.92"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_more"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                tools:ignore="ContentDescription" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

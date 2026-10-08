@@ -16,7 +16,6 @@ import java.net.URLEncoder
 
 class FabricLikeUtils private constructor(
     val webUrl: String,
-    val mcModUrl: String,
     private val mApiUrl: String,
     val iconName: String,
     val addon: Addon
@@ -108,14 +107,12 @@ class FabricLikeUtils private constructor(
     companion object {
         val FABRIC_UTILS: FabricLikeUtils = FabricLikeUtils(
             "https://fabricmc.net/",
-            "https://www.mcmod.cn/class/1411.html",
             "https://meta.fabricmc.net/v2",
             "fabric",
             Addon.FABRIC
         )
         val QUILT_UTILS: FabricLikeUtils = FabricLikeUtils(
             "https://quiltmc.org/",
-            "https://www.mcmod.cn/class/3901.html",
             "https://meta.quiltmc.org/v3",
             "quilt",
             Addon.QUILT

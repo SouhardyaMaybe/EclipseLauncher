@@ -273,8 +273,6 @@
     <string name="account_add">Add Account</string>
     <string name="account_no_saved_accounts">No Saved Accounts</string>
     <string name="account_remove">This account will be removed from the launcher, are you sure you want to do this?</string>
-    <string name="account_remove_login_type_title">Remove Login Method: %s</string>
-    <string name="account_remove_login_type_message">This login method will be removed from the launcher, but it will not remove your existing account. Are you sure you want to do this?</string>
     <string name="account_microsoft_account">Microsoft Account</string>
     <string name="account_microsoft_xerr_unauthorized">Your Microsoft account login information seems to be expired, this often happens after the account password is changed. Please remove the current account and log in again to reset your login information.</string>
     <string name="account_local_account">Offline Account</string>
@@ -298,7 +296,6 @@
     <string name="account_login_skip">Login failed, do you want to skip the login step?</string>
     <string name="account_no_microsoft_account">Please log in with at least one Minecraft premium account, we do not encourage launching Minecraft without a premium account.</string>
     <string name="account_no_microsoft_account_local">It seems you are not logged in with a premium account! Offline accounts are a backup solution for players who cannot connect to the internet, not for players without a premium account.</string>
-    <string name="account_no_microsoft_account_other">It seems you are not logged in with a premium account! Are you sure you want to use third-party login without logging in with a premium account?</string>
     <string name="account_no_microsoft_account_continue">Ignore and continue</string>
     <string name="account_continue_to_launch_the_game">Continue to Launch Game</string>
     <string name="account_purchase_minecraft_account">Purchase Minecraft Account</string>
@@ -566,7 +563,7 @@
     <string name="download_install_unpack_world_error">Unable to recognize file structure, automatic unpacking failed, please handle the file manually!</string>
     <!-- ModPack -->
     <string name="select_modpack_local_tip">Please select a modpack file that the launcher supports importing!</string>
-    <string name="select_modpack_local_not_supported">This modpack is not supported by the launcher! The launcher only supports importing modpacks in Modrinth, CurseForge, and MCBBS formats. Please check if your modpack is made according to the specified formats!</string>
+    <string name="select_modpack_local_not_supported">This modpack is not supported by the launcher! The launcher only supports importing modpacks in Modrinth and CurseForge formats. Please check if your modpack is made according to the specified formats!</string>
     <string name="select_modpack_local_installing_files">Installing game files… (%d / %d)</string>
     <string name="modpack_download_downloading_metadata">Downloading modpack metadata (%.2fMB / %.2fMB, speed: %s/s)</string>
     <string name="modpack_download_downloading_mods">Downloading mods (%.2fMB / %.2fMB, speed: %s/s)</string>
@@ -594,26 +591,11 @@
     <string name="update_success">The latest installation package has been downloaded. Do you want to install it? Package location:</string>
     <string name="update_downloading">Downloading installation package… (%s / %s)</string>
     <string name="update_downloading_tip">Fetching, update source: %s</string>
-    <!-- Other Login -->
-    <string name="other_login_server">Auth Server</string>
-    <string name="other_login_email">Email or Username</string>
-    <string name="other_login_password">Password</string>
-    <string name="other_login_uniform_pass">Unified Passport</string>
-    <string name="other_login_yggdrasil_api">Please enter the Yggdrasil API authentication server address</string>
-    <string name="other_login_32_bit_server">Please enter the 32-bit server ID</string>
-    <string name="other_login_error">An error occurred during login:\n</string>
-    <string name="other_login_baseurl_not_set">Base URL Not Set</string>
-    <string name="other_login_server_not_empty">Server cannot be empty, please check the authentication server settings!</string>
-    <string name="other_login_select_role_title">Select Role</string>
-    <string name="other_login_select_role_message">Multiple roles exist for the current account, please select the role you want to use</string>
-    <string name="other_login_registry_now">No account? Click here to register one!</string>
-    <string name="other_login_role_not_found">Role matching the current account not found, please check if this role exists on the server you are using!</string>
     <!-- Splash -->
     <string name="splash_screen_desc">The launcher needs to install these contents to ensure Minecraft can start properly. These contents are included in the app and need to be extracted before they can be used. Click the button below to start extracting and updating these contents.</string>
     <string name="splash_screen_installing">The launcher is extracting these contents. The main interface will automatically open after extraction is complete. Please wait patiently.</string>
     <string name="splash_screen_lwjgl">Lightweight Java Game Library, Minecraft relies on it to run the game.</string>
     <string name="splash_screen_cacio">Provides a portable GUI backend for OpenJDK.</string>
-    <string name="splash_screen_authlib_injector">Injects authlib via runtime to enable login outside the game.</string>
     <string name="splash_screen_components">Some components that the launcher depends on.</string>
     <string name="splash_screen_jre8">Java 8 environment, Minecraft 1.16- depends on Java 8.</string>
     <string name="splash_screen_jre17">Java 17 environment, Minecraft 1.17+ depends on Java 17.</string>

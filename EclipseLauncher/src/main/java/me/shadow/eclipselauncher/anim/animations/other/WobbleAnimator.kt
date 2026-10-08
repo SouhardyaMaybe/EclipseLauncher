@@ -1,40 +1,34 @@
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 daimajia
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
-
 package me.shadow.eclipselauncher.anim.animations.other
 
 import android.animation.Animator
-import android.animation.ObjectAnimator
 import android.view.View
 import me.shadow.eclipselauncher.anim.animations.BaseAnimator
+import me.shadow.eclipselauncher.anim.animations.MotionCurves
 
-class WobbleAnimator: BaseAnimator() {
+/**
+ * Wobble in place: the view shifts side to side with swings that shrink
+ * linearly from 25% down to 5% of its width while rocking from -5 degrees
+ * to -1 degrees, then rests.
+ */
+class WobbleAnimator : BaseAnimator() {
     override fun getAnimators(target: View): Array<Animator> {
-        val one = (target.width / 100.0).toFloat()
+        // One unit equals one percent of the view's width.
+        val percent = target.width / 100f
         return arrayOf(
-            ObjectAnimator.ofFloat(target, "translationX", 0 * one, -25 * one, 20 * one, -15 * one, 10 * one, -5 * one, 0 * one, 0f),
-            ObjectAnimator.ofFloat(target, "rotation", 0f, -5f, 3f, -3f, 2f, -1f, 0f))
+            MotionCurves.swing(target, "translationX", extremes = 5, firstSign = -1f, restEarly = true) { swing ->
+                MAX_SHIFT * percent * (1f - (swing - 1) / 5f)
+            },
+            MotionCurves.swing(target, "rotation", extremes = 5, firstSign = -1f, restEarly = false) { swing ->
+                MAX_TILT - (swing - 1)
+            }
+        )
+    }
+
+    private companion object {
+        /** Widest side-to-side swing: 25% of the view's width. */
+        const val MAX_SHIFT = 25f
+
+        /** First tilt in degrees; every swing rocks one degree less. */
+        const val MAX_TILT = 5f
     }
 }

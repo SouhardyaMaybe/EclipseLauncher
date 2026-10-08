@@ -9,8 +9,6 @@ import me.shadow.eclipselauncher.R
 enum class Category(val classify: Classify, val resNameID: Int, val curseforgeID: String?, val modrinthName: String?) {
     ALL(Classify.ALL, R.string.generic_all, null, null),
 
-    //Data source for the Mod and ModPack categories: https://github.com/Hex-Dragon/PCL2/blob/f40a2990103ae85c34acb5d8d367ab1644aa7ca6/Plain%20Craft%20Launcher%202/Modules/Minecraft/ModComp.vb#L281
-    //Thanks to Hex-Dragon (the PCL2 author)!!!!
     //Mod categories
     MOD_WORLDGEN(Classify.MOD, R.string.category_worldgen, "406", "worldgen"),
     MOD_BIOMES(Classify.MOD, R.string.category_biomes, "407", null),
