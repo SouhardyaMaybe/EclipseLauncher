@@ -103,7 +103,7 @@ jobs:
           prerelease: ${{ env.prerelease == 'true' }}
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: dist/*
+          files: dist/*.apk
 
   BuildDebug:
     if: startsWith(github.ref, 'refs/pull/') || github.ref_name != 'main'
