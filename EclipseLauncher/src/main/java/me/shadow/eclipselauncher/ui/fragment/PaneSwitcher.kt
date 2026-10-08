@@ -66,7 +66,7 @@ class PaneSwitcher(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                 )
             }
-            root.addView(this)
+            if (root is ViewGroup) root.addView(this)
         }
     } else null
 

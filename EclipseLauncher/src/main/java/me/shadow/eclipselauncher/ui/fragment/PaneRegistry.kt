@@ -53,5 +53,5 @@ object PaneRegistry {
     )
 
     /** Finds the pane entry for a fragment, including its superclasses. */
-    fun find(fragment: Fragment): Entry? = entries.firstOrNull { (cls, _) -> cls.isInstance(fragment) }?.value
+    fun find(fragment: Fragment): Entry? = entries.firstOrNull { (cls, _) -> cls.isInstance(fragment) }?.second
 }
