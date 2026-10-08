@@ -22,7 +22,7 @@
             android:paddingVertical="@dimen/_12sdp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:background="@drawable/background_card"
@@ -91,7 +91,7 @@
 
             <me.shadow.eclipselauncher.ui.view.AnimTextView
                 android:id="@+id/app_info"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_12sdp"
@@ -101,7 +101,7 @@
                 android:paddingVertical="@dimen/_12sdp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_12sdp"

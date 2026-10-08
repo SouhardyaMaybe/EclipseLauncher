@@ -19,7 +19,7 @@ object PaneRegistry {
 
     private val entries: List<Pair<Class<*>, Entry>> = listOf(
         me.shadow.eclipselauncher.pojav.fragments.MainMenuFragment::class.java to
-            Entry(R.id.play_layout, R.id.launcher_menu, R.string.pane_menu, PaneSwitcher.Mode.SWITCH),
+            Entry(R.id.play_layout, R.id.launcher_menu, 0, PaneSwitcher.Mode.ICON_RAIL),
         me.shadow.eclipselauncher.ui.fragment.VersionsListFragment::class.java to
             Entry(R.id.version_layout, R.id.operate_layout, R.string.pane_actions),
         me.shadow.eclipselauncher.ui.fragment.VersionSelectorFragment::class.java to
@@ -47,9 +47,9 @@ object PaneRegistry {
         me.shadow.eclipselauncher.ui.fragment.VersionManagerFragment::class.java to
             Entry(R.id.shortcuts_layout, R.id.edit_layout, R.string.pane_actions, PaneSwitcher.Mode.SWITCH),
         me.shadow.eclipselauncher.ui.fragment.SettingsFragment::class.java to
-            Entry(R.id.settings_layout, R.id.settings_viewpager, R.string.pane_sections, PaneSwitcher.Mode.RAIL),
+            Entry(R.id.settings_layout, R.id.settings_viewpager, 0, PaneSwitcher.Mode.HEADERS),
         me.shadow.eclipselauncher.ui.fragment.DownloadFragment::class.java to
-            Entry(R.id.classify_layout, R.id.download_viewpager, R.string.pane_sections, PaneSwitcher.Mode.RAIL)
+            Entry(R.id.classify_layout, R.id.download_viewpager, 0, PaneSwitcher.Mode.HEADERS)
     )
 
     /** Finds the pane entry for a fragment, including its superclasses. */

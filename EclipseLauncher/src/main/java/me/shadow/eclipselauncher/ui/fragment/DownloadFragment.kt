@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -43,37 +41,14 @@ class DownloadFragment : FragmentWithAnim(R.layout.fragment_download) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewPager()
 
-        // Portrait single-pane mode: the opener button switches between download sections
-        onPaneOpenerClick = { showSectionsPopup() }
-
+        // Portrait: the tab rail is a full-screen "headers" list of sections;
+        // tapping one opens its page (no-op in the two-pane landscape layout).
         binding.classifyTab.observeIndexChange { _, toIndex, reselect, fromUser ->
-            if (reselect) return@observeIndexChange
-            if (fromUser) binding.downloadViewpager.setCurrentItem(toIndex, false)
-        }
-    }
-
-    private fun showSectionsPopup() {
-        val anchor = paneOpenerButton ?: return
-        val popup = PopupMenu(requireContext(), anchor)
-        for (i in 0 until binding.classifyTab.childCount) {
-            val label = findTabLabel(binding.classifyTab.getChildAt(i)) ?: continue
-            popup.menu.add(0, i, i, label)
-        }
-        popup.setOnMenuItemClickListener { item ->
-            binding.downloadViewpager.setCurrentItem(item.itemId, false)
-            true
-        }
-        popup.show()
-    }
-
-    private fun findTabLabel(view: View?): CharSequence? {
-        if (view is TextView) return view.text
-        if (view is ViewGroup) {
-            for (i in 0 until view.childCount) {
-                findTabLabel(view.getChildAt(i))?.let { return it }
+            if (fromUser) {
+                if (!reselect) binding.downloadViewpager.setCurrentItem(toIndex, false)
+                openPane()
             }
         }
-        return null
     }
 
     private fun initViewPager() {

@@ -7,6 +7,7 @@ import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -488,6 +489,19 @@ public class LauncherActivity extends BaseActivity {
     protected void onStart() {
         super.onStart();
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(mFragmentCallbackListener, true);
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Safety net: re-apply the visible fragment's pane state straight from the
+        // activity, so a rotation can never leave a half-applied two-pane layout.
+        // PaneSwitcher.applyOrientation is idempotent, so this is safe to call
+        // right after the fragments' own callbacks.
+        Fragment fragment = getSupportFragmentManager().findFragmentById(binding.containerFragment.getId());
+        if (fragment instanceof BaseFragment) {
+            ((BaseFragment) fragment).reapplyPaneOrientation();
+        }
     }
 
     @Override

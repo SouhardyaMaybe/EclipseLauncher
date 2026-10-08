@@ -1,7 +1,6 @@
 package me.shadow.eclipselauncher.ui.fragment
 
 import android.content.res.Configuration
-import android.view.View
 import androidx.fragment.app.Fragment
 import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
 import me.shadow.eclipselauncher.pojav.progresskeeper.TaskCountListener
@@ -9,17 +8,6 @@ import me.shadow.eclipselauncher.pojav.progresskeeper.TaskCountListener
 abstract class BaseFragment : Fragment, TaskCountListener {
     private var mIsTaskRunning: Boolean = false
     private var paneSwitcher: PaneSwitcher? = null
-
-    /**
-     * Optional custom action for the portrait pane-opener button
-     * (e.g. a section picker). When null the button toggles the secondary pane.
-     * Set this from onViewCreated; it is wired when the switcher is created.
-     */
-    var onPaneOpenerClick: (() -> Unit)? = null
-
-    /** The floating portrait opener button of this fragment (available after onStart). */
-    val paneOpenerButton: View?
-        get() = paneSwitcher?.openerButton
 
     constructor() : super()
 
@@ -55,11 +43,17 @@ abstract class BaseFragment : Fragment, TaskCountListener {
             currentView, entry.left, entry.right, entry.openerLabel, entry.mode
         )
         paneSwitcher = switcher
-        switcher.openerButton?.setOnClickListener {
-            val custom = onPaneOpenerClick
-            if (custom != null) custom() else switcher.togglePane()
-        }
+        switcher.openerButton?.setOnClickListener { switcher.togglePane() }
         switcher.applyOrientation(currentView.resources.configuration)
+    }
+
+    /**
+     * Re-applies the pane layout from the view's current configuration.
+     * Called by the activity after every configuration change as a safety net;
+     * [applyOrientation] is idempotent, so duplicate calls are harmless.
+     */
+    fun reapplyPaneOrientation() {
+        ensurePaneSwitcher()
     }
 
     override fun onStart() {
@@ -75,7 +69,7 @@ abstract class BaseFragment : Fragment, TaskCountListener {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        paneSwitcher?.applyOrientation(newConfig)
+        reapplyPaneOrientation()
     }
 
     override fun onUpdateTaskCount(taskCount: Int) {
