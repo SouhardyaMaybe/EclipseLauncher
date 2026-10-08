@@ -39,11 +39,11 @@ public abstract class BaseActivity extends AppCompatActivity {
         Tools.updateWindowSize(this);
 
         checkStoragePermissions();
-        //加载渲染器
+        // Load the renderer
         Renderers.INSTANCE.init(false);
-        //加载插件
+        // Load the plugins
         PluginLoader.loadAllPlugins(this, false);
-        //刷新游戏路径
+        // Refresh the game paths
         ProfilePathManager.INSTANCE.refreshPath();
     }
 
@@ -97,7 +97,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     private void checkStoragePermissions() {
-        //检查所有文件管理权限
+        // Check all-files access permissions
         StoragePermissionsUtils.checkPermissions(this);
     }
 }

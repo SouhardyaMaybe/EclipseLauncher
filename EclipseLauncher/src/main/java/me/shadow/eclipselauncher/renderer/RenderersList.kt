@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.renderer
 
 /**
- * @param rendererIdentifier 渲染器唯一标识符
- * @param rendererNames 渲染器名称列表
+ * @param rendererIdentifier the unique identifier of the renderer
+ * @param rendererNames the list of renderer names
  */
 class RenderersList(val rendererIdentifier: List<String>, val rendererNames: List<String>)

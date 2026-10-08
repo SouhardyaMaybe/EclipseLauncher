@@ -168,7 +168,7 @@ class VersionConfig(private var versionPath: File) : Parcelable {
 
         @JvmStatic
         fun parseConfig(versionPath: File): VersionConfig {
-            //兼容旧版本的版本隔离文件（识别并保存为新版本后，旧的版本隔离文件将被删除）
+            //Backward compatibility with the legacy version isolation file (once it has been read and saved in the new format, the old file is deleted)
             val oldConfigFile = File(getEclipseVersionPath(versionPath), "EclipseVersion.cfg")
             val configFile = File(getEclipseVersionPath(versionPath), "VersionConfig.json")
 
@@ -181,12 +181,12 @@ class VersionConfig(private var versionPath: File) : Parcelable {
                             save()
                         }
                     }.getOrNull().let { config ->
-                        //移除旧的配置文件
+                        //Remove the old config file
                         oldConfigFile.delete()
                         config?.let { return@getConfig it }
                     }
                 }
-                //读取此文件的内容，并解析为VersionConfig
+                //Read the contents of this file and parse it into a VersionConfig
                 val configString = Tools.read(configFile)
                 val config = Tools.GLOBAL_GSON.fromJson(configString, VersionConfig::class.java)
                 runCatching {

@@ -19,7 +19,6 @@ class UrlManager {
         const val URL_GITHUB_HOME: String = "https://api.github.com/repos/SouhardyaMaybe/Eclipse-Info/contents/"
         const val URL_MINECRAFT: String = "https://www.minecraft.net/"
         const val URL_MINECRAFT_VERSION_REPOS: String = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json"
-        const val URL_SUPPORT: String = "https://github.com/SouhardyaMaybe/EclipseLauncher"
         const val URL_HOME: String = "https://github.com/SouhardyaMaybe/EclipseLauncher"
         const val URL_FCL_RENDERER_PLUGIN: String = "https://github.com/ShirosakiMio/FCLRendererPlugin/releases/tag/Renderer"
         const val URL_FCL_DRIVER_PLUGIN: String = "https://github.com/FCL-Team/FCLDriverPlugin/releases/tag/Turnip"
@@ -56,7 +55,7 @@ class UrlManager {
         fun createOkHttpClient(): OkHttpClient = createOkHttpClientBuilder().build()
 
         /**
-         * 创建一个OkHttpClient，可自定义一些内容
+         * Creates an OkHttpClient with optional custom configuration
          */
         @JvmStatic
         fun createOkHttpClientBuilder(action: (OkHttpClient.Builder) -> Unit = { }): OkHttpClient.Builder {

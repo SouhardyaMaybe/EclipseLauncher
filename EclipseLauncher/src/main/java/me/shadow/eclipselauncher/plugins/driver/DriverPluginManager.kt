@@ -5,7 +5,7 @@ import android.content.pm.ApplicationInfo
 import me.shadow.eclipselauncher.setting.AllSettings
 
 /**
- * FCL 驱动器插件
+ * FCL driver plugins
  * [FCL DriverPlugin.kt](https://github.com/FCL-Team/FoldCraftLauncher/blob/main/FCLauncher/src/main/java/com/tungsten/fclauncher/plugins/DriverPlugin.kt)
  */
 object DriverPluginManager {
@@ -25,8 +25,8 @@ object DriverPluginManager {
     fun getDriver(): Driver = currentDriver
 
     /**
-     * 初始化驱动器
-     * @param reset 是否清除已有插件
+     * Initialize the driver
+     * @param reset whether to clear the existing plugins
      */
     fun initDriver(context: Context, reset: Boolean) {
         if (reset) driverList.clear()
@@ -35,7 +35,7 @@ object DriverPluginManager {
     }
 
     /**
-     * 通用 FCL 插件
+     * Generic FCL plugin
      */
     fun parsePlugin(info: ApplicationInfo) {
         if (info.flags and ApplicationInfo.FLAG_SYSTEM == 0) {

@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.event.single
 
 /**
- * 当MC的options.txt文件变更时，则使用这个事件通知
+ * This event is used to notify when MC's options.txt file changes
  * @see me.shadow.eclipselauncher.feature.MCOptions
  */
 class MCOptionChangeEvent

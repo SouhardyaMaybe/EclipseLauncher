@@ -30,7 +30,7 @@ class ProfilePathAdapter(
     RecyclerView.Adapter<ProfilePathAdapter.ViewHolder>() {
     private val mData: MutableList<ProfileItem> = ArrayList()
     private val radioButtonList: MutableList<RadioButton> = mutableListOf()
-    //如果没有存储权限，那么旧设置为默认路径
+    //If there is no storage permission, fall back to the default path
     private var currentId: String? = if (StoragePermissionsUtils.checkPermissions()) launcherProfile.getValue() else "default"
     private val managerPopupWindow: PopupWindow = PopupWindow().apply {
         isFocusable = true
@@ -167,7 +167,7 @@ class ProfilePathAdapter(
                                 .setCancelable(false)
                                 .setConfirmClickListener {
                                     if (currentId == profileItem.id) {
-                                        //如果删除的是当前选中的路径，那么将自动选择为默认路径
+                                        //If the deleted path is the currently selected one, the default path is selected automatically
                                         setPathId("default")
                                     }
                                     mData.removeAt(itemIndex)

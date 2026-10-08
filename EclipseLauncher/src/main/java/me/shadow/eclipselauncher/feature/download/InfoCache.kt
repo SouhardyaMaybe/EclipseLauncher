@@ -6,28 +6,28 @@ import me.shadow.eclipselauncher.feature.download.item.ModVersionItem
 import me.shadow.eclipselauncher.feature.download.item.VersionItem
 
 /**
- * 将搜索得到的信息缓存在内存中，下次加载时可直接从内存中拿到上次的搜索结果
+ * Cache the search results in memory, so the previous results can be read directly from memory on the next load
  */
 class InfoCache {
     abstract class CacheBase<V> {
         private val cache: MutableMap<String, V> = HashMap()
 
         /**
-         * 根据ModId，将搜索到的值存入内存
+         * Store the searched value in memory by ModId
          */
         fun put(modId: String, value: V) {
             cache[modId] = value
         }
 
         /**
-         * 根据ModId，拿到内存中存储的值，若没有，则返回空
+         * Get the value stored in memory by ModId, returning null if it is absent
          */
         fun get(modId: String): V? {
             return cache[modId]
         }
 
         /**
-         * 检查内存中是否存在已经存入的ModId
+         * Check whether the given ModId is already stored in memory
          */
         fun containsKey(modId: String): Boolean {
             return cache.containsKey(modId)

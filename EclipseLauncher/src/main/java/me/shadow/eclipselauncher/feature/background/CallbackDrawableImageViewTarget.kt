@@ -5,7 +5,7 @@ import android.widget.ImageView
 import com.bumptech.glide.request.target.DrawableImageViewTarget
 
 /**
- * 对DrawableImageViewTarget类的加载回调
+ * Loading callback for the DrawableImageViewTarget class
  */
 class CallbackDrawableImageViewTarget(
     private val imageView: ImageView,

@@ -171,7 +171,7 @@ public class MinecraftGLSurface extends View implements GrabListener {
                 public void onSurfaceTextureUpdated(@NonNull SurfaceTexture surface) {
                     if (!mIsRenderingStarted) {
                         mIsRenderingStarted = true;
-                        //在正式渲染画面的时候，调用这个监听器，关闭启动器背景图像，防止一些设备的半透明问题
+                        //When actually rendering the frame, call this listener to turn off the launcher background image, preventing translucency issues on some devices
                         if (mOnRenderingStartedListener != null) mOnRenderingStartedListener.isStarted();
                     }
                 }

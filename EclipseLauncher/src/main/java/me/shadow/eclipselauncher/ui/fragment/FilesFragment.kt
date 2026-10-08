@@ -121,7 +121,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
                 setOnMultiSelectListener { itemBeans: List<FileItemBean> ->
                     if (itemBeans.isNotEmpty()) {
                         Task.runTask {
-                            //取出全部文件
+                            // Take out all files
                             val selectedFiles: MutableList<File> = ArrayList()
                             itemBeans.forEach(Consumer { value: FileItemBean ->
                                 val file = value.file
@@ -154,7 +154,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
 
                 setRefreshListener {
                     setVisibilityAnim(nothingText, isNoFile)
-                    // 如果目录变更到了外部存储，则会检查权限
+                    // Check the permission when the directory changes to external storage
                     if (Objects.equals(fullPath.absolutePath, storageDirectory.absolutePath)) {
                         StoragePermissionsUtils.checkPermissions(
                             activity = requireActivity(),
@@ -174,7 +174,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
                         val path = editBox.text.toString()
 
                         val file = File(path)
-                        //检查路径是否符合要求：最少为最顶部路径、路径是一个文件夹、这个路径存在
+                        // Validate the path: it must not be above the root, must be a folder, and must exist
                         if (!path.contains(mLockPath!!) || !file.isDirectory || !file.exists()) {
                             editBox.error = getString(R.string.file_does_not_exist)
                             return@setConfirmListener false
@@ -223,7 +223,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
             operateView.addFileButton.setOnClickListener {
                 closeMultiSelect()
                 openDocumentLauncher?.launch(null)
-            } //不限制文件类型
+            } // Do not restrict file types
             operateView.createFolderButton.setOnClickListener {
                 closeMultiSelect()
                 EditTextDialog.Builder(requireContext())
@@ -325,7 +325,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
     }
 
     private fun closeMultiSelect() {
-        //点击其它控件时关闭多选模式
+        // Exit multi-select mode when another control is clicked
         binding.multiSelectFiles.isChecked = false
         binding.selectAll.visibility = View.GONE
     }

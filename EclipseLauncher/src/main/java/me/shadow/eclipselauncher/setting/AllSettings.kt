@@ -37,12 +37,6 @@ class AllSettings {
         @JvmStatic
         val forceVsync = BooleanSettingUnit("force_vsync", false)
 
-        @JvmStatic
-        val vsyncInZink = BooleanSettingUnit("vsync_in_zink", false)
-
-        @JvmStatic
-        val zinkPreferSystemDriver = BooleanSettingUnit("zinkPreferSystemDriver", false)
-
         // Control
         @JvmStatic
         val disableGestures = BooleanSettingUnit("disableGestures", false)
@@ -116,7 +110,7 @@ class AllSettings {
 
         @JvmStatic
         val ramAllocation = lazy {
-            //涉及到Context初始化，需要进行懒加载
+            //This involves Context initialization, so lazy loading is required
             IntSettingUnit("allocation", LauncherPreferences.findBestRAMAllocation(ContextExecutor.getApplication()))
         }
 

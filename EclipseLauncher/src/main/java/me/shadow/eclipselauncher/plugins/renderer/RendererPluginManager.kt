@@ -17,7 +17,7 @@ import java.io.FileInputStream
 import java.util.zip.ZipFile
 
 /**
- * FCL、EclipseLauncher 渲染器插件，同时支持使用本地渲染器插件
+ * FCL and EclipseLauncher renderer plugins, with support for local renderer plugins as well
  * [FCL Renderer Plugin](https://github.com/FCL-Team/FCLRendererPlugin)
  */
 object RendererPluginManager {
@@ -26,13 +26,13 @@ object RendererPluginManager {
     private val localRendererPluginList: MutableList<LocalRendererPlugin> = mutableListOf()
 
     /**
-     * 获取当前渲染器插件加载的所有渲染器
+     * Get all renderers loaded by the current renderer plugins
      */
     @JvmStatic
     fun getRendererList() = rendererPluginList
 
     /**
-     * 移除某些已加载的渲染器
+     * Remove some of the loaded renderers
      */
     @JvmStatic
     fun removeRenderer(rendererPlugins: Collection<RendererPlugin>) {
@@ -40,13 +40,13 @@ object RendererPluginManager {
     }
 
     /**
-     * 获取当前本地渲染器插件加载的所有渲染器
+     * Get all renderers loaded by the current local renderer plugins
      */
     @JvmStatic
     fun getAllLocalRendererList() = localRendererPluginList
 
     /**
-     * @return 是可用的
+     * @return whether it is usable
      */
     @JvmStatic
     fun isAvailable(): Boolean {
@@ -54,8 +54,8 @@ object RendererPluginManager {
     }
 
     /**
-     * 当前选择的渲染器插件所加载的渲染器
-     * 根据总渲染器管理者选择的渲染器的渲染器唯一标识符进行判断
+     * The renderer loaded by the currently selected renderer plugin
+     * Determined by the renderer unique identifier selected by the master renderer manager
      */
     @JvmStatic
     val selectedRendererPlugin: RendererPlugin?
@@ -67,7 +67,7 @@ object RendererPluginManager {
         }
 
     /**
-     * 清除渲染器插件
+     * Clear the renderer plugins
      */
     fun clearPlugin() {
         rendererPluginList.clear()
@@ -76,7 +76,7 @@ object RendererPluginManager {
     }
 
     /**
-     * 当前渲染器插件是否带有配置项（软件式插件、白名单包名）
+     * Whether the current renderer plugin has configuration options (software plugin, whitelisted package name)
      */
     @JvmStatic
     fun getConfigurablePluginOrNull(rendererUniqueIdentifier: String): RendererPlugin? {
@@ -89,7 +89,7 @@ object RendererPluginManager {
     }
 
     /**
-     * 解析 EclipseLauncher、FCL 渲染器插件
+     * Parse EclipseLauncher and FCL renderer plugins
      */
     fun parseApkPlugin(context: Context, info: ApplicationInfo) {
         if (info.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
@@ -155,22 +155,22 @@ object RendererPluginManager {
     }
 
     /**
-     * 从本地 `/files/renderer_plugins/` 目录下尝试解析渲染器插件
-     * @return 是否是符合要求的插件
+     * Try to parse renderer plugins from the local `/files/renderer_plugins/` directory
+     * @return whether it is a plugin that meets the requirements
      *
-     * 渲染器文件夹格式
+     * Renderer folder format
      * renderer_plugins/
-     * ----文件夹名称/
-     * --------renderer_config.json (存放渲染器具体信息的配置文件)
-     * --------libs/ (渲染器`.so`文件的存放目录)
-     * ------------arm64-v8a/ (arm64架构)
-     * ----------------渲染器库文件.so
-     * ------------armeabi-v7a/ (arm32架构)
-     * ----------------渲染器库文件.so
-     * ------------x86/ (x86架构)
-     * ----------------渲染器库文件.so
-     * ------------x86_64/ (x86_64架构)
-     * ----------------渲染器库文件.so
+     * ----folder name/
+     * --------renderer_config.json (config file storing the renderer's specific information)
+     * --------libs/ (directory holding the renderer `.so` files)
+     * ------------arm64-v8a/ (arm64 architecture)
+     * ----------------renderer library .so file
+     * ------------armeabi-v7a/ (arm32 architecture)
+     * ----------------renderer library .so file
+     * ------------x86/ (x86 architecture)
+     * ----------------renderer library .so file
+     * ------------x86_64/ (x86_64 architecture)
+     * ----------------renderer library .so file
      */
     fun parseLocalPlugin(context: Context, directory: File): Boolean {
         val archModel: String = UpdateUtils.getArchModel(Architecture.getDeviceArchitecture()) ?: return false
@@ -222,7 +222,7 @@ object RendererPluginManager {
     }
 
     /**
-     * 导入本地渲染器插件
+     * Import local renderer plugins
      */
     fun importLocalRendererPlugin(pluginFile: File): Boolean {
         if (!pluginFile.exists() || !pluginFile.isFile) {

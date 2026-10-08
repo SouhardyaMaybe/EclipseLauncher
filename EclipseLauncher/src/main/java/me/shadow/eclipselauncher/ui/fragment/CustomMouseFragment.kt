@@ -114,7 +114,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         ))
         TaskExecutors.runInUIThread {
             fileRecyclerViewCreator?.loadData(fileItemBeans)
-            //默认显示当前选中的鼠标
+            // Show the currently selected mouse by default
             refreshIcon()
         }
     }
@@ -160,9 +160,9 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
 
                 val filesButton = FilesButton()
                 filesButton.setButtonVisibility(false, false,
-                    !isDefaultMouse, !isDefaultMouse, !isDefaultMouse, (isDefaultMouse || isImage(file))) //默认虚拟鼠标不支持分享、重命名、删除操作
+                    !isDefaultMouse, !isDefaultMouse, !isDefaultMouse, (isDefaultMouse || isImage(file))) // The default virtual mouse does not support sharing, renaming, or deleting
 
-                //如果选中的虚拟鼠标是默认的虚拟鼠标，那么将加上额外的提醒
+                // Show an extra warning when the selected virtual mouse is the default one
                 var message = getString(R.string.file_message)
                 if (isDefaultMouse) message += """
      

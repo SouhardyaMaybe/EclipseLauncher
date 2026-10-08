@@ -1,8 +1,8 @@
 package me.shadow.eclipselauncher.event.single
 
 /**
- * 当主Activity的背景图片变更时，会通过这个事件进行通知
- * 仅仅只有主Activity需要进行事件通知，因为当背景图片变更时，用户当前的界面一定为主Activity
+ * This event notifies when the main Activity's background image changes
+ * Only the main Activity needs this notification, because when the background image changes the user must be on the main Activity
  * @see me.shadow.eclipselauncher.pojav.LauncherActivity
  * @see me.shadow.eclipselauncher.ui.fragment.CustomBackgroundFragment
  */

@@ -96,8 +96,8 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
                         val image = isImage(file)
                         val filesButton = FilesButton()
                         filesButton.setButtonVisibility(false, false, true, true, true, image)
-                        //默认虚拟鼠标不支持分享、重命名、删除操作
-                        val message = if (image) { //如果选中的不是一个图片，那么将显示默认的文件选择提示信息
+                        // The default entry does not support sharing, renaming, or deleting
+                        val message = if (image) { // When the selection is not an image, show the default file selection prompt instead
                             getString(R.string.custom_background_dialog_message, currentStatusName)
                         } else {
                             getString(R.string.file_message)

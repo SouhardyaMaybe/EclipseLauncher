@@ -40,10 +40,10 @@ import org.greenrobot.eventbus.EventBus
 class LaunchGame {
     companion object {
         /**
-         * 改为启动游戏前进行的操作
-         * - 进行登录，同时也能及时的刷新账号的信息（这明显更合理不是吗，PojavLauncher？）
-         * - 复制 options.txt 文件到游戏目录
-         * @param version 选择的版本
+         * Operations performed before launching the game
+         * - Signs in and refreshes the account info in time
+         * - Copies the options.txt file to the game directory
+         * @param version the selected version
          */
         @JvmStatic
         fun preLaunch(context: Context, version: Version) {
@@ -55,7 +55,7 @@ class LaunchGame {
                 val versionName = version.getVersionName()
                 val mcVersion = AsyncMinecraftDownloader.getListedVersion(versionName)
                 val listener = ContextAwareDoneListener(context, version)
-                //若网络未连接，跳过下载任务直接启动
+                // Skip the download tasks and launch directly when offline
                 if (!networkAvailable) {
                     listener.onDownloadDone()
                 } else {
@@ -72,7 +72,7 @@ class LaunchGame {
             }
 
             if (!networkAvailable) {
-                // 网络未链接，无法登录，但是依旧允许玩家启动游戏 (临时创建一个同名的离线账号启动游戏)
+                // No network, cannot sign in, but the player may still launch the game (a temporary offline account with the same name is created)
                 Toast.makeText(context, context.getString(R.string.account_login_no_network), Toast.LENGTH_SHORT).show()
                 launch(true)
                 return
@@ -90,7 +90,7 @@ class LaunchGame {
                     TaskExecutors.runInUIThread {
                         Toast.makeText(context, context.getString(R.string.account_login_done), Toast.LENGTH_SHORT).show()
                     }
-                    //登录完成，正式启动游戏！
+                    // Signed in, starting the game!
                     launch()
                 },
                 { exception ->
@@ -155,7 +155,7 @@ class LaunchGame {
 
             if (versionRuntime.isNotEmpty()) return versionRuntime
 
-            //如果版本未选择Java环境，则自动选择合适的环境
+            // Automatically pick a suitable runtime when the version has no Java environment selected
             var runtime = AllSettings.defaultRuntime.getValue()
             val pickedRuntime = MultiRTUtils.read(runtime)
             if (pickedRuntime.javaVersion == 0 || pickedRuntime.javaVersion < targetJavaVersion) {
@@ -211,7 +211,7 @@ class LaunchGame {
             val versionInfo = Tools.getVersionInfo(minecraftVersion)
             val gameDirPath = minecraftVersion.getGameDir()
 
-            //预处理
+            // Pre-launch processing
             Tools.disableSplash(gameDirPath)
             val launchClassPath = Tools.generateLaunchClassPath(versionInfo, minecraftVersion)
 

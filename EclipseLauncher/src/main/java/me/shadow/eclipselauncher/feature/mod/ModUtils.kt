@@ -21,7 +21,7 @@ class ModUtils {
             val fileName = file!!.name
             val fileParent = file.parent
             var newFileName = fileName.substring(0, fileName.lastIndexOf(DISABLE_JAR_FILE_SUFFIX))
-            if (!fileName.endsWith(JAR_FILE_SUFFIX)) newFileName += JAR_FILE_SUFFIX //如果没有.jar结尾，那么默认加上.jar后缀
+            if (!fileName.endsWith(JAR_FILE_SUFFIX)) newFileName += JAR_FILE_SUFFIX //If it does not end with .jar, append the .jar suffix by default
 
             val newFile = File(fileParent, newFileName)
             renameFile(file, newFile)

@@ -22,7 +22,7 @@
 - [x] Refactored app layout for improved aesthetics and usability.
 - [x] Built-in simple file manager to eliminate worries about Android permission restrictions!
 - [x] Better version management, customizable game directory location, allowing settings in external storage directories.
-- [x] Add more renderers, with support for renderer plugins!
+- [x] Streamlined GL4ES rendering, with support for renderer plugins!
 - [x] Download Mods, ModPacks, resource packs, saves, and shader packs directly within the launcher!
 - [x] Customizable virtual mouse icon and launcher background image.
 - [x] Light and dark themes available.
@@ -42,7 +42,7 @@
 
 This project uses several useful code libraries. Special thanks to them!
 
-#### Code Libraries Used by PojavLauncher
+#### Code Libraries Used by Eclipse Launcher
 
 >- [Boardwalk](https://github.com/zhuowei/Boardwalk) (JVM Launcher): Unknown license / [Apache License 2.0](https://github.com/zhuowei/Boardwalk/blob/master/LICENSE) or GNU GPLv2.
 >- Android Support Library: [Apache License 2.0](https://android.googlesource.com/platform/prebuilts/maven_repo/android/+/master/NOTICE.txt).
@@ -54,9 +54,8 @@ This project uses several useful code libraries. Special thanks to them!
 >- [pro-grade](https://github.com/pro-grade/pro-grade) (Java Sandbox Security Manager): [Apache License 2.0](https://github.com/pro-grade/pro-grade/blob/master/LICENSE.txt).
 >- [bhook](https://github.com/bytedance/bhook) (For exit code capture): [MIT License](https://github.com/bytedance/bhook/blob/main/LICENSE).
 >- [libepoxy](https://github.com/anholt/libepoxy): [MIT License](https://github.com/anholt/libepoxy/blob/master/COPYING).
->- [virglrenderer](https://github.com/PojavLauncherTeam/virglrenderer): [MIT License](https://gitlab.freedesktop.org/virgl/virglrenderer/-/blob/master/COPYING).
 
-#### Additional Code Libraries Used by Eclipse Launcher
+#### Additional Code Libraries
 
 >- [HMCL](https://github.com/HMCL-dev/HMCL) (uses some source code): [GPL-3.0 License](https://github.com/HMCL-dev/HMCL/blob/main/LICENSE)
 >- [CommonMark](https://github.com/thephpleague/commonmark) (for rendering Markdown text): [BSD-3-Clause License](https://github.com/thephpleague/commonmark/blob/2.5/LICENSE)

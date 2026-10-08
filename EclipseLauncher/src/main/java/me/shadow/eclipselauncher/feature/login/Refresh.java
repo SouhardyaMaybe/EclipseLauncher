@@ -2,7 +2,6 @@ package me.shadow.eclipselauncher.feature.login;
 
 import com.google.gson.annotations.SerializedName;
 
-//https://github.com/Vera-Firefly/Pojav-Glow-Worm/commit/933dcd1d275616d21fb2bccacbfbfc174b785333
 public class Refresh {
     @SerializedName("selectedProfile")
     private SelectedProfile selectedProfile;

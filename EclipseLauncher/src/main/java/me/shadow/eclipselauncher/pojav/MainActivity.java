@@ -144,7 +144,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         // Set the sustained performance mode for available APIs
         window.setSustainedPerformanceMode(AllSettings.getSustainedPerformance().getValue());
 
-        // 防止系统息屏
+        // Prevent the screen from turning off
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         ControlLayout controlLayout = binding.mainControlLayout;
@@ -157,7 +157,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         //Now, attach to the service. The game will only start when this happens, to make sure that we know the right state.
         bindService(gameServiceIntent, this, 0);
 
-        //初始化输入监听器，当输入法遮挡了游戏画面时，将设置这个监听器
+        //Initialize the input listener; it is set when the IME covers the game view
         mInputWatcher = s -> binding.inputPreview.setText(s.toString().trim());
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
@@ -225,7 +225,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             });
 
             binding.mainGameRenderView.setOnRenderingStartedListener(() -> {
-                //彻底清除背景图片，确保一些设备不再出现“半透明渲染”的问题
+                //Completely clear the background image to make sure some devices no longer show the "translucent rendering" problem
                 BackgroundManager.clearBackgroundImage(binding.backgroundView);
                 Logging.i("Rendering Game", "The game rendering has started, " +
                         "and the background image has been cleared to prevent certain issues from occurring.");
@@ -374,7 +374,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
     }
 
-    //使用一个输入预览框来展示用户输入的内容
+    //Use an input preview box to display what the user types
     private void setInputPreview(boolean show) {
         mInputPreviewAnim.clearEntries();
         mInputPreviewAnim.apply(new AnimPlayer.Entry(binding.inputPreviewLayout, show ? Animations.FadeIn : Animations.FadeOut))
@@ -540,11 +540,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
         public MenuSettingsInitListener(ViewGameMenuBinding binding) {
             this.binding = binding;
-            //初始化状态
+            //Initialize the state
             this.binding.hotbarWidth.setMax(currentDisplayMetrics.widthPixels / 2);
             this.binding.hotbarHeight.setMax(currentDisplayMetrics.heightPixels / 2);
 
-            //初始化Seekbar的值
+            //Initialize the SeekBar's value
             MenuUtils.initSeekBarValue(this.binding.resolutionScaler, AllSettings.getResolutionRatio().getValue(), this.binding.resolutionScalerValue, "%");
             binding.resolutionScalerPreview.setText(VideoSettingsFragment.getResolutionRatioPreview(getResources(), AllSettings.getResolutionRatio().getValue()));
             MenuUtils.initSeekBarValue(this.binding.timeLongPressTrigger, AllSettings.getTimeLongPressTrigger().getValue(), this.binding.timeLongPressTriggerValue, "ms");
@@ -553,7 +553,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             MenuUtils.initSeekBarValue(this.binding.hotbarHeight, AllSettings.getHotbarHeight().getValue().getValue(), this.binding.hotbarHeightValue, "px");
             MenuUtils.initSeekBarValue(this.binding.hotbarWidth, AllSettings.getHotbarWidth().getValue().getValue(), this.binding.hotbarWidthValue, "px");
 
-            //初始化Switch的状态
+            //Initialize the Switch's state
             this.binding.openMemoryInfo.setChecked(AllSettings.getGameMenuShowMemory().getValue());
             this.binding.openFpsInfo.setChecked(AllSettings.getGameMenuShowFPS().getValue());
             this.binding.disableGestures.setChecked(AllSettings.getDisableGestures().getValue());
@@ -565,7 +565,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             refreshLayoutVisible(this.binding.timeLongPressTriggerLayout, !AllSettings.getDisableGestures().getValue());
             refreshLayoutVisible(this.binding.gyroLayout, AllSettings.getEnableGyro().getValue());
 
-            //初始化点击事件
+            //Initialize the click listeners
             this.binding.forceClose.setOnClickListener(this);
             this.binding.logOutput.setOnClickListener(this);
             this.binding.sendCustomKey.setOnClickListener(this);
@@ -630,7 +630,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
 
         private void dialogSendCustomKey() {
             keyboardDialog.setOnMultiKeycodeSelectListener(selectedKeycodes -> {
-                //模拟同时按下，同时松开按键
+                //Simulate pressing and releasing the keys at the same time
                 Task.runTask(() -> {
                     selectedKeycodes.forEach(keycode -> sendKeyPress(keycode, true));
                     return null;
@@ -658,7 +658,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             SelectControlsDialog dialog = new SelectControlsDialog(MainActivity.this, file -> {
                 try {
                     MainActivity.binding.mainControlLayout.loadLayout(file.getAbsolutePath());
-                    //刷新：是否隐藏菜单按钮
+                    //Refresh: whether to hide the menu button
                     mGameMenuWrapper.setVisibility(!MainActivity.binding.mainControlLayout.hasMenuButton());
                 } catch (IOException ignored) {}
             });
@@ -766,7 +766,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             } else if (v == binding.enableGyro) {
                 refreshLayoutVisible(binding.gyroLayout, isChecked);
                 AllSettings.getEnableGyro().put(isChecked).save();
-                //刷新陀螺仪的启用状态
+                //Refresh the gyroscope enabled state
                 AllStaticSettings.enableGyro = isChecked;
                 mGyroControl.updateOrientation();
                 if (isChecked) mGyroControl.enable();
@@ -781,7 +781,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
 
         /**
-         * 刷新View的可见状态
+         * Refresh the View's visibility state
          */
         private void refreshLayoutVisible(View view, boolean visible) {
             view.setVisibility(visible ? View.VISIBLE : View.GONE);
@@ -805,8 +805,8 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         @Override public void onDrawerOpened(@NonNull View drawerView) {}
         @Override public void onDrawerClosed(@NonNull View drawerView) {}
         @Override public void onDrawerStateChanged(int newState) {
-            //需要在菜单状态改变的时候，关闭Hotbar类型的Spinner，这个库并没有自动关闭的功能，所以需要这么做
-            //关掉！关掉！一定要关掉！
+            //When the menu state changes, the Hotbar-type Spinner must be closed; this library has no auto-close feature, so it has to be done here
+            //Close it! Close it! It must be closed!
             closeSpinner();
         }
 

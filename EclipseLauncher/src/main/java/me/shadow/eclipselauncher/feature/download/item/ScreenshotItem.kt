@@ -1,10 +1,10 @@
 package me.shadow.eclipselauncher.feature.download.item
 
 /**
- * 屏幕截图信息记录
- * @param imageUrl 截图的地址
- * @param title 截图的标题
- * @param description 截图的描述
+ * Screenshot information record
+ * @param imageUrl the address of the screenshot
+ * @param title the title of the screenshot
+ * @param description the description of the screenshot
  */
 class ScreenshotItem(
     val imageUrl: String,

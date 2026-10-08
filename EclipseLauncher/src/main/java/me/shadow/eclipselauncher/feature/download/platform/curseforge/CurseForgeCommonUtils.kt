@@ -136,13 +136,13 @@ class CurseForgeCommonUtils {
             val versionsItem: MutableList<VersionItem> = ArrayList()
             for (data in allData) {
                 try {
-                    //获取版本信息
+                    //Get the version info
                     val mcVersions: MutableSet<String> = TreeSet()
                     for (gameVersionElement in data.getAsJsonArray("gameVersions")) {
                         val gameVersion = gameVersionElement.asString
                         mcVersions.add(gameVersion)
                     }
-                    //过滤非MC版本的元素
+                    //Filter out elements that are not MC versions
                     val releaseRegex = RELEASE_REGEX
                     val nonMCVersion: MutableSet<String> = TreeSet()
                     mcVersions.forEach(Consumer { string: String ->

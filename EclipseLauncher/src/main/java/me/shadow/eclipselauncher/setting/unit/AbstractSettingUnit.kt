@@ -8,18 +8,18 @@ abstract class AbstractSettingUnit<V>(
     val defaultValue: V
 ) {
     /**
-     * @return 获取当前的设置值
+     * @return the current setting value
      */
     abstract fun getValue(): V
 
     /**
-     * @return 存入值，并返回一个设置构建器
+     * @return store the value and return a setting builder
      */
     @CheckResult
     fun put(value: V): Settings.Manager.SettingBuilder = Settings.Manager.put(key, value!!)
 
     /**
-     * 重置当前设置单元为默认值
+     * Reset the current setting unit to its default value
      */
     fun reset() {
         Settings.Manager.put(key, defaultValue!!).save()

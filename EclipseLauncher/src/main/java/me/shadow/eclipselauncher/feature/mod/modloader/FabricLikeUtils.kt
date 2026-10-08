@@ -75,7 +75,7 @@ class FabricLikeUtils private constructor(
             ) { input: String? -> input }
 
             val jsonArray = Gson().fromJson(jsonString, JsonArray::class.java)
-            val jsonObject = jsonArray[0].asJsonObject //始终获取最新的安装器信息
+            val jsonObject = jsonArray[0].asJsonObject //Always fetch the latest installer info
             val url = jsonObject["url"].asString
             println(url)
 

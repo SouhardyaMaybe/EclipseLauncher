@@ -7,7 +7,7 @@ import me.shadow.eclipselauncher.feature.download.enums.Platform
 import java.util.Date
 
 /**
- * @param modloaders Mod 加载器信息
+ * @param modloaders the Mod loader info
  */
 open class ModInfoItem(
     classify: Classify,

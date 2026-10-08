@@ -23,7 +23,7 @@ class NumberWithUnits {
                 unitIndex++
             }
 
-            //检查是否为空的单位，如果是，那么就不做格式化，直接返回原始值
+            //Check for an empty unit; if there is one, skip formatting and return the original value
             if (units[unitIndex].isEmpty()) {
                 return number.toString()
             } else {

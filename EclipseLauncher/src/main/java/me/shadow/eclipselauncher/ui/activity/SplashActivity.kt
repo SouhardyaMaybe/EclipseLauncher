@@ -3,6 +3,7 @@ package me.shadow.eclipselauncher.ui.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.core.app.ActivityCompat
@@ -18,6 +19,7 @@ import me.shadow.eclipselauncher.feature.unpack.UnpackJreTask
 import me.shadow.eclipselauncher.feature.unpack.UnpackSingleFilesTask
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
+import me.shadow.eclipselauncher.ui.fragment.PaneSwitcher
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
 import me.shadow.eclipselauncher.pojav.LauncherActivity
 import me.shadow.eclipselauncher.pojav.MissingStorageActivity
@@ -25,6 +27,7 @@ import me.shadow.eclipselauncher.pojav.Tools
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
+    private var paneSwitcher: PaneSwitcher? = null
     private var isStarted: Boolean = false
     private lateinit var binding: ActivitySplashBinding
     private lateinit var installableAdapter: InstallableAdapter
@@ -37,6 +40,10 @@ class SplashActivity : BaseActivity() {
 
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        //Portrait single-pane mode: the start pane takes over, the component list stays landscape-only
+        paneSwitcher = PaneSwitcher(binding.root, R.id.recycler_view, R.id.operate_layout, 0, PaneSwitcher.Mode.PRIMARY_RIGHT)
+        paneSwitcher?.applyOrientation(resources.configuration)
 
         binding.titleText.text = InfoDistributor.APP_NAME
         binding.recyclerView.apply {
@@ -60,15 +67,15 @@ class SplashActivity : BaseActivity() {
             return
         }
 
-        //如果安卓版本小于等于9，则检查存储权限（不是管理所有文件权限），拥有存储权限会保证文件、文件夹正常创建
-        //但是并不强制要求用户必须授予权限，如果用户拒绝，那么之后产生的问题将由用户承担
+        // On Android 9 or below, check the storage permission (not all-files access); holding it keeps files and folders creating normally
+        // However the permission is not forced; if the user declines, any later problems are their own to bear
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P && !StoragePermissionsUtils.hasStoragePermissions(this)) {
             TipDialog.Builder(this)
                 .setTitle(R.string.generic_warning)
                 .setMessage(InfoCenter.replaceName(this, R.string.permissions_write_external_storage))
                 .setWarning()
                 .setConfirmClickListener { requestStoragePermissions() }
-                .setCancelClickListener { checkEnd() } //用户取消，那就跟随用户的意愿
+                .setCancelClickListener { checkEnd() } // The user cancelled, so respect their choice
                 .showDialog()
         } else {
             checkEnd()
@@ -90,8 +97,8 @@ class SplashActivity : BaseActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-            //无论用户是否授予了权限，都会完成检查，因为启动器并不强制要求权限
-            //但是一旦因为存储权限出现了问题，那么将由用户自行承担后果
+            // Finish the check whether or not the permission was granted; the launcher does not require it
+            // But if a storage-permission problem occurs later, the user bears the consequences
             checkEnd()
         }
     }
@@ -143,5 +150,10 @@ class SplashActivity : BaseActivity() {
 
     companion object {
         private const val STORAGE_PERMISSION_REQUEST_CODE: Int = 100
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        paneSwitcher?.applyOrientation(newConfig)
     }
 }

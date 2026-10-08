@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.download.item
 
 /**
- * 用于记录搜索结果
+ * Used to record search results
  */
 class SearchResult {
     var previousCount: Int = 0

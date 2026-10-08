@@ -27,7 +27,7 @@
         android:layout_height="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_4sdp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/about_access_link"
+        android:contentDescription="@string/generic_open_link"
         android:src="@drawable/ic_launch_link"
         android:scaleType="centerInside"
         app:layout_constraintBottom_toBottomOf="parent"

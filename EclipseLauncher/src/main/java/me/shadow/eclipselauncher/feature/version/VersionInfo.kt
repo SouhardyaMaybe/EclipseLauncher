@@ -10,8 +10,8 @@ class VersionInfo(
     val loaderInfo: Array<LoaderInfo>?
 ) {
     /**
-     * 拼接Minecraft的版本信息，包括ModLoader信息
-     * @return 用", "分割的信息字符串
+     * Build the Minecraft version info string, including ModLoader info
+     * @return the info string joined with ", "
      */
     fun getInfoString(): String {
         val infoList = mutableListOf<String>().apply {
@@ -32,7 +32,7 @@ class VersionInfo(
         val version: String
     ) {
         /**
-         * 通过加载器名称，获得对应的环境变量键名
+         * Get the corresponding environment variable key from the loader name
          */
         fun getLoaderEnvKey(): String? {
             return when(name) {

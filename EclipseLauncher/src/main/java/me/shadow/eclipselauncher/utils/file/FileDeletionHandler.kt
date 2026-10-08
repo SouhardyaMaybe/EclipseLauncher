@@ -58,7 +58,7 @@ class FileDeletionHandler(
             FileUtils.deleteQuietly(it)
         }
         currentTask?.let { task -> if (task.isCancelled) return }
-        //剩下的都是空文件夹，直接删除
+        //The rest are empty folders, delete them directly
         mSelectedFiles.forEach { FileUtils.deleteQuietly(it) }
     }
 

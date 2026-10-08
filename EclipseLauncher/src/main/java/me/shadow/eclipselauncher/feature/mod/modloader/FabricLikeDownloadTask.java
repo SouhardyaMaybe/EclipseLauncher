@@ -55,8 +55,8 @@ public class FabricLikeDownloadTask implements InstallTask, Tools.DownloaderFeed
         return outputFile;
     }
 
-    //因为Quilt要用Jre17去跑，跑完之后JVM不会自动退出
-    //为了自动化处理，所以暂时这么做
+    //Because Quilt needs to run with JRE 17, and the JVM does not exit automatically when it finishes
+    //This is how it is handled for now, to keep the process automated
     private void legacyInstall(String customName) throws Exception {
         String jsonString = DownloadUtils.downloadString(mUtils.createJsonDownloadUrl(mGameVersion, mLoaderVersion));
 

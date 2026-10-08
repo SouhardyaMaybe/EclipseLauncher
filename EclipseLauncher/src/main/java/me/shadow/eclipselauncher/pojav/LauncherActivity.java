@@ -158,7 +158,7 @@ public class LauncherActivity extends BaseActivity {
     @Subscribe()
     public void event(SwapToLoginEvent event) {
         Fragment currentFragment = getCurrentFragment();
-        //如果当前可见的Fragment不为空，则判断当前的Fragment是否为AccountFragment，不是就跳转至AccountFragment
+        //If a visible fragment is present, jump to AccountFragment unless that is already the visible one
         if (currentFragment == null || getVisibleFragment(AccountFragment.TAG) != null) return;
         ZHTools.swapFragmentWithAnim(currentFragment, AccountFragment.class, AccountFragment.TAG, null);
     }
@@ -377,7 +377,7 @@ public class LauncherActivity extends BaseActivity {
 
         checkNotice();
 
-        //检查已经下载后的包，或者检查更新
+        //Check for downloaded packages, or check for updates
         Task.runTask(() -> {
             UpdateUtils.checkDownloadedPackage(this, false, true);
             return null;
@@ -389,12 +389,19 @@ public class LauncherActivity extends BaseActivity {
             @Override
             public void handleOnBackPressed() {
                 Fragment currentFragment = getCurrentFragment();
-                if (currentFragment instanceof BaseFragment && !((BaseFragment) currentFragment).onBackPressed()) {
-                    //Fragment那边拒绝了返回事件
-                    return;
+                if (currentFragment instanceof BaseFragment) {
+                    BaseFragment baseFragment = (BaseFragment) currentFragment;
+                    if (!baseFragment.onBackPressed()) {
+                        //The fragment handled the back event itself
+                        return;
+                    }
+                    if (baseFragment.closeOpenPane()) {
+                        //A portrait pane was open, close it instead of leaving the screen
+                        return;
+                    }
                 }
 
-                //如果栈中只剩下1个或没有Fragment，则直接退出启动器
+                //Exit the launcher when only one or no fragments remain on the stack
                 if (getSupportFragmentManager().getBackStackEntryCount() <= 1) {
                     finish();
                 } else {
@@ -404,7 +411,7 @@ public class LauncherActivity extends BaseActivity {
         });
 
         FragmentManager fragmentManager = getSupportFragmentManager();
-        //如果栈中没有Fragment，那么就将主Fragment添加进来
+        //Add the main fragment when the stack is still empty
         if (fragmentManager.getBackStackEntryCount() < 1) {
             fragmentManager.beginTransaction()
                     .setReorderingAllowed(true)
@@ -527,7 +534,7 @@ public class LauncherActivity extends BaseActivity {
             if (checkNotice.isCancelled() || noticeInfo == null) {
                 return;
             }
-            //当偏好设置内是开启通知栏 或者 检测到通知编号不为偏好设置里保存的值时，显示通知栏
+            //Show the notice bar when notifications are enabled or the notice numbering differs from the stored value
             if (AllSettings.getNoticeDefault().getValue() ||
                     (noticeInfo.numbering != AllSettings.getNoticeNumbering().getValue())) {
                 TaskExecutors.runInUIThread(() -> setNotice(true));

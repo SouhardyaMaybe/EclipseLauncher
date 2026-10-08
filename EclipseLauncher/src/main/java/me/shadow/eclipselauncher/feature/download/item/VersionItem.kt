@@ -4,16 +4,16 @@ import me.shadow.eclipselauncher.feature.download.enums.VersionType
 import java.util.Date
 
 /**
- * 版本信息类
- * @param projectId 该版本所在项目的唯一标识
- * @param title 该版本的标题
- * @param downloadCount 该版本的总下载量
- * @param uploadDate 该版本的上传日期
- * @param mcVersions 该版本的 MC版本
- * @param versionType 该版本的版本状态
- * @param fileName 该版本的文件名称
- * @param fileHash 该版本的文件HASH值
- * @param fileUrl 该版本的文件下载链接
+ * Version information class
+ * @param projectId the unique identifier of the project this version belongs to
+ * @param title the title of the version
+ * @param downloadCount the total download count of the version
+ * @param uploadDate the upload date of the version
+ * @param mcVersions the MC versions supported by this version
+ * @param versionType the release status of the version
+ * @param fileName the file name of the version
+ * @param fileHash the file hash of the version
+ * @param fileUrl the file download link of the version
  */
 open class VersionItem(
     val projectId: String,

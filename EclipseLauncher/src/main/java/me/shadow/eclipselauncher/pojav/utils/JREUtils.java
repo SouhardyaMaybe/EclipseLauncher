@@ -225,10 +225,6 @@ public final class JREUtils {
 
         if (AllSettings.getDumpShaders().getValue())
             envMap.put("LIBGL_VGPU_DUMP", "1");
-        if (AllSettings.getZinkPreferSystemDriver().getValue())
-            envMap.put("POJAV_ZINK_PREFER_SYSTEM_DRIVER", "1");
-        if (AllSettings.getVsyncInZink().getValue())
-            envMap.put("POJAV_VSYNC_IN_ZINK", "1");
         if (AllSettings.getBigCoreAffinity().getValue())
             envMap.put("POJAV_BIG_CORE_AFFINITY", "1");
         if (FFmpegPlugin.isAvailable)

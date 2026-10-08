@@ -58,9 +58,9 @@ class InstallArgsUtils(private val mcVersion: String, private val loaderVersion:
     }
 
     /**
-     * 将Forge或NeoForge安装器中的install_profile.json 文件中的 version 的键，修改为 customName
-     * Forge安装器会根据 version 这个值，来生成对应的版本文件夹
-     * 这样做是为了自定义版本 json 的安装位置
+     * Change the version key in the install_profile.json of the Forge or NeoForge installer to customName
+     * The Forge installer uses this version value to create the corresponding version folder
+     * This is done so the installation location of the version json can be customized
      */
     @Throws(Throwable::class)
     private fun forgeLikeCustomVersionName(jarFile: File, customName: String) {
@@ -92,7 +92,7 @@ class InstallArgsUtils(private val mcVersion: String, private val loaderVersion:
     }
 
     /**
-     * 解压出install_profile.json
+     * Extract install_profile.json
      */
     @Throws(Throwable::class)
     private fun extractInstallProfile(jarFile: File, profileJson: File) {
@@ -107,21 +107,21 @@ class InstallArgsUtils(private val mcVersion: String, private val loaderVersion:
     }
 
     /**
-     * 通过修改install_profile.json文件中的值，来实现自定义版本名称的效果
+     * Achieve a custom version name by modifying values in the install_profile.json file
      */
     @Throws(Throwable::class)
     private fun modifyJsonFile(profileJson: File, customName: String) {
         val jsonObject = JsonParser.parseString(profileJson.readText()).asJsonObject
-        //通过检查是否有spec这个键，来判断是否为新版本的Installer
-        if (jsonObject.has("spec")) { //新版安装器
+        //Check for the spec key to decide whether this is a new-format installer
+        if (jsonObject.has("spec")) { //New-format installer
             if (!jsonObject.has("version")) throw IOException("Unable to find version key!")
-            //install_profile.json中，把version这个值改为customName，也就完成自定义版本名的效果
+            //In install_profile.json, change the version value to customName to complete the custom version name
             jsonObject.addProperty("version", customName)
-        } else { //旧版安装器
+        } else { //Legacy installer
             if (!jsonObject.has("install")) throw IOException("Unable to find install key!")
             val install = jsonObject.get("install").asJsonObject
             if (!install.has("target")) throw IOException("Unable to find install-target key!")
-            //把target这个值改为customName，也就完成旧版自定义版本名的效果
+            //Change the target value to customName to complete the custom version name in the legacy format
             install.addProperty("target", customName)
             jsonObject.add("install", install)
         }
@@ -130,7 +130,7 @@ class InstallArgsUtils(private val mcVersion: String, private val loaderVersion:
 
     @Throws(Throwable::class)
     private fun writeTempJarFile(jarFile: File, tempJarFile: File, profileJson: File) {
-        //仅跳过META-INF中后缀为.SF或.RSA的文件，避免验证的时候发现install_profile.json被修改
+        //Skip only files ending in .SF or .RSA under META-INF, so that verification does not detect that install_profile.json was modified
         fun needSkip(entryName: String) = entryName.startsWith("META-INF/") && (entryName.endsWith(".SF") || entryName.endsWith(".RSA"))
 
         ZipFile(jarFile).use { zipFile ->
@@ -141,7 +141,7 @@ class InstallArgsUtils(private val mcVersion: String, private val loaderVersion:
                         profileJson.inputStream().use { fis -> fis.copyTo(zos) }
                     } else {
                         if (!originalEntry.isDirectory && !needSkip(originalEntry.name)) {
-                            //写入原始文件
+                            //Write the original file
                             zipFile.getInputStream(originalEntry).use { it.copyTo(zos) }
                         }
                     }

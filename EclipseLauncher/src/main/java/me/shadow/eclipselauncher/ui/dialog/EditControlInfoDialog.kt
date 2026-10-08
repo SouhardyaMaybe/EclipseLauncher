@@ -27,9 +27,9 @@ class EditControlInfoDialog(
 
         binding.apply {
             fileNameEdit.isEnabled = editFileName
-            //设置hint
-            fileNameEdit.setHint(R.string.generic_required) //必填
-            nameEdit.setHint(R.string.generic_optional) //选填
+            //Set the hint
+            fileNameEdit.setHint(R.string.generic_required) //Required
+            nameEdit.setHint(R.string.generic_optional) //Optional
             versionEdit.setHint(R.string.generic_optional)
             authorEdit.setHint(R.string.generic_optional)
             descEdit.setHint(R.string.generic_optional)

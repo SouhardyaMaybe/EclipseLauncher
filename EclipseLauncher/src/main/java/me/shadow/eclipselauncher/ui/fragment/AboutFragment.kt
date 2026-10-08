@@ -4,17 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
+import me.shadow.eclipselauncher.InfoCenter
+import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.anim.AnimPlayer
 import me.shadow.eclipselauncher.anim.animations.Animations
-import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.FragmentAboutBinding
-import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.ui.fragment.about.AboutInfoPageFragment
-import me.shadow.eclipselauncher.ui.fragment.about.AboutSponsorPageFragment
 import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
@@ -36,56 +30,26 @@ class AboutFragment : FragmentWithAnim(R.layout.fragment_about) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        initViewPager()
-
         binding.apply {
+            dec1.text = InfoCenter.replaceName(requireActivity(), R.string.about_dec1)
+            dec2.text = InfoCenter.replaceName(requireActivity(), R.string.about_dec2)
+            dec3.text = InfoCenter.replaceName(requireActivity(), R.string.about_dec3)
+
             appInfo.text = StringUtils.insertNewline(StringUtils.insertSpace(getString(R.string.about_version_name), ZHTools.getVersionName()),
                 StringUtils.insertSpace(getString(R.string.about_version_code), ZHTools.getVersionCode()),
                 StringUtils.insertSpace(getString(R.string.about_last_update_time), ZHTools.getLastUpdateTime(requireContext())),
                 StringUtils.insertSpace(getString(R.string.about_version_status), ZHTools.getVersionStatus(requireContext())))
-            appInfo.setOnClickListener{ StringUtils.copyText("text", appInfo.text.toString(), requireContext()) }
+            appInfo.setOnClickListener { StringUtils.copyText("text", appInfo.text.toString(), requireContext()) }
 
-            returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
-            supportDevelopment.setOnClickListener {
-                TipDialog.Builder(requireActivity())
-                    .setTitle(R.string.request_sponsorship_title)
-                    .setMessage(R.string.request_sponsorship_message)
-                    .setConfirm(R.string.about_button_support_development)
-                    .setConfirmClickListener { ZHTools.openLink(requireActivity(), UrlManager.URL_SUPPORT) }
-                    .showDialog()
-            }
-        }
-    }
-
-    private fun initViewPager() {
-        binding.infoViewPager.apply {
-            adapter = ViewPagerAdapter(requireActivity(), this)
-            orientation = ViewPager2.ORIENTATION_HORIZONTAL
-            offscreenPageLimit = 1
+            githubButton.setOnClickListener { ZHTools.openLink(requireActivity(), UrlManager.URL_HOME) }
         }
     }
 
     override fun slideIn(animPlayer: AnimPlayer) {
-        animPlayer.apply(AnimPlayer.Entry(binding.infoViewPager, Animations.BounceInDown))
-            .apply(AnimPlayer.Entry(binding.operateLayout, Animations.BounceInLeft))
+        animPlayer.apply(AnimPlayer.Entry(binding.aboutContent, Animations.BounceInDown))
     }
 
     override fun slideOut(animPlayer: AnimPlayer) {
-        animPlayer.apply(AnimPlayer.Entry(binding.infoViewPager, Animations.FadeOutUp))
-        animPlayer.apply(AnimPlayer.Entry(binding.operateLayout, Animations.FadeOutRight))
-    }
-
-    private class ViewPagerAdapter(
-        fragmentActivity: FragmentActivity,
-        private val viewPager: ViewPager2
-    ): FragmentStateAdapter(fragmentActivity) {
-        override fun getItemCount(): Int = 2
-        override fun createFragment(position: Int): Fragment {
-            return when(position) {
-                0 -> AboutInfoPageFragment(viewPager)
-                else -> AboutSponsorPageFragment()
-            }
-        }
+        animPlayer.apply(AnimPlayer.Entry(binding.aboutContent, Animations.FadeOutUp))
     }
 }
-

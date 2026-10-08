@@ -4,11 +4,11 @@ import me.shadow.eclipselauncher.feature.version.install.Addon
 import me.shadow.eclipselauncher.feature.version.install.InstallTaskItem
 
 /**
- * 安装任务开始时，将使用这个事件进行通知
+ * This event is used to notify when an install task starts
  * @see me.shadow.eclipselauncher.ui.fragment.InstallGameFragment
- * @param minecraftVersion MC原版版本
- * @param customVersionName 自定义的版本文件夹名称
- * @param taskMap 安装任务
+ * @param minecraftVersion the vanilla MC version
+ * @param customVersionName the custom version folder name
+ * @param taskMap the install tasks
  */
 class InstallGameEvent(
     val minecraftVersion: String,

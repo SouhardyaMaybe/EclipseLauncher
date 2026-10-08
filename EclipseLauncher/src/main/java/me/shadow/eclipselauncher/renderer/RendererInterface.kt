@@ -1,41 +1,41 @@
 package me.shadow.eclipselauncher.renderer
 
 /**
- * 启动器渲染器实现
+ * Launcher renderer implementation
  */
 interface RendererInterface {
     /**
-     * 获取渲染器的ID
+     * Get the renderer's ID
      */
     fun getRendererId(): String
 
     /**
-     * 获取渲染器的唯一标识ID
+     * Get the renderer's unique identifier
      */
     fun getUniqueIdentifier(): String
 
     /**
-     * 获取渲染器的名称
+     * Get the renderer's name
      */
     fun getRendererName(): String
 
     /**
-     * 获取渲染器的环境变量
+     * Get the renderer's environment variables
      */
     fun getRendererEnv(): Lazy<Map<String, String>>
 
     /**
-     * 获取需要dlopen的库
+     * Get the libraries that need to be dlopened
      */
     fun getDlopenLibrary(): Lazy<List<String>>
 
     /**
-     * 获取渲染器的库
+     * Get the renderer's libraries
      */
     fun getRendererLibrary(): String
 
     /**
-     * 获取EGL名称
+     * Get the EGL name
      */
     fun getRendererEGL(): String? = null
 }

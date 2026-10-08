@@ -3,18 +3,18 @@ package me.shadow.eclipselauncher.ui.subassembly.hotbar
 import me.shadow.eclipselauncher.R
 
 /**
- * 快捷栏判定类型
- * @param nameId 类型的本地化名称id
- * @param valueName 类型的设置存储值
+ * Hotbar detection types
+ * @param nameId the localized name resource id of the type
+ * @param valueName the stored setting value of the type
  */
 enum class HotbarType(val nameId: Int, val valueName: String) {
     /**
-     * 自适应：根据屏幕分辨率、GUI缩放尺寸，为判定框自动计算出合适的宽与高（可能会不精准）
+     * Adaptive: the width and height of the detection box are calculated automatically from the screen resolution and GUI scale (may be imprecise)
      */
     AUTO(R.string.option_hotbar_type_auto, "auto"),
 
     /**
-     * 手动：让用户自行调整判定框的宽与高
+     * Manual: let the user adjust the width and height of the detection box themselves
      */
     MANUALLY(R.string.option_hotbar_type_manually, "manually")
 }

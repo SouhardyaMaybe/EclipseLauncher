@@ -235,7 +235,7 @@
                     android:layout_height="@dimen/_24sdp"
                     android:layout_marginEnd="@dimen/_12sdp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/about_access_link"
+                    android:contentDescription="@string/generic_open_link"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_launch_link"
                     android:visibility="gone" />

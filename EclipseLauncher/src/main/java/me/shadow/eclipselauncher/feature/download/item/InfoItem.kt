@@ -6,18 +6,18 @@ import me.shadow.eclipselauncher.feature.download.enums.Platform
 import java.util.Date
 
 /**
- * 基础的信息类
- * @param classify 该项目的类别
- * @param platform 该项目的所属平台
- * @param projectId 该项目的唯一标识
- * @param slug 该项目的slug
- * @param author 该项目的作者
- * @param title 该项目的标题
- * @param description 该项目的描述
- * @param downloadCount 该项目的总下载量
- * @param uploadDate 该项目的上传日期
- * @param iconUrl 该项目的封面链接
- * @param category 该项目的标签
+ * Basic information class
+ * @param classify the category of the project
+ * @param platform the platform the project belongs to
+ * @param projectId the unique identifier of the project
+ * @param slug the slug of the project
+ * @param author the author of the project
+ * @param title the title of the project
+ * @param description the description of the project
+ * @param downloadCount the total download count of the project
+ * @param uploadDate the upload date of the project
+ * @param iconUrl the cover image link of the project
+ * @param category the tags of the project
  */
 open class InfoItem(
     val classify: Classify,

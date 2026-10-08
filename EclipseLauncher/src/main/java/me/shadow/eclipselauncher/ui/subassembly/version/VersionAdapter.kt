@@ -33,7 +33,7 @@ class VersionAdapter(
     private val listener: OnVersionItemClickListener
 ) : RecyclerView.Adapter<VersionAdapter.ViewHolder>() {
     private val versions: MutableList<Version> = ArrayList()
-    //所有的RadioButton的List，其记录了当前所代表的版本路径
+    //The list of all RadioButtons, each recording the version path it represents
     private val radioButtonList: MutableList<RadioButton> = mutableListOf()
     private var currentVersion: String? = null
     private var managerPopupWindow: PopupWindow = PopupWindow().apply {
@@ -50,7 +50,7 @@ class VersionAdapter(
             clear()
         }
         currentVersion = VersionsManager.getCurrentVersion()?.getVersionPath()?.absolutePath
-        //查找当前版本的索引
+        //Find the index of the current version
         val currentIndex = versions.indexOfFirst { it.getVersionPath().absolutePath == currentVersion }
         notifyDataSetChanged()
 
@@ -66,13 +66,13 @@ class VersionAdapter(
             VersionsManager.saveCurrentVersion(version.getVersionName())
             currentVersion = version.getVersionPath().absolutePath
         } else {
-            //版本无效时，不能设置版本，默认点击就会提示用户删除
+            //When the version is invalid it cannot be selected; a click prompts the user to delete it
             deleteVersion(version, context.getString(R.string.version_manager_delete_tip_invalid))
         }
         radioButtonList.forEach { radioButton -> radioButton.isChecked = radioButton.tag.toString() == currentVersion }
     }
 
-    //删除版本前提示用户，如果版本无效，那么默认点击事件就是删除版本
+    //Prompt the user before deleting a version; if the version is invalid, the default click action is to delete it
     private fun deleteVersion(version: Version, deleteMessage: String) {
         val context = parentFragment.requireActivity()
 
@@ -231,12 +231,12 @@ class VersionAdapter(
 
     interface OnVersionItemClickListener {
         /**
-         * 用户点击了“收藏”按钮，检查并展示“收藏”弹窗
+         * The user clicked the "Favorite" button; check and show the "Favorite" dialog
          */
         fun showFavoritesDialog(versionName: String)
 
         /**
-         * 检查当前版本是否被收藏了
+         * Check whether the current version is already favorited
          */
         fun isVersionFavorited(versionName: String): Boolean
     }

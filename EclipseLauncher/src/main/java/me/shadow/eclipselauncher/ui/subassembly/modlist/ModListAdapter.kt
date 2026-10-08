@@ -92,7 +92,7 @@ class ModListAdapter(
         }
 
         /**
-         * @return Mod加载器的图标、名称，若没有，则为原版草方块，以及空字符串
+         * @return the icon and name of the Mod loader, or the vanilla grass block and an empty string if there is none
          */
         private fun getModLoaderInfo(context: Context, modLoader: ModLoader?): Pair<Drawable?, String?> {
             val loaderInfo: Pair<Int, String?> = when (modLoader) {

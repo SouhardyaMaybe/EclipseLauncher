@@ -81,7 +81,7 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
             Tools.showError(this, e, true);
         }
 
-        // 防止系统息屏
+        // Prevent the screen from turning off
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         MainActivity.GLOBAL_CLIPBOARD = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
@@ -280,21 +280,21 @@ public class JavaGUILauncherActivity extends BaseActivity implements View.OnTouc
             char c = str.charAt(i);
 
             if (c == '"' && (i == 0 || str.charAt(i - 1) != '\\')) {
-                // 切换引号状态（忽略转义引号）
+                // Toggle the quote state (escaped quotes are ignored)
                 inQuotes = !inQuotes;
             } else if (Character.isWhitespace(c) && !inQuotes) {
-                // 如果不在引号内且遇到空格，则结束当前部分并添加到结果中
+                // If not inside a quote and a space is encountered, finish the current part and add it to the result
                 if (currentPart.length() > 0) {
                     result.add(currentPart.toString());
-                    currentPart.setLength(0); // 清空当前部分
+                    currentPart.setLength(0); // Clear the current part
                 }
             } else {
-                // 将字符添加到当前部分
+                // Add the character to the current part
                 currentPart.append(c);
             }
         }
 
-        // 添加最后一部分（如果有的话）
+        // Add the last part, if any
         if (currentPart.length() > 0) {
             result.add(currentPart.toString());
         }

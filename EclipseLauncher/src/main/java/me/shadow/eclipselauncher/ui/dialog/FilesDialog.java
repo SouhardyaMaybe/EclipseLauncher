@@ -79,20 +79,20 @@ public class FilesDialog extends FullScreenDialog implements DraggableDialog.Dia
         PasteFile pasteFile = PasteFile.getInstance();
         binding.copyView.setOnClickListener(v -> {
             if (this.mCopyClick != null) {
-                pasteFile.setPaste(mRoot, mSelectedFiles, PasteFile.PasteType.COPY); // 复制模式
+                pasteFile.setPaste(mRoot, mSelectedFiles, PasteFile.PasteType.COPY); // Copy mode
                 this.mCopyClick.onButtonClick();
             }
             closeDialog();
         });
         binding.moveView.setOnClickListener(v -> {
             if (this.mCopyClick != null) {
-                pasteFile.setPaste(mRoot, mSelectedFiles, PasteFile.PasteType.MOVE); // 移动模式
+                pasteFile.setPaste(mRoot, mSelectedFiles, PasteFile.PasteType.MOVE); // Move mode
                 this.mCopyClick.onButtonClick();
             }
             closeDialog();
         });
 
-        if (mSelectedFiles.size() == 1) { //单选模式
+        if (mSelectedFiles.size() == 1) { // Single-select mode
             File file = mSelectedFiles.get(0);
             binding.shareView.setOnClickListener(view -> {
                 FileTools.shareFile(getContext(), file);
@@ -110,7 +110,7 @@ public class FilesDialog extends FullScreenDialog implements DraggableDialog.Dia
             setButtonClickable(filesButton.share, binding.shareView);
             setButtonClickable(filesButton.rename, binding.renameView);
         } else {
-            //多选模式禁止使用分享、重命名
+            // Sharing and renaming are disabled in multi-select mode
             setButtonClickable(false, binding.shareView);
             setButtonClickable(false, binding.renameView);
         }
@@ -135,7 +135,7 @@ public class FilesDialog extends FullScreenDialog implements DraggableDialog.Dia
         FilesDialog.this.dismiss();
     }
 
-    //此方法要在设置点击事件之后调用，否则禁用按钮后按钮仍然能够点击
+    //This method must be called after setting the click listeners, otherwise the buttons remain clickable after being disabled
     private void setButtonClickable(boolean clickable, RelativeLayout button) {
         button.setClickable(clickable);
         button.setAlpha(clickable ? 1f : 0.5f);

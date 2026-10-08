@@ -29,14 +29,14 @@ import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- * 所有版本管理者
+ * Manager for all versions
  * @see Version
  */
 object VersionsManager {
     private val versions = CopyOnWriteArrayList<Version>()
 
     /**
-     * @return 获取当前的游戏信息
+     * @return the current game info
      */
     lateinit var currentGameInfo: CurrentGameInfo
         private set
@@ -47,29 +47,29 @@ object VersionsManager {
     private var lastRefreshTime = 0L
 
     /**
-     * @return 检查是否可以刷新
+     * @return whether a refresh is allowed
      */
     @JvmStatic
     fun canRefresh() = !isRefreshing && ZHTools.getCurrentTimeMillis() - lastRefreshTime > 500
 
     /**
-     * @return 全部的版本数据
+     * @return all version data
      */
     fun getVersions() = versions.toList()
 
     /**
-     * 检查版本是否已经存在
+     * Check whether the version already exists
      */
     fun isVersionExists(versionName: String, checkJson: Boolean = false): Boolean {
         val folder = File(ProfilePathHome.getVersionsHome(), versionName)
-        //保证版本文件夹存在的同时，也应保证其版本json文件存在
+        //As well as requiring the version folder to exist, its version json file must exist too
         return if (checkJson) File(folder, "${folder.name}.json").exists()
         else folder.exists()
     }
 
     /**
-     * 异步刷新当前的版本列表，刷新完成后，将使用一个事件进行通知，不过这个事件并不会在UI线程执行
-     * @param tag 标记是谁发起了版本刷新任务，方便debug
+     * Asynchronously refresh the current version list; once the refresh completes an event is posted to notify observers, but this event is not delivered on the UI thread
+     * @param tag identifies who initiated the version refresh task, to make debugging easier
      * @see me.shadow.eclipselauncher.event.single.RefreshVersionsEvent
      */
     fun refresh(tag: String, refreshVersionInfo: Boolean = false) {
@@ -106,7 +106,7 @@ object VersionsManager {
 
         currentGameInfo = CurrentGameInfo.refreshCurrentInfo()
 
-        //使用事件通知版本已刷新
+        //Notify via event that the versions have been refreshed
         EventBus.getDefault().post(RefreshVersionsEvent(END))
         isRefreshing = false
     }
@@ -115,7 +115,7 @@ object VersionsManager {
         if (versionFile.exists() && versionFile.isDirectory) {
             var isVersion = false
 
-            //通过判断是否存在版本的.json文件，来确定其是否为一个版本
+            //Determine whether a folder is a version by checking whether its .json file exists
             val jsonFile = File(versionFile, "${versionFile.name}.json")
             if (jsonFile.exists() && jsonFile.isFile) {
                 isVersion = true
@@ -143,14 +143,14 @@ object VersionsManager {
     }
 
     /**
-     * @return 获取当前的版本
+     * @return the current version
      */
     fun getCurrentVersion(): Version? {
         if (versions.isEmpty()) return null
 
         fun returnVersionByFirst(): Version? {
             return versions.find { it.isValid() }?.apply {
-                //确保版本有效
+                //Make sure the version is valid
                 saveCurrentVersion(getVersionName())
             }
         }
@@ -167,43 +167,43 @@ object VersionsManager {
     }
 
     /**
-     * @return 通过版本名，判断其版本是否存在
+     * @return whether a version with the given name exists
      */
     fun checkVersionExistsByName(versionName: String?) =
         versionName?.let { name -> versions.any { it.getVersionName() == name } } ?: false
 
     /**
-     * @return 获取 Eclipse 启动器版本标识文件夹
+     * @return the Eclipse launcher version marker folder
      */
     fun getEclipseVersionPath(version: Version) = File(version.getVersionPath(), InfoDistributor.LAUNCHER_NAME)
 
     /**
-     * @return 通过目录获取 Eclipse 启动器版本标识文件夹
+     * @return the Eclipse launcher version marker folder for the given directory
      */
     fun getEclipseVersionPath(folder: File) = File(folder, InfoDistributor.LAUNCHER_NAME)
 
     /**
-     * @return 通过名称获取 Eclipse 启动器版本标识文件夹
+     * @return the Eclipse launcher version marker folder for the given name
      */
     fun getEclipseVersionPath(name: String) = File(getVersionPath(name), InfoDistributor.LAUNCHER_NAME)
 
     /**
-     * @return 获取当前版本设置的图标
+     * @return the icon configured for the version
      */
     fun getVersionIconFile(version: Version) = File(getEclipseVersionPath(version), "VersionIcon.png")
 
     /**
-     * @return 通过名称获取当前版本设置的图标
+     * @return the icon configured for the version with the given name
      */
     fun getVersionIconFile(name: String) = File(getEclipseVersionPath(name), "VersionIcon.png")
 
     /**
-     * @return 通过名称获取版本的文件夹路径
+     * @return the version folder path for the given name
      */
     fun getVersionPath(name: String) = File(ProfilePathHome.getVersionsHome(), name)
 
     /**
-     * 保存当前选择的版本
+     * Save the currently selected version
      */
     fun saveCurrentVersion(versionName: String) {
         runCatching {
@@ -223,7 +223,7 @@ object VersionsManager {
             isVersionExists(newName, true) ->
                 context.getString(R.string.version_install_exists)
             versionInfo?.loaderInfo?.takeIf { it.isNotEmpty() }?.let {
-                //如果这个版本是有ModLoader加载器信息的，则不允许修改为与原版名称一致的名称，防止冲突
+                //If this version has ModLoader info, do not allow renaming it to the vanilla Minecraft version name, to avoid conflicts
                 newName == versionInfo.minecraftVersion
             } ?: false ->
                 context.getString(R.string.version_install_cannot_use_mc_name)
@@ -232,8 +232,8 @@ object VersionsManager {
     }
 
     /**
-     * 打开重命名版本的弹窗，需要确保在UI线程运行
-     * @param beforeRename 在重命名前一步的操作
+     * Open the rename-version dialog; must be run on the UI thread
+     * @param beforeRename the action to run one step before renaming
      */
     fun openRenameDialog(context: Context, version: Version, beforeRename: (() -> Unit)? = null) {
         EditTextDialog.Builder(context)
@@ -243,7 +243,7 @@ object VersionsManager {
             .setConfirmListener { editText, _ ->
                 val string = editText.text.toString()
 
-                //与原始名称一致
+                //Same as the original name
                 if (string == version.getVersionName()) return@setConfirmListener true
 
                 if (FileTools.isFilenameInvalid(editText)) {
@@ -264,21 +264,21 @@ object VersionsManager {
     }
 
     /**
-     * 重命名当前版本，但并不会在这里对即将重命名的名称，进行非法性判断
+     * Rename the current version; the new name is not validated here
      */
     private fun renameVersion(version: Version, name: String) {
         val currentVersionName = getCurrentVersion()?.getVersionName()
-        //如果当前的版本是即将被重命名的版本，那么就把将要重命名的名字设置为当前版本
+        //If the version being renamed is the current version, update the current version to the new name
         if (version.getVersionName() == currentVersionName) saveCurrentVersion(name)
 
-        //尝试刷新收藏夹内的版本名称
+        //Try to refresh the version name inside the favorites
         FavoritesVersionUtils.renameVersion(version.getVersionName(), name)
 
         val versionFolder = version.getVersionPath()
         val renameFolder = File(ProfilePathHome.getVersionsHome(), name)
 
-        //不管重命名之后的文件夹是什么，只要这个文件夹存在，那么就必须删除
-        //否则将出现问题
+        //Whatever the target folder is after the rename, if that folder exists it must be deleted
+        //Otherwise problems will occur
         FileUtils.deleteQuietly(renameFolder)
 
         val originalName = versionFolder.name
@@ -295,12 +295,12 @@ object VersionsManager {
 
         FileUtils.deleteQuietly(versionFolder)
 
-        //重命名后，需要刷新列表
+        //Refresh the list after renaming
         refresh("VersionsManager:renameVersion")
     }
 
     /**
-     * 打开复制版本的名称输入框，将选中的版本复制为一个新的版本
+     * Open the name input dialog for copying a version, duplicating the selected version into a new one
      */
     fun openCopyDialog(context: Context, version: Version) {
         val dialog = ZHTools.createTaskRunningDialog(context)
@@ -314,7 +314,7 @@ object VersionsManager {
             .setConfirmListener { editText, checked ->
                 val string = editText.text.toString()
 
-                //与原始名称一致
+                //Same as the original name
                 if (string == version.getVersionName()) return@setConfirmListener true
 
                 if (FileTools.isFilenameInvalid(editText)) {
@@ -342,10 +342,10 @@ object VersionsManager {
     }
 
     /**
-     * 将选中的版本复制为一个新的版本
-     * @param version 选中的版本
-     * @param name 新的版本的名称
-     * @param copyAllFile 是否复制全部文件
+     * Copy the selected version into a new version
+     * @param version the selected version
+     * @param name the name of the new version
+     * @param copyAllFile whether to copy all files
      */
     private fun copyVersion(version: Version, name: String, copyAllFile: Boolean) {
         val versionsFolder = version.getVersionsFolder()
@@ -353,21 +353,21 @@ object VersionsManager {
 
         val originalName = version.getVersionName()
 
-        //新版本的json与jar文件
+        //The json and jar files of the new version
         val newJsonFile = File(newVersion, "$name.json")
         val newJarFile = File(newVersion, "$name.jar")
 
         val originalVersionFolder = version.getVersionPath()
         if (copyAllFile) {
-            //启用复制所有文件时，直接将原文件夹整体复制到新版本
+            //When copying all files is enabled, copy the whole original folder into the new version
             FileUtils.copyDirectory(originalVersionFolder, newVersion)
-            //重命名json、jar文件
+            //Rename the json and jar files
             val jsonFile = File(newVersion, "$originalName.json")
             val jarFile = File(newVersion, "$originalName.jar")
             if (jsonFile.exists()) jsonFile.renameTo(newJsonFile)
             if (jarFile.exists()) jarFile.renameTo(newJarFile)
         } else {
-            //不复制所有文件时，仅复制并重命名json、jar文件
+            //When not copying all files, only copy and rename the json and jar files
             val originalJsonFile = File(originalVersionFolder, "$originalName.json")
             val originalJarFile = File(originalVersionFolder, "$originalName.jar")
             newVersion.mkdirs()
@@ -377,7 +377,7 @@ object VersionsManager {
             if (originalJarFile.exists()) originalJarFile.copyTo(newJarFile)
         }
 
-        //保存版本配置文件
+        //Save the version config file
         version.getVersionConfig().copy().let { config ->
             config.setVersionPath(newVersion)
             config.setIsolationType(VersionConfig.IsolationType.ENABLE)

@@ -9,9 +9,9 @@ import me.shadow.eclipselauncher.pojav.prefs.LauncherPreferences
 class LocaleHelper(context: Context) : ContextWrapper(context) {
     companion object {
         fun setLocale(context: Context): ContextWrapper {
-            //初始化路径
+            //Initialize the paths
             PathManager.initContextConstants(context)
-            //刷新启动器设置
+            //Reload the launcher settings
             Settings.refreshSettings()
 
             LauncherPreferences.loadPreferences()

@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.event.single
 
 /**
- * 启动器全屏模式设置项变更事件
+ * Event for changes to the launcher full-screen mode setting
  */
 class LauncherIgnoreNotchEvent

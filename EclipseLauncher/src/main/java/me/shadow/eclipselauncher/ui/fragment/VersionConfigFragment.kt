@@ -223,8 +223,8 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
     }
 
     /**
-     * 刷新图标，并对重置图标的按钮播放显示或隐藏的动画
-     * @param init 首次刷新不需要对重置按钮播放动画
+     * Refreshes the icon and plays the show/hide animation of the reset-icon button
+     * @param init the first refresh does not animate the reset button
      */
     private fun refreshIcon(init: Boolean) {
         binding.apply {
@@ -260,7 +260,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
     private fun loadValues(context: Context) {
         mTempConfig?.let { config ->
             binding.apply {
-                //版本隔离
+                // Version isolation
                 val isolationTypes: EnumEntries<IsolationType> = IsolationType.entries
                 val isolationAdapter = ObjectSpinnerAdapter<IsolationType>(isolationType) { getIsolationString(requireActivity(), it) }
                 isolationAdapter.setItems(isolationTypes)
@@ -280,12 +280,12 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                         }
                     })
 
-                //控制布局
+                // Control layout
                 controlName.text = config.getControl()
-                //自定义路径
+                // Custom path
                 customPath.text = config.getCustomPath().replaceFirst(ProfilePathManager.getCurrentPath().toRegex(), ".")
 
-                //渲染器
+                // Renderer
                 val renderersList = Renderers.getCompatibleRenderers(context).first
                 val rendererNames: MutableList<String> = ArrayList(renderersList.rendererIdentifier)
                 val renderList: MutableList<String> = ArrayList(renderersList.rendererNames.size + 1)
@@ -306,7 +306,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                         else config.setRenderer(rendererNames[i1])
                     })
 
-                //驱动器
+                // Driver
                 val driverNames = DriverPluginManager.getDriverNameList()
                 val driverList = ArrayList(driverNames)
                 driverList.add(context.getString(R.string.generic_default))
@@ -325,12 +325,12 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                         else config.setDriver(driverNames[i1])
                     })
 
-                //自定义信息
+                // Custom info
                 customInfoEdit.setText(config.getCustomInfo())
-                //JVM 启动参数
+                // JVM launch arguments
                 jvmArgsEdit.setText(config.getJavaArgs())
 
-                //Java 运行环境
+                // Java runtime
                 val runtimes = MultiRTUtils.getRuntimes()
                 val runtimeNames: MutableList<String> = ArrayList()
                 runtimes.forEach { v: Runtime ->

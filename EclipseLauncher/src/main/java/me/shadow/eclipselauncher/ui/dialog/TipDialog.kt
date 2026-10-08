@@ -77,7 +77,7 @@ class TipDialog private constructor(
             cancelButton.visibility = if (showCancel) View.VISIBLE else View.GONE
             confirmButton.visibility = if (showConfirm) View.VISIBLE else View.GONE
 
-            //如果开启了警告模式，那么就为标题添加一个红色的警告图标
+            //If warning mode is enabled, add a red warning icon to the title
             if (warning) {
                 warningIcon.visibility = View.VISIBLE
                 warningIcon.drawable.setTint(Color.RED)
@@ -91,7 +91,7 @@ class TipDialog private constructor(
 
     override fun show() {
         super.show()
-        //尝试修复一些设备上的View宽度不正确的问题，在这里进行测量
+        //Measure here to try to fix incorrect View widths on some devices
         window?.findViewById<View>(android.R.id.content)?.measure(0, 0)
 
         if (confirmButtonCountdown > 0) {
@@ -101,7 +101,7 @@ class TipDialog private constructor(
                 val buttonText = text
                 var remainingTime = confirmButtonCountdown
 
-                val interval = 500L //更新频率
+                val interval = 500L //Update frequency
                 val handler = Handler(Looper.getMainLooper())
                 val runnable = object : Runnable {
                     @SuppressLint("SetTextI18n")
@@ -307,7 +307,7 @@ class TipDialog private constructor(
         }
 
         /**
-         * 为标题栏添加红色警告图标
+         * Add a red warning icon to the title bar
          */
         @CheckResult
         fun setWarning(): Builder {

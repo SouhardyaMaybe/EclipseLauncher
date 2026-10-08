@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -40,10 +42,37 @@ class SettingsFragment : FragmentWithAnim(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewPager()
 
+        // Portrait single-pane mode: the opener button switches between settings sections
+        onPaneOpenerClick = { showSectionsPopup() }
+
         binding.settingsTab.observeIndexChange { _, toIndex, reselect, fromUser ->
             if (reselect) return@observeIndexChange
             if (fromUser) binding.settingsViewpager.setCurrentItem(toIndex, false)
         }
+    }
+
+    private fun showSectionsPopup() {
+        val anchor = paneOpenerButton ?: return
+        val popup = PopupMenu(requireContext(), anchor)
+        for (i in 0 until binding.settingsTab.childCount) {
+            val label = findTabLabel(binding.settingsTab.getChildAt(i)) ?: continue
+            popup.menu.add(0, i, i, label)
+        }
+        popup.setOnMenuItemClickListener { item ->
+            binding.settingsViewpager.setCurrentItem(item.itemId, false)
+            true
+        }
+        popup.show()
+    }
+
+    private fun findTabLabel(view: View?): CharSequence? {
+        if (view is TextView) return view.text
+        if (view is ViewGroup) {
+            for (i in 0 until view.childCount) {
+                findTabLabel(view.getChildAt(i))?.let { return it }
+            }
+        }
+        return null
     }
 
     override fun onResume() {

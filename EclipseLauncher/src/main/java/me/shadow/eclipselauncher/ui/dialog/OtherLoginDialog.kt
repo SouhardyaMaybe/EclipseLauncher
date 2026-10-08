@@ -66,7 +66,7 @@ class OtherLoginDialog(
                 loginButton -> {
                     val email = emailEdit.text.toString()
                     val password = passwordEdit.text.toString()
-                    //登录前需检查邮箱、密码、基础链接
+                    //Before logging in, check the email, password, and base URL
                     if (!checkAccountInformation(email, password)) return
                     if (server.baseUrl.isNullOrEmpty()) {
                         Toast.makeText(context, context.getString(R.string.other_login_server_not_empty), Toast.LENGTH_SHORT).show()

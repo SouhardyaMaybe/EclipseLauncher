@@ -5,7 +5,7 @@ import me.shadow.eclipselauncher.feature.download.enums.VersionType
 import java.util.Date
 
 /**
- * @param modloaders 该版本的 Mod 加载器信息
+ * @param modloaders the Mod loader info of this version
  */
 open class ModLikeVersionItem(
     projectId: String,

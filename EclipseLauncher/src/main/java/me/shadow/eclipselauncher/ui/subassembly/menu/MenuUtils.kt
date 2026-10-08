@@ -8,9 +8,9 @@ import android.widget.TextView
 class MenuUtils {
     companion object {
         /**
-         * 调整滑动条的值
-         * @param seekBar 滑动条
-         * @param v 需要调整的值的大小
+         * Adjust the value of the seek bar
+         * @param seekBar the seek bar
+         * @param v the amount to adjust the value by
          */
         @JvmStatic
         fun adjustSeekbar(seekBar: SeekBar, v: Int) {
@@ -18,7 +18,7 @@ class MenuUtils {
         }
 
         /**
-         * 反转Switch当前的选中状态
+         * Invert the Switch's current checked state
          */
         @JvmStatic
         @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -27,7 +27,7 @@ class MenuUtils {
         }
 
         /**
-         * 初始化Seekbar的值
+         * Initialize the SeekBar's value
          */
         @JvmStatic
         fun initSeekBarValue(seek: SeekBar, value: Int, valueView: TextView, suffix: String) {
@@ -36,7 +36,7 @@ class MenuUtils {
         }
 
         /**
-         * 更新Seekbar旁边数值的文本值
+         * Update the text of the number next to the SeekBar
          */
         @JvmStatic
         fun updateSeekbarValue(value: Int, valueView: TextView, suffix: String) {

@@ -98,7 +98,7 @@ class CurseForgeModHelper {
             val invalidDependencies: MutableList<String> = ArrayList()
             for (modData in allModData) {
                 try {
-                    // 获取版本信息
+                    // Get the version info
                     val mcVersions: MutableSet<String> = TreeSet()
                     for (gameVersionElement in modData.getAsJsonArray("gameVersions")) {
                         val gameVersion = gameVersionElement.asString
@@ -108,7 +108,7 @@ class CurseForgeModHelper {
                     val modloaders: MutableList<ModLoader> = ArrayList()
                     mcVersions.forEach { ModLoaderUtils.addModLoaderToList(modloaders, it) }
 
-                    // 过滤非MC版本的元素
+                    // Filter out elements that are not MC versions
                     val releaseRegex = RELEASE_REGEX
                     val nonMCVersion: MutableSet<String> = TreeSet()
                     mcVersions.forEach { string: String ->

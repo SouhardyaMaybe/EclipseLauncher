@@ -5,7 +5,7 @@ import me.shadow.eclipselauncher.feature.download.enums.VersionType
 import java.util.Date
 
 /**
- * @param dependencies 该版本的依赖 Mod 的信息
+ * @param dependencies the info of the dependency mods of this version
  */
 class ModVersionItem(
     projectId: String,

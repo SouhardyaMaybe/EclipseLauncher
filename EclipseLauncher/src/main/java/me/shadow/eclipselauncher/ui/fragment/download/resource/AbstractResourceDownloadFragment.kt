@@ -124,7 +124,7 @@ abstract class AbstractResourceDownloadFragment(
                 false
             }
 
-            // 打开版本选择弹窗
+            // Open the version picker dialog
             selectedMcVersionView.setOnClickListener {
                 val selectVersionDialog = SelectVersionDialog(requireContext())
                 selectVersionDialog.setOnVersionSelectedListener(object : VersionSelectedListener() {
@@ -142,7 +142,7 @@ abstract class AbstractResourceDownloadFragment(
             }
         }
 
-        // 初始化 Spinner
+        // Initialize the spinner
         mPlatformAdapter.setItems(Platform.entries)
         mSortAdapter.setItems(Sort.entries)
         mCategoryAdapter.setItems(categoryList)
@@ -280,7 +280,7 @@ abstract class AbstractResourceDownloadFragment(
     }
 
     /**
-     * 清除上一次的搜索状态，然后执行搜索
+     * Clears the previous search state, then performs the search
      */
     private fun search() {
         setStatusText(false)
@@ -298,7 +298,7 @@ abstract class AbstractResourceDownloadFragment(
     }
 
     /**
-     * 检查当前适配器内的item数量是否为0，如果是，那么执行搜索
+     * Checks whether the adapter holds no items, and searches if so
      */
     private fun checkSearch() {
         if (mInfoAdapter.itemCount == 0) search()

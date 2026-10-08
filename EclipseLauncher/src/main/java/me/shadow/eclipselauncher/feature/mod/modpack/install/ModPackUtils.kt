@@ -57,7 +57,7 @@ class ModPackUtils {
         }
 
         @JvmStatic
-        fun verifyManifest(manifest: CurseManifest): Boolean { //检测是否为curseforge整合包(通过manifest.json内的数据进行判断)
+        fun verifyManifest(manifest: CurseManifest): Boolean { //Check whether this is a CurseForge modpack (judged by the data in manifest.json)
             if ("minecraftModpack" != manifest.manifestType) return false
             if (manifest.manifestVersion != 1) return false
             if (manifest.minecraft == null) return false
@@ -67,13 +67,13 @@ class ModPackUtils {
         }
 
         @JvmStatic
-        fun verifyModrinthIndex(modrinthIndex: ModrinthIndex): Boolean { //检测是否为modrinth整合包(通过modrinth.index.json内的数据进行判断)
+        fun verifyModrinthIndex(modrinthIndex: ModrinthIndex): Boolean { //Check whether this is a Modrinth modpack (judged by the data in modrinth.index.json)
             if ("minecraft" != modrinthIndex.game) return false
             if (modrinthIndex.formatVersion != 1) return false
             return modrinthIndex.dependencies != null
         }
 
-        fun verifyMCBBSPackMeta(mcbbsPackMeta: MCBBSPackMeta): Boolean { //检测是否为MCBBS整合包(通过mcbbs.packmeta内的数据进行判断)
+        fun verifyMCBBSPackMeta(mcbbsPackMeta: MCBBSPackMeta): Boolean { //Check whether this is an MCBBS modpack (judged by the data in mcbbs.packmeta)
             if ("minecraftModpack" != mcbbsPackMeta.manifestType) return false
             if (mcbbsPackMeta.manifestVersion != 2) return false
             if (mcbbsPackMeta.addons == null) return false

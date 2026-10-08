@@ -89,7 +89,7 @@ public final class UpdateLauncher {
                         final long[] lastSize = {0};
                         final long[] lastTime = {ZHTools.getCurrentTimeMillis()};
 
-                        //限制刷新速度
+                        //Limit the refresh rate
                         timer = new Timer();
                         timer.schedule(new TimerTask() {
                             @Override
@@ -145,7 +145,7 @@ public final class UpdateLauncher {
 
     private void handleDownloadError(Exception e) {
         if (isCanceled) {
-            //已经取消了下载，不处理取消带来的任何异常
+            //The download has already been cancelled, so do not handle any exception caused by the cancellation
             return;
         }
 

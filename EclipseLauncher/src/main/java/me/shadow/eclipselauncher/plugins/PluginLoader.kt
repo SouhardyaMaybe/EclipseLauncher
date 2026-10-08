@@ -13,7 +13,7 @@ import me.shadow.eclipselauncher.utils.path.PathManager
 import org.apache.commons.io.FileUtils
 
 /**
- * 统一插件的加载，保证仅获取一次应用列表
+ * Centralizes plugin loading, ensuring the app list is fetched only once
  */
 object PluginLoader {
     private var isInitialized: Boolean = false
@@ -40,11 +40,11 @@ object PluginLoader {
             RendererPluginManager.parseApkPlugin(context, applicationInfo)
         }
 
-        //尝试解析本地渲染器插件
+        //Try to parse local renderer plugins
         PathManager.DIR_INSTALLED_RENDERER_PLUGIN.listFiles()?.let { files ->
             files.forEach { file ->
                 if (!(file.isDirectory && RendererPluginManager.parseLocalPlugin(context, file))) {
-                    //不符合要求的渲染器插件，将被删除！
+                    //Renderer plugins that do not meet the requirements will be deleted!
                     FileUtils.deleteQuietly(file)
                 }
             }

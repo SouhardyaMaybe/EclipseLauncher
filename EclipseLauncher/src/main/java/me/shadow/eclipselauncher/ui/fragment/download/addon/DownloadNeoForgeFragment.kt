@@ -29,7 +29,7 @@ class DownloadNeoForgeFragment : ModListFragment() {
         setIcon(ContextCompat.getDrawable(fragmentActivity!!, R.drawable.ic_neoforge))
         setTitleText("NeoForge")
         setLink("https://neoforged.net/")
-        setReleaseCheckBoxGone() //隐藏“仅展示正式版”选择框，在这里没有用处
+        setReleaseCheckBoxGone() // Hide the release-only checkbox, it serves no purpose here
     }
 
     override fun initRefresh(): Future<*> {
@@ -87,7 +87,7 @@ class DownloadNeoForgeFragment : ModListFragment() {
         val mNeoForgeVersions: MutableMap<String, MutableList<String>> = HashMap()
         neoForgeVersions.forEach(Consumer { neoForgeVersion: String ->
             currentTask?.apply { if (isCancelled) return@Consumer }
-            //查找并分组Minecraft版本与NeoForge版本
+            // Find and group Minecraft versions with NeoForge versions
             val gameVersion = if (neoForgeVersion == "47.1.82") {
                 return@Consumer
             } else {

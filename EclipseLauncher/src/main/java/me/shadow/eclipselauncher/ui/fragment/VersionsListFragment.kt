@@ -116,7 +116,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                 }
 
                 override fun isVersionFavorited(versionName: String): Boolean {
-                    //如果收藏栏选择的不是“全部”，那么当前版本一定会是被收藏的状态
+                    // When a category other than All is selected, the current version must be favorited
                     if (favoritesFolderTab.currentItemIndex != 0) {
                         return true
                     }
@@ -223,7 +223,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                     ViewGroup.LayoutParams.WRAP_CONTENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT
                 )
-                //长按删除
+                // Long-press to delete
                 root.setOnLongClickListener {
                     showFavoritesDeletePopupWindow(root, folderName)
                     true
@@ -307,7 +307,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                         refreshVersions.visibility = View.GONE
                     }
                 }
-                //无论刷新进度，都应该关闭所有的操作弹窗
+                // Close all action popups regardless of the refresh progress
                 closeAllPopupWindow()
             }
         }

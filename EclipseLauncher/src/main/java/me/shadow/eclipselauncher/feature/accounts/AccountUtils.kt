@@ -78,8 +78,8 @@ class AccountUtils {
         }
 
         /**
-         * 修改自源代码：[HMCL Core: AuthlibInjectorServer.java](https://github.com/HMCL-dev/HMCL/blob/main/HMCLCore/src/main/java/org/jackhuang/hmcl/auth/authlibinjector/AuthlibInjectorServer.java#L60-#L76)
-         * <br>原项目版权归原作者所有，遵循GPL v3协议
+         * Modified from the source code: [HMCL Core: AuthlibInjectorServer.java](https://github.com/HMCL-dev/HMCL/blob/main/HMCLCore/src/main/java/org/jackhuang/hmcl/auth/authlibinjector/AuthlibInjectorServer.java#L60-#L76)
+         * <br>The original project copyright belongs to the original authors; it follows the GPL v3 license
          */
         fun tryGetFullServerUrl(baseUrl: String): String {
             fun String.addSlashIfMissing(): String {
@@ -109,8 +109,8 @@ class AccountUtils {
         }
 
         /**
-         * 修改自源代码：[HMCL Core: AuthlibInjectorServer.java](https://github.com/HMCL-dev/HMCL/blob/main/HMCLCore/src/main/java/org/jackhuang/hmcl/auth/authlibinjector/AuthlibInjectorServer.java#L90-#L96)
-         * <br>原项目版权归原作者所有，遵循GPL v3协议
+         * Modified from the source code: [HMCL Core: AuthlibInjectorServer.java](https://github.com/HMCL-dev/HMCL/blob/main/HMCLCore/src/main/java/org/jackhuang/hmcl/auth/authlibinjector/AuthlibInjectorServer.java#L90-#L96)
+         * <br>The original project copyright belongs to the original authors; it follows the GPL v3 license
          */
         private fun addHttpsIfMissing(baseUrl: String): String {
             return if (!baseUrl.startsWith("http://", true) && !baseUrl.startsWith("https://")) {

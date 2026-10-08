@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.event.single
 
 /**
- * 通知LauncherActivity实时变更页面不透明度
+ * Notify LauncherActivity to change the page opacity in real time
  */
 class PageOpacityChangeEvent(val progress: Int)

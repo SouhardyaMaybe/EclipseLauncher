@@ -201,38 +201,6 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             binding.forceVsync
         )
 
-        SwitchSettingsWrapper(
-            context,
-            AllSettings.vsyncInZink,
-            binding.vsyncInZinkLayout,
-            binding.vsyncInZink
-        )
-
-        val zinkPreferSystemDriver = SwitchSettingsWrapper(
-            context,
-            AllSettings.zinkPreferSystemDriver,
-            binding.zinkPreferSystemDriverLayout,
-            binding.zinkPreferSystemDriver
-        )
-        if (!Tools.checkVulkanSupport(context.packageManager)) {
-            zinkPreferSystemDriver.setGone()
-        } else {
-            zinkPreferSystemDriver.setOnCheckedChangeListener { buttonView, isChecked, listener ->
-                if (isChecked and ZHTools.isAdrenoGPU()) {
-                    TipDialog.Builder(requireActivity())
-                        .setTitle(R.string.generic_warning)
-                        .setMessage(R.string.setting_zink_driver_adreno)
-                        .setWarning()
-                        .setCancelable(false)
-                        .setConfirmClickListener { listener.onSave() }
-                        .setCancelClickListener { buttonView.isChecked = false }
-                        .showDialog()
-                } else {
-                    listener.onSave()
-                }
-            }
-        }
-
         changeResolutionRatioPreview(AllSettings.resolutionRatio.getValue())
         computeVisibility()
     }

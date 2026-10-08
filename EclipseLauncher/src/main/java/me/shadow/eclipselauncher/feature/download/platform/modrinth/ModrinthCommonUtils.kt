@@ -123,7 +123,7 @@ class ModrinthCommonUtils {
         private fun getInfoItem(hit: JsonObject, classify: Classify): InfoItem? {
             val categories = hit.get("categories").asJsonArray
             for (category in categories) {
-                if (category.asString == "datapack") return null //没有数据包安装的需求，一律排除
+                if (category.asString == "datapack") return null //There is no datapack install support, so exclude them all
             }
             return InfoItem(
                 classify,
@@ -173,7 +173,7 @@ class ModrinthCommonUtils {
             val response = api.get("project/${infoItem.projectId}/version", JsonArray::class.java) ?: return null
 
             val items: MutableList<T> = ArrayList()
-            //如果第一次获取依赖信息失败，则记录其id，之后不再尝试获取
+            //If fetching the dependency info fails the first time, record its id and never try again
             val invalidDependencies: MutableList<String> = ArrayList()
             for (element in response) {
                 try {

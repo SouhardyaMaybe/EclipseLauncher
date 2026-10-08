@@ -1,48 +1,48 @@
 package me.shadow.eclipselauncher.setting
 
 /**
- * 静态设置项的值，用于一些临时生效的设置项使用
- * 这里的值不会被保存到设置配置中，软件重启就会消失！
+ * Values of static settings, used for settings that only take effect temporarily
+ * The values here are not saved to the settings config and disappear when the software restarts!
  */
 class AllStaticSettings {
     companion object {
         /**
-         * 刘海屏缺口宽度 Int
+         * Notch width (Int)
          */
         @JvmField var notchSize = 0
 
         /**
-         * 缩放因子 Float
+         * Scale factor (Float)
          */
         @JvmField var scaleFactor = AllSettings.resolutionRatio.getValue() / 100f
 
         /**
-         * 禁用双击交换手中物品 Boolean
+         * Disable double-tap to swap the held item (Boolean)
          */
         @JvmField var disableDoubleTap = AllSettings.disableDoubleTap.getValue()
 
         /**
-         * 触发长按延迟 Int
+         * Long-press trigger delay (Int)
          */
         @JvmField var timeLongPressTrigger = AllSettings.timeLongPressTrigger.getValue()
 
         /**
-         * 启用陀螺仪控制 Boolean
+         * Enable gyroscope control (Boolean)
          */
         @JvmField var enableGyro = AllSettings.enableGyro.getValue()
 
         /**
-         * 陀螺仪控制灵敏度 Int
+         * Gyroscope control sensitivity (Int)
          */
         @JvmField var gyroSensitivity = AllSettings.gyroSensitivity.getValue()
 
         /**
-         * 陀螺仪反转X轴 Boolean
+         * Invert the gyroscope X axis (Boolean)
          */
         @JvmField var gyroInvertX = AllSettings.gyroInvertX.getValue()
 
         /**
-         * 陀螺仪反转Y轴 Boolean
+         * Invert the gyroscope Y axis (Boolean)
          */
         @JvmField var gyroInvertY = AllSettings.gyroInvertY.getValue()
 

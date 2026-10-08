@@ -2,16 +2,12 @@ package me.shadow.eclipselauncher.renderer
 
 import android.content.Context
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.renderer.renderers.FreedrenoRenderer
 import me.shadow.eclipselauncher.renderer.renderers.GL4ESRenderer
-import me.shadow.eclipselauncher.renderer.renderers.PanfrostRenderer
-import me.shadow.eclipselauncher.renderer.renderers.VirGLRenderer
-import me.shadow.eclipselauncher.renderer.renderers.VulkanZinkRenderer
 import me.shadow.eclipselauncher.pojav.Architecture
 import me.shadow.eclipselauncher.pojav.Tools
 
 /**
- * 启动器所有渲染器总管理者，启动器内置的渲染器与渲染器插件加载的渲染器，都会加载到这里
+ * Manager of every renderer: the launcher's built-in renderer and renderers loaded from renderer plugins
  */
 object Renderers {
     private val renderers: MutableList<RendererInterface> = mutableListOf()
@@ -30,16 +26,12 @@ object Renderers {
         }
 
         addRenderers(
-            GL4ESRenderer(),
-            VulkanZinkRenderer(),
-            VirGLRenderer(),
-            FreedrenoRenderer(),
-            PanfrostRenderer()
+            GL4ESRenderer()
         )
     }
 
     /**
-     * 获取兼容当前设备的所有渲染器
+     * Gets all renderers compatible with the current device
      */
     fun getCompatibleRenderers(context: Context): Pair<RenderersList, List<RendererInterface>> = compatibleRenderers ?: run {
         val deviceHasVulkan = Tools.checkVulkanSupport(context.packageManager)
@@ -66,7 +58,7 @@ object Renderers {
     }
 
     /**
-     * 加入一些渲染器
+     * Adds one or more renderers
      */
     @JvmStatic
     fun addRenderers(vararg renderers: RendererInterface) {
@@ -76,7 +68,7 @@ object Renderers {
     }
 
     /**
-     * 加入单个渲染器
+     * Adds a single renderer
      */
     @JvmStatic
     fun addRenderer(renderer: RendererInterface): Boolean {
@@ -92,10 +84,10 @@ object Renderers {
     }
 
     /**
-     * 设置当前的渲染器
-     * @param context 用于初始化适配当前设备的渲染器
-     * @param uniqueIdentifier 渲染器的唯一标识符，用于找到当前想要设置的渲染器
-     * @param retryToFirstOnFailure 如果未找到匹配的渲染器，是否跳回渲染器列表的首个渲染器
+     * Sets the current renderer
+     * @param context used to select renderers compatible with the current device
+     * @param uniqueIdentifier the unique identifier used to find the renderer to set
+     * @param retryToFirstOnFailure whether to fall back to the first renderer in the list when no match is found
      */
     fun setCurrentRenderer(context: Context, uniqueIdentifier: String, retryToFirstOnFailure: Boolean = true) {
         if (!isInitialized) throw IllegalStateException("Uninitialized renderer!")
@@ -110,7 +102,7 @@ object Renderers {
     }
 
     /**
-     * 获取当前的渲染器
+     * Gets the current renderer
      */
     fun getCurrentRenderer(): RendererInterface {
         if (!isInitialized) throw IllegalStateException("Uninitialized renderer!")
@@ -118,7 +110,7 @@ object Renderers {
     }
 
     /**
-     * 当前是否设置了渲染器
+     * Whether a renderer has already been set
      */
     fun isCurrentRendererValid(): Boolean = isInitialized && this.currentRenderer != null
 }

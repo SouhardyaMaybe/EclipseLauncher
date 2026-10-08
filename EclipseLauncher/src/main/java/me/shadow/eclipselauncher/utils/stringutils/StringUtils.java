@@ -31,11 +31,11 @@ public class StringUtils {
     }
 
     /**
-     * 在字符串之间插入空格
+     * Insert spaces between strings
      *
-     * @param prefixString 第一个字符串
-     * @param suffixString 之后的多个字符串
-     * @return 返回插入好空格的字符串 "string1 string2 string3"
+     * @param prefixString the first string
+     * @param suffixString the following strings
+     * @return the string with spaces inserted, "string1 string2 string3"
      */
     public static String insertSpace(String prefixString, String... suffixString) {
         return insertString(" ", prefixString, suffixString);
@@ -47,11 +47,11 @@ public class StringUtils {
     }
 
     /**
-     * 在字符串之间插入换行符
+     * Insert newlines between strings
      *
-     * @param prefixString 第一个字符串
-     * @param suffixString 之后的多个字符串
-     * @return 返回插入好换行符的字符串
+     * @param prefixString the first string
+     * @param suffixString the following strings
+     * @return the string with newlines inserted
      */
     public static String insertNewline(String prefixString, String... suffixString) {
         return insertString("\r\n", prefixString, suffixString);
@@ -70,7 +70,7 @@ public class StringUtils {
     }
 
     /**
-     * @return 检查字符串是否为null，如果是那么则返回""，如果不是，则返回字符串本身
+     * @return checks whether the string is null, returning "" if it is, otherwise returns the string itself
      */
     public static String getStringNotNull(String string) {
         if (string == null) return "";

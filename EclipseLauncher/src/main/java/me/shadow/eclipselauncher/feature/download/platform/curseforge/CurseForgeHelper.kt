@@ -23,7 +23,7 @@ class CurseForgeHelper : AbstractPlatformHelper(PlatformUtils.createCurseForgeAp
         return CurseForgeHelper()
     }
 
-    //更换为使用 slug 拼接链接
+    //Switch to building the link with the slug
     override fun getWebUrl(infoItem: InfoItem): String? {
         return "https://www.curseforge.com/minecraft/${
             when (infoItem.classify) {

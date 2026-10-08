@@ -5,7 +5,7 @@ import me.shadow.eclipselauncher.feature.download.enums.ModLoader
 import me.shadow.eclipselauncher.feature.download.enums.Sort
 
 /**
- * 用于平台进行搜索时，提供筛选信息
+ * Provides filter information when searching on a platform
  */
 class Filters {
     var name: String = ""

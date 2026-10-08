@@ -45,12 +45,12 @@ class AnimUtils {
         }
 
         /**
-         * 用于便捷地使用隐藏动画
-         * @param view 需要操作的控件
-         * @param startDelay 开始前的延迟
-         * @param shouldShow true: 显示，false: 隐藏
-         * @param duration 持续时间
-         * @param listener 动画监听器，用于调用动画开始前和结束的回调
+         * Convenience helper for hide animations
+         * @param view the view to operate on
+         * @param startDelay the delay before starting
+         * @param shouldShow true: show, false: hide
+         * @param duration the duration
+         * @param listener the animation listener used for the before-start and end callbacks
          */
         @JvmStatic
         fun setVisibilityAnim(
@@ -76,13 +76,13 @@ class AnimUtils {
         }
 
         /**
-         * 用于便捷地使用渐隐渐显动画
-         * @param view 需要操作的控件
-         * @param startDelay 开始前的延迟
-         * @param begin 开始的透明度（Alpha）
-         * @param end 结束的透明度（Alpha）
-         * @param duration 持续时间
-         * @param endAction 动画结束时执行的任务
+         * Convenience helper for fade-out/fade-in animations
+         * @param view the view to operate on
+         * @param startDelay the delay before starting
+         * @param begin the starting alpha
+         * @param end the ending alpha
+         * @param duration the duration
+         * @param endAction the task to run when the animation ends
          */
         @JvmStatic
         fun fadeAnim(

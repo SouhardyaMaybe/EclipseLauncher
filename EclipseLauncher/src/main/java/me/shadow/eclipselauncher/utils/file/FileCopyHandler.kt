@@ -29,7 +29,7 @@ class FileCopyHandler(
     private fun addFile(file: File) {
         fileCount.incrementAndGet()
         fileSize.addAndGet(FileUtils.sizeOf(file))
-        //当前文件 - 目标文件
+        //Current file - target file
         foundFiles [file] = getNewDestination(file, getTargetFile(file), mFileExtensionGetter?.onGet(file))
     }
 
@@ -54,7 +54,7 @@ class FileCopyHandler(
         return File(file.absolutePath.replace(mRoot.absolutePath, mTarget.absolutePath).removeSuffix(file.name))
     }
 
-    //如果目标地点已存在同名文件，就将目标文件的文件名加上数字标识，防止文件被覆盖
+    //If a file with the same name already exists at the target location, append a number to the target file name to prevent it from being overwritten
     private fun getNewDestination(sourceFile: File, targetDir: File, fileExtension: String?): File {
         var extension: String? = fileExtension
         var destFile = File(targetDir, sourceFile.name)

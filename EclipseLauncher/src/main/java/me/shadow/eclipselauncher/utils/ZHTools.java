@@ -85,7 +85,7 @@ public final class ZHTools {
             return ResourcesCompat.getDrawable(context.getResources(), R.drawable.ic_mouse_pointer, context.getTheme());
         }
 
-        // 鼠标：自定义鼠标图片
+        // Mouse: custom mouse image
         if (mouseFile.exists()) {
             return Drawable.createFromPath(mouseFile.getAbsolutePath());
         } else {
@@ -113,17 +113,17 @@ public final class ZHTools {
     }
 
     /**
-     * 展示一个提示弹窗，告知用户接下来将要在浏览器内访问的链接，用户可以选择不进行访问
-     * @param link 要访问的链接
+     * Show a tip dialog telling the user about the link that is about to be opened in the browser; the user may choose not to visit it
+     * @param link the link to visit
      */
     public static void openLink(Context context, String link) {
         openLink(context, link, null);
     }
 
     /**
-     * 展示一个提示弹窗，告知用户接下来将要在浏览器内访问的链接，用户可以选择不进行访问
-     * @param link 要访问的链接
-     * @param dataType 设置 intent 的数据以及显式 MIME 数据类型
+     * Show a tip dialog telling the user about the link that is about to be opened in the browser; the user may choose not to visit it
+     * @param link the link to visit
+     * @param dataType the intent data and the explicit MIME data type
      */
     public static void openLink(Context context, String link, String dataType) {
         new TipDialog.Builder(context)
@@ -194,7 +194,7 @@ public final class ZHTools {
         return BuildConfig.APPLICATION_ID;
     }
 
-    //获取软件上一次更新时间
+    //Get the last update time of the software
     public static String getLastUpdateTime(Context context) {
         PackageManager packageManager = context.getPackageManager();
         try {
@@ -209,27 +209,27 @@ public final class ZHTools {
     }
 
     /**
-     * @return 启动器是否为预发布版
+     * @return whether the launcher is a pre-release
      */
     public static boolean isPreRelease() {
         return "PRE_RELEASE".equals(InfoDistributor.BUILD_TYPE);
     }
 
     /**
-     * @return 启动器是否为正式版
+     * @return whether the launcher is a stable release
      */
     public static boolean isRelease() {
         return "RELEASE".equals(InfoDistributor.BUILD_TYPE);
     }
 
     /**
-     * @return 启动器是否为测试版
+     * @return whether the launcher is a beta
      */
     public static boolean isDebug() {
         return "DEBUG".equals(InfoDistributor.BUILD_TYPE);
     }
 
-    //获取版本状态信息
+    //Get the version status info
     public static String getVersionStatus(Context context) {
         String status;
         if (isPreRelease()) status = context.getString(R.string.generic_pre_release);
@@ -416,10 +416,10 @@ public final class ZHTools {
                         "a, a:link, a:visited, a:hover, a:active {" +
                         "  color: " + color[1] + ";" +
                         "  text-decoration: none;" +
-                        "  pointer-events: none;" + //禁止链接的交互性
+                        "  pointer-events: none;" + //Disable link interactivity
                         "}";
 
-                //JavaScript代码，用于将CSS样式添加到WebView中
+                //JavaScript code used to add CSS styles to the WebView
                 String js = "var parent = document.getElementsByTagName('head').item(0);" +
                         "var style = document.createElement('style');" +
                         "style.type = 'text/css';" +

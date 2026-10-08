@@ -122,7 +122,7 @@ class DownloadModFragment : ModListFragment() {
         val pattern = RELEASE_REGEX
 
         val releaseCheckBoxChecked = releaseCheckBox.isChecked
-        //在Key内同时记录MC版本，与Mod加载器信息，以便之后细分Mod加载器
+        // Record the MC version together with the mod loader information in the key, so loaders can be subdivided later
         val mModVersionsByMinecraftVersion: MutableMap<Pair<String, ModLoader?>, MutableList<VersionItem>> = HashMap()
 
         versions?.forEach(Consumer { versionItem ->
@@ -134,7 +134,7 @@ class DownloadModFragment : ModListFragment() {
                 if (releaseCheckBoxChecked) {
                     val matcher = pattern.matcher(mcVersion)
                     if (!matcher.matches()) {
-                        //如果不是正式版本，将继续检测下一项
+                        // Skip to the next item when this is not a release version
                         continue
                     }
                 }
@@ -145,9 +145,9 @@ class DownloadModFragment : ModListFragment() {
                         modloaders.forEach {
                             addIfAbsent(mModVersionsByMinecraftVersion, Pair(mcVersion, it), versionItem)
                         }
-                        //当这个版本是一个 ModVersionItem 的时候，则检查其Mod加载器是否不为空，如果不为空，则将版本支持的Mod加载器，放到不同的Mod加载器列表中
-                        //这样会让用户更容易找到匹配自己需要的Mod加载器的版本
-                        continue //已经分类完毕，没有必要再将这个版本加入进普通的版本列表中了
+                        // When the entry is a ModVersionItem, check its mod loader: if it is not empty, put the version into each loader's own list
+                        // This makes it easier for users to find versions matching the mod loader they need
+                        continue // Already sorted, no need to add this version to the plain version list
                     }
                 }
                 addIfAbsent(mModVersionsByMinecraftVersion, Pair(mcVersion, null), versionItem)
@@ -157,7 +157,7 @@ class DownloadModFragment : ModListFragment() {
         currentTask?.apply { if (isCancelled) return }
 
         val currentVersion = VersionsManager.getCurrentVersion()
-        //定位首次适配的版本，并记录其索引，在加载完成之后，RecyclerView 会滚动到这个索引处
+        // Locate the first compatible version and record its index; after loading, the RecyclerView scrolls to it
         var firstAdaptIndex: Int? = null
 
         val mData: MutableList<ModListItemBean> = ArrayList()
@@ -169,7 +169,7 @@ class DownloadModFragment : ModListFragment() {
                 } else {
                     val name1 = entry1.key.second?.name ?: ""
                     val name2 = entry2.key.second?.name ?: ""
-                    //保证有ModLoader的版本在前
+                    // Keep versions that have a mod loader first
                     if (name1.isEmpty() && name2.isNotEmpty()) 1
                     else if (name1.isNotEmpty() && name2.isEmpty()) -1
                     else name1.compareTo(name2)
@@ -190,12 +190,12 @@ class DownloadModFragment : ModListFragment() {
                         val loaderInfo = version.getVersionInfo()?.loaderInfo
 
                         when {
-                            //资源没有模组加载器信息，直接判定适配
+                            // The resource has no loader information, treat it as compatible
                             modloader == null -> true
-                            //资源有模组加载器，但当前版本没有模组加载器信息，不适配
-                            //（不装模组加载器你想装什么模组？）
+                            // The resource has a loader but this version has none, not compatible
+                            // (What mod would you even install without a mod loader?)
                             loaderInfo == null -> false
-                            //匹配模组加载器
+                            // Match the mod loader
                             else -> loaderInfo.any { loader -> Objects.equals(modloader.loaderName, loader.name) }
                         }
                     } ?: false
@@ -239,7 +239,7 @@ class DownloadModFragment : ModListFragment() {
             firstAdaptIndex?.let {
                 recyclerView.postDelayed(
                     {
-                        //直接滚动到先前获取到的“首次适配”的索引，并且往下偏移两个索引
+                        // Scroll straight to the previously found first-compatible index, offset two positions down
                         recyclerView.smoothScrollToPosition((it + 2).coerceAtMost(mData.size - 1))
                     },
                     500
@@ -270,7 +270,7 @@ class DownloadModFragment : ModListFragment() {
             screenshotItems?.let addButton@{ items ->
                 if (items.isEmpty()) return@addButton
                 fragmentActivity?.let { activity ->
-                    //添加一个按钮，通过点击这个按钮来加载屏幕截图数据
+                    // Add a button that loads the screenshot data when clicked
                     addMoreView(AnimButton(activity).apply {
                         layoutParams = RecyclerView.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
                         setText(R.string.download_info_load_screenshot)

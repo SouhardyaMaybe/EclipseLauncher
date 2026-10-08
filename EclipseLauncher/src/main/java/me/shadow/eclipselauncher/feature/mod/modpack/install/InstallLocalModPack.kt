@@ -84,7 +84,7 @@ class InstallLocalModPack {
                     }
                 }
             } finally {
-                FileUtils.deleteQuietly(zipFile) // 删除文件（虽然文件通常来说并不会很大）
+                FileUtils.deleteQuietly(zipFile) // Delete the file (although such files are usually not very large)
             }
         }
 
@@ -92,7 +92,7 @@ class InstallLocalModPack {
         fun showUnSupportDialog(context: Context) {
             TipDialog.Builder(context)
                 .setTitle(R.string.generic_warning)
-                .setMessage(R.string.select_modpack_local_not_supported) //弹窗提醒
+                .setMessage(R.string.select_modpack_local_not_supported) //Show a dialog reminder
                 .setWarning()
                 .setShowCancel(true)
                 .setShowConfirm(false)

@@ -19,7 +19,7 @@ class FileItemBean(
     constructor(file: File) : this(
         file.name,
         Date(file.lastModified()),
-        //文件夹统计大小需要花费的时间较多，只展示文件的大小就好了
+        //Calculating a folder's size takes too long, so only show the size of files
         if (file.isFile) FileUtils.sizeOf(file) else null
     ) {
         this.file = file
@@ -39,14 +39,14 @@ class FileItemBean(
         val thisName = file?.name ?: name
         val otherName = other.file?.name ?: other.name
 
-        //首先检查文件是否为目录
+        //First check whether the file is a directory
         if (this.file != null && file!!.isDirectory) {
             if (other.file != null && !other.file!!.isDirectory) {
-                //目录排在文件前面
+                //Directories are placed before files
                 return -1
             }
         } else if (other.file != null && other.file!!.isDirectory) {
-            //文件排在目录后面
+            //Files are placed after directories
             return 1
         }
 

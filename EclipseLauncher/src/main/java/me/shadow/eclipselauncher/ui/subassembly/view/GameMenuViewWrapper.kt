@@ -82,7 +82,7 @@ class GameMenuViewWrapper(
     }
 
     /**
-     * 根据三个条件判断是否显示悬浮窗（是否想要显示、是否展示内存信息、是否展示FPS）
+     * Decide whether to show the floating window based on three conditions (whether it should be shown, whether to display memory info, whether to display FPS)
      */
     private fun thinkForVisibility() {
         val v1 = visible || showMemory || showFPS

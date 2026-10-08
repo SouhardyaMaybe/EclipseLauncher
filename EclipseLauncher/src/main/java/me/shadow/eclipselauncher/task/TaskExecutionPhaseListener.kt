@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.task
 
 /**
- * 任务执行的各种阶段的监听器
+ * Listener for the various phases of task execution
  */
 interface TaskExecutionPhaseListener {
     fun onBeforeStart() {}
@@ -9,8 +9,8 @@ interface TaskExecutionPhaseListener {
     fun onEnded() {}
     fun onFinally() {}
     /**
-     * 任务执行中触发异常后将会执行的内容
-     * @param throwable 触发的异常
+     * What to run after an exception is thrown during task execution
+     * @param throwable the thrown exception
      */
     fun onThrowable(throwable: Throwable) {}
 }
