@@ -223,10 +223,6 @@ public final class JREUtils {
         envMap.put("AWTSTUB_HEIGHT", Integer.toString(CallbackBridge.windowHeight > 0 ? CallbackBridge.windowHeight : CallbackBridge.physicalHeight));
         envMap.put("MOD_ANDROID_RUNTIME", PathManager.DIR_RUNTIME_MOD != null ? PathManager.DIR_RUNTIME_MOD.getAbsolutePath() : "");
 
-        if (AllSettings.getDumpShaders().getValue())
-            envMap.put("LIBGL_VGPU_DUMP", "1");
-        if (AllSettings.getBigCoreAffinity().getValue())
-            envMap.put("POJAV_BIG_CORE_AFFINITY", "1");
         if (FFmpegPlugin.isAvailable)
             envMap.put("POJAV_FFMPEG_PATH", FFmpegPlugin.executablePath);
     }
