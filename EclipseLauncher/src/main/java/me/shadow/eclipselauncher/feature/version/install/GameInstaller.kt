@@ -9,6 +9,11 @@ import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.core.tasks.AsyncMinecraftDownloader
 import me.shadow.eclipselauncher.core.tasks.MinecraftDownloader
 import me.shadow.eclipselauncher.utils.io.FileUtils
@@ -24,6 +29,7 @@ class GameInstaller(
     private val taskMap: Map<Addon, InstallTaskItem> = installEvent.taskMap
     private val targetVersionFolder = VersionsManager.getVersionPath(customVersionName)
     private val vanillaVersionFolder = VersionsManager.getVersionPath(realVersion)
+    private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("GameInstaller"))
 
     fun installGame() {
         Logging.i("Minecraft Downloader", "Start downloading the version: $realVersion")
@@ -33,71 +39,68 @@ class GameInstaller(
         }
 
         val mcVersion = AsyncMinecraftDownloader.getListedVersion(realVersion)
-        MinecraftDownloader().start(
-            mcVersion,
-            realVersion,
-            object : AsyncMinecraftDownloader.DoneListener {
-                override fun onDownloadDone() {
-                    Task.runTask {
-                        if (taskMap.isEmpty()) {
-                            //If there are no add-ons, only the vanilla version needs to be installed, so make sure the vanilla .json file exists inside this custom version folder
-                            //Check whether the version name was customized: if the real version equals the custom name, the user did not change the name and a plain vanilla install is being performed
-                            //If the name was not customized, do not copy the version file - the vanilla file and the target file are the same file anyway!
-                            if (realVersion != customVersionName && VersionsManager.isVersionExists(realVersion)) {
-                                //Locate the vanilla .json file; it was already downloaded when MinecraftDownloader started
-                                val vanillaJsonFile = File(vanillaVersionFolder, "${vanillaVersionFolder.name}.json")
-                                if (vanillaJsonFile.exists() && vanillaJsonFile.isFile) {
-                                    //If the vanilla .json file exists, just copy it over
-                                    FileUtils.copyFile(vanillaJsonFile, File(targetVersionFolder, "$customVersionName.json"))
-                                }
-                            }
-                            //There is no ModLoader task, so the following pointless ModLoader steps are skipped entirely!
-                            return@runTask null
-                        }
+        coroutineScope.launch {
+            try {
+                MinecraftDownloader().start(mcVersion, realVersion)
+            } catch (throwable: Throwable) {
+                Tools.showErrorRemote(throwable)
+                if (taskMap.isNotEmpty()) {
+                    ProgressLayout.clearProgress(ProgressLayout.INSTALL_RESOURCE)
+                }
+                return@launch
+            }
 
-                        //Separate the Mod and ModLoader tasks; the mods should be installed first
-                        val modTask: MutableList<InstallTaskItem> = ArrayList()
-                        val modloaderTask = AtomicReference<Pair<Addon, InstallTaskItem>>() //For now only one ModLoader can be installed at a time
-                        taskMap.forEach { (addon, taskItem) ->
-                            if (taskItem.isMod) modTask.add(taskItem)
-                            else modloaderTask.set(Pair(addon, taskItem))
+            Task.runTask {
+                if (taskMap.isEmpty()) {
+                    //If there are no add-ons, only the vanilla version needs to be installed, so make sure the vanilla .json file exists inside this custom version folder
+                    //Check whether the version name was customized: if the real version equals the custom name, the user did not change the name and a plain vanilla install is being performed
+                    //If the name was not customized, do not copy the version file - the vanilla file and the target file are the same file anyway!
+                    if (realVersion != customVersionName && VersionsManager.isVersionExists(realVersion)) {
+                        //Locate the vanilla .json file; it was already downloaded when MinecraftDownloader started
+                        val vanillaJsonFile = File(vanillaVersionFolder, "${vanillaVersionFolder.name}.json")
+                        if (vanillaJsonFile.exists() && vanillaJsonFile.isFile) {
+                            //If the vanilla .json file exists, just copy it over
+                            FileUtils.copyFile(vanillaJsonFile, File(targetVersionFolder, "$customVersionName.json"))
                         }
-
-                        //Download the mod files
-                        modTask.forEach { task ->
-                            Logging.i("Install Version", "Installing Mod: ${task.selectedVersion}")
-                            val file = task.task.run(customVersionName)
-                            val endTask = task.endTask
-                            file?.let { endTask?.endTask(activity, it) }
-                        }
-
-                        modloaderTask.get()?.let { taskPair ->
-                            ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, 0, R.string.mod_download_progress, taskPair.first.addonName)
-
-                            Logging.i("Install Version", "Installing ModLoader: ${taskPair.second.selectedVersion}")
-                            val file = taskPair.second.task.run(customVersionName)
-                            return@runTask Pair(file, taskPair.second)
-                        }
-
-                        null
-                    }.ended ended@{ taskPair ->
-                        taskPair?.let { pair ->
-                            pair.first?.let {
-                                pair.second.endTask?.endTask(activity, it)
-                            }
-                        }
-                    }.onThrowable { e ->
-                        Tools.showErrorRemote(e)
-                    }.execute()
+                    }
+                    //There is no ModLoader task, so the following pointless ModLoader steps are skipped entirely!
+                    return@runTask null
                 }
 
-                override fun onDownloadFailed(throwable: Throwable) {
-                    Tools.showErrorRemote(throwable)
-                    if (taskMap.isNotEmpty()) {
-                        ProgressLayout.clearProgress(ProgressLayout.INSTALL_RESOURCE)
+                //Separate the Mod and ModLoader tasks; the mods should be installed first
+                val modTask: MutableList<InstallTaskItem> = ArrayList()
+                val modloaderTask = AtomicReference<Pair<Addon, InstallTaskItem>>() //For now only one ModLoader can be installed at a time
+                taskMap.forEach { (addon, taskItem) ->
+                    if (taskItem.isMod) modTask.add(taskItem)
+                    else modloaderTask.set(Pair(addon, taskItem))
+                }
+
+                //Download the mod files
+                modTask.forEach { task ->
+                    Logging.i("Install Version", "Installing Mod: ${task.selectedVersion}")
+                    val file = task.task.run(customVersionName)
+                    val endTask = task.endTask
+                    file?.let { endTask?.endTask(activity, it) }
+                }
+
+                modloaderTask.get()?.let { taskPair ->
+                    ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, 0, R.string.mod_download_progress, taskPair.first.addonName)
+
+                    Logging.i("Install Version", "Installing ModLoader: ${taskPair.second.selectedVersion}")
+                    val file = taskPair.second.task.run(customVersionName)
+                    return@runTask Pair(file, taskPair.second)
+                }
+
+                null
+            }.ended ended@{ taskPair ->
+                taskPair?.let { pair ->
+                    pair.first?.let {
+                        pair.second.endTask?.endTask(activity, it)
                     }
                 }
-            }
-        )
+            }.onThrowable { e ->
+                Tools.showErrorRemote(e)
+            }.execute()
+        }
     }
 }

@@ -35,10 +35,19 @@ import me.shadow.eclipselauncher.core.tasks.AsyncMinecraftDownloader
 import me.shadow.eclipselauncher.core.tasks.MinecraftDownloader
 import me.shadow.eclipselauncher.core.utils.JREUtils
 import me.shadow.eclipselauncher.core.value.MinecraftAccount
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 
 class LaunchGame {
     companion object {
+        // Runs the pre-launch download where the old Task.runTask did: a background pool
+        private val coroutineScope =
+            CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("LaunchGame"))
+
         /**
          * Operations performed before launching the game
          * - Signs in and refreshes the account info in time
@@ -59,7 +68,14 @@ class LaunchGame {
                 if (!networkAvailable) {
                     listener.onDownloadDone()
                 } else {
-                    MinecraftDownloader().start(mcVersion, versionName, listener)
+                    coroutineScope.launch {
+                        try {
+                            MinecraftDownloader().start(mcVersion, versionName)
+                            listener.onDownloadDone()
+                        } catch (throwable: Throwable) {
+                            listener.onDownloadFailed(throwable)
+                        }
+                    }
                 }
             }
 

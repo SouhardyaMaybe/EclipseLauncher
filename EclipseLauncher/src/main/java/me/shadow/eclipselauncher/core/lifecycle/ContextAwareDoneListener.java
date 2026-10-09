@@ -14,10 +14,9 @@ import me.shadow.eclipselauncher.setting.AllSettings;
 import me.shadow.eclipselauncher.core.MainActivity;
 import me.shadow.eclipselauncher.core.Tools;
 import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper;
-import me.shadow.eclipselauncher.core.tasks.AsyncMinecraftDownloader;
 import me.shadow.eclipselauncher.core.utils.NotificationUtils;
 
-public class ContextAwareDoneListener implements AsyncMinecraftDownloader.DoneListener, ContextExecutorTask {
+public class ContextAwareDoneListener implements ContextExecutorTask {
     private final String mErrorString;
     private final Version mVersion;
 
