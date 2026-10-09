@@ -9,7 +9,7 @@ import me.shadow.eclipselauncher.utils.path.UrlManager;
 
 import me.shadow.eclipselauncher.pojav.Tools;
 
-import org.apache.commons.io.IOUtils;
+import me.shadow.eclipselauncher.utils.io.IOUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -98,7 +98,7 @@ public class DownloadUtils {
 
     public static <T> T downloadStringCached(String url, String cacheName, boolean force, ParseCallback<T> parseCallback) throws IOException, ParseException{
         File cacheDestination = new File(PathManager.DIR_CACHE_STRING, cacheName);
-        if (force && cacheDestination.exists()) org.apache.commons.io.FileUtils.deleteQuietly(cacheDestination);
+        if (force && cacheDestination.exists()) me.shadow.eclipselauncher.utils.io.FileUtils.deleteQuietly(cacheDestination);
         if (cacheDestination.isFile() && cacheDestination.canRead() &&
                 ZHTools.getCurrentTimeMillis() < (cacheDestination.lastModified() + 86400000)) {
             try {

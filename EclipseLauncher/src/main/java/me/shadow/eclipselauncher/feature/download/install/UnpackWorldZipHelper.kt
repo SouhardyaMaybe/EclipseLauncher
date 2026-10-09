@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.feature.download.install
 
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.pojav.utils.ZipUtils
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.io.IOException
 import java.util.zip.ZipFile

@@ -17,6 +17,11 @@ public class DependentLibrary {
 		public LibraryDownloads(MinecraftLibraryArtifact artifact) {
 			this.artifact = artifact;
 		}
+
+		/** No-arg constructor for JSON deserialization; the artifact is filled in reflectively when present. */
+		public LibraryDownloads() {
+			this(null);
+		}
 	}
 }
 

@@ -10,7 +10,7 @@ import me.shadow.eclipselauncher.plugins.renderer.RendererPluginManager
 import me.shadow.eclipselauncher.renderer.RendererInterface
 import me.shadow.eclipselauncher.renderer.Renderers
 import me.shadow.eclipselauncher.utils.path.PathManager
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 
 /**
  * Centralizes plugin loading, ensuring the app list is fetched only once

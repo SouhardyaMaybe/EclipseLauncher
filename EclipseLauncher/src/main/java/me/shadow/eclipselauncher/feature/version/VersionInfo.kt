@@ -6,8 +6,8 @@ import java.io.File
 import java.io.FileWriter
 
 class VersionInfo(
-    val minecraftVersion: String,
-    val loaderInfo: Array<LoaderInfo>?
+    val minecraftVersion: String = "",
+    val loaderInfo: Array<LoaderInfo>? = null
 ) {
     /**
      * Build the Minecraft version info string, including ModLoader info
@@ -28,8 +28,8 @@ class VersionInfo(
     }
 
     data class LoaderInfo(
-        val name: String,
-        val version: String
+        val name: String = "",
+        val version: String = ""
     ) {
         /**
          * Get the corresponding environment variable key from the loader name

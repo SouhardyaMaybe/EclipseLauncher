@@ -12,7 +12,7 @@ import me.shadow.eclipselauncher.plugins.PluginLoader
 import me.shadow.eclipselauncher.plugins.renderer.LocalRendererPlugin
 import me.shadow.eclipselauncher.plugins.renderer.RendererPluginManager
 import me.shadow.eclipselauncher.renderer.Renderers
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 
 class LocalRendererPluginDialog(
     private val context: Context

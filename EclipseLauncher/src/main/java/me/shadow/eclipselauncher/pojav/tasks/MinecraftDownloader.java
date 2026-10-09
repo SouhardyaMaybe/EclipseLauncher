@@ -176,7 +176,7 @@ public class MinecraftDownloader {
         if(mTargetJarFile.exists()) return;
         FileUtils.ensureParentDirectory(mTargetJarFile);
         Logging.i("NewMCDownloader", "Copying " + mSourceJarFile.getName() + " to "+mTargetJarFile.getAbsolutePath());
-        org.apache.commons.io.FileUtils.copyFile(mSourceJarFile, mTargetJarFile, false);
+        me.shadow.eclipselauncher.utils.io.FileUtils.copyFile(mSourceJarFile, mTargetJarFile, false);
     }
 
     private void extractNatives(String versionName) throws IOException {

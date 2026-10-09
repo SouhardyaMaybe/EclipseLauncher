@@ -1,9 +1,9 @@
 package me.shadow.eclipselauncher.feature.version.utils
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import me.shadow.eclipselauncher.json.JsonArray
+import me.shadow.eclipselauncher.json.JsonElement
+import me.shadow.eclipselauncher.json.JsonObject
+import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionInfo
 import me.shadow.eclipselauncher.pojav.Tools

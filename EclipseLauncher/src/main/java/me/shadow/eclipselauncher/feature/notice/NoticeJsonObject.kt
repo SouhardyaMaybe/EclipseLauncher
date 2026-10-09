@@ -1,14 +1,14 @@
 package me.shadow.eclipselauncher.feature.notice
 
-import com.google.gson.annotations.SerializedName
+import me.shadow.eclipselauncher.json.annotations.SerializedName
 
 class NoticeJsonObject(
-    val title: Text,
-    val content: Text,
-    val date: String,
-    val numbering: Int
+    val title: Text = Text(),
+    val content: Text = Text(),
+    val date: String = "",
+    val numbering: Int = 0
 ) {
     class Text(
-        @SerializedName("en_us") val enUS: String
+        @SerializedName("en_us") val enUS: String = ""
     )
 }

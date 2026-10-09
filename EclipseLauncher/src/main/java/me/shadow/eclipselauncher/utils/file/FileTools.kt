@@ -12,7 +12,7 @@ import me.shadow.eclipselauncher.ui.dialog.EditTextDialog
 import me.shadow.eclipselauncher.ui.dialog.EditTextDialog.ConfirmListener
 import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.pojav.Tools
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FilenameFilter

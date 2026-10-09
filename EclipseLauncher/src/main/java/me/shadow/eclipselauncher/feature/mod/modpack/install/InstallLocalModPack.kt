@@ -12,7 +12,7 @@ import me.shadow.eclipselauncher.feature.version.VersionConfig
 import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.zip.ZipFile
 

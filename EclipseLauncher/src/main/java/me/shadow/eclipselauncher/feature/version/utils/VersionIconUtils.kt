@@ -7,7 +7,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.version.Version
 import me.shadow.eclipselauncher.feature.version.VersionsManager
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 
 /**
  * Used to set a version's icon automatically, or to reset the custom icon of a version

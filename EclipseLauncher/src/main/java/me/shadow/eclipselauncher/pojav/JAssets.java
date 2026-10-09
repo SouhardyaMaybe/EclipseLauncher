@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.pojav;
 
 import androidx.annotation.Keep;
 
-import com.google.gson.annotations.SerializedName;
+import me.shadow.eclipselauncher.json.annotations.SerializedName;
 
 import java.util.Map;
 

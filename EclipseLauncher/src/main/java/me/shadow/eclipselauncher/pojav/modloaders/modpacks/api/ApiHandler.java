@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.pojav.modloaders.modpacks.api;
 
 import android.util.ArrayMap;
 
-import com.google.gson.Gson;
+import me.shadow.eclipselauncher.json.Gson;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.utils.path.UrlManager;
 

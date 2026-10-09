@@ -11,7 +11,7 @@ import me.shadow.eclipselauncher.pojav.Tools
 import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
 import me.shadow.eclipselauncher.pojav.tasks.AsyncMinecraftDownloader
 import me.shadow.eclipselauncher.pojav.tasks.MinecraftDownloader
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference
 

@@ -22,4 +22,9 @@
     *;
  }
 
+# The launcher JSON module resolves generic types and reads @SerializedName
+# through reflection, so the corresponding class attributes must survive shrinking
+ -keepattributes Signature
+ -keepattributes *Annotation*
+
 

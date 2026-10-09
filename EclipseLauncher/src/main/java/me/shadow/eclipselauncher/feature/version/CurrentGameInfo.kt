@@ -1,10 +1,10 @@
 package me.shadow.eclipselauncher.feature.version
 
-import com.google.gson.annotations.SerializedName
+import me.shadow.eclipselauncher.json.annotations.SerializedName
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.pojav.Tools
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.os.Build.VERSION
 import android.os.Environment
 import me.shadow.eclipselauncher.InfoDistributor
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 
 class PathManager {

@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.pojav.multirt;
 
-import static org.apache.commons.io.FileUtils.listFiles;
+import static me.shadow.eclipselauncher.utils.io.FileUtils.listFiles;
 
 import android.system.Os;
 
@@ -13,12 +13,9 @@ import me.shadow.eclipselauncher.utils.stringutils.SortStrings;
 
 import me.shadow.eclipselauncher.pojav.Tools;
 import me.shadow.eclipselauncher.pojav.utils.MathUtils;
-
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
+import me.shadow.eclipselauncher.utils.io.FileUtils;
+import me.shadow.eclipselauncher.utils.io.IOUtils;
+import me.shadow.eclipselauncher.utils.io.TarXzExtractor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -241,38 +238,38 @@ public class MultiRTUtils {
     private static void uncompressTarXZ(final InputStream tarFileInputStream, final File dest) throws IOException {
         me.shadow.eclipselauncher.pojav.utils.FileUtils.ensureDirectory(dest);
 
-        byte[] buffer = new byte[8192];
-        TarArchiveInputStream tarIn = new TarArchiveInputStream(
-                new XZCompressorInputStream(tarFileInputStream)
-        );
-        TarArchiveEntry tarEntry = tarIn.getNextTarEntry();
-        // tarIn is a TarArchiveInputStream
-        while (tarEntry != null) {
+        final byte[] buffer = new byte[8192];
+        TarXzExtractor.extract(tarFileInputStream, dest, new TarXzExtractor.Listener() {
+            @Override
+            public void onEntry(String name) {
+                // publishProgress(null, "Unpacking " + name);
+                ProgressLayout.setProgress(ProgressLayout.UNPACK_RUNTIME, 100, R.string.generic_unpacking, name);
+            }
 
-            final String tarEntryName = tarEntry.getName();
-            // publishProgress(null, "Unpacking " + tarEntry.getName());
-            ProgressLayout.setProgress(ProgressLayout.UNPACK_RUNTIME, 100, R.string.generic_unpacking, tarEntryName);
+            @Override
+            public void onDirectory(String name, File destPath) throws IOException {
+                me.shadow.eclipselauncher.pojav.utils.FileUtils.ensureDirectory(destPath);
+            }
 
-            File destPath = new File(dest, tarEntry.getName());
-            me.shadow.eclipselauncher.pojav.utils.FileUtils.ensureParentDirectory(destPath);
-            if (tarEntry.isSymbolicLink()) {
+            @Override
+            public void onSymbolicLink(String name, String linkName, File destPath) {
                 try {
                     // android.system.Os
                     // Libcore one support all Android versions
-                    Os.symlink(tarEntry.getName(), tarEntry.getLinkName());
+                    Os.symlink(name, linkName);
                 } catch (Throwable e) {
                     Logging.e("MultiRT", Tools.printToString(e));
                 }
-
-            } else if (tarEntry.isDirectory()) {
-                me.shadow.eclipselauncher.pojav.utils.FileUtils.ensureDirectory(destPath);
-            } else if (!destPath.exists() || destPath.length() != tarEntry.getSize()) {
-                FileOutputStream os = new FileOutputStream(destPath);
-                IOUtils.copyLarge(tarIn, os, buffer);
-                os.close();
             }
-            tarEntry = tarIn.getNextTarEntry();
-        }
-        tarIn.close();
+
+            @Override
+            public void onFile(String name, long size, File destPath, InputStream data) throws IOException {
+                if (!destPath.exists() || destPath.length() != size) {
+                    FileOutputStream os = new FileOutputStream(destPath);
+                    IOUtils.copyLarge(data, os, buffer);
+                    os.close();
+                }
+            }
+        });
     }
 }

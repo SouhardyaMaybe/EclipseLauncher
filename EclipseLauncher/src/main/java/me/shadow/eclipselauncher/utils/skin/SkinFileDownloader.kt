@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.utils.skin
 
-import com.google.gson.JsonObject
+import me.shadow.eclipselauncher.json.JsonObject
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils

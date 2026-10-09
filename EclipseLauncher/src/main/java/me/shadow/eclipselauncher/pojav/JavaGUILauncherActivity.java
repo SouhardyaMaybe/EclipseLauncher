@@ -39,7 +39,7 @@ import me.shadow.eclipselauncher.pojav.multirt.Runtime;
 import me.shadow.eclipselauncher.pojav.utils.JREUtils;
 import me.shadow.eclipselauncher.pojav.utils.MathUtils;
 
-import org.apache.commons.io.IOUtils;
+import me.shadow.eclipselauncher.utils.io.IOUtils;
 import org.greenrobot.eventbus.Subscribe;
 import org.lwjgl.glfw.CallbackBridge;
 

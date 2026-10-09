@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.customprofilepath
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import me.shadow.eclipselauncher.json.JsonObject
+import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.setting.AllSettings

@@ -27,11 +27,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import me.shadow.eclipselauncher.InfoDistributor;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.context.ContextExecutor;
+import me.shadow.eclipselauncher.json.Gson;
+import me.shadow.eclipselauncher.json.GsonBuilder;
 import me.shadow.eclipselauncher.utils.LauncherProfiles;
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome;
 import me.shadow.eclipselauncher.feature.log.Logging;
@@ -53,9 +53,10 @@ import me.shadow.eclipselauncher.pojav.utils.FileUtils;
 import me.shadow.eclipselauncher.pojav.value.DependentLibrary;
 import me.shadow.eclipselauncher.pojav.value.MinecraftLibraryArtifact;
 
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
 import org.lwjgl.glfw.CallbackBridge;
+
+import me.shadow.eclipselauncher.utils.io.Digest;
+import me.shadow.eclipselauncher.utils.io.IOUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -609,7 +610,7 @@ public final class Tools {
         try {
             String sha1_dst;
             try (InputStream is = new FileInputStream(f)) {
-                sha1_dst = new String(Hex.encodeHex(org.apache.commons.codec.digest.DigestUtils.sha1(is)));
+                sha1_dst = Digest.sha1Hex(is);
             }
             if(sourceSHA != null) {
                 return sha1_dst.equalsIgnoreCase(sourceSHA);

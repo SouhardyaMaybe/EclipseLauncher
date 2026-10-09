@@ -5,9 +5,9 @@ import android.content.Context
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.getkeepsafe.taptargetview.TapTarget
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonParser
+import me.shadow.eclipselauncher.json.Gson
+import me.shadow.eclipselauncher.json.JsonArray
+import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.utils.path.PathManager

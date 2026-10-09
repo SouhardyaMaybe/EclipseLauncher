@@ -3,7 +3,7 @@ package me.shadow.eclipselauncher.feature.version
 import android.content.Context
 import android.os.Parcel
 import android.os.Parcelable
-import com.google.gson.JsonParser
+import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionsManager.getEclipseVersionPath
@@ -13,7 +13,7 @@ import me.shadow.eclipselauncher.pojav.Tools
 import java.io.File
 import java.io.FileWriter
 
-class VersionConfig(private var versionPath: File) : Parcelable {
+class VersionConfig(private var versionPath: File = File("")) : Parcelable {
     private var isolationType: IsolationType = IsolationType.FOLLOW_GLOBAL
     private var javaDir: String = ""
     private var javaArgs: String = ""

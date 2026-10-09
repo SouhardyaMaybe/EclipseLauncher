@@ -46,7 +46,7 @@ import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.skin.UserCosmetics
 import me.shadow.eclipselauncher.pojav.fragments.MicrosoftLoginFragment
 import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

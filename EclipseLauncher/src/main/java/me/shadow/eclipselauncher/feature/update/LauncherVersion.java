@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.feature.update;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.annotations.SerializedName;
+import me.shadow.eclipselauncher.json.annotations.SerializedName;
 
 public class LauncherVersion {
     @SerializedName("version_code")
@@ -26,6 +26,11 @@ public class LauncherVersion {
         this.publishedAt = publishedAt;
         this.fileSize = fileSize;
         this.isPreRelease = isPreRelease;
+    }
+
+    /** No-arg constructor for JSON deserialization; every field is overwritten when present. */
+    public LauncherVersion() {
+        this(0, null, null, null, null, null, false);
     }
 
     public int getVersionCode() {
@@ -77,6 +82,11 @@ public class LauncherVersion {
             this.enUS = enUS;
         }
 
+        /** No-arg constructor for JSON deserialization. */
+        public WhatsNew() {
+            this(null);
+        }
+
         public String getEnUS() {
             return enUS;
         }
@@ -103,6 +113,11 @@ public class LauncherVersion {
             this.arm64 = arm64;
             this.x86 = x86;
             this.x86_64 = x86_64;
+        }
+
+        /** No-arg constructor for JSON deserialization. */
+        public FileSize() {
+            this(0, 0, 0, 0, 0);
         }
 
         public long getAll() {

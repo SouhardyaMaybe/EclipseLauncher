@@ -5,7 +5,7 @@ import android.content.res.AssetManager
 import me.shadow.eclipselauncher.feature.log.Logging.i
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.pojav.Tools
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream

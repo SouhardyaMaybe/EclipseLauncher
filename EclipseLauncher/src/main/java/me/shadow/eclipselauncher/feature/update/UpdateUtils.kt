@@ -23,7 +23,7 @@ import me.shadow.eclipselauncher.pojav.Architecture
 import me.shadow.eclipselauncher.pojav.Tools
 import okhttp3.Call
 import okhttp3.Response
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException

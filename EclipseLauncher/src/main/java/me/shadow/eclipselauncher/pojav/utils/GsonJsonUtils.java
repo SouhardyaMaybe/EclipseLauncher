@@ -1,8 +1,8 @@
 package me.shadow.eclipselauncher.pojav.utils;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import me.shadow.eclipselauncher.json.JsonArray;
+import me.shadow.eclipselauncher.json.JsonElement;
+import me.shadow.eclipselauncher.json.JsonObject;
 
 public class GsonJsonUtils {
     /**

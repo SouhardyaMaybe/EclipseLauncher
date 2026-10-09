@@ -1,8 +1,8 @@
 package me.shadow.eclipselauncher.feature.mod.modloader
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonSyntaxException
+import me.shadow.eclipselauncher.json.Gson
+import me.shadow.eclipselauncher.json.JsonArray
+import me.shadow.eclipselauncher.json.JsonSyntaxException
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.feature.version.install.Addon
 import me.shadow.eclipselauncher.pojav.Tools

@@ -3,7 +3,7 @@ package me.shadow.eclipselauncher.pojav.value;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
-import com.google.gson.JsonSyntaxException;
+import me.shadow.eclipselauncher.json.JsonSyntaxException;
 import me.shadow.eclipselauncher.feature.accounts.AccountsManager;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.utils.path.PathManager;
@@ -11,7 +11,7 @@ import me.shadow.eclipselauncher.utils.skin.SkinFileDownloader;
 
 import me.shadow.eclipselauncher.pojav.Tools;
 
-import org.apache.commons.io.FileUtils;
+import me.shadow.eclipselauncher.utils.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;

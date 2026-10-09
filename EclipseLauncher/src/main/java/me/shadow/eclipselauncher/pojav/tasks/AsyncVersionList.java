@@ -4,9 +4,8 @@ import static me.shadow.eclipselauncher.pojav.utils.DownloadUtils.downloadString
 
 import androidx.annotation.Nullable;
 
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
+import me.shadow.eclipselauncher.json.JsonIOException;
+import me.shadow.eclipselauncher.json.JsonSyntaxException;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.task.Task;
 import me.shadow.eclipselauncher.utils.path.PathManager;
@@ -41,7 +40,7 @@ public class AsyncVersionList {
             // Fallback when no network or not needed
             if (versionList == null) {
                 try {
-                    versionList = Tools.GLOBAL_GSON.fromJson(new JsonReader(new FileReader(versionFile)), JMinecraftVersionList.class);
+                    versionList = Tools.GLOBAL_GSON.fromJson(new FileReader(versionFile), JMinecraftVersionList.class);
                 } catch (FileNotFoundException e) {
                     Logging.e("File Not Found", Tools.printToString(e));
                 } catch (JsonIOException | JsonSyntaxException e) {

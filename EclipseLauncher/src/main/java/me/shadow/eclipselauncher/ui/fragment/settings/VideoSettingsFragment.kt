@@ -34,7 +34,7 @@ import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.pojav.Tools
 import me.shadow.eclipselauncher.pojav.contracts.OpenDocumentWithExtension
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 

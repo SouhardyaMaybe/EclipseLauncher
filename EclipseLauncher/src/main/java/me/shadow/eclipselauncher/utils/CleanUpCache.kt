@@ -7,7 +7,7 @@ import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.path.PathManager
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 
 class CleanUpCache {

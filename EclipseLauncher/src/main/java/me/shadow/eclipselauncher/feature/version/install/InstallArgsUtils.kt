@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.version.install
 
 import android.content.Intent
-import com.google.gson.JsonParser
+import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.mcgui.ProgressLayout
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome

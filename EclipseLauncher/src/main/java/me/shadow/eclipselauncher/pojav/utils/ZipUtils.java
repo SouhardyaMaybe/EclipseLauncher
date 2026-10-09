@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.pojav.utils;
 
-import org.apache.commons.io.IOUtils;
+import me.shadow.eclipselauncher.utils.io.IOUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;

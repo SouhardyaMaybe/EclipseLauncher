@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.download.platform.modrinth
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
+import me.shadow.eclipselauncher.json.JsonArray
+import me.shadow.eclipselauncher.json.JsonObject
 import me.shadow.eclipselauncher.feature.download.Filters
 import me.shadow.eclipselauncher.feature.download.InfoCache
 import me.shadow.eclipselauncher.feature.download.enums.Category

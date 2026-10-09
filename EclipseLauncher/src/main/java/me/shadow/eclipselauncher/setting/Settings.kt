@@ -1,15 +1,15 @@
 package me.shadow.eclipselauncher.setting
 
 import androidx.annotation.CheckResult
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import me.shadow.eclipselauncher.json.Gson
+import me.shadow.eclipselauncher.json.GsonBuilder
+import me.shadow.eclipselauncher.json.reflect.TypeToken
 import me.shadow.eclipselauncher.event.single.SettingsChangeEvent
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.setting.unit.AbstractSettingUnit
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.pojav.Tools
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.lang.reflect.Type
 import java.util.concurrent.ConcurrentHashMap

@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.utils
 
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.feature.log.Logging
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.io.IOException
 

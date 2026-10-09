@@ -230,7 +230,6 @@ tasks.named("preBuild") {
 
 dependencies {
     implementation("javax.annotation:javax.annotation-api:1.3.2")
-    implementation("commons-codec:commons-codec:1.17.1")
     // implementation("com.wu-man:android-bsf-api:3.1.3")
     implementation("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0-beta01")
@@ -274,7 +273,4 @@ dependencies {
     implementation("com.getkeepsafe.taptargetview:taptargetview:1.14.0")
     implementation("io.github.petterpx:floatingx:2.3.3")
     implementation("org.greenrobot:eventbus:3.3.1")
-    implementation("com.moandjiezana.toml:toml4j:0.7.2") {
-        exclude(group = "com.google.code.gson", module = "gson")
-    }
 }

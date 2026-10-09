@@ -4,7 +4,7 @@ import android.content.Context
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.utils.file.FileHandler
 import me.shadow.eclipselauncher.utils.file.FileSearchProgress
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 

@@ -3,7 +3,7 @@ package me.shadow.eclipselauncher.utils.file
 import android.content.Context
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.task.Task
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 

@@ -11,7 +11,7 @@ import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.pojav.progresskeeper.DownloaderProgressWrapper
 import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException

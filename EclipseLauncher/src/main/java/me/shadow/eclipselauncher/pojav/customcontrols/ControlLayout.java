@@ -13,7 +13,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.google.gson.JsonSyntaxException;
+import me.shadow.eclipselauncher.json.JsonSyntaxException;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.setting.AllSettings;

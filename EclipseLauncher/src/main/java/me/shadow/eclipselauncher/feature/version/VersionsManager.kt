@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import me.shadow.eclipselauncher.pojav.Tools
-import org.apache.commons.io.FileUtils
+import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList

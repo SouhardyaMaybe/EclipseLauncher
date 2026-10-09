@@ -2,13 +2,13 @@ package me.shadow.eclipselauncher.pojav.customcontrols;
 
 import android.content.Context;
 
-import com.google.gson.JsonSyntaxException;
+import me.shadow.eclipselauncher.json.JsonSyntaxException;
 import me.shadow.eclipselauncher.R;
 
 import me.shadow.eclipselauncher.pojav.LwjglGlfwKeycode;
 import me.shadow.eclipselauncher.pojav.Tools;
 
-import org.apache.commons.io.IOUtils;
+import me.shadow.eclipselauncher.utils.io.IOUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.pojav.customcontrols.gamepad;
 
 import android.util.Log;
 
-import com.google.gson.JsonParseException;
+import me.shadow.eclipselauncher.json.JsonParseException;
 import me.shadow.eclipselauncher.utils.path.PathManager;
 
 import me.shadow.eclipselauncher.pojav.Tools;
