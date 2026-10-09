@@ -27,12 +27,12 @@ import me.shadow.eclipselauncher.ui.subassembly.filelist.FileItemBean
 import me.shadow.eclipselauncher.ui.subassembly.filelist.FileRecyclerViewCreator
 import me.shadow.eclipselauncher.utils.NewbieGuideUtils
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.mkdirs
 import me.shadow.eclipselauncher.utils.image.ImageUtils.Companion.isImage
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 
 class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
@@ -48,7 +48,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { result: Uri? ->
             result?.let { uri ->
-                val dialog = ZHTools.showTaskRunningDialog(requireContext())
+                val dialog = EclipseTools.showTaskRunningDialog(requireContext())
                 Task.runTask {
                     FileTools.copyFileInBackground(requireActivity(), uri, mousePath().absolutePath)
                 }.ended(TaskExecutors.getAndroidUI()) {
@@ -76,7 +76,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
         initViews()
 
         binding.actionBar.apply {
-            returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
+            returnButton.setOnClickListener { EclipseTools.onBackPressed(requireActivity()) }
             addFileButton.setOnClickListener { openDocumentLauncher.launch(arrayOf("image/*")) }
             refreshButton.setOnClickListener { loadData() }
         }
@@ -127,7 +127,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
 
     private fun refreshIcon() {
         binding.mouseIcon.apply {
-            ZHTools.getCustomMouse()?.let { file ->
+            EclipseTools.getCustomMouse()?.let { file ->
                 Glide.with(requireActivity())
                     .load(file)
                     .override(width, height)
@@ -135,7 +135,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
                     .into(DrawableImageViewTarget(this))
                 return@apply
             }
-            setImageDrawable(ZHTools.customMouse(context))
+            setImageDrawable(EclipseTools.customMouse(context))
         }
     }
 
@@ -146,7 +146,7 @@ class CustomMouseFragment : FragmentWithAnim(R.layout.fragment_custom_mouse) {
             pasteButton.visibility = View.GONE
             createFolderButton.visibility = View.GONE
 
-            ZHTools.setTooltipText(
+            EclipseTools.setTooltipText(
                 returnButton,
                 addFileButton,
                 refreshButton

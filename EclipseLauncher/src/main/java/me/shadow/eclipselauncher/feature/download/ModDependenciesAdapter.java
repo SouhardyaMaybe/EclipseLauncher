@@ -33,7 +33,7 @@ import me.shadow.eclipselauncher.setting.AllSettings;
 import me.shadow.eclipselauncher.ui.fragment.DownloadModFragment;
 import me.shadow.eclipselauncher.utils.NumberWithUnits;
 
-import me.shadow.eclipselauncher.pojav.Tools;
+import me.shadow.eclipselauncher.core.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 

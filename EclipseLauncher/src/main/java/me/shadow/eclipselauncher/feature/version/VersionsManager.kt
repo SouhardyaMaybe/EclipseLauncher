@@ -13,7 +13,7 @@ import me.shadow.eclipselauncher.feature.version.utils.VersionInfoUtils
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.EditTextDialog
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.stringutils.SortStrings
 import kotlinx.coroutines.CoroutineName
@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -50,7 +50,7 @@ object VersionsManager {
      * @return whether a refresh is allowed
      */
     @JvmStatic
-    fun canRefresh() = !isRefreshing && ZHTools.getCurrentTimeMillis() - lastRefreshTime > 500
+    fun canRefresh() = !isRefreshing && EclipseTools.getCurrentTimeMillis() - lastRefreshTime > 500
 
     /**
      * @return all version data
@@ -76,7 +76,7 @@ object VersionsManager {
         Logging.i("VersionsManager", "$tag initiated the refresh version task")
         coroutineScope.launch {
             refreshMutex.withLock {
-                lastRefreshTime = ZHTools.getCurrentTimeMillis()
+                lastRefreshTime = EclipseTools.getCurrentTimeMillis()
                 handleRefreshOperation(refreshVersionInfo)
             }
         }
@@ -303,7 +303,7 @@ object VersionsManager {
      * Open the name input dialog for copying a version, duplicating the selected version into a new one
      */
     fun openCopyDialog(context: Context, version: Version) {
-        val dialog = ZHTools.createTaskRunningDialog(context)
+        val dialog = EclipseTools.createTaskRunningDialog(context)
         EditTextDialog.Builder(context)
             .setTitle(R.string.version_manager_copy)
             .setMessage(R.string.version_manager_copy_tip)

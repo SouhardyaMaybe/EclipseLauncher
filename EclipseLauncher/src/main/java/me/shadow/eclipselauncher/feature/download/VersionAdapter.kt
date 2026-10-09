@@ -19,11 +19,11 @@ import me.shadow.eclipselauncher.feature.download.item.VersionItem
 import me.shadow.eclipselauncher.feature.download.platform.AbstractPlatformHelper
 import me.shadow.eclipselauncher.ui.dialog.ModDependenciesDialog
 import me.shadow.eclipselauncher.utils.NumberWithUnits.Companion.formatNumberWithUnit
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.anim.ViewAnimUtils.Companion.setViewAnim
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
 import java.util.Locale
 import java.util.StringJoiner
 import java.util.TimeZone
@@ -79,7 +79,7 @@ class VersionAdapter(
             }
             binding.tagsLayout.addView(getTagTextView(getDownloadTypeText(versionItem.versionType)))
 
-            binding.downloadLink.setOnClickListener { ZHTools.openLink(mContext, versionItem.fileUrl) }
+            binding.downloadLink.setOnClickListener { EclipseTools.openLink(mContext, versionItem.fileUrl) }
 
             itemView.setOnClickListener {
                 if (versionItem is ModVersionItem && versionItem.dependencies.isNotEmpty()) {

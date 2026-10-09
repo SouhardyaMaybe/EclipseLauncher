@@ -1,8 +1,8 @@
 package me.shadow.eclipselauncher.ui.fragment
 
 import androidx.fragment.app.Fragment
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
-import me.shadow.eclipselauncher.pojav.progresskeeper.TaskCountListener
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.progresskeeper.TaskCountListener
 
 abstract class BaseFragment : Fragment, TaskCountListener {
     private var mIsTaskRunning: Boolean = false

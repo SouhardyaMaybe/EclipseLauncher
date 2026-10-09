@@ -27,7 +27,7 @@ static jbyteArray stringToBytes(JNIEnv *env, const char* string) {
 static void replaceLibPathInEnvBlock(JNIEnv *env, jbyteArray* envBlock, jint* envc, const char* directory) {
     static bool env_block_replacement_warning = false;
     if(*envBlock != NULL && !env_block_replacement_warning) {
-        printf("exec_hooks WARN: replaceLibPathInEnvBlock does not preserve original env. Please notify PojavLauncherTeam if you need that feature\n");
+        printf("exec_hooks WARN: replaceLibPathInEnvBlock does not preserve original env. Please notify the Eclipse Launcher maintainers if you need that feature\n");
         env_block_replacement_warning = true;
     }
     char envStr[1024];
@@ -62,7 +62,7 @@ static jint hooked_ProcessImpl_forkAndExec(JNIEnv *env, jobject process, jint mo
 
         // Also add LD_LIBRARY_PATH and PATH for the lib in order to override the ones from the launcher, since
         // they may interfere with ffmpeg dependencies.
-        const char* ffmpeg_path = getenv("POJAV_FFMPEG_PATH");
+        const char* ffmpeg_path = getenv("ECLIPSE_FFMPEG_PATH");
         if(ffmpeg_path != NULL) {
             replaceLibPathInEnvBlock(env, &envBlock, &envc, dirname(ffmpeg_path));
             prog = stringToBytes(env, ffmpeg_path);
@@ -77,13 +77,13 @@ void hookExec() {
     orig_ProcessImpl_forkAndExec = dlsym(RTLD_DEFAULT, "Java_java_lang_UNIXProcess_forkAndExec");
     if (!orig_ProcessImpl_forkAndExec) {
         orig_ProcessImpl_forkAndExec = dlsym(RTLD_DEFAULT, "Java_java_lang_ProcessImpl_forkAndExec");
-        cls = (*pojav_environ->runtimeJNIEnvPtr_JRE)->FindClass(pojav_environ->runtimeJNIEnvPtr_JRE, "java/lang/ProcessImpl");
+        cls = (*eclipse_environ->runtimeJNIEnvPtr_JRE)->FindClass(eclipse_environ->runtimeJNIEnvPtr_JRE, "java/lang/ProcessImpl");
     } else {
-        cls = (*pojav_environ->runtimeJNIEnvPtr_JRE)->FindClass(pojav_environ->runtimeJNIEnvPtr_JRE, "java/lang/UNIXProcess");
+        cls = (*eclipse_environ->runtimeJNIEnvPtr_JRE)->FindClass(eclipse_environ->runtimeJNIEnvPtr_JRE, "java/lang/UNIXProcess");
     }
     JNINativeMethod methods[] = {
             {"forkAndExec", "(I[B[B[BI[BI[B[IZ)I", (void *)&hooked_ProcessImpl_forkAndExec}
     };
-    (*pojav_environ->runtimeJNIEnvPtr_JRE)->RegisterNatives(pojav_environ->runtimeJNIEnvPtr_JRE, cls, methods, 1);
+    (*eclipse_environ->runtimeJNIEnvPtr_JRE)->RegisterNatives(eclipse_environ->runtimeJNIEnvPtr_JRE, cls, methods, 1);
     printf("Registered forkAndExec\n");
 }

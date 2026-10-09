@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import me.shadow.eclipselauncher.setting.Settings
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.prefs.LauncherPreferences
+import me.shadow.eclipselauncher.core.prefs.LauncherPreferences
 
 class LocaleHelper(context: Context) : ContextWrapper(context) {
     companion object {

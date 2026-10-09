@@ -15,7 +15,7 @@ import me.shadow.eclipselauncher.databinding.ViewLoggerBinding;
 import me.shadow.eclipselauncher.setting.AllSettings;
 import me.shadow.eclipselauncher.utils.anim.ViewAnimUtils;
 
-import me.shadow.eclipselauncher.pojav.Logger;
+import me.shadow.eclipselauncher.core.Logger;
 
 /**
  * A class able to display logs to the user.

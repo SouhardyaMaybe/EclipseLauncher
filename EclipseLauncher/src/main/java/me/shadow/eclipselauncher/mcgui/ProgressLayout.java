@@ -16,9 +16,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.feature.log.Logging;
 
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper;
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressListener;
-import me.shadow.eclipselauncher.pojav.progresskeeper.TaskCountListener;
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper;
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressListener;
+import me.shadow.eclipselauncher.core.progresskeeper.TaskCountListener;
 
 import java.util.HashMap;
 import java.util.Map;

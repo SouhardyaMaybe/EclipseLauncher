@@ -93,7 +93,7 @@ gl_render_window_t* gl_init_context(gl_render_window_t *share) {
     {
         EGLBoolean bindResult;
 
-        if (!strncmp(getenv("POJAV_RENDERER"), "opengles3_desktopgl", 19))
+        if (!strncmp(getenv("ECLIPSE_RENDERER"), "opengles3_desktopgl", 19))
         {
             printf("EGLBridge: Binding to OpenGL\n");
             bindResult = eglBindAPI_p(EGL_OPENGL_API);
@@ -154,11 +154,11 @@ void gl_make_current(gl_render_window_t* bundle) {
     }
 
     bool hasSetMainWindow = false;
-    if (pojav_environ->mainWindowBundle == NULL)
+    if (eclipse_environ->mainWindowBundle == NULL)
     {
-        pojav_environ->mainWindowBundle = (basic_render_window_t*)bundle;
-        __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is now %p", pojav_environ->mainWindowBundle);
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        eclipse_environ->mainWindowBundle = (basic_render_window_t*)bundle;
+        __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is now %p", eclipse_environ->mainWindowBundle);
+        eclipse_environ->mainWindowBundle->newNativeSurface = eclipse_environ->eclipseWindow;
         hasSetMainWindow = true;
     }
 
@@ -171,9 +171,9 @@ void gl_make_current(gl_render_window_t* bundle) {
     } else {
         if (hasSetMainWindow)
         {
-            pojav_environ->mainWindowBundle->newNativeSurface = NULL;
-            gl_swap_surface((gl_render_window_t*)pojav_environ->mainWindowBundle);
-            pojav_environ->mainWindowBundle = NULL;
+            eclipse_environ->mainWindowBundle->newNativeSurface = NULL;
+            gl_swap_surface((gl_render_window_t*)eclipse_environ->mainWindowBundle);
+            eclipse_environ->mainWindowBundle = NULL;
         }
         __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "eglMakeCurrent returned with error: %04x", eglGetError_p());
     }
@@ -202,22 +202,22 @@ void gl_swap_buffers() {
 }
 
 void gl_setup_window() {
-    if (pojav_environ->mainWindowBundle != NULL)
+    if (eclipse_environ->mainWindowBundle != NULL)
     {
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is not NULL, changing state");
-        pojav_environ->mainWindowBundle->state = STATE_RENDERER_NEW_WINDOW;
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        eclipse_environ->mainWindowBundle->state = STATE_RENDERER_NEW_WINDOW;
+        eclipse_environ->mainWindowBundle->newNativeSurface = eclipse_environ->eclipseWindow;
     }
 }
 
 void gl_swap_interval(int swapInterval) {
-    if (pojav_environ->force_vsync) swapInterval = 1;
+    if (eclipse_environ->force_vsync) swapInterval = 1;
 
     eglSwapInterval_p(g_EglDisplay, swapInterval);
 }
 
 JNIEXPORT void JNICALL
-Java_org_lwjgl_opengl_PojavRendererInit_nativeInitGl4esInternals(JNIEnv *env, jclass clazz,
+Java_org_lwjgl_opengl_RendererInit_nativeInitGl4esInternals(JNIEnv *env, jclass clazz,
                                                             jobject function_provider) {
     __android_log_print(ANDROID_LOG_INFO, g_LogTag, "GL4ES internals initializing...");
     jclass funcProviderClass = (*env)->GetObjectClass(env, function_provider);

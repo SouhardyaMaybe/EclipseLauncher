@@ -30,14 +30,14 @@ import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors.Companion.getAndroidUI
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.subassembly.adapter.ObjectSpinnerAdapter
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.copyFileInBackground
 import com.skydoves.powerspinner.DefaultSpinnerAdapter
 import com.skydoves.powerspinner.OnSpinnerItemSelectedListener
 import com.skydoves.powerspinner.PowerSpinnerView
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.multirt.MultiRTUtils
-import me.shadow.eclipselauncher.pojav.multirt.Runtime
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.multirt.MultiRTUtils
+import me.shadow.eclipselauncher.core.multirt.Runtime
 import org.greenrobot.eventbus.EventBus
 import kotlin.enums.EnumEntries
 
@@ -51,7 +51,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
     private val resetIconAnimPlayer = AnimPlayer()
     private val openDocumentLauncher = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { result: Uri? ->
         result?.let {
-            val dialog = ZHTools.showTaskRunningDialog(requireActivity())
+            val dialog = EclipseTools.showTaskRunningDialog(requireActivity())
             Task.runTask {
                 copyFileInBackground(requireActivity(), it, mVersionIconUtils.getIconFile())
             }.ended(getAndroidUI()) { refreshIcon(false) }
@@ -87,7 +87,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
         val version = getCurrentVersion()
         version ?: run {
             Tools.showError(requireActivity(), getString(R.string.version_manager_no_installed_version), NoVersionException("There is no installed version"))
-            ZHTools.onBackPressed(requireActivity())
+            EclipseTools.onBackPressed(requireActivity())
             return
         }
         currentVersion = version
@@ -150,7 +150,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
         val activity = requireActivity()
         binding.apply {
             when (v) {
-                cancelButton -> ZHTools.onBackPressed(activity)
+                cancelButton -> EclipseTools.onBackPressed(activity)
                 saveButton -> {
                     save()
                     Tools.backToMainMenu(requireActivity())
@@ -160,7 +160,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
 
                 controlName -> {
                     mSelectPathMark = SELECT_CONTROL
-                    ZHTools.swapFragmentWithAnim(
+                    EclipseTools.swapFragmentWithAnim(
                         this@VersionConfigFragment,
                         ControlButtonFragment::class.java, ControlButtonFragment.TAG,
                         Bundle().apply {
@@ -174,7 +174,7 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                 }
                 customPath -> {
                     mSelectPathMark = SELECT_CUSTOM_PATH
-                    ZHTools.swapFragmentWithAnim(
+                    EclipseTools.swapFragmentWithAnim(
                         this@VersionConfigFragment,
                         FilesFragment::class.java, FilesFragment.TAG,
                         Bundle().apply {
@@ -339,7 +339,14 @@ class VersionConfigFragment : FragmentWithAnim(R.layout.fragment_version_config)
                 runtimeNames.add(getString(R.string.install_auto_select))
                 var jvmIndex = runtimeNames.size - 1
                 if (config.getJavaDir().isNotEmpty()) {
-                    val selectedRuntime = config.getJavaDir().substring(Tools.LAUNCHERPROFILES_RTPREFIX.length)
+                    val javaDir = config.getJavaDir()
+                    val selectedRuntime = when {
+                        javaDir.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX) ->
+                            javaDir.substring(Tools.LAUNCHERPROFILES_RTPREFIX.length)
+                        javaDir.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX_LEGACY) ->
+                            javaDir.substring(Tools.LAUNCHERPROFILES_RTPREFIX_LEGACY.length)
+                        else -> javaDir.substring(Tools.LAUNCHERPROFILES_RTPREFIX.length)
+                    }
                     val index = runtimes.indexOf(Runtime(selectedRuntime))
                     if (index != -1) jvmIndex = index
                 }

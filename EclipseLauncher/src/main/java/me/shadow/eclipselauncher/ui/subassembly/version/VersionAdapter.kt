@@ -24,9 +24,9 @@ import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.fragment.FilesFragment
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileDeletionHandler
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 
 class VersionAdapter(
     private val parentFragment: Fragment,
@@ -222,7 +222,7 @@ class VersionAdapter(
             bundle.putString(FilesFragment.BUNDLE_LOCK_PATH, ProfilePathManager.getCurrentPath())
             bundle.putString(FilesFragment.BUNDLE_LIST_PATH, path)
             bundle.putBoolean(FilesFragment.BUNDLE_QUICK_ACCESS_PATHS, false)
-            ZHTools.swapFragmentWithAnim(
+            EclipseTools.swapFragmentWithAnim(
                 parentFragment,
                 FilesFragment::class.java, FilesFragment.TAG, bundle
             )

@@ -4,7 +4,7 @@ import android.content.Context
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.ProgressDialog
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import java.util.Timer
 import java.util.TimerTask
 import java.util.concurrent.Future
@@ -15,7 +15,7 @@ abstract class FileHandler(
     protected var currentTask: Future<*>? = null
     private var timer: Timer? = null
     private var lastSize: Long = 0
-    private var lastTime: Long = ZHTools.getCurrentTimeMillis()
+    private var lastTime: Long = EclipseTools.getCurrentTimeMillis()
 
     protected fun start(progress: FileSearchProgress) {
         TaskExecutors.runInUIThread {
@@ -36,7 +36,7 @@ abstract class FileHandler(
                         val totalSize = progress.getTotalSize()
                         val processedSize = totalSize - pendingSize
 
-                        val currentTime = ZHTools.getCurrentTimeMillis()
+                        val currentTime = EclipseTools.getCurrentTimeMillis()
                         val timeElapsed = (currentTime - lastTime) / 1000.0
                         val sizeChange = processedSize - lastSize
                         val rate = (if (timeElapsed > 0) sizeChange / timeElapsed else 0.0).toLong()

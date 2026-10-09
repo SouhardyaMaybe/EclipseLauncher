@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 
 abstract class AbstractSettingsWrapper(
     private val mainView: View
@@ -21,7 +21,7 @@ abstract class AbstractSettingsWrapper(
             TipDialog.Builder(context)
                 .setTitle(R.string.generic_tip)
                 .setMessage(R.string.setting_reboot_tip)
-                .setConfirmClickListener { ZHTools.killProcess() }
+                .setConfirmClickListener { EclipseTools.killProcess() }
                 .showDialog()
         }
     }

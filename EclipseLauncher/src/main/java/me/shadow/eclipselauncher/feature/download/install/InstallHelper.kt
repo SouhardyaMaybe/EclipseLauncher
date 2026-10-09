@@ -9,8 +9,8 @@ import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.progresskeeper.DownloaderProgressWrapper
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.progresskeeper.DownloaderProgressWrapper
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File

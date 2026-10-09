@@ -6,10 +6,10 @@ import me.shadow.eclipselauncher.utils.LauncherProfiles
 import me.shadow.eclipselauncher.feature.download.item.ModLoaderWrapper
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.utils.runtime.SelectRuntimeUtils
-import me.shadow.eclipselauncher.pojav.JavaGUILauncherActivity
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.models.CurseManifest
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.models.ModrinthIndex
+import me.shadow.eclipselauncher.core.JavaGUILauncherActivity
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.models.CurseManifest
+import me.shadow.eclipselauncher.core.modloaders.modpacks.models.ModrinthIndex
 import java.io.File
 import java.util.zip.ZipFile
 

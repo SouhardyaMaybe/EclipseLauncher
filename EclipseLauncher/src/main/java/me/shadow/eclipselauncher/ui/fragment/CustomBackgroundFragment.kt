@@ -30,13 +30,13 @@ import me.shadow.eclipselauncher.ui.subassembly.filelist.FileIcon
 import me.shadow.eclipselauncher.ui.subassembly.filelist.FileSelectedListener
 import me.shadow.eclipselauncher.utils.NewbieGuideUtils
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.mkdirs
 import me.shadow.eclipselauncher.utils.image.ImageUtils.Companion.isImage
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.EnumMap
@@ -55,7 +55,7 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult<Array<String>, Uri>(ActivityResultContracts.OpenDocument()) { result: Uri? ->
             result?.let { uri ->
-                val dialog = ZHTools.showTaskRunningDialog(requireContext())
+                val dialog = EclipseTools.showTaskRunningDialog(requireContext())
                 Task.runTask {
                     FileTools.copyFileInBackground(requireActivity(), uri, binding.fileRecyclerView.fullPath.absolutePath)
                 }.ended(TaskExecutors.getAndroidUI()) {
@@ -154,7 +154,7 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
                     refreshBackground()
                 }
 
-                returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
+                returnButton.setOnClickListener { EclipseTools.onBackPressed(requireActivity()) }
                 addFileButton.setOnClickListener { openDocumentLauncher?.launch(arrayOf("image/*")) }
                 refreshButton.setOnClickListener {
                     fileRecyclerView.listFileAt(backgroundPath())
@@ -246,7 +246,7 @@ class CustomBackgroundFragment : FragmentWithAnim(R.layout.fragment_custom_backg
             addFileButton.setContentDescription(getString(R.string.custom_background_add))
             pasteButton.setImageDrawable(ContextCompat.getDrawable(requireActivity(), R.drawable.ic_reset))
 
-            ZHTools.setTooltipText(
+            EclipseTools.setTooltipText(
                 returnButton,
                 addFileButton,
                 pasteButton,

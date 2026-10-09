@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.utils
 
 import android.content.Context
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 import java.io.IOException
 

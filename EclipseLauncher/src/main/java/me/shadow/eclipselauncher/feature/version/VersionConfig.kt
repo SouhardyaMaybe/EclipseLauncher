@@ -9,7 +9,7 @@ import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionsManager.getEclipseVersionPath
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils.getStringNotNull
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 import java.io.FileWriter
 

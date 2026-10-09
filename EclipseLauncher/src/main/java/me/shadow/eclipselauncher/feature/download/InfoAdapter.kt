@@ -24,9 +24,9 @@ import me.shadow.eclipselauncher.feature.download.item.ModInfoItem
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.ui.fragment.DownloadModFragment
 import me.shadow.eclipselauncher.utils.NumberWithUnits
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import org.greenrobot.eventbus.EventBus
 import java.util.Collections
 import java.util.Locale
@@ -108,7 +108,7 @@ class InfoAdapter(
                         infoViewModel.infoItem = item.copy()
                         infoViewModel.platformHelper = item.platform.helper.copy()
 
-                        ZHTools.swapFragmentWithAnim(fragment, DownloadModFragment::class.java, DownloadModFragment.TAG, null)
+                        EclipseTools.swapFragmentWithAnim(fragment, DownloadModFragment::class.java, DownloadModFragment.TAG, null)
                     }
                 }
 

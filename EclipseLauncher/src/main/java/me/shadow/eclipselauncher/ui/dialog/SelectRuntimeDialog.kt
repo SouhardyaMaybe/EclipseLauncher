@@ -5,9 +5,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.utils.runtime.RuntimeSelectedListener
-import me.shadow.eclipselauncher.pojav.multirt.MultiRTUtils
-import me.shadow.eclipselauncher.pojav.multirt.RTRecyclerViewAdapter
-import me.shadow.eclipselauncher.pojav.multirt.Runtime
+import me.shadow.eclipselauncher.core.multirt.MultiRTUtils
+import me.shadow.eclipselauncher.core.multirt.RTRecyclerViewAdapter
+import me.shadow.eclipselauncher.core.multirt.Runtime
 
 class SelectRuntimeDialog(
     context: Context,

@@ -8,7 +8,7 @@ import me.shadow.eclipselauncher.event.single.SettingsChangeEvent
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.setting.unit.AbstractSettingUnit
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.lang.reflect.Type

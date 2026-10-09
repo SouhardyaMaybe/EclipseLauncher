@@ -14,9 +14,9 @@ import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileDeletionHandler
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 
 class VersionManagerFragment : FragmentWithAnim(R.layout.fragment_version_manager), View.OnClickListener {
@@ -66,7 +66,7 @@ class VersionManagerFragment : FragmentWithAnim(R.layout.fragment_version_manage
         bundle.putString(FilesFragment.BUNDLE_LIST_PATH, listPath.mustExists().absolutePath)
         bundle.putBoolean(FilesFragment.BUNDLE_QUICK_ACCESS_PATHS, false)
 
-        ZHTools.swapFragmentWithAnim(this, FilesFragment::class.java, FilesFragment.TAG, bundle)
+        EclipseTools.swapFragmentWithAnim(this, FilesFragment::class.java, FilesFragment.TAG, bundle)
     }
 
     override fun onClick(v: View) {
@@ -82,7 +82,7 @@ class VersionManagerFragment : FragmentWithAnim(R.layout.fragment_version_manage
                 shortcutsMods -> {
                     val bundle = Bundle()
                     bundle.putString(ModsFragment.BUNDLE_ROOT_PATH, File(gameDirPath, "/mods").mustExists().absolutePath)
-                    ZHTools.swapFragmentWithAnim(this@VersionManagerFragment, ModsFragment::class.java, ModsFragment.TAG, bundle)
+                    EclipseTools.swapFragmentWithAnim(this@VersionManagerFragment, ModsFragment::class.java, ModsFragment.TAG, bundle)
                 }
                 gamePath -> swapFilesFragment(gameDirPath, gameDirPath)
                 resourcePath -> swapFilesFragment(gameDirPath, File(gameDirPath, "/resourcepacks"))
@@ -92,7 +92,7 @@ class VersionManagerFragment : FragmentWithAnim(R.layout.fragment_version_manage
                 logsPath -> swapFilesFragment(gameDirPath, File(gameDirPath, "/logs"))
                 crashReportPath -> swapFilesFragment(gameDirPath, File(gameDirPath, "/crash-reports"))
 
-                versionSettings -> ZHTools.swapFragmentWithAnim(this@VersionManagerFragment, VersionConfigFragment::class.java, VersionConfigFragment.TAG, null)
+                versionSettings -> EclipseTools.swapFragmentWithAnim(this@VersionManagerFragment, VersionConfigFragment::class.java, VersionConfigFragment.TAG, null)
                 versionRename -> {
                     VersionsManager.openRenameDialog(activity, version) {
                         Tools.backToMainMenu(activity) // Leave this fragment before renaming to avoid problems

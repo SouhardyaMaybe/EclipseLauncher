@@ -6,7 +6,7 @@ import me.shadow.eclipselauncher.json.JsonObject
 import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionInfo
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 
 class VersionInfoUtils {

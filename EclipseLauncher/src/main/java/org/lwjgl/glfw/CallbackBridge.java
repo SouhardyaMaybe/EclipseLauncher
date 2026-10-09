@@ -7,9 +7,9 @@ import android.view.Choreographer;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
-import me.shadow.eclipselauncher.pojav.GrabListener;
-import me.shadow.eclipselauncher.pojav.LwjglGlfwKeycode;
-import me.shadow.eclipselauncher.pojav.MainActivity;
+import me.shadow.eclipselauncher.core.GrabListener;
+import me.shadow.eclipselauncher.core.LwjglGlfwKeycode;
+import me.shadow.eclipselauncher.core.MainActivity;
 
 import java.util.ArrayList;
 
@@ -210,7 +210,7 @@ public class CallbackBridge {
     @Keep public static native int getCurrentFps();
 
     static {
-        System.loadLibrary("pojavexec");
+        System.loadLibrary("eclipseexec");
     }
 }
 

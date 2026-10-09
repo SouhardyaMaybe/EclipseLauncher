@@ -36,7 +36,7 @@ import me.shadow.eclipselauncher.ui.subassembly.customprofilepath.ProfilePathAda
 import me.shadow.eclipselauncher.ui.subassembly.version.VersionAdapter
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.UUID
@@ -85,7 +85,7 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             installNew.setOnClickListener {
-                ZHTools.swapFragmentWithAnim(this@VersionsListFragment, VersionSelectorFragment::class.java, VersionSelectorFragment.TAG, null)
+                EclipseTools.swapFragmentWithAnim(this@VersionsListFragment, VersionSelectorFragment::class.java, VersionSelectorFragment.TAG, null)
             }
 
             fun refreshFavoritesFolderTab(index: Int) {
@@ -155,14 +155,14 @@ class VersionsListFragment : FragmentWithAnim(R.layout.fragment_versions_list) {
                             bundle.putBoolean(FilesFragment.BUNDLE_SELECT_FOLDER_MODE, true)
                             bundle.putBoolean(FilesFragment.BUNDLE_SHOW_FILE, false)
                             bundle.putBoolean(FilesFragment.BUNDLE_REMOVE_LOCK_PATH, false)
-                            ZHTools.swapFragmentWithAnim(this@VersionsListFragment, FilesFragment::class.java, FilesFragment.TAG, bundle)
+                            EclipseTools.swapFragmentWithAnim(this@VersionsListFragment, FilesFragment::class.java, FilesFragment.TAG, bundle)
                         }
 
                         override fun cancelled() {}
                     }
                 )
             }
-            returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
+            returnButton.setOnClickListener { EclipseTools.onBackPressed(requireActivity()) }
         }
 
         refresh()

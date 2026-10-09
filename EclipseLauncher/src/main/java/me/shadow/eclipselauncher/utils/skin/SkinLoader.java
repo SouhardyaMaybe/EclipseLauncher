@@ -12,7 +12,7 @@ import android.graphics.drawable.Drawable;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.utils.path.PathManager;
 
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount;
+import me.shadow.eclipselauncher.core.value.MinecraftAccount;
 
 import org.jetbrains.annotations.NotNull;
 

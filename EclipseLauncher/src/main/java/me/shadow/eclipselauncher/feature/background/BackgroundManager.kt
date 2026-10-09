@@ -10,7 +10,7 @@ import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.mkdirs
 import me.shadow.eclipselauncher.utils.image.ImageUtils.Companion.isImage
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter

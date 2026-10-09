@@ -4,7 +4,7 @@ import android.content.Context
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.utils.CopyDefaultFromAssets.Companion.copyFromAssets
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 
 class UnpackSingleFilesTask(val context: Context) : AbstractUnpackTask() {
     override fun isNeedUnpack(): Boolean = true

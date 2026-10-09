@@ -22,7 +22,7 @@ void (*vtest_swap_buffers_p)(void);
 static OSMesaContext virgl_context;
 
 void *egl_make_current(void *window) {
-    if (pojav_environ->config_renderer == RENDERER_VIRGL)
+    if (eclipse_environ->config_renderer == RENDERER_VIRGL)
     {
         EGLBoolean success = eglMakeCurrent_p(
                 potatoBridge.eglDisplay,
@@ -50,7 +50,7 @@ bool loadSymbolsVirGL() {
 
     char *fileName = calloc(1, 1024);
 
-    sprintf(fileName, "%s/libvirgl_test_server.so", getenv("POJAV_NATIVEDIR"));
+    sprintf(fileName, "%s/libvirgl_test_server.so", getenv("ECLIPSE_NATIVEDIR"));
     void *handle = dlopen(fileName, RTLD_LAZY);
     printf("VirGL: libvirgl_test_server = %p\n", handle);
     if (!handle) {
@@ -66,7 +66,7 @@ bool loadSymbolsVirGL() {
 }
 
 int virglInit() {
-    if (pojav_environ->config_renderer != RENDERER_VIRGL)
+    if (eclipse_environ->config_renderer != RENDERER_VIRGL)
         return 0;
 
     if (potatoBridge.eglDisplay == NULL || potatoBridge.eglDisplay == EGL_NO_DISPLAY)
@@ -115,11 +115,11 @@ int virglInit() {
         return 0;
     }
 
-    ANativeWindow_setBuffersGeometry(pojav_environ->pojavWindow, 0, 0, vid);
+    ANativeWindow_setBuffersGeometry(eclipse_environ->eclipseWindow, 0, 0, vid);
 
     eglBindAPI_p(EGL_OPENGL_ES_API);
 
-    potatoBridge.eglSurface = eglCreateWindowSurface_p(potatoBridge.eglDisplay, config, pojav_environ->pojavWindow, NULL);
+    potatoBridge.eglSurface = eglCreateWindowSurface_p(potatoBridge.eglDisplay, config, eclipse_environ->eclipseWindow, NULL);
 
     if (!potatoBridge.eglSurface)
     {
@@ -190,7 +190,7 @@ void virglMakeCurrent(void *window) {
     if (!onMakeCurrent)
         printf("OSMDroid: making current\n");
 
-    OSMesaMakeCurrent_p(virgl_context, setbuffer, GL_UNSIGNED_BYTE, pojav_environ->savedWidth, pojav_environ->savedHeight);
+    OSMesaMakeCurrent_p(virgl_context, setbuffer, GL_UNSIGNED_BYTE, eclipse_environ->savedWidth, eclipse_environ->savedHeight);
 
     glClear_p(GL_COLOR_BUFFER_BIT);
     glClearColor_p(0.4f, 0.4f, 0.4f, 1.0f);

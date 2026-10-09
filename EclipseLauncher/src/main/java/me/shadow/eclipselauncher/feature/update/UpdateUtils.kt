@@ -13,14 +13,14 @@ import me.shadow.eclipselauncher.task.TaskExecutors.Companion.runInUIThread
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.dialog.UpdateDialog
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.http.CallUtils
 import me.shadow.eclipselauncher.utils.http.CallUtils.CallbackListener
 import me.shadow.eclipselauncher.utils.http.NetworkUtils
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Architecture
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Architecture
+import me.shadow.eclipselauncher.core.Tools
 import okhttp3.Call
 import okhttp3.Response
 import me.shadow.eclipselauncher.utils.io.FileUtils
@@ -45,7 +45,7 @@ class UpdateUtils {
                 return
             }
 
-            val isRelease = (ZHTools.isRelease() || ZHTools.isPreRelease()) && !ZHTools.isDebug()
+            val isRelease = (EclipseTools.isRelease() || EclipseTools.isPreRelease()) && !EclipseTools.isDebug()
 
             if (sApkFile.exists()) {
                 val packageManager = context.packageManager
@@ -54,9 +54,9 @@ class UpdateUtils {
                 if (isRelease && packageInfo != null) {
                     val packageName = packageInfo.packageName
                     val versionCode = packageInfo.versionCode
-                    val thisVersionCode = ZHTools.getVersionCode()
+                    val thisVersionCode = EclipseTools.getVersionCode()
 
-                    if (packageName == ZHTools.getPackageName() && versionCode > thisVersionCode) {
+                    if (packageName == EclipseTools.getPackageName() && versionCode > thisVersionCode) {
                         installApk(context, sApkFile)
                     } else {
                         FileUtils.deleteQuietly(sApkFile)
@@ -66,7 +66,7 @@ class UpdateUtils {
                 }
             } else {
                 if (isRelease && (force || checkCooling())) {
-                    AllSettings.updateCheck.put(ZHTools.getCurrentTimeMillis()).save()
+                    AllSettings.updateCheck.put(EclipseTools.getCurrentTimeMillis()).save()
                     Logging.i("Check Update", "Checking new update!")
 
                     //If the installer package does not exist, the update is fetched automatically
@@ -76,13 +76,13 @@ class UpdateUtils {
         }
 
         private fun checkCooling(): Boolean {
-            return ZHTools.getCurrentTimeMillis() - AllSettings.updateCheck.getValue() > 5 * 60 * 1000 //5-minute cooldown
+            return EclipseTools.getCurrentTimeMillis() - AllSettings.updateCheck.getValue() > 5 * 60 * 1000 //5-minute cooldown
         }
 
         @Synchronized
         fun updateCheckerMainProgram(context: Context, ignore: Boolean) {
-            if (ZHTools.getCurrentTimeMillis() - LAST_UPDATE_CHECK_TIME <= 5000) return
-            LAST_UPDATE_CHECK_TIME = ZHTools.getCurrentTimeMillis()
+            if (EclipseTools.getCurrentTimeMillis() - LAST_UPDATE_CHECK_TIME <= 5000) return
+            LAST_UPDATE_CHECK_TIME = EclipseTools.getCurrentTimeMillis()
 
             CallUtils(object : CallbackListener {
                 override fun onFailure(call: Call?) {
@@ -106,13 +106,13 @@ class UpdateUtils {
                             if (ignore && versionName == ignoreUpdate.getValue()) return  //Ignore this version
 
                             val versionCode = launcherVersion.versionCode
-                            if (ZHTools.getVersionCode() < versionCode) {
+                            if (EclipseTools.getVersionCode() < versionCode) {
                                 runInUIThread {
                                     UpdateDialog(context, launcherVersion).show()
                                 }
                             } else if (!ignore) {
                                 runInUIThread {
-                                    val nowVersionName = ZHTools.getVersionName()
+                                    val nowVersionName = EclipseTools.getVersionName()
                                     runInUIThread {
                                         Toast.makeText(
                                             context,

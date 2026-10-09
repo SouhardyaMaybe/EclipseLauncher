@@ -19,9 +19,9 @@ import me.shadow.eclipselauncher.feature.unpack.UnpackSingleFilesTask
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
-import me.shadow.eclipselauncher.pojav.LauncherActivity
-import me.shadow.eclipselauncher.pojav.MissingStorageActivity
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.LauncherActivity
+import me.shadow.eclipselauncher.core.MissingStorageActivity
+import me.shadow.eclipselauncher.core.Tools
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {

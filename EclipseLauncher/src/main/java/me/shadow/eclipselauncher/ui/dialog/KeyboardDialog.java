@@ -14,7 +14,7 @@ import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.databinding.DialogKeyboardBinding;
 import me.shadow.eclipselauncher.ui.view.AnimButton;
 
-import me.shadow.eclipselauncher.pojav.Tools;
+import me.shadow.eclipselauncher.core.Tools;
 
 import java.util.ArrayList;
 import java.util.List;

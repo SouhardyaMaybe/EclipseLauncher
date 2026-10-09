@@ -5,15 +5,15 @@ import me.shadow.eclipselauncher.InfoDistributor
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome.Companion.getLibrariesHome
 import me.shadow.eclipselauncher.feature.version.Version
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.path.LibPath
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.AWTCanvasView
-import me.shadow.eclipselauncher.pojav.JMinecraftVersionList
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.multirt.Runtime
-import me.shadow.eclipselauncher.pojav.utils.JSONUtils
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
+import me.shadow.eclipselauncher.core.AWTCanvasView
+import me.shadow.eclipselauncher.core.JMinecraftVersionList
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.multirt.Runtime
+import me.shadow.eclipselauncher.core.utils.JSONUtils
+import me.shadow.eclipselauncher.core.value.MinecraftAccount
 import me.shadow.eclipselauncher.utils.version.VersionNumbers
 import java.io.File
 
@@ -127,7 +127,7 @@ class LaunchArgs(
 
     private fun setLauncherInfo(verArgMap: MutableMap<String, String>) {
         verArgMap["launcher_name"] = InfoDistributor.LAUNCHER_NAME
-        verArgMap["launcher_version"] = ZHTools.getVersionName()
+        verArgMap["launcher_version"] = EclipseTools.getVersionName()
         verArgMap["version_type"] = minecraftVersion.getCustomInfo()
             .takeIf { it.isNotEmpty() && it.isNotBlank() }
             ?: versionInfo.type

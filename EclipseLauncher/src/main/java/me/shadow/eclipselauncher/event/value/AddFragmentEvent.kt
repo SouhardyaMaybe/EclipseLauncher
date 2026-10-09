@@ -7,8 +7,8 @@ import androidx.fragment.app.FragmentActivity
 /**
  * Add a new Fragment to the transaction manager, where it is received and handled by LauncherActivity
  * Ensure that when a Fragment is added, its parent Fragment is always the current Fragment
- * @see me.shadow.eclipselauncher.pojav.LauncherActivity
- * @see me.shadow.eclipselauncher.utils.ZHTools.addFragment
+ * @see me.shadow.eclipselauncher.core.LauncherActivity
+ * @see me.shadow.eclipselauncher.utils.EclipseTools.addFragment
  */
 class AddFragmentEvent(
     val fragmentClass: Class<out Fragment?>,

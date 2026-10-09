@@ -9,7 +9,7 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.anim.AnimPlayer
 import me.shadow.eclipselauncher.anim.animations.Animations
 import me.shadow.eclipselauncher.databinding.FragmentAboutBinding
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
 
@@ -35,13 +35,13 @@ class AboutFragment : FragmentWithAnim(R.layout.fragment_about) {
             dec2.text = InfoCenter.replaceName(requireActivity(), R.string.about_dec2)
             dec3.text = InfoCenter.replaceName(requireActivity(), R.string.about_dec3)
 
-            appInfo.text = StringUtils.insertNewline(StringUtils.insertSpace(getString(R.string.about_version_name), ZHTools.getVersionName()),
-                StringUtils.insertSpace(getString(R.string.about_version_code), ZHTools.getVersionCode()),
-                StringUtils.insertSpace(getString(R.string.about_last_update_time), ZHTools.getLastUpdateTime(requireContext())),
-                StringUtils.insertSpace(getString(R.string.about_version_status), ZHTools.getVersionStatus(requireContext())))
+            appInfo.text = StringUtils.insertNewline(StringUtils.insertSpace(getString(R.string.about_version_name), EclipseTools.getVersionName()),
+                StringUtils.insertSpace(getString(R.string.about_version_code), EclipseTools.getVersionCode()),
+                StringUtils.insertSpace(getString(R.string.about_last_update_time), EclipseTools.getLastUpdateTime(requireContext())),
+                StringUtils.insertSpace(getString(R.string.about_version_status), EclipseTools.getVersionStatus(requireContext())))
             appInfo.setOnClickListener { StringUtils.copyText("text", appInfo.text.toString(), requireContext()) }
 
-            githubButton.setOnClickListener { ZHTools.openLink(requireActivity(), UrlManager.URL_HOME) }
+            githubButton.setOnClickListener { EclipseTools.openLink(requireActivity(), UrlManager.URL_HOME) }
         }
     }
 

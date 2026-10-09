@@ -18,23 +18,23 @@ import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.LifecycleAwareTipDialog
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.http.NetworkUtils
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Architecture
-import me.shadow.eclipselauncher.pojav.JMinecraftVersionList
-import me.shadow.eclipselauncher.pojav.Logger
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.authenticator.microsoft.PresentedException
-import me.shadow.eclipselauncher.pojav.lifecycle.ContextAwareDoneListener
-import me.shadow.eclipselauncher.pojav.multirt.MultiRTUtils
-import me.shadow.eclipselauncher.pojav.plugins.FFmpegPlugin
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
-import me.shadow.eclipselauncher.pojav.services.GameService
-import me.shadow.eclipselauncher.pojav.tasks.AsyncMinecraftDownloader
-import me.shadow.eclipselauncher.pojav.tasks.MinecraftDownloader
-import me.shadow.eclipselauncher.pojav.utils.JREUtils
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
+import me.shadow.eclipselauncher.core.Architecture
+import me.shadow.eclipselauncher.core.JMinecraftVersionList
+import me.shadow.eclipselauncher.core.Logger
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.authenticator.microsoft.PresentedException
+import me.shadow.eclipselauncher.core.lifecycle.ContextAwareDoneListener
+import me.shadow.eclipselauncher.core.multirt.MultiRTUtils
+import me.shadow.eclipselauncher.core.plugins.FFmpegPlugin
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.services.GameService
+import me.shadow.eclipselauncher.core.tasks.AsyncMinecraftDownloader
+import me.shadow.eclipselauncher.core.tasks.MinecraftDownloader
+import me.shadow.eclipselauncher.core.utils.JREUtils
+import me.shadow.eclipselauncher.core.value.MinecraftAccount
 import org.greenrobot.eventbus.EventBus
 
 class LaunchGame {
@@ -149,8 +149,12 @@ class LaunchGame {
 
         private fun getRuntime(activity: Activity, version: Version, targetJavaVersion: Int): String {
             val versionRuntime = version.getJavaDir()
-                .takeIf { it.isNotEmpty() && it.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX) }
+                .takeIf {
+                    it.isNotEmpty() && (it.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX)
+                            || it.startsWith(Tools.LAUNCHERPROFILES_RTPREFIX_LEGACY))
+                }
                 ?.removePrefix(Tools.LAUNCHERPROFILES_RTPREFIX)
+                ?.removePrefix(Tools.LAUNCHERPROFILES_RTPREFIX_LEGACY)
                 ?: ""
 
             if (versionRuntime.isNotEmpty()) return versionRuntime
@@ -181,7 +185,7 @@ class LaunchGame {
             }
 
             Logger.appendToLog("--------- Start launching the game")
-            Logger.appendToLog("Info: Launcher version: ${ZHTools.getVersionName()} (${ZHTools.getVersionCode()})")
+            Logger.appendToLog("Info: Launcher version: ${EclipseTools.getVersionName()} (${EclipseTools.getVersionCode()})")
             Logger.appendToLog("Info: Architecture: ${Architecture.archAsString(Tools.DEVICE_ARCHITECTURE)}")
             Logger.appendToLog("Info: Device model: ${StringUtils.insertSpace(Build.MANUFACTURER, Build.MODEL)}")
             Logger.appendToLog("Info: API version: ${Build.VERSION.SDK_INT}")

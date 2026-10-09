@@ -2,8 +2,8 @@
 // Created by maks on 24.09.2022.
 //
 
-#ifndef POJAVLAUNCHER_ENVIRON_H
-#define POJAVLAUNCHER_ENVIRON_H
+#ifndef ECLIPSELAUNCHER_ENVIRON_H
+#define ECLIPSELAUNCHER_ENVIRON_H
 
 #include <ctxbridges/common.h>
 #include <stdatomic.h>
@@ -30,8 +30,8 @@ typedef void GLFW_invoke_MouseButton_func(void* window, int button, int action, 
 typedef void GLFW_invoke_Scroll_func(void* window, double xoffset, double yoffset);
 typedef void GLFW_invoke_WindowSize_func(void* window, int width, int height);
 
-struct pojav_environ_s {
-    struct ANativeWindow* pojavWindow;
+struct eclipse_environ_s {
+    struct ANativeWindow* eclipseWindow;
     basic_render_window_t* mainWindowBundle;
     int config_renderer;
     bool force_vsync;
@@ -72,6 +72,6 @@ struct pojav_environ_s {
 
 #undef ADD_CALLBACK_WWIN
 };
-extern struct pojav_environ_s *pojav_environ;
+extern struct eclipse_environ_s *eclipse_environ;
 
-#endif //POJAVLAUNCHER_ENVIRON_H
+#endif //ECLIPSELAUNCHER_ENVIRON_H

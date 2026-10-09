@@ -5,7 +5,7 @@ import me.shadow.eclipselauncher.anim.AnimPlayer
 import me.shadow.eclipselauncher.event.single.SettingsChangeEvent
 import me.shadow.eclipselauncher.event.value.SettingsPageSwapEvent
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
-import me.shadow.eclipselauncher.pojav.prefs.LauncherPreferences
+import me.shadow.eclipselauncher.core.prefs.LauncherPreferences
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 

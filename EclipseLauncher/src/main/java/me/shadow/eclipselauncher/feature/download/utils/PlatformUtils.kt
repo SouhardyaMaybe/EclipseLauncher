@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.download.utils
 
 import me.shadow.eclipselauncher.InfoDistributor
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
 
 class PlatformUtils {
     companion object {

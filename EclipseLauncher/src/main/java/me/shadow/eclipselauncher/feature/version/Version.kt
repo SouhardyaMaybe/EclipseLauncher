@@ -4,9 +4,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.setting.AllSettings
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 
 /**
@@ -84,7 +84,9 @@ class Version(
     }
 
     fun getCustomInfo(): String = versionConfig.getCustomInfo().getValueOrDefault(AllSettings.versionCustomInfo.getValue())
-        .replace("[zl_version]", ZHTools.getVersionName())
+        .replace("[eclipse_version]", EclipseTools.getVersionName())
+        // Custom info saved by older builds uses the legacy placeholder
+        .replace("[zl_version]", EclipseTools.getVersionName())
 
     fun getVersionInfo(): VersionInfo? {
         return runCatching {

@@ -9,9 +9,9 @@ import me.shadow.eclipselauncher.feature.mod.modloader.NeoForgeUtils.Companion.g
 import me.shadow.eclipselauncher.feature.mod.modloader.NeoForgeUtils.Companion.getNeoForgedForgeInstallerUrl
 import me.shadow.eclipselauncher.feature.version.install.InstallTask
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools.DownloaderFeedback
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.Tools.DownloaderFeedback
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import java.io.File
 import java.io.IOException
 

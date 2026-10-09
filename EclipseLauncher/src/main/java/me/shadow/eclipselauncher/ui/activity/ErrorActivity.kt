@@ -9,8 +9,8 @@ import androidx.core.content.ContextCompat
 import me.shadow.eclipselauncher.InfoCenter
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.ActivityErrorBinding
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
 
 class ErrorActivity : BaseActivity() {
     private lateinit var binding: ActivityErrorBinding
@@ -30,7 +30,7 @@ class ErrorActivity : BaseActivity() {
         binding.errorRestart.setOnClickListener {
             startActivity(Intent(this@ErrorActivity, SplashActivity::class.java))
         }
-        binding.shareLog.setOnClickListener { ZHTools.shareLogs(this) }
+        binding.shareLog.setOnClickListener { EclipseTools.shareLogs(this) }
 
         if (extras.getBoolean(BUNDLE_IS_LAUNCHER_CRASH, false)) {
             showLauncherCrash(extras)

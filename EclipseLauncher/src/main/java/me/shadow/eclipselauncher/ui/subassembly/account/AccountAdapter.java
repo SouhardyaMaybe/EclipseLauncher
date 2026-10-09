@@ -14,8 +14,8 @@ import me.shadow.eclipselauncher.feature.accounts.AccountUtils;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.utils.skin.SkinLoader;
 
-import me.shadow.eclipselauncher.pojav.Tools;
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount;
+import me.shadow.eclipselauncher.core.Tools;
+import me.shadow.eclipselauncher.core.value.MinecraftAccount;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package me.shadow.eclipselauncher.ui.subassembly.view
 import android.annotation.SuppressLint
 import android.view.MotionEvent
 import android.view.View
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import kotlin.math.max
 import kotlin.math.min
 
@@ -48,7 +48,7 @@ class DraggableViewWrapper(private val mainView: View, private val fetcher: Attr
     //Avoid the performance cost of updating too frequently
     private fun updateRateLimits(): Boolean {
         var limit = false
-        val millis = ZHTools.getCurrentTimeMillis()
+        val millis = EclipseTools.getCurrentTimeMillis()
         if (millis - lastUpdateTime < 5) limit = true
         lastUpdateTime = millis
         return limit

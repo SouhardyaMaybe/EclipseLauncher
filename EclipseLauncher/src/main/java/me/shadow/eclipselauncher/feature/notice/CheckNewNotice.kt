@@ -2,12 +2,12 @@ package me.shadow.eclipselauncher.feature.notice
 
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.setting.AllSettings
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.http.CallUtils
 import me.shadow.eclipselauncher.utils.http.CallUtils.CallbackListener
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import okhttp3.Call
 import okhttp3.Response
 import org.json.JSONObject
@@ -21,7 +21,7 @@ class CheckNewNotice {
         private var isChecking = false
 
         private fun checkCooling(): Boolean {
-            return ZHTools.getCurrentTimeMillis() - AllSettings.noticeCheck.getValue() > 2 * 60 * 1000 //2-minute cooldown
+            return EclipseTools.getCurrentTimeMillis() - AllSettings.noticeCheck.getValue() > 2 * 60 * 1000 //2-minute cooldown
         }
 
         @JvmStatic
@@ -40,7 +40,7 @@ class CheckNewNotice {
             if (!checkCooling()) {
                 return
             } else {
-                AllSettings.noticeCheck.put(ZHTools.getCurrentTimeMillis()).save()
+                AllSettings.noticeCheck.put(EclipseTools.getCurrentTimeMillis()).save()
             }
 
             CallUtils(object : CallbackListener {

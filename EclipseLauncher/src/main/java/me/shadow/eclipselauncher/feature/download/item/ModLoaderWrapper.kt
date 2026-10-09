@@ -5,7 +5,7 @@ import android.content.Intent
 import me.shadow.eclipselauncher.feature.download.enums.ModLoader
 import me.shadow.eclipselauncher.feature.mod.modloader.NeoForgeDownloadTask
 import me.shadow.eclipselauncher.feature.version.install.InstallTask
-import me.shadow.eclipselauncher.pojav.JavaGUILauncherActivity
+import me.shadow.eclipselauncher.core.JavaGUILauncherActivity
 import me.shadow.eclipselauncher.feature.mod.modloader.FabricLikeUtils
 import me.shadow.eclipselauncher.feature.mod.modloader.ForgeDownloadTask
 import me.shadow.eclipselauncher.feature.version.install.InstallArgsUtils

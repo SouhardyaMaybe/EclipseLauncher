@@ -11,8 +11,8 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.ItemFileListViewBinding
 import me.shadow.eclipselauncher.feature.download.item.VersionItem
 import me.shadow.eclipselauncher.utils.anim.ViewAnimUtils
-import me.shadow.eclipselauncher.pojav.modloaders.FabricVersion
-import me.shadow.eclipselauncher.pojav.modloaders.OptiFineUtils.OptiFineVersion
+import me.shadow.eclipselauncher.core.modloaders.FabricVersion
+import me.shadow.eclipselauncher.core.modloaders.OptiFineUtils.OptiFineVersion
 
 class ModVersionListAdapter(
     private val iconDrawable: Int,

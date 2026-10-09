@@ -17,11 +17,11 @@ import me.shadow.eclipselauncher.feature.download.utils.PlatformUtils.Companion.
 import me.shadow.eclipselauncher.feature.download.utils.VersionTypeUtils
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.utils.MCVersionRegex.Companion.RELEASE_REGEX
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
-import me.shadow.eclipselauncher.pojav.utils.JsonTreeUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.utils.JsonTreeUtils
 import java.io.IOException
 import java.util.TreeSet
 import java.util.function.Consumer
@@ -121,7 +121,7 @@ class CurseForgeCommonUtils {
                 dataObject.get("name").asString,
                 dataObject.get("summary").asString,
                 dataObject.get("downloadCount").asLong,
-                ZHTools.getDate(dataObject.get("dateCreated").asString),
+                EclipseTools.getDate(dataObject.get("dateCreated").asString),
                 getIconUrl(dataObject),
                 getAllCategories(dataObject).toList(),
             )
@@ -155,7 +155,7 @@ class CurseForgeCommonUtils {
                             infoItem.projectId,
                             data.get("displayName").asString,
                             data.get("downloadCount").asLong,
-                            ZHTools.getDate(data.get("fileDate").asString),
+                            EclipseTools.getDate(data.get("fileDate").asString),
                             mcVersions.toList(),
                             VersionTypeUtils.getVersionType(data.get("releaseType").asString),
                             data.get("fileName").asString,

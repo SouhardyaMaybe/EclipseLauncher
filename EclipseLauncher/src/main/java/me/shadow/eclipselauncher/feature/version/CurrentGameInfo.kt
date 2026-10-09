@@ -3,7 +3,7 @@ package me.shadow.eclipselauncher.feature.version
 import me.shadow.eclipselauncher.json.annotations.SerializedName
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap

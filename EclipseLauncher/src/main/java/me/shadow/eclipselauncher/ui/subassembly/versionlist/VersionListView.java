@@ -16,9 +16,9 @@ import me.shadow.eclipselauncher.task.TaskExecutors;
 import me.shadow.eclipselauncher.ui.subassembly.filelist.FileItemBean;
 import me.shadow.eclipselauncher.ui.subassembly.filelist.FileRecyclerViewCreator;
 
-import me.shadow.eclipselauncher.pojav.JMinecraftVersionList;
-import me.shadow.eclipselauncher.pojav.Tools;
-import me.shadow.eclipselauncher.pojav.utils.FilteredSubList;
+import me.shadow.eclipselauncher.core.JMinecraftVersionList;
+import me.shadow.eclipselauncher.core.Tools;
+import me.shadow.eclipselauncher.core.utils.FilteredSubList;
 
 import org.greenrobot.eventbus.EventBus;
 

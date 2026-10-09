@@ -8,7 +8,7 @@ import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.ui.subassembly.customprofilepath.ProfileItem
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 import java.io.FileWriter
 

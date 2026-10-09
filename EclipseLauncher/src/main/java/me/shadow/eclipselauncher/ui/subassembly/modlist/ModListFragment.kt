@@ -20,7 +20,7 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.FragmentModDownloadBinding
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.anim.AnimUtils
 import me.shadow.eclipselauncher.utils.anim.AnimUtils.Companion.playVisibilityAnim
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
@@ -68,7 +68,7 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
 
             refreshButton.setOnClickListener { refreshTask() }
             releaseVersion.setOnClickListener { initRefresh() }
-            returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
+            returnButton.setOnClickListener { EclipseTools.onBackPressed(requireActivity()) }
 
             backToTop.setOnClickListener { recyclerView.smoothScrollToPosition(0) }
         }
@@ -210,7 +210,7 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
     protected fun setLink(link: String?) {
         link?.let { uri ->
             binding.launchLink.apply {
-                this.setOnClickListener { ZHTools.openLink(fragmentActivity, uri) }
+                this.setOnClickListener { EclipseTools.openLink(fragmentActivity, uri) }
                 AnimUtils.setVisibilityAnim(this, true)
             }
         }

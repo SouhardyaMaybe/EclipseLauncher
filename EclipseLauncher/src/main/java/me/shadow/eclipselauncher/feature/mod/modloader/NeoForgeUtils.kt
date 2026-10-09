@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.mod.modloader
 
-import me.shadow.eclipselauncher.pojav.modloaders.ForgeVersionListHandler
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.modloaders.ForgeVersionListHandler
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import org.xml.sax.InputSource
 import org.xml.sax.SAXException
 import java.io.IOException

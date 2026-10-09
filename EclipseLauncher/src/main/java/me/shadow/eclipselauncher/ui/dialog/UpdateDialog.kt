@@ -15,7 +15,7 @@ import me.shadow.eclipselauncher.feature.update.UpdateUtils.Companion.getFileSiz
 import me.shadow.eclipselauncher.setting.AllSettings.Companion.ignoreUpdate
 import me.shadow.eclipselauncher.task.TaskExecutors.Companion.runInUIThread
 import me.shadow.eclipselauncher.ui.dialog.DraggableDialog.DialogInitializationListener
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.formatFileSize
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
 
@@ -48,7 +48,7 @@ class UpdateDialog(context: Context, private val launcherVersion: LauncherVersio
             fileSize.text = StringUtils.insertSpace(context.getString(R.string.update_dialog_file_size), formatFileSize(getFileSize(launcherVersion.fileSize)))
             versionType.text = StringUtils.insertSpace(context.getString(R.string.about_version_status), getVersionType())
 
-            ZHTools.getWebViewAfterProcessing(description)
+            EclipseTools.getWebViewAfterProcessing(description)
 
             description.settings.javaScriptEnabled = true
             description.loadDataWithBaseURL(null, StringUtils.markdownToHtml(getLanguageText(launcherVersion.description)), "text/html", "UTF-8", null)

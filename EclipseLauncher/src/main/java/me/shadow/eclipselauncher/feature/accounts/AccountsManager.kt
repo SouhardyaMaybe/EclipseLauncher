@@ -14,11 +14,11 @@ import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.authenticator.listener.DoneListener
-import me.shadow.eclipselauncher.pojav.authenticator.listener.ErrorListener
-import me.shadow.eclipselauncher.pojav.authenticator.microsoft.PresentedException
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.authenticator.listener.DoneListener
+import me.shadow.eclipselauncher.core.authenticator.listener.ErrorListener
+import me.shadow.eclipselauncher.core.authenticator.microsoft.PresentedException
+import me.shadow.eclipselauncher.core.value.MinecraftAccount
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.io.IOException

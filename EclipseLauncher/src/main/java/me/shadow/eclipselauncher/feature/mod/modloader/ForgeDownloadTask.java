@@ -7,10 +7,10 @@ import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.feature.version.install.InstallTask;
 import me.shadow.eclipselauncher.utils.path.PathManager;
 
-import me.shadow.eclipselauncher.pojav.Tools;
-import me.shadow.eclipselauncher.pojav.modloaders.ForgeUtils;
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper;
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils;
+import me.shadow.eclipselauncher.core.Tools;
+import me.shadow.eclipselauncher.core.modloaders.ForgeUtils;
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper;
+import me.shadow.eclipselauncher.core.utils.DownloadUtils;
 
 import java.io.File;
 import java.io.IOException;

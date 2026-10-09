@@ -2,10 +2,10 @@ package me.shadow.eclipselauncher.feature.accounts
 
 import android.content.Context
 import me.shadow.eclipselauncher.R
-import me.shadow.eclipselauncher.pojav.authenticator.listener.DoneListener
-import me.shadow.eclipselauncher.pojav.authenticator.listener.ErrorListener
-import me.shadow.eclipselauncher.pojav.authenticator.microsoft.MicrosoftBackgroundLogin
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
+import me.shadow.eclipselauncher.core.authenticator.listener.DoneListener
+import me.shadow.eclipselauncher.core.authenticator.listener.ErrorListener
+import me.shadow.eclipselauncher.core.authenticator.microsoft.MicrosoftBackgroundLogin
+import me.shadow.eclipselauncher.core.value.MinecraftAccount
 
 class AccountUtils {
     companion object {

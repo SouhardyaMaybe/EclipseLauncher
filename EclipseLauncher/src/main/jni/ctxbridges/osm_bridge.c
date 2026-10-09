@@ -95,16 +95,16 @@ void osm_make_current(osm_render_window_t* bundle) {
     }
     bool hasSetMainWindow = false;
     currentBundle = bundle;
-    if(pojav_environ->mainWindowBundle == NULL) {
-        pojav_environ->mainWindowBundle = (basic_render_window_t*) bundle;
-        __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is now %p", pojav_environ->mainWindowBundle);
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+    if(eclipse_environ->mainWindowBundle == NULL) {
+        eclipse_environ->mainWindowBundle = (basic_render_window_t*) bundle;
+        __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is now %p", eclipse_environ->mainWindowBundle);
+        eclipse_environ->mainWindowBundle->newNativeSurface = eclipse_environ->eclipseWindow;
         hasSetMainWindow = true;
     }
     if(bundle->nativeSurface == NULL) {
         //prepare the buffer for our first render!
         osm_swap_surfaces(bundle);
-        if(hasSetMainWindow) pojav_environ->mainWindowBundle->state = STATE_RENDERER_ALIVE;
+        if(hasSetMainWindow) eclipse_environ->mainWindowBundle->state = STATE_RENDERER_ALIVE;
     }
     if (!hasSetNoRendererBuffer)
     {
@@ -134,15 +134,15 @@ void osm_swap_buffers() {
 }
 
 void osm_setup_window() {
-    if(pojav_environ->mainWindowBundle != NULL) {
+    if(eclipse_environ->mainWindowBundle != NULL) {
         __android_log_print(ANDROID_LOG_INFO, g_LogTag, "Main window bundle is not NULL, changing state");
-        pojav_environ->mainWindowBundle->state = STATE_RENDERER_NEW_WINDOW;
-        pojav_environ->mainWindowBundle->newNativeSurface = pojav_environ->pojavWindow;
+        eclipse_environ->mainWindowBundle->state = STATE_RENDERER_NEW_WINDOW;
+        eclipse_environ->mainWindowBundle->newNativeSurface = eclipse_environ->eclipseWindow;
     }
 }
 
 void osm_swap_interval(int swapInterval) {
-    if(pojav_environ->mainWindowBundle != NULL && pojav_environ->mainWindowBundle->nativeSurface != NULL) {
-        setNativeWindowSwapInterval(pojav_environ->mainWindowBundle->nativeSurface, swapInterval);
+    if(eclipse_environ->mainWindowBundle != NULL && eclipse_environ->mainWindowBundle->nativeSurface != NULL) {
+        setNativeWindowSwapInterval(eclipse_environ->mainWindowBundle->nativeSurface, swapInterval);
     }
 }

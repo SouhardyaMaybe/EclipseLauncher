@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.ui.dialog;
 
-import static me.shadow.eclipselauncher.pojav.Tools.currentDisplayMetrics;
+import static me.shadow.eclipselauncher.core.Tools.currentDisplayMetrics;
 
 import android.view.View;
 import android.view.Window;

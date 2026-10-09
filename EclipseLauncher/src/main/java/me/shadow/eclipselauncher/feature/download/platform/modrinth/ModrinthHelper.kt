@@ -10,7 +10,7 @@ import me.shadow.eclipselauncher.feature.download.item.SearchResult
 import me.shadow.eclipselauncher.feature.download.item.VersionItem
 import me.shadow.eclipselauncher.feature.download.platform.AbstractPlatformHelper
 import me.shadow.eclipselauncher.feature.download.platform.PlatformNotSupportedException
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
 import java.io.File
 
 class ModrinthHelper : AbstractPlatformHelper(ApiHandler("https://api.modrinth.com/v2")) {

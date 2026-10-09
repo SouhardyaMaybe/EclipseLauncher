@@ -8,9 +8,9 @@ import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.feature.mod.modloader.ModVersionListAdapter
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.subassembly.modlist.ModListFragment
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.FabricVersion
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.FabricVersion
 import me.shadow.eclipselauncher.feature.mod.modloader.FabricLikeUtils
 import me.shadow.eclipselauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
 import org.greenrobot.eventbus.EventBus
@@ -97,7 +97,7 @@ abstract class DownloadFabricLikeFragment(val utils: FabricLikeUtils, val icon: 
                     utils.getDownloadTask(mcVersion, loaderVersion)
                 )
             )
-            ZHTools.onBackPressed(requireActivity())
+            EclipseTools.onBackPressed(requireActivity())
             true
         }
 

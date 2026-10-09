@@ -14,8 +14,8 @@ import me.shadow.eclipselauncher.feature.version.install.Addon
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
 import me.shadow.eclipselauncher.ui.subassembly.modlist.ModListFragment
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.Future
 import java.util.function.Consumer
@@ -115,7 +115,7 @@ class DownloadNeoForgeFragment : ModListFragment() {
                     NeoForgeDownloadTask(versionString)
                 )
             )
-            ZHTools.onBackPressed(requireActivity())
+            EclipseTools.onBackPressed(requireActivity())
             true
         }
 

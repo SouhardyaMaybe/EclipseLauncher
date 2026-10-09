@@ -32,11 +32,11 @@ import me.shadow.eclipselauncher.ui.fragment.download.addon.DownloadNeoForgeFrag
 import me.shadow.eclipselauncher.ui.fragment.download.addon.DownloadOptiFineFragment
 import me.shadow.eclipselauncher.ui.fragment.download.addon.DownloadQuiltApiFragment
 import me.shadow.eclipselauncher.ui.fragment.download.addon.DownloadQuiltFragment
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.runtime.SelectRuntimeUtils
-import me.shadow.eclipselauncher.pojav.JavaGUILauncherActivity
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.JavaGUILauncherActivity
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -179,7 +179,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
     private fun swapFragment(fragmentClass: Class<out Fragment>, tag: String) {
         val bundle = Bundle()
         bundle.putString(BUNDLE_MC_VERSION, mcVersion)
-        ZHTools.swapFragmentWithAnim(this, fragmentClass, tag, bundle)
+        EclipseTools.swapFragmentWithAnim(this, fragmentClass, tag, bundle)
     }
 
     /**
@@ -248,7 +248,7 @@ class InstallGameFragment : FragmentWithAnim(R.layout.fragment_install_game), Vi
                             .showDialog()
                     } else install()
                 }
-                back -> ZHTools.onBackPressed(activity)
+                back -> EclipseTools.onBackPressed(activity)
                 else -> {}
             }
         }

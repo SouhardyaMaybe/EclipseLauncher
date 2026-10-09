@@ -20,8 +20,8 @@ import me.shadow.eclipselauncher.feature.download.utils.DependencyUtils
 import me.shadow.eclipselauncher.feature.download.utils.ModLoaderUtils
 import me.shadow.eclipselauncher.feature.download.utils.PlatformUtils
 import me.shadow.eclipselauncher.feature.download.utils.VersionTypeUtils
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
 
 class ModrinthModHelper {
     companion object {
@@ -57,7 +57,7 @@ class ModrinthModHelper {
                         hit.get("title").asString,
                         hit.get("description").asString,
                         hit.get("downloads").asLong,
-                        ZHTools.getDate(hit.get("date_created").asString),
+                        EclipseTools.getDate(hit.get("date_created").asString),
                         ModrinthCommonUtils.getIconUrl(hit),
                         ModrinthCommonUtils.getAllCategories(hit).toList(),
                         modloaders
@@ -95,7 +95,7 @@ class ModrinthModHelper {
                                         hit.get("title").asString,
                                         hit.get("description").asString,
                                         hit.get("downloads").asLong,
-                                        ZHTools.getDate(hit.get("published").asString),
+                                        EclipseTools.getDate(hit.get("published").asString),
                                         ModrinthCommonUtils.getIconUrl(hit),
                                         ModrinthCommonUtils.getAllCategories(hit).toList(),
                                         getModLoaders(hit.getAsJsonArray("loaders")),
@@ -113,7 +113,7 @@ class ModrinthModHelper {
                         infoItem.projectId,
                         versionObject.get("name").asString,
                         versionObject.get("downloads").asLong,
-                        ZHTools.getDate(versionObject.get("date_published").asString),
+                        EclipseTools.getDate(versionObject.get("date_published").asString),
                         ModrinthCommonUtils.getMcVersions(versionObject.getAsJsonArray("game_versions")),
                         VersionTypeUtils.getVersionType(versionObject.get("version_type").asString),
                         filesJsonObject.get("filename").asString,
@@ -134,7 +134,7 @@ class ModrinthModHelper {
                     infoItem.projectId,
                     versionObject.get("name").asString,
                     versionObject.get("downloads").asLong,
-                    ZHTools.getDate(versionObject.get("date_published").asString),
+                    EclipseTools.getDate(versionObject.get("date_published").asString),
                     ModrinthCommonUtils.getMcVersions(versionObject.getAsJsonArray("game_versions")),
                     VersionTypeUtils.getVersionType(versionObject.get("version_type").asString),
                     filesJsonObject.get("filename").asString,

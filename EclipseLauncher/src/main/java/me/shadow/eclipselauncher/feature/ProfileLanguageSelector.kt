@@ -4,7 +4,7 @@ import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.Version
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.utils.MCVersionRegex
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.version.VersionNumbers
 import me.shadow.eclipselauncher.utils.version.VersionRanges
 
@@ -21,7 +21,7 @@ class ProfileLanguageSelector {
         }
 
         private fun getLanguage(minecraftVersion: Version, rawLang: String): String {
-            val lang = if (rawLang == "system") ZHTools.getSystemLanguage() else rawLang
+            val lang = if (rawLang == "system") EclipseTools.getSystemLanguage() else rawLang
 
             val version: String = minecraftVersion.getVersionInfo()?.minecraftVersion ?: "1.11"
 

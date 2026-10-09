@@ -28,12 +28,12 @@ import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.BaseSettingsWrappe
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.ListSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.path.UrlManager
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.contracts.OpenDocumentWithExtension
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.contracts.OpenDocumentWithExtension
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import java.io.File
@@ -46,7 +46,7 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension("zip", true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
-                val dialog = ZHTools.showTaskRunningDialog(requireActivity())
+                val dialog = EclipseTools.showTaskRunningDialog(requireActivity())
                 Task.runTask {
                     val pluginFiles = mutableListOf<File>()
                     uriList.forEach { uri ->
@@ -75,7 +75,7 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
                                     .setTitle(R.string.generic_warning)
                                     .setMessage(R.string.setting_renderer_local_import_restart)
                                     .setWarning()
-                                    .setConfirmClickListener { ZHTools.killProcess() }
+                                    .setConfirmClickListener { EclipseTools.killProcess() }
                                     .showDialog()
                             } else {
                                 TipDialog.Builder(requireActivity())
@@ -117,7 +117,7 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             renderers.rendererIdentifier.toTypedArray()
         )
 
-        binding.rendererDownload.setOnClickListener { ZHTools.openLink(context, UrlManager.URL_FCL_RENDERER_PLUGIN) }
+        binding.rendererDownload.setOnClickListener { EclipseTools.openLink(context, UrlManager.URL_FCL_RENDERER_PLUGIN) }
 
         BaseSettingsWrapper(
             context,
@@ -143,7 +143,7 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             driverNames
         )
 
-        binding.driverDownload.setOnClickListener { ZHTools.openLink(context, UrlManager.URL_FCL_DRIVER_PLUGIN) }
+        binding.driverDownload.setOnClickListener { EclipseTools.openLink(context, UrlManager.URL_FCL_DRIVER_PLUGIN) }
 
         val ignoreNotch = SwitchSettingsWrapper(
             context,

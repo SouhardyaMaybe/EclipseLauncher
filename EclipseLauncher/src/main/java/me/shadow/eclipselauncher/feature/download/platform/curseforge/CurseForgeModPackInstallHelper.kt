@@ -9,19 +9,19 @@ import me.shadow.eclipselauncher.feature.download.item.VersionItem
 import me.shadow.eclipselauncher.feature.download.platform.curseforge.CurseForgeCommonUtils.Companion.getDownloadSha1
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.mod.modpack.install.ModPackUtils
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ModDownloader
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.models.CurseManifest
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.models.CurseManifest.CurseMinecraft
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.models.CurseManifest.CurseModLoader
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
-import me.shadow.eclipselauncher.pojav.tasks.SpeedCalculator
-import me.shadow.eclipselauncher.pojav.utils.FileUtils
-import me.shadow.eclipselauncher.pojav.utils.ZipUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ModDownloader
+import me.shadow.eclipselauncher.core.modloaders.modpacks.models.CurseManifest
+import me.shadow.eclipselauncher.core.modloaders.modpacks.models.CurseManifest.CurseMinecraft
+import me.shadow.eclipselauncher.core.modloaders.modpacks.models.CurseManifest.CurseModLoader
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.tasks.SpeedCalculator
+import me.shadow.eclipselauncher.core.utils.FileUtils
+import me.shadow.eclipselauncher.core.utils.ZipUtils
 import java.io.File
 import java.io.IOException
 import java.util.zip.ZipFile
@@ -51,7 +51,7 @@ class CurseForgeModPackInstallHelper {
                 val speedCalculator = SpeedCalculator()
                 val modDownloader: ModDownloader = getModDownloader(api, targetPath, curseManifest)
                 modDownloader.awaitFinish { count: Int, totalCount: Int, downloadedSize: Long ->
-                    val currentTime = ZHTools.getCurrentTimeMillis()
+                    val currentTime = EclipseTools.getCurrentTimeMillis()
                     if (currentTime - progressUpdateTime < 150) return@awaitFinish
                     progressUpdateTime = currentTime
 

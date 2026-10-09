@@ -16,10 +16,10 @@ import me.shadow.eclipselauncher.feature.download.utils.CategoryUtils
 import me.shadow.eclipselauncher.feature.download.utils.PlatformUtils.Companion.safeRun
 import me.shadow.eclipselauncher.feature.download.utils.VersionTypeUtils
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
 import java.util.StringJoiner
 import java.util.TreeSet
 
@@ -134,7 +134,7 @@ class ModrinthCommonUtils {
                 hit.get("title").asString,
                 hit.get("description").asString,
                 hit.get("downloads").asLong,
-                ZHTools.getDate(hit.get("date_created").asString),
+                EclipseTools.getDate(hit.get("date_created").asString),
                 getIconUrl(hit),
                 getAllCategories(hit).toList(),
             )
@@ -151,7 +151,7 @@ class ModrinthCommonUtils {
                     hit.get("title").asString,
                     hit.get("description").asString,
                     hit.get("downloads").asLong,
-                    ZHTools.getDate(hit.get("published").asString),
+                    EclipseTools.getDate(hit.get("published").asString),
                     getIconUrl(hit),
                     getAllCategories(hit).toList()
                 )
@@ -200,7 +200,7 @@ class ModrinthCommonUtils {
                     infoItem.projectId,
                     versionObject.get("name").asString,
                     versionObject.get("downloads").asLong,
-                    ZHTools.getDate(versionObject.get("date_published").asString),
+                    EclipseTools.getDate(versionObject.get("date_published").asString),
                     getMcVersions(versionObject.getAsJsonArray("game_versions")),
                     VersionTypeUtils.getVersionType(versionObject.get("version_type").asString),
                     filesJsonObject.get("filename").asString,

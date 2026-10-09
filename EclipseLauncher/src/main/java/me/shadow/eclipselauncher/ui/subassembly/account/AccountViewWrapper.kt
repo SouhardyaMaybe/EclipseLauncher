@@ -10,9 +10,9 @@ import me.shadow.eclipselauncher.feature.accounts.AccountsManager
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.ui.fragment.AccountFragment
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.skin.SkinLoader
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 
 class AccountViewWrapper(private val parentFragment: FragmentWithAnim? = null, val binding: ViewAccountBinding) {
     private val mContext: Context = binding.root.context
@@ -20,7 +20,7 @@ class AccountViewWrapper(private val parentFragment: FragmentWithAnim? = null, v
     init {
         parentFragment?.let { fragment ->
             binding.root.setOnClickListener {
-                ZHTools.swapFragmentWithAnim(fragment, AccountFragment::class.java, AccountFragment.TAG, null)
+                EclipseTools.swapFragmentWithAnim(fragment, AccountFragment::class.java, AccountFragment.TAG, null)
             }
         }
     }

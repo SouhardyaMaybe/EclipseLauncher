@@ -11,7 +11,7 @@ import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.FileWriter
 
 class NewbieGuideUtils {

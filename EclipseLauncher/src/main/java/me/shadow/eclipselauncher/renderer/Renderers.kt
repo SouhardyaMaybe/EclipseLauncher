@@ -3,8 +3,8 @@ package me.shadow.eclipselauncher.renderer
 import android.content.Context
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.renderer.renderers.GL4ESRenderer
-import me.shadow.eclipselauncher.pojav.Architecture
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Architecture
+import me.shadow.eclipselauncher.core.Tools
 
 /**
  * Manager of every renderer: the launcher's built-in renderer and renderers loaded from renderer plugins

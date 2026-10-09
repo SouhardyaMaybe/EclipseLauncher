@@ -6,8 +6,8 @@ import me.shadow.eclipselauncher.mcgui.ProgressLayout
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.customprofilepath.ProfilePathHome
 import me.shadow.eclipselauncher.utils.path.LibPath
-import me.shadow.eclipselauncher.pojav.JavaGUILauncherActivity
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.JavaGUILauncherActivity
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
 import java.io.File
 import java.io.IOException
 import java.util.zip.ZipEntry

@@ -8,12 +8,12 @@ import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.mod.modloader.ModVersionListAdapter
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.subassembly.modlist.ModListFragment
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.feature.mod.modloader.ForgeDownloadTask
 import me.shadow.eclipselauncher.feature.version.install.Addon
 import me.shadow.eclipselauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
-import me.shadow.eclipselauncher.pojav.modloaders.ForgeUtils
+import me.shadow.eclipselauncher.core.modloaders.ForgeUtils
 import org.greenrobot.eventbus.EventBus
 import java.util.concurrent.Future
 import java.util.function.Consumer
@@ -102,7 +102,7 @@ class DownloadForgeFragment : ModListFragment() {
                 )
             )
 
-            ZHTools.onBackPressed(requireActivity())
+            EclipseTools.onBackPressed(requireActivity())
             true
         }
 

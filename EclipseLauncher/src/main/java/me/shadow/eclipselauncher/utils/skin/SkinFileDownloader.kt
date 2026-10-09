@@ -4,8 +4,8 @@ import me.shadow.eclipselauncher.json.JsonObject
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.utils.path.UrlManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream

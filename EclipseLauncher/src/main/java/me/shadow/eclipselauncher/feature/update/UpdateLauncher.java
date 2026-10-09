@@ -12,10 +12,10 @@ import androidx.annotation.NonNull;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.ui.dialog.ProgressDialog;
-import me.shadow.eclipselauncher.utils.ZHTools;
+import me.shadow.eclipselauncher.utils.EclipseTools;
 import me.shadow.eclipselauncher.utils.path.UrlManager;
 
-import me.shadow.eclipselauncher.pojav.Tools;
+import me.shadow.eclipselauncher.core.Tools;
 
 import me.shadow.eclipselauncher.utils.io.FileUtils;
 
@@ -87,7 +87,7 @@ public final class UpdateLauncher {
 
                         final long[] downloadedSize = new long[1];
                         final long[] lastSize = {0};
-                        final long[] lastTime = {ZHTools.getCurrentTimeMillis()};
+                        final long[] lastTime = {EclipseTools.getCurrentTimeMillis()};
 
                         //Limit the refresh rate
                         timer = new Timer();
@@ -95,7 +95,7 @@ public final class UpdateLauncher {
                             @Override
                             public void run() {
                                 long size = downloadedSize[0];
-                                long currentTime = ZHTools.getCurrentTimeMillis();
+                                long currentTime = EclipseTools.getCurrentTimeMillis();
                                 double timeElapsed = (currentTime - lastTime[0]) / 1000.0;
                                 long sizeChange = size - lastSize[0];
                                 long rate = (long) (sizeChange / timeElapsed);

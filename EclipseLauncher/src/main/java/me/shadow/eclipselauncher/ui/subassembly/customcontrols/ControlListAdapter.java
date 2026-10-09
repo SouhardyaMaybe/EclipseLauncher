@@ -22,7 +22,7 @@ import me.shadow.eclipselauncher.task.TaskExecutors;
 import me.shadow.eclipselauncher.ui.dialog.ControlInfoDialog;
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils;
 
-import me.shadow.eclipselauncher.pojav.Tools;
+import me.shadow.eclipselauncher.core.Tools;
 
 import java.util.ArrayList;
 import java.util.List;

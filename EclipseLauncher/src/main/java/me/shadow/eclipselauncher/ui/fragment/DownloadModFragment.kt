@@ -36,9 +36,9 @@ import me.shadow.eclipselauncher.ui.subassembly.modlist.ModListFragment
 import me.shadow.eclipselauncher.ui.subassembly.modlist.ModListItemBean
 import me.shadow.eclipselauncher.ui.view.AnimButton
 import me.shadow.eclipselauncher.utils.MCVersionRegex.Companion.RELEASE_REGEX
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import org.greenrobot.eventbus.EventBus
 import me.shadow.eclipselauncher.utils.version.VersionNumbers
 import java.util.Objects
@@ -251,11 +251,11 @@ class DownloadModFragment : ModListFragment() {
     private fun parseViewModel() {
         val viewModel = ViewModelProvider(fragmentActivity!!)[InfoViewModel::class.java]
         platformHelper = viewModel.platformHelper ?: run {
-            ZHTools.onBackPressed(fragmentActivity!!)
+            EclipseTools.onBackPressed(fragmentActivity!!)
             return
         }
         mInfoItem = viewModel.infoItem ?: run {
-            ZHTools.onBackPressed(fragmentActivity!!)
+            EclipseTools.onBackPressed(fragmentActivity!!)
             return
         }
     }

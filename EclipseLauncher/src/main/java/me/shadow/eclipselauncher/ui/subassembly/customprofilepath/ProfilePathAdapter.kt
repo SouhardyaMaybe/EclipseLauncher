@@ -21,7 +21,7 @@ import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.fragment.FilesFragment
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 
 class ProfilePathAdapter(
     private val fragment: FragmentWithAnim,
@@ -142,7 +142,7 @@ class ProfilePathAdapter(
                             val bundle = Bundle()
                             bundle.putString(FilesFragment.BUNDLE_LOCK_PATH, Environment.getExternalStorageDirectory().absolutePath)
                             bundle.putString(FilesFragment.BUNDLE_LIST_PATH, profileItem.path)
-                            ZHTools.swapFragmentWithAnim(
+                            EclipseTools.swapFragmentWithAnim(
                                 fragment,
                                 FilesFragment::class.java, FilesFragment.TAG, bundle
                             )

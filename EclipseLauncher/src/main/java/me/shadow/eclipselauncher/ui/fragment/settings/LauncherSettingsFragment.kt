@@ -18,8 +18,8 @@ import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.ListSettingsWrappe
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import me.shadow.eclipselauncher.utils.CleanUpCache.Companion.start
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.LauncherActivity
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.LauncherActivity
 import org.greenrobot.eventbus.EventBus
 
 class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fragment_launcher, SettingCategory.LAUNCHER) {
@@ -95,7 +95,7 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             binding.customBackgroundLayout
         ) {
             parentFragment?.apply {
-                ZHTools.swapFragmentWithAnim(
+                EclipseTools.swapFragmentWithAnim(
                     this,
                     CustomBackgroundFragment::class.java,
                     CustomBackgroundFragment.TAG,
@@ -179,7 +179,7 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
     private fun setupNotificationRequestPreference(notificationPermissionRequest: SwitchSettingsWrapper) {
         val activity = requireActivity()
         if (activity is LauncherActivity) {
-            if (ZHTools.checkForNotificationPermission()) notificationPermissionRequest.setGone()
+            if (EclipseTools.checkForNotificationPermission()) notificationPermissionRequest.setGone()
             notificationPermissionRequest.switchView.setOnCheckedChangeListener { _, _ ->
                 activity.askForNotificationPermission {
                     notificationPermissionRequest.mainView.visibility = View.GONE

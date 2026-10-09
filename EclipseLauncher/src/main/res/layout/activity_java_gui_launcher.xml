@@ -10,7 +10,7 @@
         android:layout_height="match_parent"
         android:background="#000000">
 
-        <me.shadow.eclipselauncher.pojav.customcontrols.keyboard.TouchCharInput
+        <me.shadow.eclipselauncher.core.customcontrols.keyboard.TouchCharInput
             android:id="@+id/awt_touch_char"
             android:layout_width="1dp"
             android:layout_height="1dp"
@@ -20,7 +20,7 @@
             android:inputType="textFilter|textImeMultiLine|textAutoComplete|textAutoCorrect"
             tools:ignore="MissingConstraints,TouchTargetSizeCheck" />
 
-        <me.shadow.eclipselauncher.pojav.AWTCanvasView
+        <me.shadow.eclipselauncher.core.AWTCanvasView
             android:id="@+id/texture_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

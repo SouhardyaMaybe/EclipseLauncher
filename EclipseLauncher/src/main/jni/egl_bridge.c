@@ -48,10 +48,10 @@ struct PotatoBridge potatoBridge;
 void* loadTurnipVulkan();
 void calculateFPS();
 
-EXTERNAL_API void pojavTerminate() {
+EXTERNAL_API void eclipseTerminate() {
     printf("EGLBridge: Terminating\n");
 
-    switch (pojav_environ->config_renderer) {
+    switch (eclipse_environ->config_renderer) {
         case RENDERER_GL4ES: {
             eglMakeCurrent_p(potatoBridge.eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
             eglDestroySurface_p(potatoBridge.eglDisplay, potatoBridge.eglSurface);
@@ -71,18 +71,18 @@ EXTERNAL_API void pojavTerminate() {
     }
 }
 
-JNIEXPORT void JNICALL Java_me_shadow_eclipselauncher_pojav_utils_JREUtils_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
-    pojav_environ->pojavWindow = ANativeWindow_fromSurface(env, surface);
+JNIEXPORT void JNICALL Java_me_shadow_eclipselauncher_core_utils_JREUtils_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
+    eclipse_environ->eclipseWindow = ANativeWindow_fromSurface(env, surface);
     if (br_setup_window) br_setup_window();
 }
 
 JNIEXPORT void JNICALL
-Java_me_shadow_eclipselauncher_pojav_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz) {
-    ANativeWindow_release(pojav_environ->pojavWindow);
+Java_me_shadow_eclipselauncher_core_utils_JREUtils_releaseBridgeWindow(ABI_COMPAT JNIEnv *env, ABI_COMPAT jclass clazz) {
+    ANativeWindow_release(eclipse_environ->eclipseWindow);
 }
 
-EXTERNAL_API void* pojavGetCurrentContext() {
-    if (pojav_environ->config_renderer == RENDERER_VIRGL)
+EXTERNAL_API void* eclipseGetCurrentContext() {
+    if (eclipse_environ->config_renderer == RENDERER_VIRGL)
         return virglGetCurrentContext();
 
     return br_get_current();
@@ -95,7 +95,7 @@ static void set_vulkan_ptr(void* ptr) {
 }
 
 void load_vulkan() {
-    const char* zinkPreferSystemDriver = getenv("POJAV_ZINK_PREFER_SYSTEM_DRIVER");
+    const char* zinkPreferSystemDriver = getenv("ECLIPSE_ZINK_PREFER_SYSTEM_DRIVER");
     int deviceApiLevel = android_get_device_api_level();
     if (zinkPreferSystemDriver == NULL && deviceApiLevel >= 28) {
 #ifdef ADRENO_POSSIBLE
@@ -115,30 +115,30 @@ void load_vulkan() {
     set_vulkan_ptr(vulkanPtr);
 }
 
-int pojavInitOpenGL() {
+int eclipseInitOpenGL() {
     const char *forceVsync = getenv("FORCE_VSYNC");
     if (!strcmp(forceVsync, "true"))
-        pojav_environ->force_vsync = true;
+        eclipse_environ->force_vsync = true;
 
-    const char *renderer = getenv("POJAV_RENDERER");
+    const char *renderer = getenv("ECLIPSE_RENDERER");
 
     load_vulkan();
 
     if (!strncmp("opengles", renderer, 8))
     {
-        pojav_environ->config_renderer = RENDERER_GL4ES;
+        eclipse_environ->config_renderer = RENDERER_GL4ES;
         set_gl_bridge_tbl();
     }
 
     if (!strcmp(renderer, "custom_gallium"))
     {
-        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        eclipse_environ->config_renderer = RENDERER_VK_ZINK;
         set_osm_bridge_tbl();
     }
 
     if (!strcmp(renderer, "vulkan_zink"))
     {
-        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        eclipse_environ->config_renderer = RENDERER_VK_ZINK;
         load_vulkan();
         setenv("GALLIUM_DRIVER", "zink", 1);
         set_osm_bridge_tbl();
@@ -146,7 +146,7 @@ int pojavInitOpenGL() {
 
     if (!strcmp(renderer, "gallium_freedreno"))
     {
-        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        eclipse_environ->config_renderer = RENDERER_VK_ZINK;
         setenv("MESA_LOADER_DRIVER_OVERRIDE", "kgsl", 1);
         setenv("GALLIUM_DRIVER", "freedreno", 1);
         set_osm_bridge_tbl();
@@ -154,7 +154,7 @@ int pojavInitOpenGL() {
 
     if (!strcmp(renderer, "gallium_panfrost"))
     {
-        pojav_environ->config_renderer = RENDERER_VK_ZINK;
+        eclipse_environ->config_renderer = RENDERER_VK_ZINK;
         setenv("GALLIUM_DRIVER", "panfrost", 1);
         setenv("MESA_DISK_CACHE_SINGLE_FILE", "1", 1);
         set_osm_bridge_tbl();
@@ -162,7 +162,7 @@ int pojavInitOpenGL() {
 
     if (!strcmp(renderer, "gallium_virgl"))
     {
-        pojav_environ->config_renderer = RENDERER_VIRGL;
+        eclipse_environ->config_renderer = RENDERER_VIRGL;
         setenv("GALLIUM_DRIVER", "virpipe", 1);
         setenv("OSMESA_NO_FLUSH_FRONTBUFFER", "1", false);
         setenv("MESA_GL_VERSION_OVERRIDE", "4.3", 1);
@@ -179,26 +179,26 @@ int pojavInitOpenGL() {
     return 0;
 }
 
-EXTERNAL_API int pojavInit() {
-    ANativeWindow_acquire(pojav_environ->pojavWindow);
-    pojav_environ->savedWidth = ANativeWindow_getWidth(pojav_environ->pojavWindow);
-    pojav_environ->savedHeight = ANativeWindow_getHeight(pojav_environ->pojavWindow);
-    ANativeWindow_setBuffersGeometry(pojav_environ->pojavWindow,pojav_environ->savedWidth,pojav_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
-    pojavInitOpenGL();
+EXTERNAL_API int eclipseInit() {
+    ANativeWindow_acquire(eclipse_environ->eclipseWindow);
+    eclipse_environ->savedWidth = ANativeWindow_getWidth(eclipse_environ->eclipseWindow);
+    eclipse_environ->savedHeight = ANativeWindow_getHeight(eclipse_environ->eclipseWindow);
+    ANativeWindow_setBuffersGeometry(eclipse_environ->eclipseWindow,eclipse_environ->savedWidth,eclipse_environ->savedHeight,AHARDWAREBUFFER_FORMAT_R8G8B8X8_UNORM);
+    eclipseInitOpenGL();
     return 1;
 }
 
-EXTERNAL_API void pojavSetWindowHint(int hint, int value) {
+EXTERNAL_API void eclipseSetWindowHint(int hint, int value) {
     if (hint != GLFW_CLIENT_API) return;
     switch (value) {
         case GLFW_NO_API:
-            pojav_environ->config_renderer = RENDERER_VULKAN;
+            eclipse_environ->config_renderer = RENDERER_VULKAN;
             /* Nothing to do: initialization is handled in Java-side */
-            // pojavInitVulkan();
+            // eclipseInitVulkan();
             break;
         case GLFW_OPENGL_API:
-            /* Nothing to do: initialization is called in pojavCreateContext */
-            // pojavInitOpenGL();
+            /* Nothing to do: initialization is called in eclipseCreateContext */
+            // eclipseInitOpenGL();
             break;
         default:
             printf("GLFW: Unimplemented API 0x%x\n", value);
@@ -206,41 +206,41 @@ EXTERNAL_API void pojavSetWindowHint(int hint, int value) {
     }
 }
 
-EXTERNAL_API void pojavSwapBuffers() {
+EXTERNAL_API void eclipseSwapBuffers() {
     calculateFPS();
 
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK
-     || pojav_environ->config_renderer == RENDERER_GL4ES)
+    if (eclipse_environ->config_renderer == RENDERER_VK_ZINK
+     || eclipse_environ->config_renderer == RENDERER_GL4ES)
     {
         br_swap_buffers();
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VIRGL)
+    if (eclipse_environ->config_renderer == RENDERER_VIRGL)
     {
         virglSwapBuffers();
     }
 
 }
 
-EXTERNAL_API void pojavMakeCurrent(void* window) {
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK
-     || pojav_environ->config_renderer == RENDERER_GL4ES)
+EXTERNAL_API void eclipseMakeCurrent(void* window) {
+    if (eclipse_environ->config_renderer == RENDERER_VK_ZINK
+     || eclipse_environ->config_renderer == RENDERER_GL4ES)
     {
         br_make_current((basic_render_window_t*)window);
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VIRGL)
+    if (eclipse_environ->config_renderer == RENDERER_VIRGL)
     {
         virglMakeCurrent(window);
     }
 
 }
 
-EXTERNAL_API void* pojavCreateContext(void* contextSrc) {
-    if (pojav_environ->config_renderer == RENDERER_VULKAN)
-        return (void *) pojav_environ->pojavWindow;
+EXTERNAL_API void* eclipseCreateContext(void* contextSrc) {
+    if (eclipse_environ->config_renderer == RENDERER_VULKAN)
+        return (void *) eclipse_environ->eclipseWindow;
 
-    if (pojav_environ->config_renderer == RENDERER_VIRGL)
+    if (eclipse_environ->config_renderer == RENDERER_VIRGL)
         return virglCreateContext(contextSrc);
 
     return br_init_context((basic_render_window_t*)contextSrc);
@@ -280,14 +280,14 @@ Java_org_lwjgl_vulkan_VK_getVulkanDriverHandle(ABI_COMPAT JNIEnv *env, ABI_COMPA
     return (jlong) maybe_load_vulkan();
 }
 
-EXTERNAL_API void pojavSwapInterval(int interval) {
-    if (pojav_environ->config_renderer == RENDERER_VK_ZINK
-     || pojav_environ->config_renderer == RENDERER_GL4ES)
+EXTERNAL_API void eclipseSwapInterval(int interval) {
+    if (eclipse_environ->config_renderer == RENDERER_VK_ZINK
+     || eclipse_environ->config_renderer == RENDERER_GL4ES)
     {
         br_swap_interval(interval);
     }
 
-    if (pojav_environ->config_renderer == RENDERER_VIRGL)
+    if (eclipse_environ->config_renderer == RENDERER_VIRGL)
     {
         virglSwapInterval(interval);
     }

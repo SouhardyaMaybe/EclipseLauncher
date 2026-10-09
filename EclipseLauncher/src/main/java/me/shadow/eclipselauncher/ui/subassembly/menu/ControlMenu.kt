@@ -9,12 +9,12 @@ import android.widget.SeekBar
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.ViewControlMenuBinding
 import me.shadow.eclipselauncher.setting.AllSettings
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.customcontrols.ControlData
-import me.shadow.eclipselauncher.pojav.customcontrols.ControlDrawerData
-import me.shadow.eclipselauncher.pojav.customcontrols.ControlJoystickData
-import me.shadow.eclipselauncher.pojav.customcontrols.ControlLayout
-import me.shadow.eclipselauncher.pojav.customcontrols.EditorExitable
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.customcontrols.ControlData
+import me.shadow.eclipselauncher.core.customcontrols.ControlDrawerData
+import me.shadow.eclipselauncher.core.customcontrols.ControlJoystickData
+import me.shadow.eclipselauncher.core.customcontrols.ControlLayout
+import me.shadow.eclipselauncher.core.customcontrols.EditorExitable
 
 class ControlMenu(
     private val activity: Activity,

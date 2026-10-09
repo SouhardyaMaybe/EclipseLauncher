@@ -36,10 +36,10 @@ import me.shadow.eclipselauncher.ui.dialog.SelectVersionDialog
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
 import me.shadow.eclipselauncher.ui.subassembly.adapter.ObjectSpinnerAdapter
 import me.shadow.eclipselauncher.ui.subassembly.versionlist.VersionSelectedListener
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import com.skydoves.powerspinner.PowerSpinnerView
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.util.concurrent.Future
@@ -184,7 +184,7 @@ abstract class AbstractResourceDownloadFragment(
                 mFilters.mcVersion = null
             }
 
-            returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
+            returnButton.setOnClickListener { EclipseTools.onBackPressed(requireActivity()) }
         }
 
         checkSearch()

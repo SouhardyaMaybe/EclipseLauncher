@@ -40,12 +40,12 @@ import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.subassembly.account.AccountAdapter
 import me.shadow.eclipselauncher.ui.subassembly.account.AccountAdapter.AccountUpdateListener
 import me.shadow.eclipselauncher.ui.subassembly.account.SelectAccountListener
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.http.NetworkUtils
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.skin.UserCosmetics
-import me.shadow.eclipselauncher.pojav.fragments.MicrosoftLoginFragment
-import me.shadow.eclipselauncher.pojav.value.MinecraftAccount
+import me.shadow.eclipselauncher.core.fragments.MicrosoftLoginFragment
+import me.shadow.eclipselauncher.core.value.MinecraftAccount
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -216,7 +216,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
                 if (fromUser) { // Only respond to manual clicks, otherwise the Microsoft login screen would keep opening
                     when (toIndex) {
                         // Microsoft account
-                        0 -> ZHTools.swapFragmentWithAnim(
+                        0 -> EclipseTools.swapFragmentWithAnim(
                             this@AccountFragment,
                             MicrosoftLoginFragment::class.java,
                             MicrosoftLoginFragment.TAG,
@@ -427,7 +427,7 @@ class AccountFragment : FragmentWithAnim(R.layout.fragment_account), View.OnClic
         val activity = requireActivity()
         binding.apply {
             when (v) {
-                returnButton -> ZHTools.onBackPressed(activity)
+                returnButton -> EclipseTools.onBackPressed(activity)
                 else -> {}
             }
         }

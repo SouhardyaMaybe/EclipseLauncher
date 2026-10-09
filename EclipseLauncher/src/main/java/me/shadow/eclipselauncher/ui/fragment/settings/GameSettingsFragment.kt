@@ -22,10 +22,10 @@ import me.shadow.eclipselauncher.utils.platform.MemoryUtils.Companion.getFreeDev
 import me.shadow.eclipselauncher.utils.platform.MemoryUtils.Companion.getTotalDeviceMemory
 import me.shadow.eclipselauncher.utils.platform.MemoryUtils.Companion.getUsedDeviceMemory
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
-import me.shadow.eclipselauncher.pojav.Architecture
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.contracts.OpenDocumentWithExtension
-import me.shadow.eclipselauncher.pojav.multirt.MultiRTConfigDialog
+import me.shadow.eclipselauncher.core.Architecture
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.contracts.OpenDocumentWithExtension
+import me.shadow.eclipselauncher.core.multirt.MultiRTConfigDialog
 import kotlin.math.min
 
 class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment_game, SettingCategory.GAME) {

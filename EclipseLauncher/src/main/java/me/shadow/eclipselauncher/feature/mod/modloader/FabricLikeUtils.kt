@@ -5,9 +5,9 @@ import me.shadow.eclipselauncher.json.JsonArray
 import me.shadow.eclipselauncher.json.JsonSyntaxException
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.feature.version.install.Addon
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.FabricVersion
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.FabricVersion
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import org.json.JSONArray
 import org.json.JSONException
 import java.io.IOException

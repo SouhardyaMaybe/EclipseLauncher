@@ -7,10 +7,10 @@ import me.shadow.eclipselauncher.event.value.InstallGameEvent
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionsManager
 import me.shadow.eclipselauncher.task.Task
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
-import me.shadow.eclipselauncher.pojav.tasks.AsyncMinecraftDownloader
-import me.shadow.eclipselauncher.pojav.tasks.MinecraftDownloader
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.tasks.AsyncMinecraftDownloader
+import me.shadow.eclipselauncher.core.tasks.MinecraftDownloader
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.util.concurrent.atomic.AtomicReference

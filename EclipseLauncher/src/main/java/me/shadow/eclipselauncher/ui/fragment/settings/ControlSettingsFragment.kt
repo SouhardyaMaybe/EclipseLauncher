@@ -18,9 +18,9 @@ import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.BaseSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import fr.spse.gamepad_remapper.Remapper
-import me.shadow.eclipselauncher.pojav.fragments.GamepadMapperFragment
+import me.shadow.eclipselauncher.core.fragments.GamepadMapperFragment
 
 class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fragment_control, SettingCategory.CONTROL) {
     private lateinit var binding: SettingsFragmentControlBinding
@@ -118,7 +118,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             binding.customMouseLayout
         ) {
             parentFragment?.apply {
-                ZHTools.swapFragmentWithAnim(
+                EclipseTools.swapFragmentWithAnim(
                     this,
                     CustomMouseFragment::class.java,
                     CustomMouseFragment.TAG,
@@ -182,7 +182,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             binding.changeControllerBindingsLayout
         ) {
             parentFragment?.apply {
-                ZHTools.swapFragmentWithAnim(
+                EclipseTools.swapFragmentWithAnim(
                     this,
                     GamepadMapperFragment::class.java,
                     GamepadMapperFragment.TAG,

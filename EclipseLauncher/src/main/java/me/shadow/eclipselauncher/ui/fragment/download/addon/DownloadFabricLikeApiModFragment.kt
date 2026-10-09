@@ -13,8 +13,8 @@ import me.shadow.eclipselauncher.feature.mod.modloader.FabricLikeApiModDownloadT
 import me.shadow.eclipselauncher.feature.mod.modloader.ModVersionListAdapter
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.subassembly.modlist.ModListFragment
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.feature.version.install.Addon
 import me.shadow.eclipselauncher.ui.fragment.InstallGameFragment.Companion.BUNDLE_MC_VERSION
 import org.greenrobot.eventbus.EventBus
@@ -110,7 +110,7 @@ abstract class DownloadFabricLikeApiModFragment(
                     FabricLikeApiModDownloadTask(addon.addonName, apiVersion)
                 )
             )
-            ZHTools.onBackPressed(requireActivity())
+            EclipseTools.onBackPressed(requireActivity())
             true
         }
 

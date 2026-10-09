@@ -12,10 +12,10 @@ import me.shadow.eclipselauncher.feature.download.platform.AbstractPlatformHelpe
 import me.shadow.eclipselauncher.feature.download.utils.CategoryUtils
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.contracts.OpenDocumentWithExtension
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.contracts.OpenDocumentWithExtension
 
 class ResourcePackDownloadFragment(parentFragment: Fragment? = null) : AbstractResourceDownloadFragment(
     parentFragment,
@@ -29,7 +29,7 @@ class ResourcePackDownloadFragment(parentFragment: Fragment? = null) : AbstractR
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension("zip", true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
-                val dialog = ZHTools.showTaskRunningDialog(requireContext())
+                val dialog = EclipseTools.showTaskRunningDialog(requireContext())
                 Task.runTask {
                     uriList.forEach { uri ->
                         FileTools.copyFileInBackground(requireActivity(), uri, getResourcePackPath().absolutePath)

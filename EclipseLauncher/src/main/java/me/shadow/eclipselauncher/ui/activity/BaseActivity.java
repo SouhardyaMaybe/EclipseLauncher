@@ -18,8 +18,8 @@ import me.shadow.eclipselauncher.renderer.Renderers;
 import me.shadow.eclipselauncher.setting.AllSettings;
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils;
 
-import me.shadow.eclipselauncher.pojav.MissingStorageActivity;
-import me.shadow.eclipselauncher.pojav.Tools;
+import me.shadow.eclipselauncher.core.MissingStorageActivity;
+import me.shadow.eclipselauncher.core.Tools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

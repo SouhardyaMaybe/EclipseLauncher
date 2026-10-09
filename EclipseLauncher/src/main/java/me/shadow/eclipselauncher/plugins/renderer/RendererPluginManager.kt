@@ -8,9 +8,9 @@ import me.shadow.eclipselauncher.feature.update.UpdateUtils
 import me.shadow.eclipselauncher.renderer.Renderers
 import me.shadow.eclipselauncher.utils.path.PathManager
 import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt
-import me.shadow.eclipselauncher.pojav.Architecture
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.utils.ZipUtils
+import me.shadow.eclipselauncher.core.Architecture
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.utils.ZipUtils
 import java.io.DataInputStream
 import java.io.File
 import java.io.FileInputStream
@@ -100,27 +100,28 @@ object RendererPluginManager {
             ) {
                 val rendererString = metaData.getString("renderer") ?: return
                 val des = metaData.getString("des") ?: return
-                val pojavEnvString = metaData.getString("pojavEnv") ?: return
+                // Plugins published for the old ecosystem use the legacy manifest key
+                val eclipseEnvString = metaData.getString("eclipseEnv") ?: metaData.getString("pojavEnv") ?: return
                 val nativeLibraryDir = info.nativeLibraryDir
                 val renderer = rendererString.split(":")
 
                 var rendererId: String = renderer[0]
                 val envList = mutableMapOf<String, String>()
                 val dlopenList = mutableListOf<String>()
-                pojavEnvString.split(":").forEach { envString ->
+                eclipseEnvString.split(":").forEach { envString ->
                     if (envString.contains("=")) {
                         val stringList = envString.split("=")
                         val key = stringList[0]
                         val value = stringList[1]
                         when (key) {
-                            "POJAV_RENDERER" -> rendererId = value
+                            "ECLIPSE_RENDERER", "POJAV_RENDERER" -> rendererId = value
                             "DLOPEN" -> {
                                 value.split(",").forEach { lib ->
                                     dlopenList.add(lib)
                                 }
                             }
                             "LIB_MESA_NAME", "MESA_LIBRARY" -> envList[key] = "$nativeLibraryDir/$value"
-                            else -> envList[key] = value
+                            else -> envList[legacyEnvKey(key)] = value
                         }
                     }
                 }
@@ -198,7 +199,9 @@ object RendererPluginManager {
                 glName,
                 eglName.progressEglName(libPath),
                 libPath,
-                pojavEnv.filter { it.key != "POJAV_RENDERER" },
+                eclipseEnv
+                    .filterKeys { it != "ECLIPSE_RENDERER" && it != "POJAV_RENDERER" }
+                    .mapKeys { legacyEnvKey(it.key) },
                 dlopenList ?: emptyList(),
                 directory
             )
@@ -207,6 +210,18 @@ object RendererPluginManager {
             localRendererPluginList.add(plugin)
         }
         return true
+    }
+
+    /**
+     * Normalize env keys published by third-party renderer plugins. Plugins built for the
+     * legacy ecosystem use the old branded prefixes; those are mapped to the current
+     * ECLIPSE_/ECLIPSEEXEC_ names so the game keeps receiving the same variables. Every other
+     * key (LIBGL_*, MESA_*, DLOPEN, ...) is returned unchanged.
+     */
+    private fun legacyEnvKey(key: String): String = when {
+        key.startsWith("POJAVEXEC_") -> "ECLIPSEEXEC_" + key.removePrefix("POJAVEXEC_")
+        key.startsWith("POJAV_") -> "ECLIPSE_" + key.removePrefix("POJAV_")
+        else -> key
     }
 
     private fun String.progressEglName(libPath: String): String =

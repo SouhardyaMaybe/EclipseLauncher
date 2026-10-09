@@ -33,19 +33,19 @@
             android:visibility="gone"
             android:padding="@dimen/_8sdp"/>
 
-        <me.shadow.eclipselauncher.pojav.customcontrols.ControlLayout
+        <me.shadow.eclipselauncher.core.customcontrols.ControlLayout
             android:id="@+id/main_control_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <me.shadow.eclipselauncher.pojav.MinecraftGLSurface
+            <me.shadow.eclipselauncher.core.MinecraftGLSurface
                 android:id="@+id/main_game_render_view"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:defaultFocusHighlightEnabled="false"
                 tools:ignore="UnusedAttribute" />
 
-            <me.shadow.eclipselauncher.pojav.customcontrols.mouse.Touchpad
+            <me.shadow.eclipselauncher.core.customcontrols.mouse.Touchpad
                 android:id="@+id/main_touchpad"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -54,7 +54,7 @@
                 android:translationZ="2dp"
                 android:visibility="gone" />
 
-            <me.shadow.eclipselauncher.pojav.customcontrols.keyboard.TouchCharInput
+            <me.shadow.eclipselauncher.core.customcontrols.keyboard.TouchCharInput
                 android:id="@+id/mainTouchCharInput"
                 android:layout_width="1dp"
                 android:layout_height="1dp"
@@ -64,9 +64,9 @@
                 android:inputType="textFilter|textImeMultiLine|textAutoComplete|textAutoCorrect"
                 tools:ignore="TouchTargetSizeCheck" />
 
-        </me.shadow.eclipselauncher.pojav.customcontrols.ControlLayout>
+        </me.shadow.eclipselauncher.core.customcontrols.ControlLayout>
 
-        <me.shadow.eclipselauncher.pojav.customcontrols.mouse.HotbarView
+        <me.shadow.eclipselauncher.core.customcontrols.mouse.HotbarView
             android:id="@+id/hotbar_view"
             android:layout_width="0px"
             android:layout_height="0px"/>

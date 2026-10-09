@@ -35,7 +35,7 @@ static jlong ndlopen_bugfix(__attribute__((unused)) JNIEnv *env,
     // It is not a problem as most of the libraries are in the launcher path, but when you try to run
     // VulkanMod which loads shaderc outside of the default jni libs directory through this method,
     // it can't load it because the path is not in the allowed paths for the anonymous namesapce.
-    // This method fixes the issue by being in libpojavexec, and thus being in the classloader namespace
+    // This method fixes the issue by being in libeclipseexec, and thus being in the classloader namespace
 
     int mode = (int)jmode;
     return (jlong) dlopen(filename, mode);
@@ -46,7 +46,7 @@ static jlong ndlopen_bugfix(__attribute__((unused)) JNIEnv *env,
  */
 void installLwjglDlopenHook() {
     __android_log_print(ANDROID_LOG_INFO, "LwjglLinkerHook", "Installing LWJGL dlopen() hook");
-    JNIEnv* env = pojav_environ->runtimeJNIEnvPtr_JRE;
+    JNIEnv* env = eclipse_environ->runtimeJNIEnvPtr_JRE;
     jclass dynamicLinkLoader = (*env)->FindClass(env, "org/lwjgl/system/linux/DynamicLinkLoader");
     if(dynamicLinkLoader == NULL) {
         __android_log_print(ANDROID_LOG_ERROR, "LwjglLinkerHook", "Failed to find the target class");

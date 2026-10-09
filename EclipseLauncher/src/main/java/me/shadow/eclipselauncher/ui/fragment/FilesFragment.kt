@@ -26,12 +26,12 @@ import me.shadow.eclipselauncher.ui.subassembly.filelist.FileSelectedListener
 import me.shadow.eclipselauncher.ui.subassembly.view.SearchViewWrapper
 import me.shadow.eclipselauncher.utils.NewbieGuideUtils
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.anim.AnimUtils.Companion.setVisibilityAnim
 import me.shadow.eclipselauncher.utils.file.FileTools
 import me.shadow.eclipselauncher.utils.file.PasteFile
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.contracts.OpenDocumentWithExtension
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.contracts.OpenDocumentWithExtension
 import org.greenrobot.eventbus.EventBus
 import java.io.File
 import java.util.Objects
@@ -68,7 +68,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
         super.onCreate(savedInstanceState)
         openDocumentLauncher = registerForActivityResult(OpenDocumentWithExtension(null, true)) { uris: List<Uri>? ->
             uris?.let { uriList ->
-                val dialog = ZHTools.showTaskRunningDialog((requireContext()))
+                val dialog = EclipseTools.showTaskRunningDialog((requireContext()))
                 Task.runTask {
                     uriList.forEach { uri ->
                         FileTools.copyFileInBackground(requireContext(), uri, binding.fileRecyclerView.fullPath.absolutePath)
@@ -392,7 +392,7 @@ class FilesFragment : FragmentWithAnim(R.layout.fragment_files) {
         binding.operateView.apply {
             pasteButton.setVisibility(if (PasteFile.getInstance().pasteType != null) View.VISIBLE else View.GONE)
 
-            ZHTools.setTooltipText(
+            EclipseTools.setTooltipText(
                 returnButton,
                 addFileButton,
                 createFolderButton,

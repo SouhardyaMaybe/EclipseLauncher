@@ -37,7 +37,7 @@ void dlsym_EGL() {
     {
         eglName = "libEGL_angle.so";
     } else {
-        eglName = getenv("POJAVEXEC_EGL");
+        eglName = getenv("ECLIPSEEXEC_EGL");
     }
 
     if (eglName)

@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.version
 
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.core.Tools
 import java.io.File
 import java.io.FileWriter
 

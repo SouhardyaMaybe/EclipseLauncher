@@ -23,12 +23,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <me.shadow.eclipselauncher.pojav.customcontrols.ControlLayout
+        <me.shadow.eclipselauncher.core.customcontrols.ControlLayout
             android:id="@+id/customctrl_controllayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        </me.shadow.eclipselauncher.pojav.customcontrols.ControlLayout>
+        </me.shadow.eclipselauncher.core.customcontrols.ControlLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -5,7 +5,7 @@ import android.app.Activity
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.path.UrlManager
 
 class LocalAccountUtils {
@@ -40,7 +40,7 @@ class LocalAccountUtils {
                 .setCheckBox(R.string.generic_no_more_reminders)
                 .setConfirmClickListener(confirmClickListener)
                 .setConfirm(confirm)
-                .setCancelClickListener { ZHTools.openLink(activity, UrlManager.URL_MINECRAFT) }
+                .setCancelClickListener { EclipseTools.openLink(activity, UrlManager.URL_MINECRAFT) }
                 .setCancel(R.string.account_purchase_minecraft_account)
                 .showDialog()
         }

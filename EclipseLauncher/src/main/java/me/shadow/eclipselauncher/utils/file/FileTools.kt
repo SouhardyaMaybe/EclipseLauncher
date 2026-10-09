@@ -10,8 +10,8 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.ui.dialog.EditTextDialog
 import me.shadow.eclipselauncher.ui.dialog.EditTextDialog.ConfirmListener
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.utils.io.FileUtils
 import java.io.File
 import java.io.FileInputStream
@@ -138,7 +138,7 @@ class FileTools {
 
             if (modifyTime > 0) {
                 val difference =
-                    (ZHTools.getCurrentTimeMillis() - fileList[0].lastModified()) / 1000 //Convert to seconds
+                    (EclipseTools.getCurrentTimeMillis() - fileList[0].lastModified()) / 1000 //Convert to seconds
                 if (difference >= modifyTime) {
                     return null
                 }

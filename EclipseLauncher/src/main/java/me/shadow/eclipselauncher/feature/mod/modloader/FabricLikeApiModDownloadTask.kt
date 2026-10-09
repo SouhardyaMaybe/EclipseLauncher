@@ -5,9 +5,9 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.download.item.VersionItem
 import me.shadow.eclipselauncher.feature.version.install.InstallTask
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.progresskeeper.ProgressKeeper
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import java.io.File
 
 class FabricLikeApiModDownloadTask(private val fileName: String, private val versionItem: VersionItem) : InstallTask, Tools.DownloaderFeedback {

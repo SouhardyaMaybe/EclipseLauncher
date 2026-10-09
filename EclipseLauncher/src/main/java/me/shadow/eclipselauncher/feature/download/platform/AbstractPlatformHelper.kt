@@ -22,9 +22,9 @@ import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.EditTextDialog
 import me.shadow.eclipselauncher.utils.file.FileTools
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
-import me.shadow.eclipselauncher.pojav.utils.DownloadUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.utils.DownloadUtils
 import java.io.File
 
 abstract class AbstractPlatformHelper(val api: ApiHandler) {

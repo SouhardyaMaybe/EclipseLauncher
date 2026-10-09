@@ -5,8 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.widget.Toast
 import me.shadow.eclipselauncher.task.TaskExecutors
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.lifecycle.ContextExecutorTask
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.lifecycle.ContextExecutorTask
 import java.lang.ref.WeakReference
 
 class ContextExecutor {

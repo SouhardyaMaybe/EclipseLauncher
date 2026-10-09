@@ -7,8 +7,8 @@ import me.shadow.eclipselauncher.setting.unit.IntSettingUnit
 import me.shadow.eclipselauncher.setting.unit.LongSettingUnit
 import me.shadow.eclipselauncher.setting.unit.StringSettingUnit
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.prefs.LauncherPreferences
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.prefs.LauncherPreferences
 
 class AllSettings {
     companion object {
@@ -91,7 +91,7 @@ class AllSettings {
         val versionIsolation = BooleanSettingUnit("versionIsolation", true)
 
         @JvmStatic
-        val versionCustomInfo = StringSettingUnit("versionCustomInfo", "${InfoDistributor.LAUNCHER_NAME}[zl_version]")
+        val versionCustomInfo = StringSettingUnit("versionCustomInfo", "${InfoDistributor.LAUNCHER_NAME}[eclipse_version]")
 
         @JvmStatic
         val autoSetGameLanguage = BooleanSettingUnit("autoSetGameLanguage", true)

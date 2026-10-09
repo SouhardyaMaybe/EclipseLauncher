@@ -3,9 +3,9 @@ package me.shadow.eclipselauncher.feature.unpack
 import android.content.Context
 import android.content.res.AssetManager
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.pojav.Architecture
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.multirt.MultiRTUtils
+import me.shadow.eclipselauncher.core.Architecture
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.multirt.MultiRTUtils
 
 class UnpackJreTask(val context: Context, val jre: Jre) : AbstractUnpackTask() {
     private lateinit var assetManager: AssetManager

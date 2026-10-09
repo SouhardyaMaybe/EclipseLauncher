@@ -14,8 +14,8 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.FragmentVersionBinding
 import me.shadow.eclipselauncher.ui.subassembly.versionlist.VersionSelectedListener
 import me.shadow.eclipselauncher.ui.subassembly.versionlist.VersionType
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
 
 class VersionSelectorFragment : FragmentWithAnim(R.layout.fragment_version) {
     companion object {
@@ -62,7 +62,7 @@ class VersionSelectorFragment : FragmentWithAnim(R.layout.fragment_version) {
                 version.setFilterString(string)
             }
 
-            returnButton.setOnClickListener { ZHTools.onBackPressed(requireActivity()) }
+            returnButton.setOnClickListener { EclipseTools.onBackPressed(requireActivity()) }
 
             version.setVersionSelectedListener(object : VersionSelectedListener() {
                 override fun onVersionSelected(version: String?) {
@@ -71,7 +71,7 @@ class VersionSelectorFragment : FragmentWithAnim(R.layout.fragment_version) {
                     } else {
                         val bundle = Bundle()
                         bundle.putString(InstallGameFragment.BUNDLE_MC_VERSION, version)
-                        ZHTools.swapFragmentWithAnim(this@VersionSelectorFragment, InstallGameFragment::class.java, InstallGameFragment.TAG, bundle)
+                        EclipseTools.swapFragmentWithAnim(this@VersionSelectorFragment, InstallGameFragment::class.java, InstallGameFragment.TAG, bundle)
                     }
                 }
             })

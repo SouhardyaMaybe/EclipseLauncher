@@ -8,11 +8,11 @@ import me.shadow.eclipselauncher.feature.download.item.ModLoaderWrapper
 import me.shadow.eclipselauncher.feature.download.item.VersionItem
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.mod.modpack.install.ModPackUtils.Companion.verifyModrinthIndex
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ModDownloader
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.models.ModrinthIndex
-import me.shadow.eclipselauncher.pojav.progresskeeper.DownloaderProgressWrapper
-import me.shadow.eclipselauncher.pojav.utils.ZipUtils
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ModDownloader
+import me.shadow.eclipselauncher.core.modloaders.modpacks.models.ModrinthIndex
+import me.shadow.eclipselauncher.core.progresskeeper.DownloaderProgressWrapper
+import me.shadow.eclipselauncher.core.utils.ZipUtils
 import java.io.File
 import java.util.zip.ZipFile
 

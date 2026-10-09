@@ -2,9 +2,9 @@ package me.shadow.eclipselauncher.ui.subassembly.customcontrols
 
 import android.content.Context
 import me.shadow.eclipselauncher.feature.log.Logging
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.customcontrols.CustomControls
-import me.shadow.eclipselauncher.pojav.customcontrols.LayoutConverter
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.customcontrols.CustomControls
+import me.shadow.eclipselauncher.core.customcontrols.LayoutConverter
 import org.json.JSONObject
 import java.io.File
 

@@ -15,11 +15,11 @@ import me.shadow.eclipselauncher.feature.mod.modpack.install.InstallExtra
 import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.utils.ZHTools
+import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.anim.ViewAnimUtils.Companion.setViewAnim
 import me.shadow.eclipselauncher.utils.file.FileTools
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.contracts.OpenDocumentWithExtension
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.contracts.OpenDocumentWithExtension
 import org.greenrobot.eventbus.EventBus
 
 class ModPackDownloadFragment(parentFragment: Fragment? = null) : AbstractResourceDownloadFragment(
@@ -36,7 +36,7 @@ class ModPackDownloadFragment(parentFragment: Fragment? = null) : AbstractResour
             uris?.let { uriList ->
                 uriList[0].let { result ->
                     if (!isTaskRunning()) {
-                        val dialog = ZHTools.showTaskRunningDialog(requireContext())
+                        val dialog = EclipseTools.showTaskRunningDialog(requireContext())
                         Task.runTask {
                             FileTools.copyFileInBackground(requireContext(), result, PathManager.DIR_CACHE.absolutePath)
                         }.ended(TaskExecutors.getAndroidUI()) { modPackFile ->

@@ -22,10 +22,10 @@ import me.shadow.eclipselauncher.feature.download.utils.PlatformUtils
 import me.shadow.eclipselauncher.feature.download.utils.VersionTypeUtils
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.utils.MCVersionRegex.Companion.RELEASE_REGEX
-import me.shadow.eclipselauncher.utils.ZHTools
-import me.shadow.eclipselauncher.pojav.Tools
-import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
-import me.shadow.eclipselauncher.pojav.utils.JsonTreeUtils
+import me.shadow.eclipselauncher.utils.EclipseTools
+import me.shadow.eclipselauncher.core.Tools
+import me.shadow.eclipselauncher.core.modloaders.modpacks.api.ApiHandler
+import me.shadow.eclipselauncher.core.utils.JsonTreeUtils
 import java.util.TreeSet
 
 class CurseForgeModHelper {
@@ -140,7 +140,7 @@ class CurseForgeModHelper {
                                             hit.get("name").asString,
                                             hit.get("summary").asString,
                                             hit.get("downloadCount").asLong,
-                                            ZHTools.getDate(hit.get("dateCreated").asString),
+                                            EclipseTools.getDate(hit.get("dateCreated").asString),
                                             CurseForgeCommonUtils.getIconUrl(hit),
                                             CurseForgeCommonUtils.getAllCategories(hit).toList(),
                                             dModLoaders,
@@ -192,7 +192,7 @@ class CurseForgeModHelper {
                     projectId,
                     title,
                     downloadCount,
-                    ZHTools.getDate(fileDate),
+                    EclipseTools.getDate(fileDate),
                     mcVersions,
                     VersionTypeUtils.getVersionType(releaseType),
                     fileName,
@@ -216,7 +216,7 @@ class CurseForgeModHelper {
                     projectId,
                     title,
                     downloadCount,
-                    ZHTools.getDate(fileDate),
+                    EclipseTools.getDate(fileDate),
                     mcVersions,
                     VersionTypeUtils.getVersionType(releaseType),
                     fileName,

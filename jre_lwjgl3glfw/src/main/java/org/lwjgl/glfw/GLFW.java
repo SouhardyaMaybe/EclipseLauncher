@@ -536,7 +536,7 @@ public class GLFW
         // CallbackBridge.receiveCallback(CallbackBridge.EVENT_TYPE_WINDOW_SIZE, mGLFWWindowWidth, mGLFWWindowHeight, 0, 0);
 
         try {
-            System.loadLibrary("pojavexec");
+            System.loadLibrary("eclipseexec");
         } catch (UnsatisfiedLinkError e) {
             e.printStackTrace();
         }
@@ -612,7 +612,7 @@ public class GLFW
         throw new UnsupportedOperationException();
     }
 
-    public static final SharedLibrary GLFW = Library.loadNative(GLFW.class, "org.lwjgl.glfw", "libpojavexec.so", true);
+    public static final SharedLibrary GLFW = Library.loadNative(GLFW.class, "org.lwjgl.glfw", "libeclipseexec.so", true);
 
     /** Contains the function pointers loaded from the glfw {@link SharedLibrary}. */
     public static final class Functions {
@@ -621,18 +621,18 @@ public class GLFW
 
         /** Function address. */
         public static final long
-        Init = apiGetFunctionAddress(GLFW, "pojavInit"),
-        CreateContext = apiGetFunctionAddress(GLFW, "pojavCreateContext"),
-        GetCurrentContext = apiGetFunctionAddress(GLFW, "pojavGetCurrentContext"),
-        //DetachOnCurrentThread = apiGetFunctionAddress(GLFW, "pojavDetachOnCurrentThread"),
-        MakeContextCurrent = apiGetFunctionAddress(GLFW, "pojavMakeCurrent"),
-        Terminate = apiGetFunctionAddress(GLFW, "pojavTerminate"),
-        SetWindowHint = apiGetFunctionAddress(GLFW, "pojavSetWindowHint"),
-        SwapBuffers = apiGetFunctionAddress(GLFW, "pojavSwapBuffers"),
-        SwapInterval = apiGetFunctionAddress(GLFW, "pojavSwapInterval"),
-        PumpEvents = apiGetFunctionAddress(GLFW, "pojavPumpEvents"),
-        StopPumping = apiGetFunctionAddress(GLFW, "pojavStopPumping"),
-        StartPumping = apiGetFunctionAddress(GLFW, "pojavStartPumping");
+        Init = apiGetFunctionAddress(GLFW, "eclipseInit"),
+        CreateContext = apiGetFunctionAddress(GLFW, "eclipseCreateContext"),
+        GetCurrentContext = apiGetFunctionAddress(GLFW, "eclipseGetCurrentContext"),
+        //DetachOnCurrentThread = apiGetFunctionAddress(GLFW, "eclipseDetachOnCurrentThread"),
+        MakeContextCurrent = apiGetFunctionAddress(GLFW, "eclipseMakeCurrent"),
+        Terminate = apiGetFunctionAddress(GLFW, "eclipseTerminate"),
+        SetWindowHint = apiGetFunctionAddress(GLFW, "eclipseSetWindowHint"),
+        SwapBuffers = apiGetFunctionAddress(GLFW, "eclipseSwapBuffers"),
+        SwapInterval = apiGetFunctionAddress(GLFW, "eclipseSwapInterval"),
+        PumpEvents = apiGetFunctionAddress(GLFW, "eclipsePumpEvents"),
+        StopPumping = apiGetFunctionAddress(GLFW, "eclipseStopPumping"),
+        StartPumping = apiGetFunctionAddress(GLFW, "eclipseStartPumping");
     }
 
     public static SharedLibrary getLibrary() {
@@ -1056,12 +1056,12 @@ public class GLFW
         int glMajor = 3;
         int glMinor = 3;
         // Custom defaults for specific renderers
-        if (System.getenv("POJAV_RENDERER").equals("vulkan_zink")) {
+        if (System.getenv("ECLIPSE_RENDERER").equals("vulkan_zink")) {
             glMajor = 4;
             glMinor = 6;
-        } else if (System.getenv("POJAV_RENDERER").equals("gallium_virgl")) {
+        } else if (System.getenv("ECLIPSE_RENDERER").equals("gallium_virgl")) {
             glMajor = 4;
-        } else if (System.getenv("POJAV_RENDERER").equals("opengles3")) {
+        } else if (System.getenv("ECLIPSE_RENDERER").equals("opengles3")) {
             glMajor = 4;
             glMinor = 0;
         }
