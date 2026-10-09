@@ -39,7 +39,7 @@ class CurseForgeModPackInstallHelper {
         @Throws(Exception::class)
         fun installZip(api: ApiHandler, zipFile: File, targetPath: File): ModLoaderWrapper? {
             ZipFile(zipFile).use { modpackZipFile ->
-                val curseManifest = Tools.GLOBAL_GSON.fromJson(
+                val curseManifest = Tools.JSON_CODEC.fromJson(
                     Tools.read(ZipUtils.getEntryStream(modpackZipFile, "manifest.json")),
                     CurseManifest::class.java
                 )

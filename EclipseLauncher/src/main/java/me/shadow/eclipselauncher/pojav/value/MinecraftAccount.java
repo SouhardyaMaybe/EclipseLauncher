@@ -46,11 +46,11 @@ public class MinecraftAccount {
     }
 
     public void save() throws IOException {
-        Tools.write(PathManager.DIR_ACCOUNT_NEW + "/" + uniqueUUID, Tools.GLOBAL_GSON.toJson(this));
+        Tools.write(PathManager.DIR_ACCOUNT_NEW + "/" + uniqueUUID, Tools.JSON_CODEC.toJson(this));
     }
     
     public static MinecraftAccount parse(String content) throws JsonSyntaxException {
-        return Tools.GLOBAL_GSON.fromJson(content, MinecraftAccount.class);
+        return Tools.JSON_CODEC.fromJson(content, MinecraftAccount.class);
     }
 
     public static MinecraftAccount loadFromProfileID(String profileID) {

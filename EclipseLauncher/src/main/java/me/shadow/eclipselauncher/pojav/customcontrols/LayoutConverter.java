@@ -72,7 +72,7 @@ public class LayoutConverter {
                 return convertV6_7Layout(layoutJobj);
             }
             if (version == 8) {
-                return Tools.GLOBAL_GSON.fromJson(jsonLayoutData, CustomControls.class);
+                return Tools.JSON_CODEC.fromJson(jsonLayoutData, CustomControls.class);
             }
             if (showError) {
                 IOException ioException = new IOException();
@@ -88,7 +88,7 @@ public class LayoutConverter {
      * @return The new layout with the fixed joystick height
      */
     public static CustomControls convertV6_7Layout(JSONObject oldLayoutJson) {
-        CustomControls layout = Tools.GLOBAL_GSON.fromJson(oldLayoutJson.toString(), CustomControls.class);
+        CustomControls layout = Tools.JSON_CODEC.fromJson(oldLayoutJson.toString(), CustomControls.class);
         for (ControlJoystickData data : layout.mJoystickDataList) {
             if (data.getHeight() > data.getWidth()) {
                 // Make the size square, adjust the dynamic position related to height
@@ -106,7 +106,7 @@ public class LayoutConverter {
      * Normalize the layout to v6 from v3/4: The stroke width is no longer dependant on the button size
      */
     private static CustomControls convertV3_4Layout(JSONObject oldLayoutJson) {
-        CustomControls layout = Tools.GLOBAL_GSON.fromJson(oldLayoutJson.toString(), CustomControls.class);
+        CustomControls layout = Tools.JSON_CODEC.fromJson(oldLayoutJson.toString(), CustomControls.class);
         convertStrokeWidth(layout);
         layout.version = 6;
         return layout;
@@ -114,12 +114,12 @@ public class LayoutConverter {
 
 
     private static CustomControls convertV2Layout(JSONObject oldLayoutJson) throws JSONException {
-        CustomControls layout = Tools.GLOBAL_GSON.fromJson(oldLayoutJson.toString(), CustomControls.class);
+        CustomControls layout = Tools.JSON_CODEC.fromJson(oldLayoutJson.toString(), CustomControls.class);
         JSONArray layoutMainArray = oldLayoutJson.getJSONArray("mControlDataList");
         layout.mControlDataList = new ArrayList<>(layoutMainArray.length());
         for (int i = 0; i < layoutMainArray.length(); i++) {
             JSONObject button = layoutMainArray.getJSONObject(i);
-            ControlData n_button = Tools.GLOBAL_GSON.fromJson(button.toString(), ControlData.class);
+            ControlData n_button = Tools.JSON_CODEC.fromJson(button.toString(), ControlData.class);
             if (!Tools.isValidString(n_button.dynamicX) && button.has("x")) {
                 double buttonC = button.getDouble("x");
                 double ratio = buttonC / CallbackBridge.physicalWidth;
@@ -137,7 +137,7 @@ public class LayoutConverter {
         for (int i = 0; i < layoutDrawerArray.length(); i++) {
             JSONObject button = layoutDrawerArray.getJSONObject(i);
             JSONObject buttonProperties = button.getJSONObject("properties");
-            ControlDrawerData n_button = Tools.GLOBAL_GSON.fromJson(button.toString(), ControlDrawerData.class);
+            ControlDrawerData n_button = Tools.JSON_CODEC.fromJson(button.toString(), ControlDrawerData.class);
             if (!Tools.isValidString(n_button.properties.dynamicX) && buttonProperties.has("x")) {
                 double buttonC = buttonProperties.getDouble("x");
                 double ratio = buttonC / CallbackBridge.physicalWidth;

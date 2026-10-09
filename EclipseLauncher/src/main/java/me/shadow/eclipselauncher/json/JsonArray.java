@@ -59,7 +59,7 @@ public final class JsonArray extends JsonElement implements Iterable<JsonElement
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        JsonWriter.write(this, builder, 0, false, false);
+        JsonEmitter.write(this, builder, 0, false, false);
         return builder.toString();
     }
 }

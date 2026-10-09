@@ -1,6 +1,6 @@
 package me.shadow.eclipselauncher.feature.mod.modloader
 
-import me.shadow.eclipselauncher.json.Gson
+import me.shadow.eclipselauncher.json.JsonCodec
 import me.shadow.eclipselauncher.json.JsonArray
 import me.shadow.eclipselauncher.json.JsonSyntaxException
 import me.shadow.eclipselauncher.feature.log.Logging.e
@@ -73,7 +73,7 @@ class FabricLikeUtils private constructor(
                 iconName + "_installer", false
             ) { input: String? -> input }
 
-            val jsonArray = Gson().fromJson(jsonString, JsonArray::class.java)
+            val jsonArray = JsonCodec().fromJson(jsonString, JsonArray::class.java)
             val jsonObject = jsonArray[0].asJsonObject //Always fetch the latest installer info
             val url = jsonObject["url"].asString
             println(url)
@@ -143,7 +143,7 @@ class FabricLikeUtils private constructor(
         @Throws(DownloadUtils.ParseException::class)
         private fun deserializeRawVersions(jsonArrayIn: String): Array<FabricVersion> {
             try {
-                return Tools.GLOBAL_GSON.fromJson(jsonArrayIn, Array<FabricVersion>::class.java)
+                return Tools.JSON_CODEC.fromJson(jsonArrayIn, Array<FabricVersion>::class.java)
             } catch (e: JsonSyntaxException) {
                 e(FabricLikeUtils::class.java.name, Tools.printToString(e))
                 throw DownloadUtils.ParseException(null)

@@ -36,7 +36,7 @@ class EditControlData {
         @JvmStatic
         fun saveToFile(context: Context?, customControls: CustomControls?, file: File) {
             runCatching {
-                Tools.write(file.absolutePath, Tools.GLOBAL_GSON.toJson(customControls))
+                Tools.write(file.absolutePath, Tools.JSON_CODEC.toJson(customControls))
             }.getOrElse { e ->
                 Tools.showError(context, e)
             }

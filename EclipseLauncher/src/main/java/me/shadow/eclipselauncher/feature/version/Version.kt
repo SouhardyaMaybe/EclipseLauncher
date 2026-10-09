@@ -89,7 +89,7 @@ class Version(
     fun getVersionInfo(): VersionInfo? {
         return runCatching {
             val infoFile = File(VersionsManager.getEclipseVersionPath(this), "VersionInfo.json")
-            Tools.GLOBAL_GSON.fromJson(Tools.read(infoFile), VersionInfo::class.java)
+            Tools.JSON_CODEC.fromJson(Tools.read(infoFile), VersionInfo::class.java)
         }.getOrElse { null }
     }
 

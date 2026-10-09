@@ -40,7 +40,7 @@ public class AsyncVersionList {
             // Fallback when no network or not needed
             if (versionList == null) {
                 try {
-                    versionList = Tools.GLOBAL_GSON.fromJson(new FileReader(versionFile), JMinecraftVersionList.class);
+                    versionList = Tools.JSON_CODEC.fromJson(new FileReader(versionFile), JMinecraftVersionList.class);
                 } catch (FileNotFoundException e) {
                     Logging.e("File Not Found", Tools.printToString(e));
                 } catch (JsonIOException | JsonSyntaxException e) {
@@ -62,7 +62,7 @@ public class AsyncVersionList {
         try {
             Logging.i("ExtVL", "Syncing to external: " + mirror);
             String jsonString = downloadString(mirror);
-            list = Tools.GLOBAL_GSON.fromJson(jsonString, JMinecraftVersionList.class);
+            list = Tools.JSON_CODEC.fromJson(jsonString, JMinecraftVersionList.class);
             Logging.i("ExtVL", "Downloaded the version list, len=" + list.versions.length);
 
             // Then save the version list

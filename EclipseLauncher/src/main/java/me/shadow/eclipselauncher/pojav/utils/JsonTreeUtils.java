@@ -4,7 +4,7 @@ import me.shadow.eclipselauncher.json.JsonArray;
 import me.shadow.eclipselauncher.json.JsonElement;
 import me.shadow.eclipselauncher.json.JsonObject;
 
-public class GsonJsonUtils {
+public class JsonTreeUtils {
     /**
      * Safely converts a JsonElement into a JsonObject.
      * @param element the input JsonElement

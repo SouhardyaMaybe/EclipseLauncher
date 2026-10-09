@@ -1,9 +1,9 @@
 package me.shadow.eclipselauncher.setting
 
 import androidx.annotation.CheckResult
-import me.shadow.eclipselauncher.json.Gson
-import me.shadow.eclipselauncher.json.GsonBuilder
-import me.shadow.eclipselauncher.json.reflect.TypeToken
+import me.shadow.eclipselauncher.json.JsonCodec
+import me.shadow.eclipselauncher.json.JsonCodecBuilder
+import me.shadow.eclipselauncher.json.reflect.TypeRef
 import me.shadow.eclipselauncher.event.single.SettingsChangeEvent
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.setting.unit.AbstractSettingUnit
@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 class Settings {
     companion object {
-        private val GSON: Gson = GsonBuilder().disableHtmlEscaping().create()
+        private val JSON_CODEC: JsonCodec = JsonCodecBuilder().disableHtmlEscaping().create()
 
         private val settingsLock = Any()
         private var settingsMap = ConcurrentHashMap<String, SettingAttribute>()
@@ -25,8 +25,8 @@ class Settings {
             return PathManager.FILE_SETTINGS.takeIf { it.exists() }?.let { file ->
                 try {
                     val jsonString = Tools.read(file)
-                    val listType: Type = object : TypeToken<List<SettingAttribute>>() {}.type
-                    GSON.fromJson<List<SettingAttribute>>(jsonString, listType)
+                    val listType: Type = object : TypeRef<List<SettingAttribute>>() {}.type
+                    JSON_CODEC.fromJson<List<SettingAttribute>>(jsonString, listType)
                         .associateBy { it.key }
                 } catch (e: Exception) {
                     Logging.e("Settings", "Failed to refresh settings: ${Tools.printToString(e)}")
@@ -105,7 +105,7 @@ class Settings {
                         }
 
                         val settingsList = newSettings.values.toList()
-                        val json = GSON.toJson(settingsList)
+                        val json = JSON_CODEC.toJson(settingsList)
                         FileUtils.write(settingsFile, json, Charsets.UTF_8)
                         refreshSettings()
                         EventBus.getDefault().post(SettingsChangeEvent())

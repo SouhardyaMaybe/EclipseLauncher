@@ -30,17 +30,17 @@ import java.util.Set;
  * defaults. Serialization skips null field values (the previous library's
  * default) and honors {@link SerializedName} as well.</p>
  */
-public class Gson {
+public class JsonCodec {
 
     private final boolean htmlSafe;
     private final boolean prettyPrinting;
 
     /** A default instance: HTML escaping enabled, compact output. */
-    public Gson() {
+    public JsonCodec() {
         this(true, false);
     }
 
-    Gson(boolean htmlSafe, boolean prettyPrinting) {
+    JsonCodec(boolean htmlSafe, boolean prettyPrinting) {
         this.htmlSafe = htmlSafe;
         this.prettyPrinting = prettyPrinting;
     }
@@ -89,7 +89,7 @@ public class Gson {
 
     public String toJson(JsonElement src) {
         StringBuilder builder = new StringBuilder();
-        JsonWriter.write(src == null ? JsonNull.INSTANCE : src, builder, 0, prettyPrinting, htmlSafe);
+        JsonEmitter.write(src == null ? JsonNull.INSTANCE : src, builder, 0, prettyPrinting, htmlSafe);
         return builder.toString();
     }
 

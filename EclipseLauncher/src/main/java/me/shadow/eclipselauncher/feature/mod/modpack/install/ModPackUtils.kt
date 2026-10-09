@@ -24,7 +24,7 @@ class ModPackUtils {
                     if (suffix == ".zip") {
                         val curseforgeEntry = modpackZipFile.getEntry("manifest.json")
                         if (curseforgeEntry != null) {
-                            val curseManifest = Tools.GLOBAL_GSON.fromJson(
+                            val curseManifest = Tools.JSON_CODEC.fromJson(
                                 Tools.read(modpackZipFile.getInputStream(curseforgeEntry)),
                                 CurseManifest::class.java
                             )
@@ -33,7 +33,7 @@ class ModPackUtils {
                     } else if (suffix == ".mrpack") {
                         val entry = modpackZipFile.getEntry("modrinth.index.json")
                         if (entry != null) {
-                            val modrinthIndex = Tools.GLOBAL_GSON.fromJson(
+                            val modrinthIndex = Tools.JSON_CODEC.fromJson(
                                 Tools.read(modpackZipFile.getInputStream(entry)),
                                 ModrinthIndex::class.java
                             )

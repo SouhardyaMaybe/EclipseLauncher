@@ -28,7 +28,7 @@ class ModrinthModPackInstallHelper {
         @Throws(Exception::class)
         fun installZip(packFile: File, targetPath: File): ModLoaderWrapper? {
             ZipFile(packFile).use { modpackZipFile ->
-                val modrinthIndex = Tools.GLOBAL_GSON.fromJson(
+                val modrinthIndex = Tools.JSON_CODEC.fromJson(
                     Tools.read(ZipUtils.getEntryStream(modpackZipFile, "modrinth.index.json")),
                     ModrinthIndex::class.java
                 )

@@ -54,7 +54,7 @@ class VersionInfo(
             if (!eclipseVersionPath.exists()) eclipseVersionPath.mkdirs()
 
             FileWriter(infoFile, false).use {
-                val json = Tools.GLOBAL_GSON.toJson(this)
+                val json = Tools.JSON_CODEC.toJson(this)
                 it.write(json)
             }
         }.onFailure { e -> Logging.e("Save Version Info", Tools.printToString(e)) }

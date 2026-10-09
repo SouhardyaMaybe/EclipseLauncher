@@ -4,11 +4,11 @@ package me.shadow.eclipselauncher.json;
  * A number that keeps the exact text found in the JSON document. Conversion to
  * a concrete numeric type only happens when the value is actually read.
  */
-final class LazilyParsedNumber extends Number {
+final class RawNumber extends Number {
 
     private final String value;
 
-    LazilyParsedNumber(String value) {
+    RawNumber(String value) {
         this.value = value;
     }
 

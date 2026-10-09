@@ -25,7 +25,7 @@ import me.shadow.eclipselauncher.utils.MCVersionRegex.Companion.RELEASE_REGEX
 import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.pojav.Tools
 import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
-import me.shadow.eclipselauncher.pojav.utils.GsonJsonUtils
+import me.shadow.eclipselauncher.pojav.utils.JsonTreeUtils
 import java.util.TreeSet
 
 class CurseForgeModHelper {
@@ -126,7 +126,7 @@ class CurseForgeModHelper {
 
                             if (!InfoCache.DependencyInfoCache.containsKey(modId)) {
                                 val response = CurseForgeCommonUtils.searchModFromID(api, modId)
-                                val hit = GsonJsonUtils.getJsonObjectSafe(response, "data")
+                                val hit = JsonTreeUtils.getJsonObjectSafe(response, "data")
 
                                 if (hit != null) {
                                     val dModLoaders = getModLoaders(hit.getAsJsonArray("latestFilesIndexes"))

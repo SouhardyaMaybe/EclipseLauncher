@@ -27,7 +27,7 @@ data class CurrentGameInfo(
         runCatching {
             FileUtils.writeByteArrayToFile(
                 infoFile,
-                Tools.GLOBAL_GSON.toJson(this).toByteArray(Charsets.UTF_8)
+                Tools.JSON_CODEC.toJson(this).toByteArray(Charsets.UTF_8)
             )
         }.onFailure { e ->
             Logging.e("CurrentGameInfo", "Save failed: ${infoFile.absolutePath}", e)
@@ -59,7 +59,7 @@ data class CurrentGameInfo(
         }
 
         private fun loadFromJsonFile(infoFile: File): CurrentGameInfo {
-            return Tools.GLOBAL_GSON.fromJson(infoFile.readText(), CurrentGameInfo::class.java)
+            return Tools.JSON_CODEC.fromJson(infoFile.readText(), CurrentGameInfo::class.java)
                 .also { info -> checkNotNull(info) { "Deserialization returned null" } }
         }
 

@@ -100,7 +100,7 @@ class UpdateUtils {
                             val rawBase64 = jsonObject.getString("content")
                             val rawJson = StringUtils.decodeBase64(rawBase64)
 
-                            val launcherVersion = Tools.GLOBAL_GSON.fromJson(rawJson, LauncherVersion::class.java)
+                            val launcherVersion = Tools.JSON_CODEC.fromJson(rawJson, LauncherVersion::class.java)
 
                             val versionName = launcherVersion.versionName
                             if (ignore && versionName == ignoreUpdate.getValue()) return  //Ignore this version

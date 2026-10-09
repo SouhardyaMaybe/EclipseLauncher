@@ -10,7 +10,7 @@ public final class JsonPrimitive extends JsonElement {
     public static final JsonPrimitive TRUE = new JsonPrimitive(Boolean.TRUE);
     public static final JsonPrimitive FALSE = new JsonPrimitive(Boolean.FALSE);
 
-    /** String, Boolean or Number. Parsed numbers are kept as {@link LazilyParsedNumber}. */
+    /** String, Boolean or Number. Parsed numbers are kept as {@link RawNumber}. */
     final Object value;
 
     public JsonPrimitive(Boolean bool) {
@@ -55,7 +55,7 @@ public final class JsonPrimitive extends JsonElement {
     @Override
     public Number getAsNumber() {
         if (value instanceof Number) return (Number) value;
-        return new LazilyParsedNumber(getAsString());
+        return new RawNumber(getAsString());
     }
 
     @Override

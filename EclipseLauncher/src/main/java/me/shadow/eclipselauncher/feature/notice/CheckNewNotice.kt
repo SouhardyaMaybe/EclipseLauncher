@@ -62,7 +62,7 @@ class CheckNewNotice {
                             //base64 decode, because what is read here is Base64-encoded text
                             val rawJson = StringUtils.decodeBase64(rawBase64)
 
-                            val noticeJson = Tools.GLOBAL_GSON.fromJson(rawJson, NoticeJsonObject::class.java)
+                            val noticeJson = Tools.JSON_CODEC.fromJson(rawJson, NoticeJsonObject::class.java)
 
                             //Get the notice message
                             val title = getLanguageText(noticeJson.title)

@@ -71,7 +71,7 @@ class VersionConfig(private var versionPath: File = File("")) : Parcelable {
         if (!eclipseVersionPath.exists()) eclipseVersionPath.mkdirs()
 
         FileWriter(configFile, false).use {
-            val json = Tools.GLOBAL_GSON.toJson(this)
+            val json = Tools.JSON_CODEC.toJson(this)
             it.write(json)
         }
         Logging.i("Save Version Config", "Saved: $this")
@@ -175,7 +175,7 @@ class VersionConfig(private var versionPath: File = File("")) : Parcelable {
             return runCatching getConfig@{
                 if (oldConfigFile.exists()) {
                     runCatching {
-                        Tools.GLOBAL_GSON.fromJson(Tools.read(oldConfigFile), VersionConfig::class.java).apply {
+                        Tools.JSON_CODEC.fromJson(Tools.read(oldConfigFile), VersionConfig::class.java).apply {
                             setIsolationType(IsolationType.ENABLE)
                             setVersionPath(versionPath)
                             save()
@@ -188,7 +188,7 @@ class VersionConfig(private var versionPath: File = File("")) : Parcelable {
                 }
                 //Read the contents of this file and parse it into a VersionConfig
                 val configString = Tools.read(configFile)
-                val config = Tools.GLOBAL_GSON.fromJson(configString, VersionConfig::class.java)
+                val config = Tools.JSON_CODEC.fromJson(configString, VersionConfig::class.java)
                 runCatching {
                     JsonParser.parseString(configString).asJsonObject.apply {
                         if (has("isolation")) {

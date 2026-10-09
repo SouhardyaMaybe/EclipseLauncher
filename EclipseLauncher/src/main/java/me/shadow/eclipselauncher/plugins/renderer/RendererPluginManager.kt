@@ -177,7 +177,7 @@ object RendererPluginManager {
         val libsDirectory: File = File(directory, "libs/$archModel").takeIf { it.exists() && it.isDirectory } ?: return false
         val rendererConfigFile: File = File(directory, "config").takeIf { it.exists() && it.isFile } ?: return false
         val rendererConfig: RendererConfig = runCatching {
-            Tools.GLOBAL_GSON.fromJson(readLocalRendererPluginConfig(rendererConfigFile), RendererConfig::class.java)
+            Tools.JSON_CODEC.fromJson(readLocalRendererPluginConfig(rendererConfigFile), RendererConfig::class.java)
         }.getOrElse { e ->
             Logging.e("LocalRendererPlugin", "Failed to parse the configuration file", e)
             return false
@@ -238,7 +238,7 @@ object RendererPluginManager {
                 pluginZip.getInputStream(configEntry).use { inputStream ->
                     DataInputStream(inputStream).use { dataInputStream ->
                         val configContent = dataInputStream.readUTF()
-                        Tools.GLOBAL_GSON.fromJson(configContent, RendererConfig::class.java)
+                        Tools.JSON_CODEC.fromJson(configContent, RendererConfig::class.java)
                     }
                 }
 

@@ -5,7 +5,7 @@ import android.content.Context
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.getkeepsafe.taptargetview.TapTarget
-import me.shadow.eclipselauncher.json.Gson
+import me.shadow.eclipselauncher.json.JsonCodec
 import me.shadow.eclipselauncher.json.JsonArray
 import me.shadow.eclipselauncher.json.JsonParser
 import me.shadow.eclipselauncher.R
@@ -59,7 +59,7 @@ class NewbieGuideUtils {
             runCatching {
                 FileWriter(PathManager.FILE_NEWBIE_GUIDE).use { fileWriter ->
                     println(jsonArray)
-                    Gson().toJson(jsonArray, fileWriter)
+                    JsonCodec().toJson(jsonArray, fileWriter)
                 }
             }.getOrElse { e -> e("Write Newbie Guide Tags", Tools.printToString(e)) }
         }

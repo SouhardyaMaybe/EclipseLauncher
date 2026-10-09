@@ -33,7 +33,7 @@ object ProfilePathManager {
         val jsonObject = JsonParser.parseString(json).asJsonObject
         return jsonObject.entrySet().mapNotNull { (key, value) ->
             runCatching {
-                val profilePath = Tools.GLOBAL_GSON.fromJson(value, ProfilePathJsonObject::class.java)
+                val profilePath = Tools.JSON_CODEC.fromJson(value, ProfilePathJsonObject::class.java)
                 ProfileItem(key, profilePath.title, profilePath.path)
             }.onFailure { e ->
                 Logging.e("parseProfileItem", "Failed to parse profile item: $key", e)
@@ -83,12 +83,12 @@ object ProfilePathManager {
         items.forEach { item ->
             if (item.id == "default") return@forEach
             val profilePathJsonObject = ProfilePathJsonObject(item.title, item.path)
-            jsonObject.add(item.id, Tools.GLOBAL_GSON.toJsonTree(profilePathJsonObject))
+            jsonObject.add(item.id, Tools.JSON_CODEC.toJsonTree(profilePathJsonObject))
         }
 
         runCatching {
             FileWriter(PathManager.FILE_PROFILE_PATH).use { writer ->
-                Tools.GLOBAL_GSON.toJson(jsonObject, writer)
+                Tools.JSON_CODEC.toJson(jsonObject, writer)
             }
         }.onFailure { e ->
             Logging.e("Write Profile", "Failed to write to game path configuration", e)

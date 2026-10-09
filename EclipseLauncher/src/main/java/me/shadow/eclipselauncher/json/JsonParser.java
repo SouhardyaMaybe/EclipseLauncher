@@ -260,7 +260,7 @@ public final class JsonParser {
                     return new JsonPrimitive(Double.NEGATIVE_INFINITY);
                 default:
                     if (isNumeric(text)) {
-                        return new JsonPrimitive(new LazilyParsedNumber(text));
+                        return new JsonPrimitive(new RawNumber(text));
                     }
                     // Lenient unquoted value: behaves like a plain string primitive
                     return new JsonPrimitive(text);

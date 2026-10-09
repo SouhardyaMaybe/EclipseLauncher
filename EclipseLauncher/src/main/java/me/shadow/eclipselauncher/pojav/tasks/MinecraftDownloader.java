@@ -223,7 +223,7 @@ public class MinecraftDownloader {
             DownloadUtils.downloadFile(assetIndex.url, targetFile);
             return null;
         });
-        return Tools.GLOBAL_GSON.fromJson(Tools.read(targetFile), JAssets.class);
+        return Tools.JSON_CODEC.fromJson(Tools.read(targetFile), JAssets.class);
     }
     
     private MinecraftClientInfo getClientInfo(JMinecraftVersionList.Version verInfo) {
@@ -244,7 +244,7 @@ public class MinecraftDownloader {
         if(verInfo != null) versionJsonFile = downloadGameJson(verInfo);
         else versionJsonFile = createGameJsonPath(versionName);
         if(versionJsonFile.canRead())  {
-            verInfo = Tools.GLOBAL_GSON.fromJson(Tools.read(versionJsonFile), JMinecraftVersionList.Version.class);
+            verInfo = Tools.JSON_CODEC.fromJson(Tools.read(versionJsonFile), JMinecraftVersionList.Version.class);
         } else {
             throw new IOException("Unable to read Version JSON for version " + versionName);
         }

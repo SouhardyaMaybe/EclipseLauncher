@@ -19,13 +19,13 @@ class SkinFileDownloader {
     @Throws(Exception::class)
     fun downloadProfileSkin(url: String, skinFile: File, uuid: String) {
         val profileJson = DownloadUtils.downloadString("${url.removeSuffix("/")}/session/minecraft/profile/$uuid")
-        val profileObject = Tools.GLOBAL_GSON.fromJson(profileJson, JsonObject::class.java)
+        val profileObject = Tools.JSON_CODEC.fromJson(profileJson, JsonObject::class.java)
         val properties = profileObject.get("properties").asJsonArray
         val rawValue = properties.get(0).asJsonObject.get("value").asString
 
         val value = StringUtils.decodeBase64(rawValue)
 
-        val valueObject = Tools.GLOBAL_GSON.fromJson(value, JsonObject::class.java)
+        val valueObject = Tools.JSON_CODEC.fromJson(value, JsonObject::class.java)
         val skinUrl = valueObject.get("textures").asJsonObject.get("SKIN").asJsonObject.get("url").asString
 
         downloadSkin(skinUrl, skinFile)

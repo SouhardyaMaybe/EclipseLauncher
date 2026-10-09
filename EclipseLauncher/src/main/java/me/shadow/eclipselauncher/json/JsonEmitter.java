@@ -6,9 +6,9 @@ package me.shadow.eclipselauncher.json;
  * library's default output (standard JSON escapes, optionally plus the five
  * HTML-sensitive characters {@code < > & = '}).
  */
-final class JsonWriter {
+final class JsonEmitter {
 
-    private JsonWriter() {
+    private JsonEmitter() {
     }
 
     static void write(JsonElement element, StringBuilder out, int indent, boolean pretty, boolean htmlSafe) {
@@ -28,7 +28,7 @@ final class JsonWriter {
             writeString(primitive.getAsString(), out, htmlSafe);
         } else if (primitive.isBoolean()) {
             out.append(primitive.getAsBoolean() ? "true" : "false");
-        } else if (primitive.value instanceof LazilyParsedNumber) {
+        } else if (primitive.value instanceof RawNumber) {
             // Raw number text parsed from a document, emitted verbatim
             out.append(primitive.value.toString());
         } else {

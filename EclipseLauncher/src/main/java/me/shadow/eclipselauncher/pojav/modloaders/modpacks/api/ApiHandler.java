@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.pojav.modloaders.modpacks.api;
 
 import android.util.ArrayMap;
 
-import me.shadow.eclipselauncher.json.Gson;
+import me.shadow.eclipselauncher.json.JsonCodec;
 import me.shadow.eclipselauncher.feature.log.Logging;
 import me.shadow.eclipselauncher.utils.path.UrlManager;
 
@@ -151,7 +151,7 @@ public class ApiHandler {
     }
 
     public static <T> T getFullUrl(Map<String, String> headers, String url, Class<T> tClass) {
-        return new Gson().fromJson(getRaw(headers, url), tClass);
+        return new JsonCodec().fromJson(getRaw(headers, url), tClass);
     }
 
     public static <T> T getFullUrl(Map<String, String> headers, String url, HashMap<String, Object> query, Class<T> tClass) {
@@ -159,11 +159,11 @@ public class ApiHandler {
     }
 
     public static <T> T postFullUrl(Map<String, String> headers, String url, T body, Class<T> tClass) {
-        return new Gson().fromJson(postRaw(headers, url, body.toString()), tClass);
+        return new JsonCodec().fromJson(postRaw(headers, url, body.toString()), tClass);
     }
 
     public static <T> T postFullUrl(Map<String, String> headers, String url, HashMap<String, Object> query, T body, Class<T> tClass) {
-        return new Gson().fromJson(postRaw(headers, url + parseQueries(query), body.toString()), tClass);
+        return new JsonCodec().fromJson(postRaw(headers, url + parseQueries(query), body.toString()), tClass);
     }
 
     private static String urlEncodeUTF8(String input) {

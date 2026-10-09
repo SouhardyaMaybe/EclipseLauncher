@@ -21,7 +21,7 @@ import me.shadow.eclipselauncher.utils.ZHTools
 import me.shadow.eclipselauncher.utils.stringutils.StringUtilsKt
 import me.shadow.eclipselauncher.pojav.Tools
 import me.shadow.eclipselauncher.pojav.modloaders.modpacks.api.ApiHandler
-import me.shadow.eclipselauncher.pojav.utils.GsonJsonUtils
+import me.shadow.eclipselauncher.pojav.utils.JsonTreeUtils
 import java.io.IOException
 import java.util.TreeSet
 import java.util.function.Consumer
@@ -105,7 +105,7 @@ class CurseForgeCommonUtils {
 
         internal fun getInfoItem(dataObject: JsonObject, classify: Classify): InfoItem? {
             val allowModDistribution = dataObject.get("allowModDistribution")
-            // Gson automatically casts null to false, which leans to issues
+            // The JSON codec automatically casts null to false, which leans to issues
             // So, only check the distribution flag if it is non-null
             if (!allowModDistribution.isJsonNull && !allowModDistribution.asBoolean) {
                 Logging.i("CurseForgeCommonUtils", "Skipping project ${dataObject["name"].asString} because curseforge sucks")
@@ -183,12 +183,12 @@ class CurseForgeCommonUtils {
         }
 
         internal fun getSha1FromData(jsonObject: JsonObject): String? {
-            val hashes = GsonJsonUtils.getJsonArraySafe(jsonObject, "hashes") ?: return null
+            val hashes = JsonTreeUtils.getJsonArraySafe(jsonObject, "hashes") ?: return null
             for (jsonElement in hashes) {
                 // The sha1 = 1; md5 = 2;
-                val jsonObject1 = GsonJsonUtils.getJsonObjectSafe(jsonElement)
-                if (GsonJsonUtils.getIntSafe(jsonObject1, "algo", -1) == ALGO_SHA_1) {
-                    return GsonJsonUtils.getStringSafe(jsonObject1, "value")
+                val jsonObject1 = JsonTreeUtils.getJsonObjectSafe(jsonElement)
+                if (JsonTreeUtils.getIntSafe(jsonObject1, "algo", -1) == ALGO_SHA_1) {
+                    return JsonTreeUtils.getStringSafe(jsonObject1, "value")
                 }
             }
             return null
@@ -213,7 +213,7 @@ class CurseForgeCommonUtils {
         internal fun getDownloadSha1(api: ApiHandler, projectID: Long, fileID: Long): String? {
             // Try the api endpoint, die in the other case
             val response = api.safeRun { get("mods/$projectID/files/$fileID", JsonObject::class.java) }
-            val data = GsonJsonUtils.getJsonObjectSafe(response, "data") ?: return null
+            val data = JsonTreeUtils.getJsonObjectSafe(response, "data") ?: return null
             return getSha1FromData(data)
         }
 
@@ -233,7 +233,7 @@ class CurseForgeCommonUtils {
                 params["pageSize"] = CURSEFORGE_PAGINATION_SIZE
 
                 val response = api.get("mods/$projectId/files", params, JsonObject::class.java)
-                val data = GsonJsonUtils.getJsonArraySafe(response, "data") ?: throw IOException("Invalid data!")
+                val data = JsonTreeUtils.getJsonArraySafe(response, "data") ?: throw IOException("Invalid data!")
 
                 for (i in 0 until data.size()) {
                     val fileInfo = data[i].asJsonObject
