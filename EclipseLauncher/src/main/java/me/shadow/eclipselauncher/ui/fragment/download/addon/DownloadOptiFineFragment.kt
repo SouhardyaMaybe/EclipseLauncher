@@ -80,7 +80,7 @@ class DownloadOptiFineFragment : ModListFragment() {
 
             optiFineVersionList.forEach(Consumer Consumer2@{ optiFineVersion: OptiFineVersion ->
                 currentTask?.apply { if (isCancelled) return@Consumer2 }
-                addIfAbsent(mOptiFineVersions, optiFineVersion.minecraftVersion.removePrefix("Minecraft").trim(), optiFineVersion)
+                addIfAbsent(mOptiFineVersions, optiFineVersion.minecraftVersion!!.removePrefix("Minecraft").trim(), optiFineVersion)
             })
         })
 
@@ -99,7 +99,7 @@ class DownloadOptiFineFragment : ModListFragment() {
             EventBus.getDefault().postSticky(
                 SelectInstallTaskEvent(
                     Addon.OPTIFINE,
-                    optifineVersion.versionName,
+                    optifineVersion.versionName!!,
                     OptiFineDownloadTask(optifineVersion)
                 )
             )

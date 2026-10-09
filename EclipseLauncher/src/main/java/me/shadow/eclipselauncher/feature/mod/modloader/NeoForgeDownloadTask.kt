@@ -1,5 +1,6 @@
 package me.shadow.eclipselauncher.feature.mod.modloader
 
+import kotlinx.coroutines.runInterruptible
 import me.shadow.eclipselauncher.mcgui.ProgressLayout
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging
@@ -30,9 +31,12 @@ class NeoForgeDownloadTask(neoforgeVersion: String) : InstallTask, DownloaderFee
     }
 
     @Throws(Exception::class)
-    override fun run(customName: String): File? {
+    override suspend fun run(customName: String): File? {
         var outputFile: File? = null
-        if (if (mLoaderVersion!!.contains("1.20.1")) determineNeoForgedForgeDownloadUrl() else determineNeoForgeDownloadUrl()) {
+        val downloadUrlDetermined = runInterruptible {
+            if (mLoaderVersion!!.contains("1.20.1")) determineNeoForgedForgeDownloadUrl() else determineNeoForgeDownloadUrl()
+        }
+        if (downloadUrlDetermined) {
             outputFile = downloadNeoForge()
         }
         ProgressLayout.clearProgress(ProgressLayout.INSTALL_RESOURCE)
@@ -50,7 +54,7 @@ class NeoForgeDownloadTask(neoforgeVersion: String) : InstallTask, DownloaderFee
     }
 
     @Throws(Exception::class)
-    private fun downloadNeoForge(): File {
+    private suspend fun downloadNeoForge(): File {
         ProgressKeeper.submitProgress(
             ProgressLayout.INSTALL_RESOURCE,
             0,
@@ -59,7 +63,7 @@ class NeoForgeDownloadTask(neoforgeVersion: String) : InstallTask, DownloaderFee
         )
         val destinationFile = File(PathManager.DIR_CACHE, "neoforge-installer.jar")
         val buffer = ByteArray(8192)
-        DownloadUtils.downloadFileMonitored(mDownloadUrl, destinationFile, buffer, this)
+        runInterruptible { DownloadUtils.downloadFileMonitored(mDownloadUrl, destinationFile, buffer, this) }
         return destinationFile
     }
 

@@ -6,13 +6,13 @@ import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.event.value.InstallGameEvent
 import me.shadow.eclipselauncher.feature.log.Logging
 import me.shadow.eclipselauncher.feature.version.VersionsManager
-import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.core.progresskeeper.ProgressKeeper
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.core.tasks.AsyncMinecraftDownloader
 import me.shadow.eclipselauncher.core.tasks.MinecraftDownloader
@@ -50,8 +50,11 @@ class GameInstaller(
                 return@launch
             }
 
-            Task.runTask {
-                if (taskMap.isEmpty()) {
+            //The vanilla copy, the mod files and the single ModLoader install run in order inside
+            //this coroutine - exactly the body of the old Task.runTask { }.ended { } chain, with
+            //the same error mapping (a thrown failure skips the completion handling, like before)
+            try {
+                val taskResult: Pair<File?, InstallTaskItem>? = if (taskMap.isEmpty()) {
                     //If there are no add-ons, only the vanilla version needs to be installed, so make sure the vanilla .json file exists inside this custom version folder
                     //Check whether the version name was customized: if the real version equals the custom name, the user did not change the name and a plain vanilla install is being performed
                     //If the name was not customized, do not copy the version file - the vanilla file and the target file are the same file anyway!
@@ -64,43 +67,42 @@ class GameInstaller(
                         }
                     }
                     //There is no ModLoader task, so the following pointless ModLoader steps are skipped entirely!
-                    return@runTask null
+                    null
+                } else {
+                    //Separate the Mod and ModLoader tasks; the mods should be installed first
+                    val modTask: MutableList<InstallTaskItem> = ArrayList()
+                    val modloaderTask = AtomicReference<Pair<Addon, InstallTaskItem>>() //For now only one ModLoader can be installed at a time
+                    taskMap.forEach { (addon, taskItem) ->
+                        if (taskItem.isMod) modTask.add(taskItem)
+                        else modloaderTask.set(Pair(addon, taskItem))
+                    }
+
+                    //Download the mod files
+                    modTask.forEach { task ->
+                        Logging.i("Install Version", "Installing Mod: ${task.selectedVersion}")
+                        val file = task.task.run(customVersionName)
+                        val endTask = task.endTask
+                        file?.let { endTask?.endTask(activity, it) }
+                        ensureActive() //never triggers today (the scope is not cancelled), but a cancelled install must not start the next mod
+                    }
+
+                    modloaderTask.get()?.let { taskPair ->
+                        ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, 0, R.string.mod_download_progress, taskPair.first.addonName)
+
+                        Logging.i("Install Version", "Installing ModLoader: ${taskPair.second.selectedVersion}")
+                        val file = taskPair.second.task.run(customVersionName)
+                        Pair(file, taskPair.second)
+                    }
                 }
 
-                //Separate the Mod and ModLoader tasks; the mods should be installed first
-                val modTask: MutableList<InstallTaskItem> = ArrayList()
-                val modloaderTask = AtomicReference<Pair<Addon, InstallTaskItem>>() //For now only one ModLoader can be installed at a time
-                taskMap.forEach { (addon, taskItem) ->
-                    if (taskItem.isMod) modTask.add(taskItem)
-                    else modloaderTask.set(Pair(addon, taskItem))
-                }
-
-                //Download the mod files
-                modTask.forEach { task ->
-                    Logging.i("Install Version", "Installing Mod: ${task.selectedVersion}")
-                    val file = task.task.run(customVersionName)
-                    val endTask = task.endTask
-                    file?.let { endTask?.endTask(activity, it) }
-                }
-
-                modloaderTask.get()?.let { taskPair ->
-                    ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, 0, R.string.mod_download_progress, taskPair.first.addonName)
-
-                    Logging.i("Install Version", "Installing ModLoader: ${taskPair.second.selectedVersion}")
-                    val file = taskPair.second.task.run(customVersionName)
-                    return@runTask Pair(file, taskPair.second)
-                }
-
-                null
-            }.ended ended@{ taskPair ->
-                taskPair?.let { pair ->
+                taskResult?.let { pair ->
                     pair.first?.let {
                         pair.second.endTask?.endTask(activity, it)
                     }
                 }
-            }.onThrowable { e ->
+            } catch (e: Throwable) {
                 Tools.showErrorRemote(e)
-            }.execute()
+            }
         }
     }
 }

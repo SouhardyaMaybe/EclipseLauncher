@@ -88,7 +88,7 @@ abstract class DownloadFabricLikeFragment(val utils: FabricLikeUtils, val icon: 
         val adapter = ModVersionListAdapter(icon, mFabricVersions)
         adapter.setOnItemClickListener { version ->
             if (isTaskRunning()) return@setOnItemClickListener false
-            val loaderVersion = (version as FabricVersion).version
+            val loaderVersion = (version as FabricVersion).version!!
 
             EventBus.getDefault().postSticky(
                 SelectInstallTaskEvent(

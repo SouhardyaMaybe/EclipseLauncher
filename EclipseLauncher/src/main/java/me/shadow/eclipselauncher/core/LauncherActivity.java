@@ -273,7 +273,7 @@ public class LauncherActivity extends BaseActivity {
                                 runOnUiThread(() -> Toast.makeText(this, getString(R.string.modpack_prepare_mod_loader_installation), Toast.LENGTH_SHORT).show());
 
                                 Logging.i("Install Version", "Installing ModLoader: " + modLoaderWrapper.getModLoaderVersion());
-                                File file = downloadTask.run(customName);
+                                File file = downloadTask.runBlocking(customName);
                                 if (file != null) {
                                     return new kotlin.Pair<>(modLoaderWrapper, file);
                                 }

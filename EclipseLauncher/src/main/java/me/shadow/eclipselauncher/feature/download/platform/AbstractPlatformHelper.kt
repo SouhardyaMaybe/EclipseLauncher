@@ -102,7 +102,9 @@ abstract class AbstractPlatformHelper(val api: ApiHandler) {
                                             }
 
                                             Logging.i("Install Version", "Installing ModLoader: ${mod.modLoaderVersion}")
-                                            downloadTask.run(customName)?.let { file ->
+                                            //runBlocking: this lambda already runs on a background
+                                            //executor, so the suspend task blocks it exactly like the old run did
+                                            downloadTask.runBlocking(customName)?.let { file ->
                                                 downloadIcon()
                                                 return@runTask Pair(mod, file)
                                             }
