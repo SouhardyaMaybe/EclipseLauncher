@@ -11,7 +11,6 @@ import me.shadow.eclipselauncher.core.utils.DownloadUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InterruptedIOException;
-import java.util.concurrent.Callable;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -141,7 +140,7 @@ public class ModDownloader {
         public void run() {
             for(String sourceUrl : mDownloadUrls) {
                 try {
-                    DownloadUtils.ensureSha1(mDestination, mSha1, (Callable<Void>) () -> {
+                    DownloadUtils.ensureSha1(mDestination, mSha1, (DownloadUtils.DownloadFunction<Void>) () -> {
                         IOException exception = tryDownload(sourceUrl);
                         if(exception != null) {
                             throw exception;

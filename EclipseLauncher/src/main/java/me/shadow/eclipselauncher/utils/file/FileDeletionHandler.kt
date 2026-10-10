@@ -39,25 +39,25 @@ class FileDeletionHandler(
 
     override fun searchFilesToProcess() {
         mSelectedFiles.forEach {
-            currentTask?.let { task -> if (task.isCancelled) return@forEach }
+            if (currentTask?.isCancelled == true) return@forEach
 
             if (it.isFile) addFile(it)
             else if (it.isDirectory) addDirectory(it)
         }
-        currentTask?.let { task -> if (task.isCancelled) return }
+        if (currentTask?.isCancelled == true) return
         totalFileSize.set(fileSize.get())
     }
 
     override fun processFile() {
         Logging.i("FileDeletionHandler", "Delete files (total files: $fileCount)")
         foundFiles.parallelStream().forEach {
-            currentTask?.let { task -> if (task.isCancelled) return@forEach }
+            if (currentTask?.isCancelled == true) return@forEach
 
             fileSize.addAndGet(-FileUtils.sizeOf(it))
             fileCount.getAndDecrement()
             FileUtils.deleteQuietly(it)
         }
-        currentTask?.let { task -> if (task.isCancelled) return }
+        if (currentTask?.isCancelled == true) return
         //The rest are empty folders, delete them directly
         mSelectedFiles.forEach { FileUtils.deleteQuietly(it) }
     }
@@ -69,6 +69,7 @@ class FileDeletionHandler(
     override fun getPendingSize() = fileSize.get()
 
     override fun onEnd() {
+        // Invokes the caller-supplied end Task, exactly like before.
         endTask?.execute()
     }
 }

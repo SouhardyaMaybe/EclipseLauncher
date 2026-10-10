@@ -1,24 +1,31 @@
 package me.shadow.eclipselauncher.utils.file
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.R
-import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.dialog.ProgressDialog
 import me.shadow.eclipselauncher.utils.EclipseTools
-import java.util.Timer
-import java.util.TimerTask
-import java.util.concurrent.Future
 
 abstract class FileHandler(
     protected val context: Context,
 ) {
-    protected var currentTask: Future<*>? = null
-    private var timer: Timer? = null
+    protected var currentTask: Job? = null
+    private var timerJob: Job? = null
     private var lastSize: Long = 0
     private var lastTime: Long = EclipseTools.getCurrentTimeMillis()
 
+    private val uiScope = CoroutineScope(SupervisorJob() + Dispatchers.Main + CoroutineName("FileHandler"))
+    private val workScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("FileHandler-work"))
+
     protected fun start(progress: FileSearchProgress) {
-        TaskExecutors.runInUIThread {
+        uiScope.launch {
             val dialog = ProgressDialog(context) {
                 cancelTask()
                 onEnd()
@@ -26,12 +33,12 @@ abstract class FileHandler(
             }
             dialog.updateText(context.getString(R.string.file_operation_file, "0 B", "0 B", 0))
 
-            currentTask = TaskExecutors.getDefault().submit {
-                TaskExecutors.runInUIThread { dialog.show() }
+            currentTask = workScope.launch {
+                uiScope.launch { dialog.show() }
 
-                timer = Timer()
-                timer?.schedule(object : TimerTask() {
-                    override fun run() {
+                // Rate meter: the old java.util.Timer ticked every 100ms, this loop does the same
+                timerJob = workScope.launch {
+                    while (isActive) {
                         val pendingSize = progress.getPendingSize()
                         val totalSize = progress.getTotalSize()
                         val processedSize = totalSize - pendingSize
@@ -44,7 +51,7 @@ abstract class FileHandler(
                         lastSize = processedSize
                         lastTime = currentTime
 
-                        TaskExecutors.runInUIThread {
+                        uiScope.launch {
                             dialog.updateText(
                                 context.getString(
                                     R.string.file_operation_file,
@@ -59,15 +66,16 @@ abstract class FileHandler(
                                 totalSize.toDouble()
                             )
                         }
+                        delay(100)
                     }
-                }, 0, 100)
+                }
 
                 searchFilesToProcess()
-                currentTask?.let { task -> if (task.isCancelled) return@submit }
+                if (!isActive) return@launch
                 processFile()
 
-                TaskExecutors.runInUIThread { dialog.dismiss() }
-                timer?.cancel()
+                uiScope.launch { dialog.dismiss() }
+                timerJob?.cancel()
                 onEnd()
             }
         }
@@ -80,11 +88,10 @@ abstract class FileHandler(
     abstract fun onEnd()
 
     private fun cancelTask() {
-        currentTask?.let {
-            if (!currentTask!!.isDone) {
-                currentTask?.cancel(true)
-                timer?.let { timer?.cancel() }
-            }
+        val task = currentTask
+        if (task != null && !task.isCompleted) {
+            task.cancel()
+            timerJob?.cancel()
         }
     }
 }

@@ -1,13 +1,20 @@
 package me.shadow.eclipselauncher.utils.anim
 
 import android.view.View
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.anim.animations.Animations
 import me.shadow.eclipselauncher.setting.AllSettings
-import me.shadow.eclipselauncher.task.Task
 import me.shadow.eclipselauncher.utils.anim.ViewAnimUtils.Companion.setViewAnim
 
 class AnimUtils {
     companion object {
+        private val animScope =
+            CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("AnimUtils"))
+
         @JvmStatic
         fun setVisibilityAnim(view: View, shouldShow: Boolean) {
             setVisibilityAnim(view, shouldShow, 300, null)
@@ -91,19 +98,23 @@ class AnimUtils {
             begin: Float,
             end: Float,
             duration: Int,
-            endAction: Runnable?
+            endAction: (() -> Unit)?
         ) {
             if ((view.visibility != View.VISIBLE && end == 0f) || (view.visibility == View.VISIBLE && end == 1f)) {
-                endAction?.let { r -> Task.runTask { r.run() }.execute() }
+                // Matches the old behavior: the callback ran on the shared background pool
+                // rather than on the UI thread.
+                if (endAction != null) {
+                    animScope.launch { endAction() }
+                }
                 return
             }
             view.visibility = View.VISIBLE
             view.alpha = begin
-            view.animate()
+            val animator = view.animate()
                 .alpha(end)
                 .setStartDelay(startDelay)
                 .setDuration(duration.toLong())
-                .withEndAction(endAction)
+            if (endAction != null) animator.withEndAction { endAction() } else animator.withEndAction(null)
         }
     }
 

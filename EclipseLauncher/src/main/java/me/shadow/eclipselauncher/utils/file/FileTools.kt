@@ -80,7 +80,7 @@ class FileTools {
         @JvmStatic
         fun isFilenameInvalid(
             str: String,
-            containsIllegalCharacters: (illegalCharacters: String) -> Unit,
+            containsIllegalCharacters: (illegalCharacters: String?) -> Unit,
             isInvalidLength: (invalidLength: Int) -> Unit
         ): Boolean {
             try {

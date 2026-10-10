@@ -1,10 +1,10 @@
-package me.shadow.eclipselauncher.core.utils;
+package me.shadow.eclipselauncher.core.utils
 
-import me.shadow.eclipselauncher.json.JsonArray;
-import me.shadow.eclipselauncher.json.JsonElement;
-import me.shadow.eclipselauncher.json.JsonObject;
+import me.shadow.eclipselauncher.json.JsonArray
+import me.shadow.eclipselauncher.json.JsonElement
+import me.shadow.eclipselauncher.json.JsonObject
 
-public class JsonTreeUtils {
+object JsonTreeUtils {
     /**
      * Safely converts a JsonElement into a JsonObject.
      * @param element the input JsonElement
@@ -14,10 +14,11 @@ public class JsonTreeUtils {
      *         the JsonElement is a JsonObjet
      *         null otherwise
      */
-    public static JsonObject getJsonObjectSafe(JsonElement element) {
-        if(element == null) return null;
-        if(element.isJsonNull() || !element.isJsonObject()) return null;
-        return element.getAsJsonObject();
+    @JvmStatic
+    fun getJsonObjectSafe(element: JsonElement?): JsonObject? {
+        if (element == null) return null
+        if (element.isJsonNull() || !element.isJsonObject()) return null
+        return element.getAsJsonObject()
     }
 
     /**
@@ -30,12 +31,13 @@ public class JsonTreeUtils {
      *         the JsonElement is not Json null
      *         null otherwise
      */
-    public static JsonElement getElementSafe(JsonObject jsonObject, String memberName) {
-        if(jsonObject == null) return null;
-        if(!jsonObject.has(memberName)) return null;
-        JsonElement element = jsonObject.get(memberName);
-        if(element.isJsonNull()) return null;
-        return element;
+    @JvmStatic
+    fun getElementSafe(jsonObject: JsonObject?, memberName: String): JsonElement? {
+        if (jsonObject == null) return null
+        if (!jsonObject.has(memberName)) return null
+        val element = jsonObject.get(memberName)
+        if (element.isJsonNull()) return null
+        return element
     }
 
     /**
@@ -49,8 +51,9 @@ public class JsonTreeUtils {
      *         the output JsonObject is a JsonObjet
      *         null otherwise
      */
-    public static JsonObject getJsonObjectSafe(JsonObject jsonObject, String memberName) {
-        return getJsonObjectSafe(getElementSafe(jsonObject, memberName));
+    @JvmStatic
+    fun getJsonObjectSafe(jsonObject: JsonObject?, memberName: String): JsonObject? {
+        return getJsonObjectSafe(getElementSafe(jsonObject, memberName))
     }
 
     /**
@@ -64,10 +67,11 @@ public class JsonTreeUtils {
      *         the JsonArray is a JsonArray
      *         null otherwise
      */
-    public static JsonArray getJsonArraySafe(JsonObject jsonObject, String memberName) {
-        JsonElement jsonElement = getElementSafe(jsonObject, memberName);
-        if(jsonElement == null || !jsonElement.isJsonArray()) return null;
-        return jsonElement.getAsJsonArray();
+    @JvmStatic
+    fun getJsonArraySafe(jsonObject: JsonObject?, memberName: String): JsonArray? {
+        val jsonElement = getElementSafe(jsonObject, memberName)
+        if (jsonElement == null || !jsonElement.isJsonArray()) return null
+        return jsonElement.getAsJsonArray()
     }
 
     /**
@@ -82,13 +86,14 @@ public class JsonTreeUtils {
      *         the int is an actual integer
      *         onNullValue otherwise
      */
-    public static int getIntSafe(JsonObject jsonObject, String memberName, int onNullValue) {
-        JsonElement jsonElement = getElementSafe(jsonObject, memberName);
-        if(jsonElement == null || !jsonElement.isJsonPrimitive()) return onNullValue;
-        try {
-            return jsonElement.getAsInt();
-        }catch (ClassCastException e) {
-            return onNullValue;
+    @JvmStatic
+    fun getIntSafe(jsonObject: JsonObject?, memberName: String, onNullValue: Int): Int {
+        val jsonElement = getElementSafe(jsonObject, memberName)
+        if (jsonElement == null || !jsonElement.isJsonPrimitive()) return onNullValue
+        return try {
+            jsonElement.getAsInt()
+        } catch (e: ClassCastException) {
+            onNullValue
         }
     }
 
@@ -103,13 +108,14 @@ public class JsonTreeUtils {
      *         the String is an actual String
      *         null otherwise
      */
-    public static String getStringSafe(JsonObject jsonObject, String memberName) {
-        JsonElement jsonElement = getElementSafe(jsonObject, memberName);
-        if(jsonElement == null || !jsonElement.isJsonPrimitive()) return null;
-        try {
-            return jsonElement.getAsString();
-        }catch (ClassCastException e) {
-            return null;
+    @JvmStatic
+    fun getStringSafe(jsonObject: JsonObject?, memberName: String): String? {
+        val jsonElement = getElementSafe(jsonObject, memberName)
+        if (jsonElement == null || !jsonElement.isJsonPrimitive()) return null
+        return try {
+            jsonElement.getAsString()
+        } catch (e: ClassCastException) {
+            null
         }
     }
 }

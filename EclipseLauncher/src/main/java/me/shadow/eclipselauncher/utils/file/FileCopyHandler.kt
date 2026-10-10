@@ -10,9 +10,9 @@ import java.util.concurrent.atomic.AtomicLong
 
 class FileCopyHandler(
     mContext: Context,
-    private val mPasteType: PasteFile.PasteType,
+    private val mPasteType: PasteFile.PasteType?,
     private val mSelectedFiles: List<File>,
-    private val mRoot: File,
+    private val mRoot: File?,
     private val mTarget: File,
     private val mFileExtensionGetter: FileExtensionGetter?,
     private val endTask: Task<*>
@@ -30,7 +30,7 @@ class FileCopyHandler(
         fileCount.incrementAndGet()
         fileSize.addAndGet(FileUtils.sizeOf(file))
         //Current file - target file
-        foundFiles [file] = getNewDestination(file, getTargetFile(file), mFileExtensionGetter?.onGet(file))
+        foundFiles[file] = getNewDestination(file, getTargetFile(file), mFileExtensionGetter?.onGet(file))
     }
 
     private fun addDirectory(directory: File) {
@@ -51,7 +51,9 @@ class FileCopyHandler(
     }
 
     private fun getTargetFile(file: File): File {
-        return File(file.absolutePath.replace(mRoot.absolutePath, mTarget.absolutePath).removeSuffix(file.name))
+        // mRoot is null only if the paste state was never set, in which case the original
+        // code failed here with a NullPointerException as well.
+        return File(file.absolutePath.replace(mRoot!!.absolutePath, mTarget.absolutePath).removeSuffix(file.name))
     }
 
     //If a file with the same name already exists at the target location, append a number to the target file name to prevent it from being overwritten
@@ -77,19 +79,19 @@ class FileCopyHandler(
 
     override fun searchFilesToProcess() {
         mSelectedFiles.forEach {
-            currentTask?.let { task -> if (task.isCancelled) return@forEach }
+            if (currentTask?.isCancelled == true) return@forEach
 
             if (it.isFile) addFile(it)
             else if (it.isDirectory) addDirectory(it)
         }
-        currentTask?.let { task -> if (task.isCancelled) return }
+        if (currentTask?.isCancelled == true) return
         totalFileSize.set(fileSize.get())
     }
 
     override fun processFile() {
         Logging.i("FileCopyHandler", "Copy files (total files: $fileCount, to ${mTarget.absolutePath})")
         foundFiles.entries.parallelStream().forEach { (currentFile, targetFile) ->
-            currentTask?.let { task -> if (task.isCancelled) return@forEach }
+            if (currentTask?.isCancelled == true) return@forEach
 
             fileSize.addAndGet(-FileUtils.sizeOf(currentFile))
             fileCount.decrementAndGet()
@@ -99,7 +101,7 @@ class FileCopyHandler(
                 else -> FileTools.moveFile(currentFile, targetFile)
             }
         }
-        currentTask?.let { task -> if (task.isCancelled) return }
+        if (currentTask?.isCancelled == true) return
         if (mPasteType == PasteFile.PasteType.MOVE) mSelectedFiles.forEach { FileUtils.deleteQuietly(it) }
     }
 
@@ -110,6 +112,8 @@ class FileCopyHandler(
     override fun getPendingSize() = fileSize.get()
 
     override fun onEnd() {
+        // The end Task is handed in by the (out of scope) caller, invoking it keeps the
+        // caller's original "refresh when the copy is done" behavior.
         endTask.execute()
     }
 
