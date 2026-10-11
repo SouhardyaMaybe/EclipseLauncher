@@ -1,24 +1,26 @@
-package me.shadow.eclipselauncher.core;
+package me.shadow.eclipselauncher.core
 
-import androidx.annotation.Keep;
+import androidx.annotation.Keep
 
 /** Singleton class made to log on one file
  * The singleton part can be removed but will require more implementation from the end-dev
  */
 @Keep
-public class Logger {
+object Logger {
     /** Print the text to the log file if not censored */
-    public static native void appendToLog(String text);
-
+    @JvmStatic
+    external fun appendToLog(text: String)
 
     /** Reset the log file, effectively erasing any previous logs */
-    public static native void begin(String logFilePath);
+    @JvmStatic
+    external fun begin(logFilePath: String)
 
     /** Small listener for anything listening to the log */
-    public interface eventLogListener {
-        void onEventLogged(String text);
+    interface eventLogListener {
+        fun onEventLogged(text: String)
     }
 
     /** Link a log listener to the logger */
-    public static native void setLogListener(eventLogListener logListener);
+    @JvmStatic
+    external fun setLogListener(logListener: eventLogListener?)
 }

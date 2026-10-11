@@ -87,7 +87,7 @@ class AsyncVersionList {
             val jsonString = DownloadUtils.downloadString(mirror)
             val parsedList: JMinecraftVersionList = Tools.JSON_CODEC.fromJson(jsonString, JMinecraftVersionList::class.java)
             list = parsedList
-            Logging.i("ExtVL", "Downloaded the version list, len=${parsedList.versions.length}")
+            Logging.i("ExtVL", "Downloaded the version list, len=${parsedList.versions.size}")
 
             // Then save the version list
             //TODO make it not save at times ?
