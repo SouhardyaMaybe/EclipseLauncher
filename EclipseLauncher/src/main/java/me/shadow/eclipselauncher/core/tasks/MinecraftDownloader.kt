@@ -40,7 +40,7 @@ import kotlin.math.max
  */
 class MinecraftDownloader {
     companion object {
-        private const val ONE_MEGABYTE = 1024d * 1024d
+        private const val ONE_MEGABYTE = 1024.0 * 1024.0
         const val MINECRAFT_RES = "https://resources.download.minecraft.net/"
 
         // Download class markers: which kind of file a scheduled download refers to
