@@ -396,7 +396,7 @@ class MinecraftDownloader {
             var size = 0L
             var skipIfFailed = false
             if (dependentLibrary.downloads != null) {
-                val artifact = dependentLibrary.downloads.artifact
+                val artifact = dependentLibrary.downloads!!.artifact
                 if (artifact != null) {
                     sha1 = artifact.sha1
                     url = artifact.url

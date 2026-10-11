@@ -67,7 +67,7 @@ class ModrinthModPackInstallHelper {
 
         private fun createInfo(modrinthIndex: ModrinthIndex?): ModLoaderWrapper? {
             if (modrinthIndex == null) return null
-            val dependencies = modrinthIndex.dependencies
+            val dependencies = modrinthIndex.dependencies!!
             val mcVersion = dependencies["minecraft"] ?: return null
             dependencies["forge"]?.let {
                 Logging.i("ModLoader", "Forge")
