@@ -239,8 +239,6 @@ dependencies {
     implementation("androidx.palette:palette-ktx:1.0.0")
 
     implementation("com.github.duanhong169:checkerboarddrawable:1.0.2")
-    implementation("com.github.PojavLauncherTeam:portrait-sdp:ed33e89cbc")
-    implementation("com.github.PojavLauncherTeam:portrait-ssp:6c02fd739b")
     implementation("com.github.Mathias-Boulay:ExtendedView:1.0.0")
     implementation("com.github.Mathias-Boulay:android_gamepad_remapper:2.0.3")
     implementation("com.github.Mathias-Boulay:virtual-joystick-android:1.14")
@@ -257,7 +255,7 @@ dependencies {
 
     implementation("org.tukaani:xz:1.9")
     // Our version of exp4j can be built from source at
-    // https://github.com/PojavLauncherTeam/exp4j
+    // https://github.com/SouhardyaMaybe/EclipseComponents/tree/main/exp4j
     implementation("net.sourceforge.htmlcleaner:htmlcleaner:2.6.1")
     implementation("com.bytedance:bytehook:1.0.10")
 
