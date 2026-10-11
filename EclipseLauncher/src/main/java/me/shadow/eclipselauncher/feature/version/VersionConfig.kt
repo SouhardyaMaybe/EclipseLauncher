@@ -193,7 +193,7 @@ class VersionConfig(private var versionPath: File = File("")) : Parcelable {
                     JsonParser.parseString(configString).asJsonObject.apply {
                         if (has("isolation")) {
                             config.setIsolationType(
-                                if (get("isolation").asBoolean) IsolationType.ENABLE
+                                if (get("isolation")!!.asBoolean) IsolationType.ENABLE
                                 else IsolationType.DISABLE
                             )
                         }

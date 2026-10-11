@@ -74,19 +74,19 @@ class VersionInfoUtils {
 
         private fun extractMinecraftVersion(json: JsonObject): String {
             //Try to detect the mod loader patches entry
-            if (json.has("patches") && json.get("patches").isJsonArray) {
-                val patches = json.getAsJsonArray("patches")
+            if (json.has("patches") && json.get("patches")!!.isJsonArray) {
+                val patches = json.getAsJsonArray("patches")!!
                 if (patches.size() > 0) {
                     val minecraft = patches[0].asJsonObject
                     if (minecraft.has("version")) {
-                        return minecraft.get("version").asString
+                        return minecraft.get("version")!!.asString
                     }
                 }
             }
 
             //Get it from the minecraft library
             json.getAsJsonArray("libraries")?.forEach { lib ->
-                val (group, artifact, version) = lib.asJsonObject["name"].asString.split(":").let {
+                val (group, artifact, version) = lib.asJsonObject["name"]!!.asString.split(":").let {
                     Triple(it[0], it[1], it.getOrNull(2) ?: "")
                 }
                 if (group == "net.minecraft" && (artifact == "client" || artifact == "server")) {
@@ -94,8 +94,8 @@ class VersionInfoUtils {
                 }
             }
 
-            val id = json["id"].asString
-            return if (json.has("inheritsFrom")) json["inheritsFrom"].asString
+            val id = json["id"]!!.asString
+            return if (json.has("inheritsFrom")) json["inheritsFrom"]!!.asString
             //Try to parse the MC version from the ID
             else LOADER_DETECTORS.firstNotNullOfOrNull { it(id) } ?: id
         }
@@ -107,7 +107,7 @@ class VersionInfoUtils {
         private fun detectModLoader(versionJson: JsonObject): VersionInfo.LoaderInfo? {
             versionJson.getAsJsonArray("libraries")?.forEach { libElement ->
                 val lib = libElement.asJsonObject
-                val (group, artifact, version) = lib.get("name").asString.split(":").let {
+                val (group, artifact, version) = lib.get("name")!!.asString.split(":").let {
                     Triple(it[0], it[1], it.getOrNull(2) ?: "")
                 }
 

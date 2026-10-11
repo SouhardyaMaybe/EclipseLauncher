@@ -39,7 +39,7 @@ class ModrinthModHelper {
             responseHit@for (responseHit in responseHits) {
                 val hit = responseHit.asJsonObject
 
-                val categories = hit.get("categories").asJsonArray
+                val categories = hit.get("categories")!!.asJsonArray
                 val modloaders: MutableList<ModLoader> = ArrayList()
                 for (category in categories) {
                     val string = category.asString
@@ -51,13 +51,13 @@ class ModrinthModHelper {
                     ModInfoItem(
                         classify,
                         Platform.MODRINTH,
-                        hit.get("project_id").asString,
-                        hit.get("slug").asString,
-                        arrayOf(hit.get("author").asString),
-                        hit.get("title").asString,
-                        hit.get("description").asString,
-                        hit.get("downloads").asLong,
-                        EclipseTools.getDate(hit.get("date_created").asString),
+                        hit.get("project_id")!!.asString,
+                        hit.get("slug")!!.asString,
+                        arrayOf(hit.get("author")!!.asString),
+                        hit.get("title")!!.asString,
+                        hit.get("description")!!.asString,
+                        hit.get("downloads")!!.asLong,
+                        EclipseTools.getDate(hit.get("date_created")!!.asString),
                         ModrinthCommonUtils.getIconUrl(hit),
                         ModrinthCommonUtils.getAllCategories(hit).toList(),
                         modloaders
@@ -73,13 +73,13 @@ class ModrinthModHelper {
             return ModrinthCommonUtils.getCommonVersions(
                 api, infoItem, force, InfoCache.ModVersionCache
             ) { versionObject, filesJsonObject, invalidDependencies ->
-                val dependencies = versionObject.get("dependencies").asJsonArray
+                val dependencies = versionObject.get("dependencies")!!.asJsonArray
                 val dependencyInfoItems: MutableList<DependenciesInfoItem> = ArrayList()
                 if (dependencies.size() != 0) {
                     for (dependency in dependencies) {
                         val dObject = dependency.asJsonObject
-                        val dProjectId = dObject.get("project_id").asString
-                        val dependencyType = dObject.get("dependency_type").asString
+                        val dProjectId = dObject.get("project_id")!!.asString
+                        val dependencyType = dObject.get("dependency_type")!!.asString
 
                         if (invalidDependencies.contains(dProjectId)) continue
                         if (!InfoCache.DependencyInfoCache.containsKey(dProjectId)) {
@@ -90,15 +90,15 @@ class ModrinthModHelper {
                                         infoItem.classify,
                                         Platform.MODRINTH,
                                         dProjectId,
-                                        hit.get("slug").asString,
+                                        hit.get("slug")!!.asString,
                                         null,
-                                        hit.get("title").asString,
-                                        hit.get("description").asString,
-                                        hit.get("downloads").asLong,
-                                        EclipseTools.getDate(hit.get("published").asString),
+                                        hit.get("title")!!.asString,
+                                        hit.get("description")!!.asString,
+                                        hit.get("downloads")!!.asLong,
+                                        EclipseTools.getDate(hit.get("published")!!.asString),
                                         ModrinthCommonUtils.getIconUrl(hit),
                                         ModrinthCommonUtils.getAllCategories(hit).toList(),
-                                        getModLoaders(hit.getAsJsonArray("loaders")),
+                                        getModLoaders(hit.getAsJsonArray("loaders")!!),
                                         DependencyUtils.getDependencyTypeFromModrinth(dependencyType)
                                     )
                                 )
@@ -111,15 +111,15 @@ class ModrinthModHelper {
                 }
                 ModVersionItem(
                         infoItem.projectId,
-                        versionObject.get("name").asString,
-                        versionObject.get("downloads").asLong,
-                        EclipseTools.getDate(versionObject.get("date_published").asString),
-                        ModrinthCommonUtils.getMcVersions(versionObject.getAsJsonArray("game_versions")),
-                        VersionTypeUtils.getVersionType(versionObject.get("version_type").asString),
-                        filesJsonObject.get("filename").asString,
+                        versionObject.get("name")!!.asString,
+                        versionObject.get("downloads")!!.asLong,
+                        EclipseTools.getDate(versionObject.get("date_published")!!.asString),
+                        ModrinthCommonUtils.getMcVersions(versionObject.getAsJsonArray("game_versions")!!),
+                        VersionTypeUtils.getVersionType(versionObject.get("version_type")!!.asString),
+                        filesJsonObject.get("filename")!!.asString,
                         ModrinthCommonUtils.getSha1Hash(filesJsonObject),
-                        filesJsonObject.get("url").asString,
-                        getModLoaders(versionObject.getAsJsonArray("loaders")),
+                        filesJsonObject.get("url")!!.asString,
+                        getModLoaders(versionObject.getAsJsonArray("loaders")!!),
                         dependencyInfoItems
                     )
             }
@@ -132,15 +132,15 @@ class ModrinthModHelper {
             ) { versionObject, filesJsonObject, _ ->
                 ModLikeVersionItem(
                     infoItem.projectId,
-                    versionObject.get("name").asString,
-                    versionObject.get("downloads").asLong,
-                    EclipseTools.getDate(versionObject.get("date_published").asString),
-                    ModrinthCommonUtils.getMcVersions(versionObject.getAsJsonArray("game_versions")),
-                    VersionTypeUtils.getVersionType(versionObject.get("version_type").asString),
-                    filesJsonObject.get("filename").asString,
+                    versionObject.get("name")!!.asString,
+                    versionObject.get("downloads")!!.asLong,
+                    EclipseTools.getDate(versionObject.get("date_published")!!.asString),
+                    ModrinthCommonUtils.getMcVersions(versionObject.getAsJsonArray("game_versions")!!),
+                    VersionTypeUtils.getVersionType(versionObject.get("version_type")!!.asString),
+                    filesJsonObject.get("filename")!!.asString,
                     ModrinthCommonUtils.getSha1Hash(filesJsonObject),
-                    filesJsonObject.get("url").asString,
-                    getModLoaders(versionObject.getAsJsonArray("loaders"))
+                    filesJsonObject.get("url")!!.asString,
+                    getModLoaders(versionObject.getAsJsonArray("loaders")!!)
                 )
             }
         }

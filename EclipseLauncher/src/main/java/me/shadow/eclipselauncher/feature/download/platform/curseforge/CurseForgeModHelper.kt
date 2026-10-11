@@ -61,7 +61,7 @@ class CurseForgeModHelper {
                             item.uploadDate,
                             item.iconUrl,
                             item.category,
-                            getModLoaders(dataElement.getAsJsonArray("latestFilesIndexes"))
+                            getModLoaders(dataElement.getAsJsonArray("latestFilesIndexes")!!)
                         )
                     )
                 }
@@ -100,7 +100,7 @@ class CurseForgeModHelper {
                 try {
                     // Get the version info
                     val mcVersions: MutableSet<String> = TreeSet()
-                    for (gameVersionElement in modData.getAsJsonArray("gameVersions")) {
+                    for (gameVersionElement in modData.getAsJsonArray("gameVersions")!!) {
                         val gameVersion = gameVersionElement.asString
                         mcVersions.add(gameVersion)
                     }
@@ -121,7 +121,7 @@ class CurseForgeModHelper {
                     if (dependencies != null && dependencies.size() != 0) {
                         for (dependency in dependencies) {
                             val dObject = dependency.asJsonObject
-                            val modId = dObject.get("modId").asString
+                            val modId = dObject.get("modId")!!.asString
                             if (invalidDependencies.contains(modId)) continue
 
                             if (!InfoCache.DependencyInfoCache.containsKey(modId)) {
@@ -129,22 +129,22 @@ class CurseForgeModHelper {
                                 val hit = JsonTreeUtils.getJsonObjectSafe(response, "data")
 
                                 if (hit != null) {
-                                    val dModLoaders = getModLoaders(hit.getAsJsonArray("latestFilesIndexes"))
+                                    val dModLoaders = getModLoaders(hit.getAsJsonArray("latestFilesIndexes")!!)
                                     InfoCache.DependencyInfoCache.put(
                                         modId, DependenciesInfoItem(
                                             infoItem.classify,
                                             Platform.CURSEFORGE,
                                             modId,
-                                            hit.get("slug").asString,
-                                            CurseForgeCommonUtils.getAuthors(hit.get("authors").asJsonArray).toTypedArray(),
-                                            hit.get("name").asString,
-                                            hit.get("summary").asString,
-                                            hit.get("downloadCount").asLong,
-                                            EclipseTools.getDate(hit.get("dateCreated").asString),
+                                            hit.get("slug")!!.asString,
+                                            CurseForgeCommonUtils.getAuthors(hit.get("authors")!!.asJsonArray).toTypedArray(),
+                                            hit.get("name")!!.asString,
+                                            hit.get("summary")!!.asString,
+                                            hit.get("downloadCount")!!.asLong,
+                                            EclipseTools.getDate(hit.get("dateCreated")!!.asString),
                                             CurseForgeCommonUtils.getIconUrl(hit),
                                             CurseForgeCommonUtils.getAllCategories(hit).toList(),
                                             dModLoaders,
-                                            DependencyUtils.getDependencyTypeFromCurseForge(dObject.get("relationType").asString)
+                                            DependencyUtils.getDependencyTypeFromCurseForge(dObject.get("relationType")!!.asString)
                                         )
                                     )
                                 } else invalidDependencies.add(modId)
@@ -158,15 +158,15 @@ class CurseForgeModHelper {
                     versionItems.add(
                         createVersionItem(
                             infoItem.projectId,
-                            modData.get("displayName").asString,
-                            modData.get("downloadCount").asLong,
-                            modData.get("fileDate").asString,
+                            modData.get("displayName")!!.asString,
+                            modData.get("downloadCount")!!.asLong,
+                            modData.get("fileDate")!!.asString,
                             mcVersions.toList(),
-                            modData.get("releaseType").asString,
+                            modData.get("releaseType")!!.asString,
                             CurseForgeCommonUtils.getSha1FromData(modData),
-                            modData.get("downloadUrl").asString,
+                            modData.get("downloadUrl")!!.asString,
                             modloaders,
-                            modData.get("fileName").asString,
+                            modData.get("fileName")!!.asString,
                             dependencyInfoList.ifEmpty { null }
                         )
                     )

@@ -17,8 +17,8 @@ object JsonTreeUtils {
     @JvmStatic
     fun getJsonObjectSafe(element: JsonElement?): JsonObject? {
         if (element == null) return null
-        if (element.isJsonNull() || !element.isJsonObject()) return null
-        return element.getAsJsonObject()
+        if (element.isJsonNull || !element.isJsonObject) return null
+        return element.asJsonObject
     }
 
     /**
@@ -35,8 +35,8 @@ object JsonTreeUtils {
     fun getElementSafe(jsonObject: JsonObject?, memberName: String): JsonElement? {
         if (jsonObject == null) return null
         if (!jsonObject.has(memberName)) return null
-        val element = jsonObject.get(memberName)
-        if (element.isJsonNull()) return null
+        val element = jsonObject.get(memberName)!!
+        if (element.isJsonNull) return null
         return element
     }
 
@@ -70,8 +70,8 @@ object JsonTreeUtils {
     @JvmStatic
     fun getJsonArraySafe(jsonObject: JsonObject?, memberName: String): JsonArray? {
         val jsonElement = getElementSafe(jsonObject, memberName)
-        if (jsonElement == null || !jsonElement.isJsonArray()) return null
-        return jsonElement.getAsJsonArray()
+        if (jsonElement == null || !jsonElement.isJsonArray) return null
+        return jsonElement.asJsonArray
     }
 
     /**
@@ -89,9 +89,9 @@ object JsonTreeUtils {
     @JvmStatic
     fun getIntSafe(jsonObject: JsonObject?, memberName: String, onNullValue: Int): Int {
         val jsonElement = getElementSafe(jsonObject, memberName)
-        if (jsonElement == null || !jsonElement.isJsonPrimitive()) return onNullValue
+        if (jsonElement == null || !jsonElement.isJsonPrimitive) return onNullValue
         return try {
-            jsonElement.getAsInt()
+            jsonElement.asInt
         } catch (e: ClassCastException) {
             onNullValue
         }
@@ -111,9 +111,9 @@ object JsonTreeUtils {
     @JvmStatic
     fun getStringSafe(jsonObject: JsonObject?, memberName: String): String? {
         val jsonElement = getElementSafe(jsonObject, memberName)
-        if (jsonElement == null || !jsonElement.isJsonPrimitive()) return null
+        if (jsonElement == null || !jsonElement.isJsonPrimitive) return null
         return try {
-            jsonElement.getAsString()
+            jsonElement.asString
         } catch (e: ClassCastException) {
             null
         }

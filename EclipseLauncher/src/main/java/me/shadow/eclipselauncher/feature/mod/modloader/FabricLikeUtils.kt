@@ -75,7 +75,7 @@ class FabricLikeUtils private constructor(
 
             val jsonArray = JsonCodec().fromJson(jsonString, JsonArray::class.java)
             val jsonObject = jsonArray[0].asJsonObject //Always fetch the latest installer info
-            val url = jsonObject["url"].asString
+            val url = jsonObject["url"]!!.asString
             println(url)
 
             return url

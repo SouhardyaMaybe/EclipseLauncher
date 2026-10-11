@@ -48,8 +48,8 @@ class CurseForgeCommonUtils {
 
         internal fun getAllCategories(hit: JsonObject): Set<Category> {
             val list: MutableSet<Category> = TreeSet()
-            for (categories in hit["categories"].asJsonArray) {
-                val id = categories.asJsonObject["id"].asString
+            for (categories in hit["categories"]!!.asJsonArray) {
+                val id = categories.asJsonObject["id"]!!.asString
                 CategoryUtils.getCategoryByCurseForge(id)?.let { list.add(it) }
             }
             return list
@@ -57,21 +57,21 @@ class CurseForgeCommonUtils {
 
         internal fun getIconUrl(hit: JsonObject): String? {
             return runCatching {
-                hit.getAsJsonObject("logo").get("thumbnailUrl").asString
+                hit.getAsJsonObject("logo")!!.get("thumbnailUrl")!!.asString
             }.getOrNull()
         }
 
         internal fun getScreenshots(api: ApiHandler, projectId: String): List<ScreenshotItem> {
             searchModFromID(api, projectId)?.let { jsonObject ->
-                val hit = jsonObject.getAsJsonObject("data")
+                val hit = jsonObject.getAsJsonObject("data")!!
                 val screenshotItems: MutableList<ScreenshotItem> = ArrayList()
-                hit.getAsJsonArray("screenshots").forEach { element ->
+                hit.getAsJsonArray("screenshots")!!.forEach { element ->
                     val screenshotObject = element.asJsonObject
                     screenshotItems.add(
                         ScreenshotItem(
-                            screenshotObject.get("url").asString,
-                            StringUtilsKt.getNonEmptyOrBlank(screenshotObject.get("title").asString),
-                            StringUtilsKt.getNonEmptyOrBlank(screenshotObject.get("description").asString),
+                            screenshotObject.get("url")!!.asString,
+                            StringUtilsKt.getNonEmptyOrBlank(screenshotObject.get("title")!!.asString),
+                            StringUtilsKt.getNonEmptyOrBlank(screenshotObject.get("description")!!.asString),
                         )
                     )
                 }
@@ -104,24 +104,24 @@ class CurseForgeCommonUtils {
         }
 
         internal fun getInfoItem(dataObject: JsonObject, classify: Classify): InfoItem? {
-            val allowModDistribution = dataObject.get("allowModDistribution")
+            val allowModDistribution = dataObject.get("allowModDistribution")!!
             // The JSON codec automatically casts null to false, which leans to issues
             // So, only check the distribution flag if it is non-null
             if (!allowModDistribution.isJsonNull && !allowModDistribution.asBoolean) {
-                Logging.i("CurseForgeCommonUtils", "Skipping project ${dataObject["name"].asString} because curseforge sucks")
+                Logging.i("CurseForgeCommonUtils", "Skipping project ${dataObject["name"]!!.asString} because curseforge sucks")
                 return null
             }
 
             return InfoItem(
                 classify,
                 Platform.CURSEFORGE,
-                dataObject.get("id").asString,
-                dataObject.get("slug").asString,
-                getAuthors(dataObject.get("authors").asJsonArray).toTypedArray(),
-                dataObject.get("name").asString,
-                dataObject.get("summary").asString,
-                dataObject.get("downloadCount").asLong,
-                EclipseTools.getDate(dataObject.get("dateCreated").asString),
+                dataObject.get("id")!!.asString,
+                dataObject.get("slug")!!.asString,
+                getAuthors(dataObject.get("authors")!!.asJsonArray).toTypedArray(),
+                dataObject.get("name")!!.asString,
+                dataObject.get("summary")!!.asString,
+                dataObject.get("downloadCount")!!.asLong,
+                EclipseTools.getDate(dataObject.get("dateCreated")!!.asString),
                 getIconUrl(dataObject),
                 getAllCategories(dataObject).toList(),
             )
@@ -138,7 +138,7 @@ class CurseForgeCommonUtils {
                 try {
                     //Get the version info
                     val mcVersions: MutableSet<String> = TreeSet()
-                    for (gameVersionElement in data.getAsJsonArray("gameVersions")) {
+                    for (gameVersionElement in data.getAsJsonArray("gameVersions")!!) {
                         val gameVersion = gameVersionElement.asString
                         mcVersions.add(gameVersion)
                     }
@@ -153,14 +153,14 @@ class CurseForgeCommonUtils {
                     versionsItem.add(
                         VersionItem(
                             infoItem.projectId,
-                            data.get("displayName").asString,
-                            data.get("downloadCount").asLong,
-                            EclipseTools.getDate(data.get("fileDate").asString),
+                            data.get("displayName")!!.asString,
+                            data.get("downloadCount")!!.asLong,
+                            EclipseTools.getDate(data.get("fileDate")!!.asString),
                             mcVersions.toList(),
-                            VersionTypeUtils.getVersionType(data.get("releaseType").asString),
-                            data.get("fileName").asString,
+                            VersionTypeUtils.getVersionType(data.get("releaseType")!!.asString),
+                            data.get("fileName")!!.asString,
                             getSha1FromData(data),
-                            data.get("downloadUrl").asString
+                            data.get("downloadUrl")!!.asString
                         )
                     )
                 } catch (e: Exception) {
@@ -177,7 +177,7 @@ class CurseForgeCommonUtils {
             val authors: MutableList<String> = ArrayList()
             for (authorElement in array) {
                 val authorObject = authorElement.asJsonObject
-                authors.add(authorObject.get("name").asString)
+                authors.add(authorObject.get("name")!!.asString)
             }
             return authors
         }
@@ -197,14 +197,14 @@ class CurseForgeCommonUtils {
         internal fun getDownloadUrl(api: ApiHandler, projectID: Long, fileID: Long): String? {
             // First try the official api endpoint
             val response = api.safeRun { get("mods/$projectID/files/$fileID/download-url", JsonObject::class.java) }
-            if (response != null && !response["data"].isJsonNull) return response["data"].asString
+            if (response != null && !response["data"]!!.isJsonNull) return response["data"]!!.asString
 
             // Otherwise, fallback to building an edge link
             val fallbackResponse = api.safeRun { get("mods/$projectID/files/$fileID", JsonObject::class.java) }
-            if (fallbackResponse != null && !fallbackResponse["data"].isJsonNull) {
-                val modData = fallbackResponse["data"].asJsonObject
-                val id = modData["id"].asInt
-                return "https://edge.forgecdn.net/files/${id / 1000}/${id % 1000}/${modData["fileName"].asString}"
+            if (fallbackResponse != null && !fallbackResponse["data"]!!.isJsonNull) {
+                val modData = fallbackResponse["data"]!!.asJsonObject
+                val id = modData["id"]!!.asInt
+                return "https://edge.forgecdn.net/files/${id / 1000}/${id % 1000}/${modData["fileName"]!!.asString}"
             }
 
             return null
@@ -237,7 +237,7 @@ class CurseForgeCommonUtils {
 
                 for (i in 0 until data.size()) {
                     val fileInfo = data[i].asJsonObject
-                    if (fileInfo["isServerPack"].asBoolean) continue
+                    if (fileInfo["isServerPack"]!!.asBoolean) continue
                     dataList.add(fileInfo)
                 }
                 if (data.size() < CURSEFORGE_PAGINATION_SIZE) {
@@ -258,7 +258,7 @@ class CurseForgeCommonUtils {
         ): SearchResult = lastResult.apply {
             this.infoItems.addAll(infoItems)
             this.previousCount += dataArray.size()
-            this.totalResultCount = response.getAsJsonObject("pagination").get("totalCount").asInt
+            this.totalResultCount = response.getAsJsonObject("pagination")!!.get("totalCount")!!.asInt
             this.isLastPage = dataArray.size() < CURSEFORGE_SEARCH_COUNT
         }
     }

@@ -119,7 +119,7 @@ class InstallArgsUtils(private val mcVersion: String, private val loaderVersion:
             jsonObject.addProperty("version", customName)
         } else { //Legacy installer
             if (!jsonObject.has("install")) throw IOException("Unable to find install key!")
-            val install = jsonObject.get("install").asJsonObject
+            val install = jsonObject.get("install")!!.asJsonObject
             if (!install.has("target")) throw IOException("Unable to find install-target key!")
             //Change the target value to customName to complete the custom version name in the legacy format
             install.addProperty("target", customName)

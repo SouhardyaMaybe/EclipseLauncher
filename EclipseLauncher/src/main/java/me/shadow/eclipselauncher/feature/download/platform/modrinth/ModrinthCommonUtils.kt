@@ -47,7 +47,7 @@ class ModrinthCommonUtils {
 
         internal fun getAllCategories(hit: JsonObject): Set<Category> {
             val list: MutableSet<Category> = TreeSet()
-            for (categories in hit["categories"].asJsonArray) {
+            for (categories in hit["categories"]!!.asJsonArray) {
                 val name = categories.asString
                 CategoryUtils.getCategoryByModrinth(name)?.let { list.add(it) }
             }
@@ -56,23 +56,23 @@ class ModrinthCommonUtils {
 
         internal fun getIconUrl(hit: JsonObject): String? {
             return runCatching {
-                hit.get("icon_url").asString
+                hit.get("icon_url")!!.asString
             }.getOrNull()
         }
 
         internal fun getScreenshots(api: ApiHandler, projectId: String): List<ScreenshotItem> {
             searchModFromID(api, projectId)?.let { hit ->
                 val screenshotItems: MutableList<ScreenshotItem> = ArrayList()
-                hit.getAsJsonArray("gallery").forEach { element ->
+                hit.getAsJsonArray("gallery")!!.forEach { element ->
                     runCatching {
                         val screenshotObject = element.asJsonObject
-                        val url = screenshotObject.get("url").asString
+                        val url = screenshotObject.get("url")!!.asString
 
-                        val titleElement = screenshotObject.get("title")
+                        val titleElement = screenshotObject.get("title")!!
                         val titleString = if (titleElement.isJsonNull) null
                         else StringUtilsKt.getNonEmptyOrBlank(titleElement.asString)
 
-                        val descriptionElement = screenshotObject.get("description")
+                        val descriptionElement = screenshotObject.get("description")!!
                         val descriptionString = if (descriptionElement.isJsonNull) null
                         else StringUtilsKt.getNonEmptyOrBlank(descriptionElement.asString)
 
@@ -121,20 +121,20 @@ class ModrinthCommonUtils {
         }
 
         private fun getInfoItem(hit: JsonObject, classify: Classify): InfoItem? {
-            val categories = hit.get("categories").asJsonArray
+            val categories = hit.get("categories")!!.asJsonArray
             for (category in categories) {
                 if (category.asString == "datapack") return null //There is no datapack install support, so exclude them all
             }
             return InfoItem(
                 classify,
                 Platform.MODRINTH,
-                hit.get("project_id").asString,
-                hit.get("slug").asString,
-                arrayOf(hit.get("author").asString),
-                hit.get("title").asString,
-                hit.get("description").asString,
-                hit.get("downloads").asLong,
-                EclipseTools.getDate(hit.get("date_created").asString),
+                hit.get("project_id")!!.asString,
+                hit.get("slug")!!.asString,
+                arrayOf(hit.get("author")!!.asString),
+                hit.get("title")!!.asString,
+                hit.get("description")!!.asString,
+                hit.get("downloads")!!.asLong,
+                EclipseTools.getDate(hit.get("date_created")!!.asString),
                 getIconUrl(hit),
                 getAllCategories(hit).toList(),
             )
@@ -146,12 +146,12 @@ class ModrinthCommonUtils {
                     classify,
                     Platform.MODRINTH,
                     projectId,
-                    hit.get("slug").asString,
+                    hit.get("slug")!!.asString,
                     null,
-                    hit.get("title").asString,
-                    hit.get("description").asString,
-                    hit.get("downloads").asLong,
-                    EclipseTools.getDate(hit.get("published").asString),
+                    hit.get("title")!!.asString,
+                    hit.get("description")!!.asString,
+                    hit.get("downloads")!!.asLong,
+                    EclipseTools.getDate(hit.get("published")!!.asString),
                     getIconUrl(hit),
                     getAllCategories(hit).toList()
                 )
@@ -178,7 +178,7 @@ class ModrinthCommonUtils {
             for (element in response) {
                 try {
                     val versionObject = element.asJsonObject
-                    val filesJsonObject: JsonObject = versionObject.getAsJsonArray("files").get(0).asJsonObject
+                    val filesJsonObject: JsonObject = versionObject.getAsJsonArray("files")!!.get(0).asJsonObject
 
                     items.add(createItem(versionObject, filesJsonObject, invalidDependencies))
                 } catch (e: Exception) {
@@ -198,14 +198,14 @@ class ModrinthCommonUtils {
             ) { versionObject, filesJsonObject, _ ->
                 VersionItem(
                     infoItem.projectId,
-                    versionObject.get("name").asString,
-                    versionObject.get("downloads").asLong,
-                    EclipseTools.getDate(versionObject.get("date_published").asString),
-                    getMcVersions(versionObject.getAsJsonArray("game_versions")),
-                    VersionTypeUtils.getVersionType(versionObject.get("version_type").asString),
-                    filesJsonObject.get("filename").asString,
+                    versionObject.get("name")!!.asString,
+                    versionObject.get("downloads")!!.asLong,
+                    EclipseTools.getDate(versionObject.get("date_published")!!.asString),
+                    getMcVersions(versionObject.getAsJsonArray("game_versions")!!),
+                    VersionTypeUtils.getVersionType(versionObject.get("version_type")!!.asString),
+                    filesJsonObject.get("filename")!!.asString,
                     getSha1Hash(filesJsonObject),
-                    filesJsonObject.get("url").asString
+                    filesJsonObject.get("url")!!.asString
                 )
             }
         }
@@ -219,8 +219,8 @@ class ModrinthCommonUtils {
         }
 
         internal fun getSha1Hash(filesJsonObject: JsonObject): String? {
-            val hashesMap = filesJsonObject.getAsJsonObject("hashes")
-            return if ((hashesMap != null && hashesMap.has("sha1"))) hashesMap["sha1"].asString else null
+            val hashesMap = filesJsonObject.getAsJsonObject("hashes")!!
+            return if ((hashesMap != null && hashesMap.has("sha1"))) hashesMap["sha1"]!!.asString else null
         }
 
         internal fun searchModFromID(api: ApiHandler, id: String): JsonObject? {
@@ -237,7 +237,7 @@ class ModrinthCommonUtils {
         ): SearchResult = lastResult.apply {
             this.infoItems.addAll(infoItems)
             this.previousCount += responseHits.size()
-            this.totalResultCount = response.get("total_hits").asInt
+            this.totalResultCount = response.get("total_hits")!!.asInt
             this.isLastPage = responseHits.size() < MODRINTH_SEARCH_COUNT
         }
     }
