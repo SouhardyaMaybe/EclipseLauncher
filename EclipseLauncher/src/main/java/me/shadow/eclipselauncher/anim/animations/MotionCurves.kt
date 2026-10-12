@@ -111,7 +111,7 @@ internal object MotionCurves {
     private fun fromPoints(target: View, property: String, vararg points: Pair<Float, Float>): ObjectAnimator {
         val frames = Array(points.size) { i -> Keyframe.ofFloat(points[i].first, points[i].second) }
         return ObjectAnimator.ofPropertyValuesHolder(
-            target, PropertyValuesHolder.ofKeyframes(property, *frames)
+            target, PropertyValuesHolder.ofKeyframe(property, *frames)
         ).also { it.interpolator = timing }
     }
 
@@ -122,7 +122,7 @@ internal object MotionCurves {
             Keyframe.ofFloat(progress, curve(progress))
         }
         return ObjectAnimator.ofPropertyValuesHolder(
-            target, PropertyValuesHolder.ofKeyframes(property, *frames)
+            target, PropertyValuesHolder.ofKeyframe(property, *frames)
         ).also { it.interpolator = timing }
     }
 }
