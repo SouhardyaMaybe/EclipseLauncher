@@ -19,6 +19,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.text.Editable;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -158,7 +159,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         bindService(gameServiceIntent, this, 0);
 
         //Initialize the input listener; it is set when the IME covers the game view
-        mInputWatcher = s -> binding.inputPreview.setText(s.toString().trim());
+        mInputWatcher = new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                binding.inputPreview.setText(s.toString().trim());
+            }
+        };
         getWindow().getDecorView().getViewTreeObserver().addOnGlobalLayoutListener(this);
     }
 

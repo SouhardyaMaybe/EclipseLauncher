@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -458,40 +459,46 @@ class EditControlPopup {
      * the currently edited mCurrentlyEditedButton
      */
     fun setupRealTimeListeners() {
-        mNameEditText.addTextChangedListener(SimpleTextWatcher { s ->
-            if (internalChanges) return@SimpleTextWatcher
+        mNameEditText.addTextChangedListener(object : SimpleTextWatcher() {
+            override fun afterTextChanged(s: Editable?) {
+                if (internalChanges) return
 
-            mCurrentlyEditedButton!!.getProperties().name = s.toString()
+                mCurrentlyEditedButton!!.getProperties().name = s.toString()
 
-            // Cheap and unoptimized, doesn't break the abstraction layer
-            mCurrentlyEditedButton!!.setProperties(mCurrentlyEditedButton!!.getProperties(), false)
-        })
-
-        mWidthEditText.addTextChangedListener(SimpleTextWatcher { s ->
-            if (internalChanges) return@SimpleTextWatcher
-
-            val width = safeParseFloat(s.toString())
-            if (width >= 0) {
-                mCurrentlyEditedButton!!.getProperties().setWidth(width)
-                if (mCurrentlyEditedButton!!.getProperties() is ControlJoystickData) {
-                    // Joysticks are square
-                    mCurrentlyEditedButton!!.getProperties().setHeight(width)
-                }
-                mCurrentlyEditedButton!!.updateProperties()
+                // Cheap and unoptimized, doesn't break the abstraction layer
+                mCurrentlyEditedButton!!.setProperties(mCurrentlyEditedButton!!.getProperties(), false)
             }
         })
 
-        mHeightEditText.addTextChangedListener(SimpleTextWatcher { s ->
-            if (internalChanges) return@SimpleTextWatcher
+        mWidthEditText.addTextChangedListener(object : SimpleTextWatcher() {
+            override fun afterTextChanged(s: Editable?) {
+                if (internalChanges) return
 
-            val height = safeParseFloat(s.toString())
-            if (height >= 0) {
-                mCurrentlyEditedButton!!.getProperties().setHeight(height)
-                if (mCurrentlyEditedButton!!.getProperties() is ControlJoystickData) {
-                    // Joysticks are square
-                    mCurrentlyEditedButton!!.getProperties().setWidth(height)
+                val width = safeParseFloat(s.toString())
+                if (width >= 0) {
+                    mCurrentlyEditedButton!!.getProperties().setWidth(width)
+                    if (mCurrentlyEditedButton!!.getProperties() is ControlJoystickData) {
+                        // Joysticks are square
+                        mCurrentlyEditedButton!!.getProperties().setHeight(width)
+                    }
+                    mCurrentlyEditedButton!!.updateProperties()
                 }
-                mCurrentlyEditedButton!!.updateProperties()
+            }
+        })
+
+        mHeightEditText.addTextChangedListener(object : SimpleTextWatcher() {
+            override fun afterTextChanged(s: Editable?) {
+                if (internalChanges) return
+
+                val height = safeParseFloat(s.toString())
+                if (height >= 0) {
+                    mCurrentlyEditedButton!!.getProperties().setHeight(height)
+                    if (mCurrentlyEditedButton!!.getProperties() is ControlJoystickData) {
+                        // Joysticks are square
+                        mCurrentlyEditedButton!!.getProperties().setWidth(height)
+                    }
+                    mCurrentlyEditedButton!!.updateProperties()
+                }
             }
         })
 

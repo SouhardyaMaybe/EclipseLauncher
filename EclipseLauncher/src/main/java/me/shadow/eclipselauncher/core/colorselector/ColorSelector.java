@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.listener.SimpleTextWatcher;
 
-public class ColorSelector implements HueSelectionListener, RectangleSelectionListener, AlphaSelectionListener, SimpleTextWatcher {
+public class ColorSelector extends SimpleTextWatcher implements HueSelectionListener, RectangleSelectionListener, AlphaSelectionListener {
     private static final int ALPHA_MASK = ~(0xFF << 24);
     private final View mRootView;
     private final HueView mHueView;

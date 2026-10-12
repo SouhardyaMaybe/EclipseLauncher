@@ -5,10 +5,10 @@ import android.text.TextWatcher
 
 /**
  * Most interfaces implementations of [TextWatcher] only implement the afterTextChanged method.
- * This interface provides a default for other methods.
+ * This class provides a default for other methods.
  */
-interface SimpleTextWatcher : TextWatcher {
-    override fun afterTextChanged(s: Editable?)
+abstract class SimpleTextWatcher : TextWatcher {
+    abstract override fun afterTextChanged(s: Editable?)
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
