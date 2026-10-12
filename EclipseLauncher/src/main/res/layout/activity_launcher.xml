@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_12sdp"
             android:background="?android:attr/selectableItemBackground"
-            android:textColor="?attr/colorOnSurfaceContainer"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
