@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.background
 
 import android.content.Context
-import android.graphics.ColorDrawable
+import android.graphics.drawable.ColorDrawable
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.google.android.material.color.MaterialColors
