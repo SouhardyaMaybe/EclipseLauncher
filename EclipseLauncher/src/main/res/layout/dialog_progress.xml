@@ -14,6 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_12sdp"
+        app:progressTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
@@ -58,6 +59,8 @@
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
+            app:progressTint="?attr/colorPrimary"
+            app:progressBackgroundTint="?attr/colorSurfaceContainer"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_4sdp"
             android:visibility="gone"

@@ -55,7 +55,7 @@
                     android:layout_toStartOf="@+id/dump_shaders"
                     android:text="@string/setting_shader_dump_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/dump_shaders"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                     android:layout_toStartOf="@+id/bigCoreAffinity"
                     android:text="@string/setting_force_big_core_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/bigCoreAffinity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

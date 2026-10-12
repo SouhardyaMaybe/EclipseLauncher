@@ -20,13 +20,13 @@
         <item name="shapeAppearanceLargeComponent">@style/EclipseShapeAppearance</item>
     </style>
 
-    <style name="CustomDialogStyle" parent="Theme.AppCompat.Light.Dialog">
+    <style name="CustomDialogStyle" parent="Theme.Material3.DayNight.Dialog">
         <item name="android:windowBackground">@drawable/dialog_background</item>
         <item name="android:scrollbarThumbHorizontal">@color/background_menu_element</item>
         <item name="android:scrollbarThumbVertical">@color/background_menu_element</item>
     </style>
 
-    <style name="CustomAlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <style name="CustomAlertDialogTheme" parent="Theme.Material3.DayNight.Dialog.Alert">
         <item name="android:windowBackground">@drawable/dialog_background</item>
         <item name="android:scrollbarThumbHorizontal">@color/background_menu_element</item>
         <item name="android:scrollbarThumbVertical">@color/background_menu_element</item>

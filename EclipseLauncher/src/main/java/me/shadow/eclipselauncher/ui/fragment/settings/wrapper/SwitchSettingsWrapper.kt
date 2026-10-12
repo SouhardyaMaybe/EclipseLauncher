@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.widget.CompoundButton
-import android.widget.Switch
+import androidx.appcompat.widget.SwitchCompat
 import me.shadow.eclipselauncher.setting.unit.BooleanSettingUnit
 
 @SuppressLint("UseSwitchCompatOrMaterialCode")
@@ -12,7 +12,7 @@ class SwitchSettingsWrapper(
     private val context: Context,
     private val unit: BooleanSettingUnit,
     val mainView: View,
-    val switchView: Switch
+    val switchView: SwitchCompat
 ) : AbstractSettingsWrapper(mainView) {
     private var listener: OnCheckedChangeListener? = null
 

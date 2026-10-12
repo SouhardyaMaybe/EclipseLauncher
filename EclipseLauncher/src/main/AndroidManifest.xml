@@ -70,7 +70,7 @@
             android:screenOrientation="sensorLandscape" />
         <activity android:name="me.shadow.eclipselauncher.core.ShowErrorActivity"
             android:configChanges="keyboardHidden|orientation|screenSize|keyboard|navigation"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
+            android:theme="@style/Theme.Material3.DayNight.Dialog" />
         <activity
             android:process=":gui_installer"
             android:name="me.shadow.eclipselauncher.core.JavaGUILauncherActivity"

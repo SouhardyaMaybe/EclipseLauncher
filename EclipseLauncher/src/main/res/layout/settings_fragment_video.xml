@@ -169,7 +169,7 @@
                     android:layout_toStartOf="@+id/ignoreNotch"
                     android:text="@string/setting_ignore_notch_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/ignoreNotch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -205,7 +205,7 @@
                     android:layout_toStartOf="@+id/ignoreNotchLauncher"
                     android:text="@string/setting_launcher_ignore_notch_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/ignoreNotchLauncher"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -302,7 +302,7 @@
                     android:layout_toStartOf="@+id/sustainedPerformance"
                     android:text="@string/setting_limit_overheating_throttling" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/sustainedPerformance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -337,7 +337,7 @@
                     android:layout_toStartOf="@+id/alternate_surface"
                     android:text="@string/setting_use_surface_view_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/alternate_surface"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -372,7 +372,7 @@
                     android:layout_toStartOf="@+id/force_vsync"
                     android:text="@string/setting_limit_overheating_throttling" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/force_vsync"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

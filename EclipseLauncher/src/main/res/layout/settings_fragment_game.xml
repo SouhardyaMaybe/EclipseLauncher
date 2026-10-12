@@ -55,7 +55,7 @@
                     android:layout_toStartOf="@+id/version_isolation"
                     android:text="@string/setting_version_isolation_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/version_isolation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
                     android:layout_toStartOf="@+id/autoSetGameLanguage"
                     android:text="@string/setting_set_game_language_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/autoSetGameLanguage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
                     android:layout_toStartOf="@+id/gameLanguageOverridden"
                     android:text="@string/setting_set_game_language_overridden_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/gameLanguageOverridden"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -413,7 +413,7 @@
                     android:layout_toStartOf="@+id/java_sandbox"
                     android:text="@string/setting_java_sandbox_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/java_sandbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -467,7 +467,7 @@
                     android:layout_toStartOf="@+id/gameMenuShowMemory"
                     android:text="@string/setting_game_menu_show_memory_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/gameMenuShowMemory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -502,7 +502,7 @@
                     android:layout_toStartOf="@+id/gameMenuShowFPS"
                     android:text="@string/setting_game_menu_show_fps_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/gameMenuShowFPS"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

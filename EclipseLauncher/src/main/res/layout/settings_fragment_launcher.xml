@@ -55,7 +55,7 @@
                     android:layout_toStartOf="@+id/checkLibraries"
                     android:text="@string/setting_check_libraries_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/checkLibraries"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                     android:layout_toStartOf="@+id/verifyManifest"
                     android:text="@string/setting_verify_manifest_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/verifyManifest"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -127,7 +127,7 @@
                     android:layout_toStartOf="@+id/resourceImageCache"
                     android:text="@string/setting_resource_image_cache_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/resourceImageCache"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
                     android:layout_toStartOf="@+id/addFullResourceName"
                     android:text="@string/setting_resource_full_name_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/addFullResourceName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -318,7 +318,7 @@
                     android:layout_toStartOf="@+id/animation"
                     android:text="@string/setting_animation_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/animation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -471,7 +471,7 @@
                     android:layout_toStartOf="@+id/enableLogOutput"
                     android:text="@string/setting_enable_log_output_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/enableLogOutput"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -506,7 +506,7 @@
                     android:layout_toStartOf="@+id/quitLauncher"
                     android:text="@string/setting_quit_launcher_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/quitLauncher"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -594,7 +594,7 @@
                     android:layout_toStartOf="@+id/notification_permission_request"
                     android:text="@string/setting_ask_for_notification_desc" />
 
-                <Switch
+                <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/notification_permission_request"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
