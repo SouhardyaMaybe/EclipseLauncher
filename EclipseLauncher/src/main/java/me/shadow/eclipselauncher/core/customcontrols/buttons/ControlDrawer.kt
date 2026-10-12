@@ -80,6 +80,8 @@ class ControlDrawer : ControlButton {
                     buttons[i].setDynamicY(generateDynamicY(y + (drawerData.properties.getHeight() + margin) * (i + 1)))
                     buttons[i].setDynamicX(generateDynamicX(x))
                 }
+
+                ControlDrawerData.Orientation.FREE -> {}
             }
             buttons[i].updateProperties()
         }
@@ -114,7 +116,7 @@ class ControlDrawer : ControlButton {
     }
 
     override fun preProcessProperties(properties: ControlData, layout: ControlLayout): ControlData {
-        val data = super<ControlInterface>.preProcessProperties(properties, layout)
+        val data = super.preProcessProperties(properties, layout)
         data.isHideable = true
         return data
     }
@@ -160,7 +162,7 @@ class ControlDrawer : ControlButton {
     }
 
     override fun canSnap(button: ControlInterface): Boolean {
-        val result = super<ControlInterface>.canSnap(button)
+        val result = super.canSnap(button)
         return result && !containsChild(button)
     }
 

@@ -1,7 +1,7 @@
 package me.shadow.eclipselauncher.feature.download
 
-import me.shadow.eclipselauncher.feature.download.InfoAdapter.createCategoryView
-import me.shadow.eclipselauncher.feature.download.InfoAdapter.getTagTextView
+import me.shadow.eclipselauncher.feature.download.InfoAdapter.Companion.createCategoryView
+import me.shadow.eclipselauncher.feature.download.InfoAdapter.Companion.getTagTextView
 
 import android.annotation.SuppressLint
 import android.content.Context

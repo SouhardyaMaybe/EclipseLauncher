@@ -11,7 +11,7 @@ interface ActionButtonInterface : View.OnClickListener {
     fun init()
 
     /** Called when the button should be made aware of the current target */
-    fun setFollowedView(view: ControlInterface)
+    fun setFollowedView(view: ControlInterface?)
 
     /** Called when the button action should be executed on the target */
     fun onClick()

@@ -63,7 +63,7 @@ class NeoForgeDownloadTask(neoforgeVersion: String) : InstallTask, DownloaderFee
         )
         val destinationFile = File(PathManager.DIR_CACHE, "neoforge-installer.jar")
         val buffer = ByteArray(8192)
-        runInterruptible { DownloadUtils.downloadFileMonitored(mDownloadUrl, destinationFile, buffer, this) }
+        runInterruptible { DownloadUtils.downloadFileMonitored(mDownloadUrl!!, destinationFile, buffer, this) }
         return destinationFile
     }
 

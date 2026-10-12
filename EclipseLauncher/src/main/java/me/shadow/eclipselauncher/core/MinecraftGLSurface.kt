@@ -183,7 +183,7 @@ class MinecraftGLSurface @JvmOverloads constructor(context: Context, attributeSe
     @Suppress("accessibility")
     override fun onTouchEvent(e: MotionEvent): Boolean {
         // Kinda need to send this back to the layout
-        if ((parent as ControlLayout).modifiable) return false
+        if ((parent as ControlLayout).getModifiable()) return false
 
         // Looking for a mouse to handle, won't have an effect if no mouse exists.
         for (i in 0 until e.pointerCount) {

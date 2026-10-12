@@ -83,7 +83,7 @@ class Touchpad @JvmOverloads constructor(
         updateMouseDrawable()
         // For some reason it's annotated as Nullable even though it doesn't seem to actually
         // ever return null
-        assert mMousePointerDrawable != null
+        assert(mMousePointerDrawable != null)
 
         updateMouseScale()
 

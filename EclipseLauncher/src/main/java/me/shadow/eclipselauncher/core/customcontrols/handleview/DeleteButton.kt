@@ -33,7 +33,7 @@ class DeleteButton : AnimButton, ActionButtonInterface {
         return mCurrentlySelectedButton != null
     }
 
-    override fun setFollowedView(view: ControlInterface) {
+    override fun setFollowedView(view: ControlInterface?) {
         mCurrentlySelectedButton = view
     }
 

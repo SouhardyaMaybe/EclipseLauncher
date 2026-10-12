@@ -79,10 +79,10 @@ open class ControlButton : TextView, ControlInterface {
         setText(properties.name)
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         if (mIsToggled || (!mProperties.isToggle && isActivated))
-            canvas!!.drawRoundRect(0f, 0f, width.toFloat(), height.toFloat(), mComputedRadius, mComputedRadius, mRectPaint)
+            canvas.drawRoundRect(0f, 0f, width.toFloat(), height.toFloat(), mComputedRadius, mComputedRadius, mRectPaint)
     }
 
     override fun loadEditValues(editControlPopup: EditControlPopup) {

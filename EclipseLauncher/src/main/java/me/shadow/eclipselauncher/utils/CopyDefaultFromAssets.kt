@@ -13,7 +13,7 @@ class CopyDefaultFromAssets {
         fun copyFromAssets(context: Context?) {
             //Default control layout
             if (checkDirectoryEmpty(PathManager.DIR_CTRLMAP_PATH)) {
-                Tools.copyAssetFile(context, "default.json", PathManager.DIR_CTRLMAP_PATH, false)
+                Tools.copyAssetFile(context!!, "default.json", PathManager.DIR_CTRLMAP_PATH, false)
             }
         }
 

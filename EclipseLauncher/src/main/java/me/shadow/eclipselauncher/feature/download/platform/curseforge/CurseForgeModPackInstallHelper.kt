@@ -87,7 +87,7 @@ class CurseForgeModPackInstallHelper {
                         "Failed to obtain download URL for ${StringUtils.insertSpace(curseFile.projectID, curseFile.fileID)}"
                     )
                     else if (url == null) return@submitDownload null
-                    ModDownloader.FileInfo(url, FileUtils.getFileName(url), getDownloadSha1(api, curseFile.projectID, curseFile.fileID))
+                    ModDownloader.FileInfo(url, FileUtils.getFileName(url)!!, getDownloadSha1(api, curseFile.projectID, curseFile.fileID))
                 }
             }
             return modDownloader
@@ -125,7 +125,7 @@ class CurseForgeModPackInstallHelper {
                 }
                 else -> return null
             }
-            return ModLoaderWrapper(modloader, modLoaderVersion, minecraft.version)
+            return ModLoaderWrapper(modloader, modLoaderVersion, minecraft.version!!)
         }
     }
 }

@@ -638,7 +638,7 @@ class EditControlPopup {
             mCurrentlyEditedButton!!.getProperties().keycodes[finalI] = mKeycodeSpinners[finalI]!!.selectedItemPosition - mSpecialArray.size
         } else {
             mCurrentlyEditedButton!!.getProperties().keycodes[finalI] =
-                EfficientAndroidLWJGLKeycode.getValueByIndex(mKeycodeSpinners[finalI]!!.selectedItemPosition - mSpecialArray.size)
+                EfficientAndroidLWJGLKeycode.getValueByIndex(mKeycodeSpinners[finalI]!!.selectedItemPosition - mSpecialArray.size).toInt()
         }
         mKeycodeTextviews[finalI]!!.setText(mKeycodeSpinners[finalI]!!.selectedItem as String?)
     }

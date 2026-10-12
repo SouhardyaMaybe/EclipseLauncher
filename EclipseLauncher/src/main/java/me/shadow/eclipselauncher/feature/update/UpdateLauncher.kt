@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.feature.update
 
 import me.shadow.eclipselauncher.task.TaskExecutors.Companion.runInUIThread
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.formatFileSize
-import me.shadow.eclipselauncher.utils.path.UrlManager.TIME_OUT
+import me.shadow.eclipselauncher.utils.path.UrlManager.Companion.TIME_OUT
 
 import android.app.Dialog
 import android.content.Context

@@ -489,7 +489,7 @@ open class ControlLayout : FrameLayout {
     }
 
     private fun saveDialog(title: String?, confirmTask: Task<*>?) {
-        val infoDialog = EditControlInfoDialog(context, true, mLayoutFileName, mInfoData)
+        val infoDialog = EditControlInfoDialog(context, true, mLayoutFileName, mInfoData!!)
 
         if (title != null && !title.isEmpty()) infoDialog.setTitle(title)
 
@@ -521,28 +521,32 @@ open class ControlLayout : FrameLayout {
     }
 
     fun openLoadDialog() {
-        val dialog = SelectControlsDialog(context) { file ->
-            try {
-                loadLayout(file.absolutePath)
-            } catch (e: IOException) {
-                Tools.showError(context, e)
+        val dialog = SelectControlsDialog(context, object : SelectControlsDialog.SelectedListener {
+            override fun onSelected(file: File) {
+                try {
+                    loadLayout(file.absolutePath)
+                } catch (e: IOException) {
+                    Tools.showError(context, e)
+                }
             }
-        }
+        })
         dialog.show()
     }
 
     fun openSetDefaultDialog() {
-        val dialog = SelectControlsDialog(context) { file ->
-            val absolutePath = file.absolutePath
-            try {
-                AllSettings.defaultCtrl.put(absolutePath).save()
-                loadLayout(absolutePath)
-            } catch (e: IOException) {
-                Tools.showError(context, e)
-            } catch (e: JsonSyntaxException) {
-                Tools.showError(context, e)
+        val dialog = SelectControlsDialog(context, object : SelectControlsDialog.SelectedListener {
+            override fun onSelected(file: File) {
+                val absolutePath = file.absolutePath
+                try {
+                    AllSettings.defaultCtrl.put(absolutePath).save()
+                    loadLayout(absolutePath)
+                } catch (e: IOException) {
+                    Tools.showError(context, e)
+                } catch (e: JsonSyntaxException) {
+                    Tools.showError(context, e)
+                }
             }
-        }
+        })
         dialog.setTitleText(R.string.customctrl_selectdefault)
         dialog.show()
     }

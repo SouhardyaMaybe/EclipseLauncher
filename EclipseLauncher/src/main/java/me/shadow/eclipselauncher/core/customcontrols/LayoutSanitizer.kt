@@ -1,7 +1,5 @@
 package me.shadow.eclipselauncher.core.customcontrols
 
-import java.util.Iterator
-
 class LayoutSanitizer {
 
     companion object {
@@ -26,7 +24,7 @@ class LayoutSanitizer {
 
         private fun sanitizeList(controlDataList: MutableList<*>): Boolean {
             var madeChanges = false
-            val iterator: Iterator<*> = controlDataList.iterator()
+            val iterator: MutableIterator<*> = controlDataList.iterator()
             while (iterator.hasNext()) {
                 val controlData = getControlData(iterator.next())
                 if (!isSaneData(controlData)) {

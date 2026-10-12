@@ -4,7 +4,7 @@ import android.view.KeyEvent
 
 import me.shadow.eclipselauncher.R
 
-import me.shadow.eclipselauncher.context.ContextExecutor.getString
+import me.shadow.eclipselauncher.context.ContextExecutor.Companion.getString
 
 import org.lwjgl.glfw.CallbackBridge
 

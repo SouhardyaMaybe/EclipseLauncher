@@ -35,7 +35,7 @@ class AddSubButton : AnimButton, ActionButtonInterface {
         return mCurrentlySelectedButton != null && mCurrentlySelectedButton is ControlDrawer
     }
 
-    override fun setFollowedView(view: ControlInterface) {
+    override fun setFollowedView(view: ControlInterface?) {
         mCurrentlySelectedButton = view
     }
 

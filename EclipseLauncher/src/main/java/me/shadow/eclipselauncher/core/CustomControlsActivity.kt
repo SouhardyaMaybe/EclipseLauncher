@@ -2,6 +2,7 @@ package me.shadow.eclipselauncher.core
 
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import android.widget.FrameLayout
 
 import androidx.activity.OnBackPressedCallback

@@ -107,7 +107,7 @@ object EclipseTools {
 
     @JvmStatic
     fun getCustomMouse(): File? {
-        val customMouse = AllSettings.customMouse.value
+        val customMouse = AllSettings.customMouse.getValue()
         if (customMouse.isEmpty()) return null
         return File(PathManager.DIR_CUSTOM_MOUSE, customMouse)
     }
@@ -190,7 +190,7 @@ object EclipseTools {
 
     private fun getFragmentTransaction(fragment: Fragment): FragmentTransaction {
         val transaction = fragment.requireActivity().supportFragmentManager.beginTransaction()
-        if (AllSettings.animation.value) {
+        if (AllSettings.animation.getValue()) {
             transaction.setCustomAnimations(R.anim.cut_into, R.anim.cut_out, R.anim.cut_into, R.anim.cut_out)
         }
         return transaction.setReorderingAllowed(true)

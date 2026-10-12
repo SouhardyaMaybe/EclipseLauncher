@@ -38,8 +38,8 @@ class LayoutConverter {
         @JvmStatic
         fun loadFromAssets(context: Context, jsonName: String): CustomControls? {
             try {
-                context.assets.open(jsonName).use { is: InputStream ->
-                    val string = IOUtils.toString(is, StandardCharsets.UTF_8)
+                context.assets.open(jsonName).use { stream: InputStream ->
+                    val string = IOUtils.toString(stream, StandardCharsets.UTF_8)
 
                     val layoutJobj = JSONObject(string)
                     return loadAndConvertIfNecessary(context, layoutJobj, string, null, true)

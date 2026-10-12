@@ -47,7 +47,7 @@ class ForgeDownloadTask : InstallTask, Tools.DownloaderFeedback {
         ProgressKeeper.submitProgress(ProgressLayout.INSTALL_RESOURCE, 0, R.string.mod_download_progress, mFullVersion)
         val destinationFile = File(PathManager.DIR_CACHE, "forge-installer.jar")
         val buffer = ByteArray(8192)
-        runInterruptible { DownloadUtils.downloadFileMonitored(mDownloadUrl, destinationFile, buffer, this) }
+        runInterruptible { DownloadUtils.downloadFileMonitored(mDownloadUrl!!, destinationFile, buffer, this) }
         return destinationFile
     }
 

@@ -53,7 +53,7 @@ class FolderProvider : DocumentsProvider() {
 
         var summary = InfoDistributor.APP_NAME
         if (BuildConfig.DEBUG) {
-            summary = "(${context.getString(R.string.generic_debug)}) $summary"
+            summary = "(${context!!.getString(R.string.generic_debug)}) $summary"
         }
 
         val row = result.newRow()
@@ -107,13 +107,13 @@ class FolderProvider : DocumentsProvider() {
 
     override fun onCreate(): Boolean {
         if (Tools.checkStorageRoot()) {
-            PathManager.initContextConstants(context)
+            PathManager.initContextConstants(context!!)
         } else {
             return false
         }
         BASE_DIR = File(PathManager.DIR_GAME_HOME)
-        mContentResolver = context.contentResolver
-        mStorageProviderAuthortiy = context.getString(R.string.storageProviderAuthorities)
+        mContentResolver = context!!.contentResolver
+        mStorageProviderAuthortiy = context!!.getString(R.string.storageProviderAuthorities)
         return true
     }
 
@@ -258,13 +258,13 @@ class FolderProvider : DocumentsProvider() {
 
         var flags = 0
         if (resolvedFile.isDirectory) {
-            if (resolvedFile.canWrite) flags = flags or Document.FLAG_DIR_SUPPORTS_CREATE
-        } else if (resolvedFile.canWrite) {
+            if (resolvedFile.canWrite()) flags = flags or Document.FLAG_DIR_SUPPORTS_CREATE
+        } else if (resolvedFile.canWrite()) {
             flags = flags or Document.FLAG_SUPPORTS_WRITE
         }
         val parent = resolvedFile.parentFile
         if (parent != null) { // Only fails in one case: when the parent is /, which you can't delete.
-            if (parent.canWrite) flags = flags or Document.FLAG_SUPPORTS_DELETE
+            if (parent.canWrite()) flags = flags or Document.FLAG_SUPPORTS_DELETE
         }
 
         val displayName = resolvedFile.name

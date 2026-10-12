@@ -76,7 +76,7 @@ class ActionRow : LinearLayout {
         setElevation(5f)
     }
 
-    fun setFollowedButton(controlInterface: ControlInterface) {
+    fun setFollowedButton(controlInterface: ControlInterface?) {
         if (mFollowedView != null)
             mFollowedView!!.viewTreeObserver.removeOnPreDrawListener(mFollowedViewListener)
 
@@ -86,7 +86,7 @@ class ActionRow : LinearLayout {
         }
 
         visibility = View.VISIBLE
-        mFollowedView = controlInterface as View
+        mFollowedView = controlInterface as View?
         if (mFollowedView != null)
             mFollowedView!!.viewTreeObserver.addOnPreDrawListener(mFollowedViewListener)
     }

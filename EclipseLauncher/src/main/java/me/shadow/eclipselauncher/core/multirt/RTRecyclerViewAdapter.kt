@@ -117,7 +117,7 @@ class RTRecyclerViewAdapter private constructor(
                 mProvidedByLauncherTextView.visibility =
                     if (runtime.isProvidedByLauncher) View.VISIBLE else View.GONE
 
-                if (runtime.versionString != null && Tools.DEVICE_ARCHITECTURE == Architecture.archAsInt(runtime.arch)) {
+                if (runtime.versionString != null && Tools.DEVICE_ARCHITECTURE == Architecture.archAsInt(runtime.arch!!)) {
                     mJavaVersionTextView.text = getJavaVersionName(runtime)
                     mFullJavaVersionTextView.text = runtime.versionString
 
@@ -205,7 +205,7 @@ class RTRecyclerViewAdapter private constructor(
             mProvidedByLauncherTextView.visibility =
                 if (runtime.isProvidedByLauncher) View.VISIBLE else View.GONE
 
-            if (runtime.versionString != null && Tools.DEVICE_ARCHITECTURE == Architecture.archAsInt(runtime.arch)) {
+            if (runtime.versionString != null && Tools.DEVICE_ARCHITECTURE == Architecture.archAsInt(runtime.arch!!)) {
                 mJavaVersionTextView.text = getJavaVersionName(runtime)
                 mFullJavaVersionTextView.text = runtime.versionString
                 mFullJavaVersionTextView.setTextColor(mDefaultColors)

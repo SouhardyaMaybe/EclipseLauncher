@@ -141,7 +141,7 @@ class TouchCharInput : androidx.appcompat.widget.AppCompatEditText {
                     sender.sendBackspace()
                 }
                 for (i in start until start + lengthAfter) {
-                    sender.sendChar(text!!.charAt(i))
+                    sender.sendChar(text!![i])
                 }
             }
         }

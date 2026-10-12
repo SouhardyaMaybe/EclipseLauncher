@@ -110,7 +110,7 @@ interface ControlInterface : View.OnLongClickListener, GrabListener {
         val gd = if (getControlView().background is GradientDrawable)
             getControlView().background as GradientDrawable
         else GradientDrawable()
-        gd.color = getProperties().bgColor
+        gd.setColor(getProperties().bgColor)
         gd.setStroke(Tools.dpToPx(getProperties().strokeWidth * (getControlLayoutParent()!!.getLayoutScale() / 100f)).toInt(), getProperties().strokeColor)
         gd.cornerRadius = computeCornerRadius(getProperties().cornerRadius)
 

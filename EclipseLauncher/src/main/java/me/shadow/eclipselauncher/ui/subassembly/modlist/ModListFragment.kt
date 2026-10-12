@@ -210,7 +210,7 @@ abstract class ModListFragment : FragmentWithAnim(R.layout.fragment_mod_download
     protected fun setLink(link: String?) {
         link?.let { uri ->
             binding.launchLink.apply {
-                this.setOnClickListener { EclipseTools.openLink(fragmentActivity, uri) }
+                this.setOnClickListener { EclipseTools.openLink(fragmentActivity!!, uri) }
                 AnimUtils.setVisibilityAnim(this, true)
             }
         }

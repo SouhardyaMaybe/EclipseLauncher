@@ -7,7 +7,7 @@ import kotlin.math.floor
 
 /**
  * Runtime companion for the scalable dimension resources bundled in
- * `res/values*/positive_sdps.xml`, `negative_sdps.xml` and `positive_ssps.xml`.
+ * the values buckets (positive_sdps.xml, negative_sdps.xml and positive_ssps.xml).
  *
  * The resources expose `_Nsdp` (N = 1..600 plus `_minusNsdp` for N = 1..60) and
  * `_Nssp` (N = 1..100). The base `values/` bucket maps every name to the plain

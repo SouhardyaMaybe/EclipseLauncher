@@ -3,7 +3,7 @@ package me.shadow.eclipselauncher.core.customcontrols.gamepad
 /**
  *  This class corresponds to a button that does exist on the gamepad
  */
-open class GamepadButton : GamepadEmulatedButton {
+open class GamepadButton : GamepadEmulatedButton() {
     @JvmField
     var isToggleable = false
     private var mIsToggled = false

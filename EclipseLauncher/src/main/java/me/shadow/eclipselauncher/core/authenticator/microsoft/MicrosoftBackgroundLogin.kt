@@ -109,7 +109,7 @@ class MicrosoftBackgroundLogin(private val mIsRefresh: Boolean, private val mAut
             val acc: MinecraftAccount
             if (account == null) {
                 //Try to find an existing local account with the same Profile UUID
-                val acc1 = MinecraftAccount.loadFromProfileID(mcUuid)
+                val acc1 = MinecraftAccount.loadFromProfileID(mcUuid!!)
                 acc = acc1 ?: MinecraftAccount()
             } else {
                 acc = account
@@ -119,9 +119,9 @@ class MicrosoftBackgroundLogin(private val mIsRefresh: Boolean, private val mAut
                 acc.xuid = xsts[0]
                 acc.clientToken = "0" /* FIXME */
                 acc.accessToken = minecraftToken
-                acc.username = mcName
-                acc.profileId = mcUuid
-                acc.msaRefreshToken = msRefreshToken
+                acc.username = mcName!!
+                acc.profileId = mcUuid!!
+                acc.msaRefreshToken = msRefreshToken!!
                 acc.accountType = AccountType.MICROSOFT.type
                 acc.updateMicrosoftSkin()
             }

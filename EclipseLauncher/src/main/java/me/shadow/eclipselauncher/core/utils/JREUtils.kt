@@ -34,12 +34,12 @@ import me.shadow.eclipselauncher.ui.activity.ErrorActivity
 import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.path.LibPath
 import me.shadow.eclipselauncher.utils.path.PathManager
-import me.shadow.eclipselauncher.utils.path.PathManager.DIR_NATIVE_LIB
+import me.shadow.eclipselauncher.utils.path.PathManager.Companion.DIR_NATIVE_LIB
 import com.oracle.dalvik.VMLauncher
 
 import me.shadow.eclipselauncher.core.Architecture
-import me.shadow.eclipselauncher.core.Architecture.ARCH_X86
-import me.shadow.eclipselauncher.core.Architecture.is64BitsDevice
+import me.shadow.eclipselauncher.core.Architecture.Companion.ARCH_X86
+import me.shadow.eclipselauncher.core.Architecture.Companion.is64BitsDevice
 import me.shadow.eclipselauncher.core.Logger
 import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.core.Tools.currentDisplayMetrics
@@ -191,7 +191,7 @@ object JREUtils {
 
     @JvmStatic
     fun relocateLibPath(runtime: Runtime, jreHome: String) {
-        var jreArchitecture = runtime.arch
+        var jreArchitecture = runtime.arch!!
         if (Architecture.archAsInt(jreArchitecture) == ARCH_X86) {
             jreArchitecture = "i386/i486/i586"
         }
@@ -243,7 +243,7 @@ object JREUtils {
         envMap["TMPDIR"] = PathManager.DIR_CACHE.absolutePath
         envMap["LD_LIBRARY_PATH"] = LD_LIBRARY_PATH
         envMap["PATH"] = "$jreHome/bin:" + Os.getenv("PATH")
-        envMap["FORCE_VSYNC"] = AllSettings.forceVsync.value.toString()
+        envMap["FORCE_VSYNC"] = AllSettings.forceVsync.getValue().toString()
         envMap["AWTSTUB_WIDTH"] =
             (if (CallbackBridge.windowWidth > 0) CallbackBridge.windowWidth else CallbackBridge.physicalWidth).toString()
         envMap["AWTSTUB_HEIGHT"] =
@@ -257,7 +257,7 @@ object JREUtils {
 
     private fun setRendererEnv(envMap: MutableMap<String, String?>) {
         val currentRenderer: RendererInterface = Renderers.getCurrentRenderer()
-        val rendererId = currentRenderer.rendererId
+        val rendererId = currentRenderer.getRendererId()
 
         if (rendererId.startsWith("opengles2")) {
             envMap["LIBGL_ES"] = "2"
@@ -267,9 +267,9 @@ object JREUtils {
             envMap["LIBGL_NORMALIZE"] = "1"
         }
 
-        envMap.putAll(currentRenderer.rendererEnv.value)
+        envMap.putAll(currentRenderer.getRendererEnv().value)
 
-        val eglName = currentRenderer.rendererEGL
+        val eglName = currentRenderer.getRendererEGL()
         if (eglName != null) envMap["ECLIPSEEXEC_EGL"] = eglName
 
         envMap["ECLIPSE_RENDERER"] = rendererId
@@ -410,8 +410,8 @@ object JREUtils {
         userArgs.add("-javaagent:" + LibPath.MIO_LIB_PATCHER.absolutePath)
 
         //Add automatically generated args
-        userArgs.add("-Xms" + AllSettings.ramAllocation.value.value + "M")
-        userArgs.add("-Xmx" + AllSettings.ramAllocation.value.value + "M")
+        userArgs.add("-Xms" + AllSettings.ramAllocation.value.getValue() + "M")
+        userArgs.add("-Xmx" + AllSettings.ramAllocation.value.getValue() + "M")
         if (Renderers.isCurrentRendererValid()) userArgs.add("-Dorg.lwjgl.opengl.libname=" + loadGraphicsLibrary())
 
         // Force LWJGL to use the Freetype library intended for it, instead of using the one
@@ -425,7 +425,7 @@ object JREUtils {
         activity.runOnUiThread {
             Toast.makeText(
                 activity,
-                activity.getString(R.string.autoram_info_msg, AllSettings.ramAllocation.value.value),
+                activity.getString(R.string.autoram_info_msg, AllSettings.ramAllocation.value.getValue()),
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -507,10 +507,10 @@ object JREUtils {
                 //"-Dorg.lwjgl.util.DebugLoader=true",
                 // GLFW Stub width height
                 "-Dglfwstub.windowWidth=" + Tools.getDisplayFriendlyRes(
-                    currentDisplayMetrics.widthPixels, AllSettings.resolutionRatio.value / 100F
+                    currentDisplayMetrics.widthPixels, AllSettings.resolutionRatio.getValue() / 100F
                 ),
                 "-Dglfwstub.windowHeight=" + Tools.getDisplayFriendlyRes(
-                    currentDisplayMetrics.heightPixels, AllSettings.resolutionRatio.value / 100F
+                    currentDisplayMetrics.heightPixels, AllSettings.resolutionRatio.getValue() / 100F
                 ),
                 "-Dglfwstub.initEgl=false",
                 "-Dext.net.resolvPath=$resolvFile",
@@ -615,7 +615,7 @@ object JREUtils {
             if (rendererPlugin != null) {
                 rendererPlugin.path + "/" + rendererPlugin.glName
             } else {
-                Renderers.getCurrentRenderer().rendererLibrary
+                Renderers.getCurrentRenderer().getRendererLibrary()
             }
         }
     }
@@ -715,7 +715,7 @@ object JREUtils {
             }
         } else {
             Logging.e("glesDetect", "Couldn't initialize EGL.")
-            -3
+            return -3
         }
     }
 

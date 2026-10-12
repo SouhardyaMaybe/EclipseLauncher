@@ -35,7 +35,7 @@ class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
     ) { uris: List<Uri>? ->
         uris?.let { uriList ->
             uriList[0].let { data ->
-                Tools.installRuntimeFromUri(context, data)
+                Tools.installRuntimeFromUri(context!!, data)
             }
         }
     }

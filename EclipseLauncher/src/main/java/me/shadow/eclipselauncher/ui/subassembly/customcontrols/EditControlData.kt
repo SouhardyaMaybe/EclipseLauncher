@@ -26,7 +26,7 @@ class EditControlData {
             runCatching {
                 val jsonLayoutData = Tools.read(file)
                 val layoutJsonObject = JSONObject(jsonLayoutData)
-                return LayoutConverter.loadFromJsonObject(context, layoutJsonObject, jsonLayoutData, file.absolutePath, false)
+                return LayoutConverter.loadFromJsonObject(context!!, layoutJsonObject, jsonLayoutData, file.absolutePath, false)
             }.getOrElse { e ->
                 Logging.e("Load Controls", Tools.printToString(e))
                 return null
@@ -38,14 +38,14 @@ class EditControlData {
             runCatching {
                 Tools.write(file.absolutePath, Tools.JSON_CODEC.toJson(customControls))
             }.getOrElse { e ->
-                Tools.showError(context, e)
+                Tools.showError(context!!, e)
             }
         }
 
         @JvmStatic
         fun createNewControlFile(context: Context?, jsonFile: File, mControlInfoDataList: ControlInfoData?) {
             val customControls =
-                CustomControls(ArrayList(), ArrayList(), ArrayList(), mControlInfoDataList)
+                CustomControls(ArrayList(), ArrayList(), ArrayList(), mControlInfoDataList!!)
             saveToFile(context, customControls, jsonFile)
         }
     }

@@ -14,7 +14,7 @@ import me.shadow.eclipselauncher.setting.AllStaticSettings
 import me.shadow.eclipselauncher.setting.Settings
 import me.shadow.eclipselauncher.ui.activity.BaseActivity
 
-import me.shadow.eclipselauncher.core.Architecture.is32BitsDevice
+import me.shadow.eclipselauncher.core.Architecture.Companion.is32BitsDevice
 import me.shadow.eclipselauncher.core.Tools
 import me.shadow.eclipselauncher.core.multirt.MultiRTUtils
 import me.shadow.eclipselauncher.core.utils.JREUtils

@@ -123,7 +123,7 @@ class MinecraftDownloader {
             while (true) {
                 if (mDownloaderThreadException.get() != null) break
                 // Wait up to 33ms for all workers to finish, like awaitTermination(33ms) did
-                if (withTimeoutOrNull(PROGRESS_INTERVAL_MS) { joinAll(workers) } != null) break
+                if (withTimeoutOrNull(PROGRESS_INTERVAL_MS) { joinAll(*workers) } != null) break
 
                 val speed = speedCalculator.feed(mInternetUsageCounter.get()) / ONE_MEGABYTE
                 if (mUseFileCounter) reportProgressFileCounter(speed)
@@ -321,9 +321,9 @@ class MinecraftDownloader {
         if (verInfo.libraries != null) scheduleLibraryDownloads(verInfo.libraries)
 
         if (Tools.isValidString(verInfo.inheritsFrom)) {
-            val inheritedVersion = AsyncMinecraftDownloader.getListedVersion(verInfo.inheritsFrom)
+            val inheritedVersion = AsyncMinecraftDownloader.getListedVersion(verInfo.inheritsFrom!!)
             // Infinite inheritance !?! :noway:
-            downloadAndProcessMetadata(inheritedVersion, verInfo.inheritsFrom)
+            downloadAndProcessMetadata(inheritedVersion, verInfo.inheritsFrom!!)
         }
     }
 
@@ -341,7 +341,7 @@ class MinecraftDownloader {
         // Only attempt to check size if we still use the size counter and didn't switch to file counter.
         if (downloadSize <= 0 && !mUseFileCounter) {
             try {
-                downloadSize = DownloadUtils.getContentLength(url)
+                downloadSize = DownloadUtils.getContentLength(url!!)
             } catch (e: Exception) {
                 downloadSize = -1
             }
@@ -513,7 +513,7 @@ class MinecraftDownloader {
             if (resultHash != null) {
                 Logging.i(
                     "MinecraftDownloader",
-                    "Got hash: " + resultHash + " for " + FileUtils.getFileName(mTargetUrl)
+                    "Got hash: " + resultHash + " for " + FileUtils.getFileName(mTargetUrl!!)
                 )
                 mTargetSha1 = resultHash
             }
@@ -556,7 +556,7 @@ class MinecraftDownloader {
         private fun downloadFile() {
             try {
                 DownloadUtils.ensureSha1<File?>(mTargetPath, mTargetSha1) {
-                    DownloadUtils.downloadFileMonitored(mTargetUrl, mTargetPath, getLocalBuffer(), this@DownloaderTask)
+                    DownloadUtils.downloadFileMonitored(mTargetUrl!!, mTargetPath, getLocalBuffer(), this@DownloaderTask)
                     null
                 }
             } catch (e: Exception) {

@@ -274,8 +274,8 @@ open class ControlData {
         /**
          * Create a builder, keep a weak reference to it to use it with all views on first inflation
          */
-        private fun buildExpressionBuilder() {
-            val expressionBuilder = ExpressionBuilder("1 + 1")
+        private fun buildExpressionBuilder(expression: String = "1 + 1") {
+            val expressionBuilder = ExpressionBuilder(expression)
                 .function(object : Function("dp", 1) {
                     override fun apply(vararg args: Double): Double {
                         return Tools.pxToDp(args[0].toFloat()).toDouble()
@@ -296,7 +296,7 @@ open class ControlData {
          */
         private fun setExpression(stringExpression: String) {
             if (builder.get() == null) buildExpressionBuilder()
-            builder.get()!!.expression(stringExpression)
+            buildExpressionBuilder(stringExpression)
         }
 
         /**
