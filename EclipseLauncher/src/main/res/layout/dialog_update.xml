@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent"
     android:layout_width="match_parent"
@@ -112,7 +113,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_2sdp"
             android:layout_weight="1"
-            android:text="@android:string/cancel" />
+            android:text="@android:string/cancel"
+            app:buttonVariant="text" />
 
         <me.shadow.eclipselauncher.ui.view.AnimButton
             android:id="@+id/ignore_button"
@@ -120,7 +122,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_2sdp"
             android:layout_weight="1"
-            android:text="@string/update_dialog_ignore" />
+            android:text="@string/update_dialog_ignore"
+            app:buttonVariant="text" />
 
         <me.shadow.eclipselauncher.ui.view.AnimButton
             android:id="@+id/update_button"
@@ -128,7 +131,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_2sdp"
             android:layout_weight="1"
-            android:text="@string/update_dialog_yes" />
+            android:text="@string/update_dialog_yes"
+            app:buttonVariant="filled" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

@@ -82,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/_8sdp"
                     android:text="Github"
+                app:buttonVariant="filled"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/dec3"
@@ -119,7 +120,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:shapeAppearanceOverlay="@style/RoundImageView"
-                    app:strokeColor="@android:color/white"
+                    app:strokeColor="?attr/colorOutline"
                     app:strokeWidth="@dimen/_2sdp"
                     tools:ignore="ContentDescription" />
 
