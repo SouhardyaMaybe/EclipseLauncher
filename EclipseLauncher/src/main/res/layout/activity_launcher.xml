@@ -14,7 +14,7 @@
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp"
-        android:background="@color/background_menu_top"
+        android:background="?attr/colorSurfaceContainer"
         app:layout_constraintTop_toTopOf="parent">
 
         <me.shadow.eclipselauncher.ui.view.AnimTextView
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_12sdp"
             android:background="?android:attr/selectableItemBackground"
-            android:textColor="@color/menu_bar_text"
+            android:textColor="?attr/colorOnSurfaceContainer"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -36,7 +36,7 @@
             android:layout_height="0dp"
             android:layout_marginEnd="@dimen/_8sdp"
             android:layout_marginVertical="@dimen/_3sdp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/icon_button_tonal_background"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_download"
             android:scaleX="1.04"
@@ -44,7 +44,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/setting_button"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="#FFF" />
+            app:tint="?attr/colorOnSurface" />
 
         <ImageButton
             android:id="@+id/setting_button"
@@ -52,9 +52,10 @@
             android:layout_height="0dp"
             android:layout_marginEnd="@dimen/_8sdp"
             android:layout_marginVertical="@dimen/_3sdp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/icon_button_tonal_background"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_menu_settings"
+            android:tint="?attr/colorOnSurface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
