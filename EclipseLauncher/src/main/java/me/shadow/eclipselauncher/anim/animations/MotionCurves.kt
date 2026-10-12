@@ -2,6 +2,7 @@ package me.shadow.eclipselauncher.anim.animations
 
 import android.animation.Keyframe
 import android.animation.ObjectAnimator
+import android.animation.PropertyValuesHolder
 import android.animation.TimeInterpolator
 import android.view.View
 import kotlin.math.cos
@@ -109,7 +110,9 @@ internal object MotionCurves {
     /** Builds an animator from explicit (progress, value) keyframe points. */
     private fun fromPoints(target: View, property: String, vararg points: Pair<Float, Float>): ObjectAnimator {
         val frames = Array(points.size) { i -> Keyframe.ofFloat(points[i].first, points[i].second) }
-        return ObjectAnimator.ofKeyframes(target, property, *frames).also { it.interpolator = timing }
+        return ObjectAnimator.ofPropertyValuesHolder(
+            target, PropertyValuesHolder.ofKeyframes(property, *frames)
+        ).also { it.interpolator = timing }
     }
 
     /** Samples [curve] at [samples] evenly spaced progress points (0..1). */
@@ -118,6 +121,8 @@ internal object MotionCurves {
             val progress = i.toFloat() / samples
             Keyframe.ofFloat(progress, curve(progress))
         }
-        return ObjectAnimator.ofKeyframes(target, property, *frames).also { it.interpolator = timing }
+        return ObjectAnimator.ofPropertyValuesHolder(
+            target, PropertyValuesHolder.ofKeyframes(property, *frames)
+        ).also { it.interpolator = timing }
     }
 }

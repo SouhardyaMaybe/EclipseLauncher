@@ -660,7 +660,7 @@ object JREUtils {
         val egl = EGLContext.getEGL() as EGL10
         val display = egl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY)
         val numConfigs = IntArray(1)
-        if (egl.eglInitialize(display, null)) {
+        return if (egl.eglInitialize(display, null)) {
             try {
                 val checkES3 = hasExtension(
                     egl.eglQueryString(display, EGL10.EGL_EXTENSIONS),
@@ -715,7 +715,7 @@ object JREUtils {
             }
         } else {
             Logging.e("glesDetect", "Couldn't initialize EGL.")
-            return -3
+            -3
         }
     }
 

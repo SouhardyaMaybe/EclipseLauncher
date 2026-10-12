@@ -123,7 +123,7 @@ class MinecraftDownloader {
             while (true) {
                 if (mDownloaderThreadException.get() != null) break
                 // Wait up to 33ms for all workers to finish, like awaitTermination(33ms) did
-                if (withTimeoutOrNull(PROGRESS_INTERVAL_MS) { joinAll(*workers) } != null) break
+                if (withTimeoutOrNull(PROGRESS_INTERVAL_MS) { workers.joinAll() } != null) break
 
                 val speed = speedCalculator.feed(mInternetUsageCounter.get()) / ONE_MEGABYTE
                 if (mUseFileCounter) reportProgressFileCounter(speed)
