@@ -614,6 +614,16 @@
     <string name="about_dec1">%s is a Minecraft launcher that runs Minecraft: Java Edition on Android devices.</string>
     <string name="about_dec2">%s focuses on a clean interface, practical features, and a low barrier to entry, so everyone can enjoy Minecraft with ease.</string>
     <string name="about_dec3">%s uses the GPL 3.0 open-source license, which is "viral." Any code that uses, modifies, or derives from GPL libraries or software must also adopt the GPL license for open sourcing. If you intend to distribute this software, please comply with the relevant provisions of the GPL 3.0 open-source license.</string>
+    <string name="about_credits_title">Credits and acknowledgements:</string>
+    <string name="about_access_link">Access Link</string>
+    <string name="about_lib_openjdk">Java runtimes based on OpenJDK, used as the runtime environment for the game and its tools.</string>
+    <string name="about_lib_lwjgl">Java bindings for OpenGL, Vulkan and OpenAL — how the game talks to native code.</string>
+    <string name="about_lib_glfw">Window, input and OpenGL context library the game uses through LWJGL.</string>
+    <string name="about_lib_gl4es">OpenGL 1.x to OpenGL ES translation layer providing the game renderer on Android.</string>
+    <string name="about_lib_mesa">Open-source OpenGL implementation and graphics driver stack components.</string>
+    <string name="about_lib_sdl">Window, input and audio backend required by Minecraft 26.3 and newer.</string>
+    <string name="about_lib_ffmpeg">Multimedia framework behind the launcher video capture.</string>
+    <string name="about_lib_cacio">AWT implementation ported to Android, powering in-game dialogs and screens.</string>
     <string name="about_Shadow_desc">Author of Eclipse Launcher</string>
     <string name="about_author_name">Shadow</string>
     <string name="about_version_name">Software Version Name:</string>
