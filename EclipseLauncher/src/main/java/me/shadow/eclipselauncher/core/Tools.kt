@@ -566,7 +566,7 @@ object Tools {
                 }
 
                 // Fuse libraries
-                inheritLibraryList.addAll(inheritsVer.libraries.asList())
+                inheritLibraryList.addAll(customVer.libraries.asList())
                 inheritsVer.libraries = inheritLibraryList.toTypedArray()
                 preProcessLibraries(inheritsVer.libraries)
 
