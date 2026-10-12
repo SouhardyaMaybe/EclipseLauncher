@@ -62,6 +62,15 @@ class LaunchArgs(
             argsList.add("-Djna.boot.library.path=$dirPath")
         }
 
+        val mcVersion = versionInfo.inheritsFrom ?: versionInfo.id
+        if (VersionNumbers.compare(mcVersion, "26.2") >= 0) {
+            // The 26.2+ bootstrap eagerly loads the shaderc/spvc/vma libraries whenever the
+            // system Vulkan loader can be found, but their native libraries are not shipped
+            // yet; point LWJGL at a library that does not exist so the loader probe fails and
+            // the game falls back to OpenGL
+            argsList.add("-Dorg.lwjgl.vulkan.libname=vulkan_disabled")
+        }
+
         return argsList
     }
 
