@@ -2,7 +2,7 @@ package me.shadow.eclipselauncher.ui.subassembly.menu
 
 import android.annotation.SuppressLint
 import android.widget.SeekBar
-import android.widget.Switch
+import android.widget.CompoundButton
 import android.widget.TextView
 
 class MenuUtils {
@@ -22,7 +22,7 @@ class MenuUtils {
          */
         @JvmStatic
         @SuppressLint("UseSwitchCompatOrMaterialCode")
-        fun toggleSwitchState(switchView: Switch) {
+        fun toggleSwitchState(switchView: CompoundButton) {
             switchView.isChecked = !switchView.isChecked
         }
 

@@ -37,7 +37,7 @@
                 android:layout_marginHorizontal="@dimen/_8sdp"
                 android:layout_marginBottom="@dimen/_8sdp"
                 android:scrollbars="vertical"
-                android:scrollbarThumbVertical="@color/background_menu_element"
+                android:scrollbarThumbVertical="?attr/colorOutline"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

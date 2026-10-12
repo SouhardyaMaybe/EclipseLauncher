@@ -16,7 +16,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.Spinner
-import android.widget.Switch
+import androidx.appcompat.widget.SwitchCompat
 import android.widget.TextView
 
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -80,11 +80,11 @@ class EditControlPopup {
     protected lateinit var mHeightEditText: EditText
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    protected lateinit var mToggleSwitch: Switch
-    protected lateinit var mPassthroughSwitch: Switch
-    protected lateinit var mSwipeableSwitch: Switch
-    protected lateinit var mForwardLockSwitch: Switch
-    protected lateinit var mAbsoluteTrackingSwitch: Switch
+    protected lateinit var mToggleSwitch: SwitchCompat
+    protected lateinit var mPassthroughSwitch: SwitchCompat
+    protected lateinit var mSwipeableSwitch: SwitchCompat
+    protected lateinit var mForwardLockSwitch: SwitchCompat
+    protected lateinit var mAbsoluteTrackingSwitch: SwitchCompat
 
     protected lateinit var mOrientationSpinner: Spinner
     protected var mKeycodeTextviews = arrayOfNulls<TextView>(4)

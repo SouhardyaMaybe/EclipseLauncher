@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.ContextCompat
+import com.google.android.material.color.MaterialColors
 import me.shadow.eclipselauncher.InfoCenter
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.ActivityErrorBinding
@@ -55,10 +56,11 @@ class ErrorActivity : BaseActivity() {
 
         binding.apply {
             this.errorTitle.text = InfoCenter.replaceName(context, R.string.error_fatal)
+            this.errorTitle.setTextColor(MaterialColors.getColor(this.errorTitle, R.attr.colorOnError))
             this.errorText.text = errorText
 
-            this.topView.setBackgroundColor(ContextCompat.getColor(context, R.color.background_menu_top_error))
-            this.background.setBackgroundColor(ContextCompat.getColor(context, R.color.background_app_error))
+            this.topView.setBackgroundColor(MaterialColors.getColor(this.topView, R.attr.colorError))
+            this.background.setBackgroundColor(MaterialColors.getColor(this.background, R.attr.colorErrorContainer))
         }
     }
 
@@ -81,7 +83,7 @@ class ErrorActivity : BaseActivity() {
             this.errorTip.visibility = View.VISIBLE
             this.errorNoScreenshot.visibility = View.VISIBLE
 
-            this.topView.setBackgroundColor(ContextCompat.getColor(context, R.color.background_menu_top))
+            this.topView.setBackgroundColor(MaterialColors.getColor(this.topView, R.attr.colorSurfaceContainer))
             this.background.setBackgroundColor(ContextCompat.getColor(context, R.color.background_app))
         }
     }

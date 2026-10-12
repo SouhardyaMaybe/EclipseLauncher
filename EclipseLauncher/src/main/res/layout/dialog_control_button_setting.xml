@@ -260,7 +260,7 @@
             app:layout_constraintTop_toBottomOf="@+id/editOrientation_textView" />
 
         <!-- TOGGLE SECTION -->
-        <Switch
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/checkboxToggle"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_36sdp"
@@ -270,7 +270,7 @@
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <!-- MOUSE PASS THROUGH SECTION -->
-        <Switch
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/checkboxPassThrough"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_36sdp"
@@ -280,7 +280,7 @@
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <!-- SWIPEABLE BUTTON SECTION -->
-        <Switch
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/checkboxSwipeable"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_36sdp"
@@ -290,7 +290,7 @@
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <!-- FORWARD LOCK SECTION -->
-        <Switch
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/checkboxForwardLock"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_36sdp"
@@ -299,7 +299,7 @@
             app:layout_constraintTop_toBottomOf="@id/checkboxSwipeable"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-        <Switch
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/checkboxAbsoluteFingerTracking"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_36sdp"

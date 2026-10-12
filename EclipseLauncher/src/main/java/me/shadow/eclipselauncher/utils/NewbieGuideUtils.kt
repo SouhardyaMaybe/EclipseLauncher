@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.getkeepsafe.taptargetview.TapTarget
+import com.google.android.material.color.MaterialColors
 import me.shadow.eclipselauncher.json.JsonCodec
 import me.shadow.eclipselauncher.json.JsonArray
 import me.shadow.eclipselauncher.json.JsonParser
@@ -18,7 +19,6 @@ class NewbieGuideUtils {
     @SuppressLint("NonConstantResourceId")
     companion object {
         private const val TEXT_COLOR = R.color.black_or_white
-        private const val TARGET_CIRCLE_COLOR = R.color.background_menu_element
         private val NEWBIE_TAGS: MutableList<String> = ArrayList()
 
         init {
@@ -69,14 +69,14 @@ class NewbieGuideUtils {
             return TapTarget.forView(view, title, desc)
                 .titleTextColor(TEXT_COLOR)
                 .descriptionTextColor(TEXT_COLOR)
-                .targetCircleColorInt(ContextCompat.getColor(context, TARGET_CIRCLE_COLOR))
+                .targetCircleColorInt(MaterialColors.getColor(context, null, R.attr.colorPrimary))
         }
 
         @JvmStatic
         fun getSimpleTarget(context: Context, view: View?, title: String): TapTarget {
             return TapTarget.forView(view, title)
                 .titleTextColor(TEXT_COLOR)
-                .targetCircleColorInt(ContextCompat.getColor(context, TARGET_CIRCLE_COLOR))
+                .targetCircleColorInt(MaterialColors.getColor(context, null, R.attr.colorPrimary))
         }
     }
 }

@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.google.android.material.color.MaterialColors;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.palette.graphics.Palette;
@@ -560,7 +561,7 @@ public class LauncherActivity extends BaseActivity {
     }
 
     private void refreshTopBarColor(boolean loadFromBackground) {
-        int backgroundMenuTop = ContextCompat.getColor(this, R.color.background_menu_top);
+        int topBarSurface = MaterialColors.getColor(this, null, R.attr.colorSurfaceContainer);
 
         if (loadFromBackground) {
             Bitmap bitmap = ImageUtils.getBitmapFromImageView(binding.backgroundView);
@@ -570,8 +571,8 @@ public class LauncherActivity extends BaseActivity {
                 boolean isDarkMode = EclipseTools.isDarkMode(this);
                 binding.topLayout.setBackgroundColor(
                         isDarkMode ?
-                                palette.getDarkVibrantColor(backgroundMenuTop) :
-                                palette.getLightVibrantColor(backgroundMenuTop)
+                                palette.getDarkVibrantColor(topBarSurface) :
+                                palette.getLightVibrantColor(topBarSurface)
                 );
 
                 int mutedColor = isDarkMode ?
@@ -586,9 +587,9 @@ public class LauncherActivity extends BaseActivity {
                 return;
             }
         }
-        binding.topLayout.setBackgroundColor(backgroundMenuTop);
-        binding.appTitleText.setTextColor(ContextCompat.getColor(this, R.color.menu_bar_text));
-        ColorStateList colorStateList = ColorStateList.valueOf(0xFFFFFFFF);
+        binding.topLayout.setBackgroundColor(topBarSurface);
+        binding.appTitleText.setTextColor(MaterialColors.getColor(this, null, R.attr.colorOnSurface));
+        ColorStateList colorStateList = ColorStateList.valueOf(MaterialColors.getColor(this, null, R.attr.colorOnSurface));
         binding.downloadButton.setImageTintList(colorStateList);
         binding.settingButton.setImageTintList(colorStateList);
     }
