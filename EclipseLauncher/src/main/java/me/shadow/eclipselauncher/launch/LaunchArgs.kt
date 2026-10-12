@@ -81,13 +81,23 @@ class LaunchArgs(
 
         val minecraftArgs: MutableList<String> = java.util.ArrayList()
         versionInfo.arguments?.let {
-            fun String.addIgnoreListIfHas(): String {
-                if (startsWith("-DignoreList=")) return "$this,$versionFileName.jar"
-                return this
+            fun String.processJvmArg(): String = when {
+                startsWith("-DignoreList=") -> "$this,$versionFileName.jar"
+                // Since 26.2 Mojang points java.library.path at a "java" subdirectory of the
+                // natives directory, which does not exist on Android; use the natives directory
+                startsWith("-Djava.library.path=") -> "-Djava.library.path=\${natives_directory}"
+                // The 26.2+ native libraries bootstrap creates and writes these directories
+                // during startup, which is impossible inside the read-only native library
+                // directory; the cache directory is writable
+                startsWith("-Djna.tmpdir=") ||
+                    startsWith("-Dorg.lwjgl.system.SharedLibraryExtractPath=") ||
+                    startsWith("-Dio.netty.native.workdir=") ->
+                    replace("\${natives_directory}", PathManager.DIR_CACHE.absolutePath)
+                else -> this
             }
             it.jvm?.forEach { arg ->
                 if (arg is String) {
-                    minecraftArgs.add(arg.addIgnoreListIfHas())
+                    minecraftArgs.add(arg.processJvmArg())
                 }
             }
         }
