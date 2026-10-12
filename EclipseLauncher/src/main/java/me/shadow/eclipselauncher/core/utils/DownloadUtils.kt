@@ -169,12 +169,25 @@ object DownloadUtils {
 
         var attempts = 0
         var fileOkay = verifyFile(outputFile, sha1)
+        var lastNetworkError: IOException? = null
         while (attempts < 5 && !fileOkay) {
             attempts++
-            downloadFile(downloadFunction)
+            try {
+                downloadFile(downloadFunction)
+                lastNetworkError = null
+            } catch (e: IOException) {
+                // Transient network failure (e.g. SocketTimeoutException): retry
+                // within the same attempt budget instead of aborting the install
+                lastNetworkError = e
+            }
             fileOkay = verifyFile(outputFile, sha1)
         }
-        if (!fileOkay) throw SHA1VerificationException("SHA1 verifcation failed after 5 download attempts")
+        if (!fileOkay) {
+            // A download that never completed is a network failure, not a checksum
+            // mismatch: rethrow it as-is so callers see the original error
+            throw lastNetworkError
+                ?: SHA1VerificationException("SHA1 verifcation failed after 5 download attempts")
+        }
         return null
     }
 

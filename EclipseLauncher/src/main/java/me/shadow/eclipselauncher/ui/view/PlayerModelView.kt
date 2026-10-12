@@ -78,7 +78,7 @@ class PlayerModelView @JvmOverloads constructor(
     private var lastX = 0f
     private var lastY = 0f
 
-    private val texturePaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val texturePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val clipPath = Path()
     private val matrix = Matrix()
     private val srcPoints = FloatArray(6)
