@@ -1,9 +1,10 @@
 package me.shadow.eclipselauncher.feature.background
 
 import android.content.Context
+import android.graphics.ColorDrawable
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
+import com.google.android.material.color.MaterialColors
 import me.shadow.eclipselauncher.InfoDistributor
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging
@@ -60,7 +61,7 @@ object BackgroundManager {
         callback: CallbackDrawableImageViewTarget.Callback? = null
     ) {
         backgroundView.setImageDrawable(
-            ContextCompat.getDrawable(context, R.color.background_app)
+            ColorDrawable(MaterialColors.getColor(context, R.attr.colorSurface, 0))
         )
 
         val backgroundImage = getBackgroundImage(backgroundType) ?: run {

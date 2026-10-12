@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
-import androidx.core.content.ContextCompat
 import com.google.android.material.color.MaterialColors
 import me.shadow.eclipselauncher.InfoCenter
 import me.shadow.eclipselauncher.R
@@ -84,7 +83,7 @@ class ErrorActivity : BaseActivity() {
             this.errorNoScreenshot.visibility = View.VISIBLE
 
             this.topView.setBackgroundColor(MaterialColors.getColor(this.topView, R.attr.colorSurfaceContainer))
-            this.background.setBackgroundColor(ContextCompat.getColor(context, R.color.background_app))
+            this.background.setBackgroundColor(MaterialColors.getColor(this.background, R.attr.colorSurface))
         }
     }
 
