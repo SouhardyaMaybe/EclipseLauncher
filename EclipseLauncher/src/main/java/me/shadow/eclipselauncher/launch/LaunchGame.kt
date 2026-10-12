@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import me.shadow.eclipselauncher.mcgui.ProgressLayout
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.event.single.AccountUpdateEvent
+import me.shadow.eclipselauncher.feature.MCOptions
 import me.shadow.eclipselauncher.feature.accounts.AccountType
 import me.shadow.eclipselauncher.feature.accounts.AccountUtils
 import me.shadow.eclipselauncher.feature.accounts.AccountsManager
@@ -21,6 +22,7 @@ import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.http.NetworkUtils
 import me.shadow.eclipselauncher.utils.stringutils.StringUtils
+import me.shadow.eclipselauncher.utils.version.VersionNumbers
 import me.shadow.eclipselauncher.core.Architecture
 import me.shadow.eclipselauncher.core.JMinecraftVersionList
 import me.shadow.eclipselauncher.core.Logger
@@ -230,6 +232,16 @@ class LaunchGame {
 
             val versionInfo = Tools.getVersionInfo(minecraftVersion)
             val gameDirPath = minecraftVersion.getGameDir()
+
+            // The bundled renderers only provide OpenGL; pin the graphics backend preference
+            // on 26.2+ so the game does not pick the Vulkan renderer first
+            val mcVersion = versionInfo.inheritsFrom ?: versionInfo.id
+            if (VersionNumbers.compare(mcVersion, "26.2") >= 0 &&
+                MCOptions.get("preferredGraphicsBackend") != "opengl"
+            ) {
+                MCOptions.set("preferredGraphicsBackend", "opengl")
+                MCOptions.save()
+            }
 
             // Pre-launch processing
             Tools.disableSplash(gameDirPath)
