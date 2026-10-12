@@ -22,7 +22,7 @@ object FFmpegPlugin {
         val manager = context.packageManager
         try {
             val ffmpegPluginInfo = manager.getPackageInfo(
-                "net.kdt.pojavlaunch.ffmpeg",
+                "me.shadow.eclipse.ffmpeg",
                 PackageManager.GET_SHARED_LIBRARY_FILES
             )
             libraryPath = ffmpegPluginInfo.applicationInfo!!.nativeLibraryDir
