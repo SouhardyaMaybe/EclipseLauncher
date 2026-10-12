@@ -13,6 +13,7 @@ import me.shadow.eclipselauncher.feature.accounts.AccountType
 import me.shadow.eclipselauncher.feature.accounts.AccountUtils
 import me.shadow.eclipselauncher.feature.accounts.AccountsManager
 import me.shadow.eclipselauncher.feature.log.Logging
+import me.shadow.eclipselauncher.feature.unpack.Components
 import me.shadow.eclipselauncher.feature.version.Version
 import me.shadow.eclipselauncher.renderer.Renderers
 import me.shadow.eclipselauncher.setting.AllSettings
@@ -241,6 +242,28 @@ class LaunchGame {
             ) {
                 MCOptions.set("preferredGraphicsBackend", "opengl")
                 MCOptions.save()
+            }
+
+            // 26.3+ launches through SDL3 and needs the LWJGL 3.4.3 callback API; while the
+            // bundled core is older, stop with a clear message instead of failing inside the
+            // game's constructor. The check clears itself once the bundled core reaches 3.4.3.
+            if (versionInfo.libraries.any { it.name.startsWith("org.lwjgl:lwjgl-sdl") } &&
+                VersionNumbers.compare(Components.LWJGL3.displayName.substringAfter(' '), "3.4.3") < 0
+            ) {
+                val builder = TipDialog.Builder(activity)
+                    .setTitle(R.string.generic_warning)
+                    .setMessage(
+                        activity.getString(
+                            R.string.launch_runtime_unavailable,
+                            mcVersion,
+                            Components.LWJGL3.displayName
+                        )
+                    )
+                    .setWarning()
+                    .setCenterMessage(false)
+                    .setShowCancel(false)
+                LifecycleAwareTipDialog.haltOnDialog(activity.lifecycle, builder)
+                return
             }
 
             // Pre-launch processing

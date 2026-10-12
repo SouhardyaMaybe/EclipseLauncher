@@ -524,6 +524,7 @@
     <string name="game_exit_note">For details on the error, please check the log file or crash report. If you can\'t solve the issue on your own, please send the log file or crash report to someone who can help you resolve it!</string>
     <string name="game_exit_no_screenshot">Please don\'t just take a screenshot of the current app interface; otherwise, no one will know what happened. Share your log file or crash report!</string>
     <string name="game_autopick_runtime_failed">No suitable runtime environment found, set to the runtime environment selected for the current version</string>
+    <string name="launch_runtime_unavailable">Minecraft %1$s requires the LWJGL 3.4.3 runtime, which this build does not bundle yet (bundled: %2$s).</string>
     <string name="game_tip">The game is currently running. You can enable log output via the menu to check the game\'s status.</string>
     <string name="game_tip_version">Currently launched game version:</string>
     <string name="game_tip_mc_info">Minecraft Info:</string>
