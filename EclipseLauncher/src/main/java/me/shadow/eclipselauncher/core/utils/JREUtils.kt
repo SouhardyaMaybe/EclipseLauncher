@@ -244,6 +244,10 @@ object JREUtils {
         envMap["LD_LIBRARY_PATH"] = LD_LIBRARY_PATH
         envMap["PATH"] = "$jreHome/bin:" + Os.getenv("PATH")
         envMap["FORCE_VSYNC"] = AllSettings.forceVsync.getValue().toString()
+        if (AllSettings.dumpShaders.getValue())
+            envMap["LIBGL_VGPU_DUMP"] = "1"
+        if (AllSettings.bigCoreAffinity.getValue())
+            envMap["ECLIPSE_BIG_CORE_AFFINITY"] = "1"
         envMap["AWTSTUB_WIDTH"] =
             (if (CallbackBridge.windowWidth > 0) CallbackBridge.windowWidth else CallbackBridge.physicalWidth).toString()
         envMap["AWTSTUB_HEIGHT"] =

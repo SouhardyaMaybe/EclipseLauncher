@@ -53,3 +53,9 @@ void bigcore_set_affinity() {
         printf("bigcore: forced current thread onto big core\n");
     }
 }
+void bigcore_maybe_set_affinity_from_env() {
+    const char* enabled = getenv("ECLIPSE_BIG_CORE_AFFINITY");
+    if(enabled != NULL && enabled[0] == '1') {
+        bigcore_set_affinity();
+    }
+}

@@ -74,6 +74,7 @@ EXTERNAL_API void eclipseTerminate() {
 JNIEXPORT void JNICALL Java_me_shadow_eclipselauncher_core_utils_JREUtils_setupBridgeWindow(JNIEnv* env, ABI_COMPAT jclass clazz, jobject surface) {
     eclipse_environ->eclipseWindow = ANativeWindow_fromSurface(env, surface);
     if (br_setup_window) br_setup_window();
+    bigcore_maybe_set_affinity_from_env();
 }
 
 JNIEXPORT void JNICALL
