@@ -50,7 +50,7 @@ configure<StringFogExtension> {
 
 android {
     namespace = nameId
-    compileSdk = 34
+    compileSdk = 35
 
     signingConfigs {
         create("releaseBuild") {
