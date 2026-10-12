@@ -2,12 +2,14 @@ name: Android CI
 
 on:
   push:
+    branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
   workflow_dispatch:
 
 jobs:
   BuildRelease:
-    if: github.repository_owner == 'SouhardyaMaybe' && !startsWith(github.ref, 'refs/pull/') && github.ref_name == 'main'
+    if: github.repository_owner == 'SouhardyaMaybe' && !startsWith(github.ref, 'refs/pull/') && (github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/'))
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -24,16 +26,18 @@ jobs:
       - name: Set build type
         id: set-env
         run: |
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          BUILD_TYPE="DEBUG"
-
-          if [[ "$COMMIT_MSG" == *"pre-release"* ]]; then
-            BUILD_TYPE="PRE_RELEASE"
-          elif [[ "$COMMIT_MSG" == *"release"* ]]; then
-            BUILD_TYPE="RELEASE"
+          # Build type is driven by the REF, never by commit messages:
+          # a pushed version tag produces RELEASE builds, everything else
+          # (main pushes, dispatches, PR validation) stays DEBUG.
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            if [[ "$GITHUB_REF_NAME" == *pre* ]]; then
+              echo "ECLIPSE_BUILD_TYPE=PRE_RELEASE" >> $GITHUB_ENV
+            else
+              echo "ECLIPSE_BUILD_TYPE=RELEASE" >> $GITHUB_ENV
+            fi
+          else
+            echo "ECLIPSE_BUILD_TYPE=DEBUG" >> $GITHUB_ENV
           fi
-
-          echo "ECLIPSE_BUILD_TYPE=${BUILD_TYPE}" >> $GITHUB_ENV
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -63,29 +67,20 @@ jobs:
 
   PublishRelease:
     needs: BuildRelease
-    if: github.repository_owner == 'SouhardyaMaybe' && !startsWith(github.ref, 'refs/pull/') && github.ref_name == 'main'
+    if: github.repository_owner == 'SouhardyaMaybe' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-22.04
     permissions:
       contents: write
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Determine release tag
+      - name: Determine release kind from tag
         run: |
-          VERSION=$(grep '^launcher_version_name=' EclipseLauncher/gradle.properties | cut -d= -f2)
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-
-          if [[ "$COMMIT_MSG" == *"pre-release"* ]]; then
-            echo "tag=v${VERSION}-pre" >> $GITHUB_ENV
+          # Tag-driven publishing: the pushed tag IS the release identity.
+          # "v1.2.3" -> release; any tag containing "pre" -> pre-release.
+          if [[ "$GITHUB_REF_NAME" == *pre* ]]; then
             echo "prerelease=true" >> $GITHUB_ENV
-          elif [[ "$COMMIT_MSG" == *"release"* ]]; then
-            echo "tag=v${VERSION}" >> $GITHUB_ENV
-            echo "prerelease=false" >> $GITHUB_ENV
           else
-            echo "tag=nightly" >> $GITHUB_ENV
-            echo "prerelease=true" >> $GITHUB_ENV
+            echo "prerelease=false" >> $GITHUB_ENV
           fi
 
       - name: Download built APKs
@@ -98,15 +93,15 @@ jobs:
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.tag }}
-          name: Eclipse Launcher ${{ env.tag }}
+          tag_name: ${{ github.ref_name }}
+          name: Eclipse Launcher ${{ github.ref_name }}
           prerelease: ${{ env.prerelease == 'true' }}
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: dist/*.apk
 
   BuildDebug:
-    if: startsWith(github.ref, 'refs/pull/') || github.ref_name != 'main'
+    if: startsWith(github.ref, 'refs/pull/') || (github.ref_name != 'main' && !startsWith(github.ref, 'refs/tags/'))
     runs-on: ubuntu-22.04
     strategy:
       matrix:
