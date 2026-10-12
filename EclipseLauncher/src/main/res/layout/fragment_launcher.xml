@@ -67,7 +67,7 @@
                         android:layout_centerVertical="true"
                         android:layout_toEndOf="@id/about_icon"
                         android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/primary_text"/>
+                        android:textColor="?attr/colorOnSurface"/>
 
                 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
 
@@ -103,7 +103,7 @@
                         android:layout_toEndOf="@id/custom_control_icon"
                         android:text="@string/custom_control_title"
                         android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/primary_text"/>
+                        android:textColor="?attr/colorOnSurface"/>
 
                 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
 
@@ -139,7 +139,7 @@
                         android:layout_toEndOf="@id/open_main_dir_icon"
                         android:text="@string/main_open_main_dir"
                         android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/primary_text"/>
+                        android:textColor="?attr/colorOnSurface"/>
 
                 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
 
@@ -175,7 +175,7 @@
                         android:layout_toEndOf="@id/install_jar_icon"
                         android:text="@string/main_install_jar_file"
                         android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/primary_text"/>
+                        android:textColor="?attr/colorOnSurface"/>
 
                 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
 
@@ -212,7 +212,7 @@
                         android:layout_toEndOf="@id/share_logs_icon"
                         android:text="@string/main_share_logs"
                         android:textSize="@dimen/_12sdp"
-                        android:textColor="@color/primary_text"/>
+                        android:textColor="?attr/colorOnSurface"/>
 
                 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
             </LinearLayout>

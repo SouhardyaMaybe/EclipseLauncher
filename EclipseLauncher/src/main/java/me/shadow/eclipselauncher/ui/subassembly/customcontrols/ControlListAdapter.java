@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.flexbox.FlexboxLayout;
+import com.google.android.material.color.MaterialColors;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.databinding.ItemControlListViewBinding;
 import me.shadow.eclipselauncher.databinding.ItemFileListViewBinding;
@@ -161,8 +162,8 @@ public class ControlListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
             //Set the highlight
             int color = controlItemBean.isHighlighted ?
-                    Color.rgb(69, 179, 162) :
-                    binding.title.getResources().getColor(R.color.primary_text, binding.title.getContext().getTheme());
+                    MaterialColors.getColor(binding.title, R.attr.colorPrimary) :
+                    MaterialColors.getColor(binding.title, R.attr.colorOnSurface);
             binding.title.setTextColor(color);
 
             //Initialize the author name; hide it if it was not filled in

@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_version"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/version_isolation_layout"
@@ -115,7 +115,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_language"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/autoSetGameLanguage_layout"
@@ -231,7 +231,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_java_tweaks"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/install_jre_layout"
@@ -438,7 +438,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_game_menu"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/gameMenuShowMemory_layout"

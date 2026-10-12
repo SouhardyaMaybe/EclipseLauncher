@@ -42,7 +42,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/menu_progress"
+                app:tabIndicatorColor="?attr/colorPrimary"
                 app:tabIndicatorHeight="@dimen/_3sdp"
                 app:tabMode="fixed" />
 

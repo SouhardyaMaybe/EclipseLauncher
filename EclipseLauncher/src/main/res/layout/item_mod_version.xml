@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_12sdp"
         android:ellipsize="end"
-        android:textColor="@color/primary_text"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="@dimen/_13ssp"
         app:layout_constraintEnd_toStartOf="@+id/download_link"
         app:layout_constraintHorizontal_bias="0.0"

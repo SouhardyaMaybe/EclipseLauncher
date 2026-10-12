@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_4sdp"
-            android:textColor="@color/primary_text"
+            android:textColor="?attr/colorOnSurface"
             android:textSize="@dimen/_11ssp"
             tools:text="NeoForge"/>
 
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_12sdp"
         android:text="Version ID"
-        android:textColor="@color/primary_text"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="@dimen/_14ssp"
         app:layout_constraintStart_toEndOf="@id/modloader_layout"
         app:layout_constraintTop_toTopOf="parent"
@@ -66,7 +66,7 @@
         android:scrollHorizontally="true"
         android:singleLine="true"
         android:text="@string/download_install_is_adapt"
-        android:textColor="@color/primary_text"
+        android:textColor="?attr/colorOnSurface"
         android:textSize="@dimen/_12ssp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_experimental_patches"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/dump_shaders_layout"

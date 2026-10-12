@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_download"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/checkLibraries_layout"
@@ -237,7 +237,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_personalization"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/launcherTheme_layout"
@@ -442,7 +442,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_launcher"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/enableLogOutput_layout"

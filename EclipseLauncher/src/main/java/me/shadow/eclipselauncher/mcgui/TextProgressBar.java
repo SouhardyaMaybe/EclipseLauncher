@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.StringRes;
 import androidx.core.content.res.ResourcesCompat;
+import com.google.android.material.color.MaterialColors;
 
 import me.shadow.eclipselauncher.R;
 
@@ -43,7 +44,7 @@ public class TextProgressBar extends ProgressBar {
     protected synchronized void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mTextPaint.setTextSize((float) ((getHeight()- getPaddingBottom() - getPaddingTop()) * 0.55));
-        mTextPaint.setColor(getResources().getColor(R.color.primary_text, getContext().getTheme()));
+        mTextPaint.setColor(MaterialColors.getColor(this, R.attr.colorOnSurface));
         int xPos = (int) Math.max(Math.min((getProgress() * getWidth() / getMax()) + mTextPadding, getWidth() - mTextPaint.measureText(mText) - mTextPadding) , mTextPadding);
         int yPos = (int) ((getHeight() / 2) - ((mTextPaint.descent() + mTextPaint.ascent()) / 2)) ;
 

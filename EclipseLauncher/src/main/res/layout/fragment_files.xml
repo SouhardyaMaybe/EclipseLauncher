@@ -69,7 +69,7 @@
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:text="."
-                    android:textColor="@color/primary_text"
+                    android:textColor="?attr/colorOnSurface"
                     android:background="?android:attr/selectableItemBackground"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/select_all"

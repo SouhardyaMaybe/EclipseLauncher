@@ -230,7 +230,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/platform_textview"
-                            app:spinner_arrow_tint="@color/primary_text"
+                            app:spinner_arrow_tint="?attr/colorOnSurface"
                             app:spinner_popup_background="@drawable/background_edit_box"
                             app:spinner_popup_height="@dimen/_80sdp"
                             tools:paddingVertical="@dimen/_12sdp" />
@@ -260,7 +260,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/sort_textview"
-                            app:spinner_arrow_tint="@color/primary_text"
+                            app:spinner_arrow_tint="?attr/colorOnSurface"
                             app:spinner_popup_background="@drawable/background_edit_box"
                             app:spinner_popup_height="@dimen/_200sdp"
                             tools:paddingVertical="@dimen/_12sdp" />
@@ -290,7 +290,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/category_textview"
-                            app:spinner_arrow_tint="@color/primary_text"
+                            app:spinner_arrow_tint="?attr/colorOnSurface"
                             app:spinner_popup_background="@drawable/background_edit_box"
                             app:spinner_popup_height="@dimen/_200sdp"
                             tools:paddingVertical="@dimen/_12sdp" />
@@ -320,7 +320,7 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/modloader_textview"
-                            app:spinner_arrow_tint="@color/primary_text"
+                            app:spinner_arrow_tint="?attr/colorOnSurface"
                             app:spinner_popup_background="@drawable/background_edit_box"
                             app:spinner_popup_height="@dimen/_200sdp"
                             tools:paddingVertical="@dimen/_12sdp" />

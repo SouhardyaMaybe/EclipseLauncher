@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_control"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/disableGestures_layout"
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/pedit_control"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/buttonscale_layout"
@@ -267,7 +267,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_virtual_mouse"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/mousescale_layout"
@@ -443,7 +443,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_gyro_controls"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/enableGyro_layout"
@@ -701,7 +701,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
                 android:text="@string/setting_category_controller_settings"
-                android:textColor="@color/settings_category" />
+                android:textColor="?attr/colorPrimary" />
 
             <me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout
                 android:id="@+id/changeControllerBindings_layout"

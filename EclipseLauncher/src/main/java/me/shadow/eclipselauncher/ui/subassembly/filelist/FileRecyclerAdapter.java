@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.DrawableImageViewTarget;
+import com.google.android.material.color.MaterialColors;
 import me.shadow.eclipselauncher.R;
 import me.shadow.eclipselauncher.databinding.ItemFileListViewBinding;
 import me.shadow.eclipselauncher.utils.file.FileTools;
@@ -188,7 +189,7 @@ public class FileRecyclerAdapter extends RecyclerView.Adapter<FileRecyclerAdapte
             binding.infoLayout.setVisibility(infoLayoutVisible);
 
             if (fileItemBean.isHighlighted) {
-                binding.name.setTextColor(Color.rgb(69, 179, 162)); //Set the highlight
+                binding.name.setTextColor(MaterialColors.getColor(binding.name, R.attr.colorPrimary)); //Set the highlight
             } else {
                 binding.name.setTextColor(binding.name.getResources().getColor(R.color.black_or_white, binding.name.getContext().getTheme()));
             }

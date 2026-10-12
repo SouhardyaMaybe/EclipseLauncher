@@ -51,7 +51,7 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/install_icon"
                     android:layout_marginHorizontal="@dimen/_8sdp"
-                    android:textColor="@color/primary_text"
+                    android:textColor="?attr/colorOnSurface"
                     android:text="@string/version_install_new" />
 
             </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>
@@ -138,7 +138,7 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:text="@string/version_manager_title"
-                android:textColor="@color/primary_text"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -203,7 +203,7 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:text="@string/profiles_path_title"
-                android:textColor="@color/primary_text"
+                android:textColor="?attr/colorOnSurface"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
