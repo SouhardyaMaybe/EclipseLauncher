@@ -83,6 +83,7 @@ object VersionNumbers {
                         appendToken(tokens, separators, Token.Number("0"), pending)
                         pending = char.toString()
                     }
+                    index++
                 }
             }
         }
