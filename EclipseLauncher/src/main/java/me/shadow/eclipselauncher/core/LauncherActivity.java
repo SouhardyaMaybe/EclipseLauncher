@@ -561,7 +561,7 @@ public class LauncherActivity extends BaseActivity {
     }
 
     private void refreshTopBarColor(boolean loadFromBackground) {
-        int topBarSurface = MaterialColors.getColor(this, null, R.attr.colorSurfaceContainer);
+        int topBarSurface = MaterialColors.getColor(this, R.attr.colorSurfaceContainer, 0);
 
         if (loadFromBackground) {
             Bitmap bitmap = ImageUtils.getBitmapFromImageView(binding.backgroundView);
@@ -588,8 +588,8 @@ public class LauncherActivity extends BaseActivity {
             }
         }
         binding.topLayout.setBackgroundColor(topBarSurface);
-        binding.appTitleText.setTextColor(MaterialColors.getColor(this, null, R.attr.colorOnSurface));
-        ColorStateList colorStateList = ColorStateList.valueOf(MaterialColors.getColor(this, null, R.attr.colorOnSurface));
+        binding.appTitleText.setTextColor(MaterialColors.getColor(this, R.attr.colorOnSurface, 0));
+        ColorStateList colorStateList = ColorStateList.valueOf(MaterialColors.getColor(this, R.attr.colorOnSurface, 0));
         binding.downloadButton.setImageTintList(colorStateList);
         binding.settingButton.setImageTintList(colorStateList);
     }

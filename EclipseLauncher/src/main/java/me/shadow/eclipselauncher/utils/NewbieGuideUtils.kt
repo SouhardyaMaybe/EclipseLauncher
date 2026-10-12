@@ -69,14 +69,14 @@ class NewbieGuideUtils {
             return TapTarget.forView(view, title, desc)
                 .titleTextColor(TEXT_COLOR)
                 .descriptionTextColor(TEXT_COLOR)
-                .targetCircleColorInt(MaterialColors.getColor(context, null, R.attr.colorPrimary))
+                .targetCircleColorInt(MaterialColors.getColor(context, R.attr.colorPrimary, 0))
         }
 
         @JvmStatic
         fun getSimpleTarget(context: Context, view: View?, title: String): TapTarget {
             return TapTarget.forView(view, title)
                 .titleTextColor(TEXT_COLOR)
-                .targetCircleColorInt(MaterialColors.getColor(context, null, R.attr.colorPrimary))
+                .targetCircleColorInt(MaterialColors.getColor(context, R.attr.colorPrimary, 0))
         }
     }
 }
