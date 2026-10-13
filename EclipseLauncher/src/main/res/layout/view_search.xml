@@ -64,6 +64,8 @@
         android:id="@+id/text"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="@dimen/_12ssp"
         android:paddingHorizontal="@dimen/_8sdp"
         android:text="@string/search_count"
         android:visibility="gone"

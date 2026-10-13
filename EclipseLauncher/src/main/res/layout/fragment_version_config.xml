@@ -44,6 +44,7 @@
                     android:background="@drawable/background_card">
 
                     <TextView
+                        style="@style/EclipseSectionHeader"
                         android:id="@+id/version_settings_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -198,6 +199,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        style="@style/EclipseSectionHeader"
                         android:id="@+id/game_settings_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

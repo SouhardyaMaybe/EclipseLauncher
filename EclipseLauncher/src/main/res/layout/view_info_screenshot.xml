@@ -37,13 +37,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textColor="@color/black_or_white"
+        android:textSize="@dimen/_16ssp"/>
 
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:textSize="@dimen/_11ssp"/>
 
 </LinearLayout>

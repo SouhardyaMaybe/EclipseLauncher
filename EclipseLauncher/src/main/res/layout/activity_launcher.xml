@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_12sdp"
             android:background="?android:attr/selectableItemBackground"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/black_or_white"
             android:textSize="@dimen/_16ssp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -118,6 +118,8 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textColor="@color/black_or_white"
+            android:textSize="@dimen/_16ssp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -146,7 +148,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_4sdp"
-                    android:gravity="end" />
+                    android:gravity="end"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp" />
 
             </LinearLayout>
 

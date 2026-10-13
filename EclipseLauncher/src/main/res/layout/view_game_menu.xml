@@ -13,6 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.Material3.TitleMedium"
+        android:textStyle="bold"
+        android:textColor="@color/black_or_white"
+        android:textSize="@dimen/_16ssp"
         android:gravity="center_horizontal"
         android:text="@string/setting_category_game_menu"/>
 
@@ -146,6 +149,8 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp"
                     android:text="@string/setting_resolution_scaler_title"
                     android:singleLine="true"
                     app:layout_constraintTop_toTopOf="parent"
@@ -156,6 +161,8 @@
                     android:id="@+id/resolution_scaler_preview"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:background="@drawable/background_text"
                     app:layout_constraintTop_toTopOf="parent"
@@ -301,6 +308,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp"
                     android:text="@string/setting_longpress_trigger_title"/>
 
                 <RelativeLayout
@@ -372,6 +381,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp"
                     android:text="@string/mouse_settings_speed_name"/>
 
                 <RelativeLayout
@@ -527,6 +538,8 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="@dimen/_12ssp"
                         android:text="@string/setting_gyro_sensitivity_title"/>
 
                     <RelativeLayout
@@ -664,6 +677,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="@dimen/_12ssp"
                 android:text="@string/option_hotbar_type"/>
 
             <com.skydoves.powerspinner.PowerSpinnerView
@@ -688,6 +703,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp"
                     android:text="@string/option_hotbar_width"/>
 
                 <RelativeLayout
@@ -759,6 +776,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp"
                     android:text="@string/option_hotbar_height"/>
 
                 <RelativeLayout
