@@ -75,7 +75,7 @@
                     android:id="@+id/custom_control_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginStart="@dimen/_12sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:translationZ="4dp"
@@ -111,7 +111,7 @@
                     android:id="@+id/open_main_dir_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginStart="@dimen/_12sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:translationZ="4dp"
@@ -147,7 +147,7 @@
                     android:id="@+id/install_jar_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginStart="@dimen/_12sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:translationZ="4dp"
@@ -183,7 +183,7 @@
                     android:id="@+id/share_logs_button"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginStart="@dimen/_12sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
                     android:layout_marginBottom="@dimen/_12sdp"
@@ -232,7 +232,7 @@
 
         <View
             android:id="@+id/shadowView"
-            android:layout_width="@dimen/_4sdp"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
             android:background="@drawable/shadow_gradient_right"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -258,13 +258,13 @@
                     android:id="@+id/version"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/_38sdp"
-                    android:layout_marginBottom="@dimen/_8sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:background="@drawable/eclipse_card_background"
-                    app:layout_constraintBottom_toTopOf="@+id/play_button"
                     app:layout_constraintEnd_toStartOf="@+id/manager_profile_button"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/view_account">
 
                     <ImageView
                         android:id="@+id/version_icon"
@@ -319,11 +319,10 @@
                     android:layout_width="@dimen/_38sdp"
                     android:layout_height="0dp"
                     android:layout_marginEnd="@dimen/_8sdp"
-                    android:layout_marginBottom="@dimen/_8sdp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:scaleType="centerInside"
                     android:src="@drawable/ic_setting"
-                    app:layout_constraintBottom_toTopOf="@+id/play_button"
+                    app:layout_constraintBottom_toBottomOf="@id/version"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/version" />
 
@@ -347,7 +346,6 @@
                     layout="@layout/view_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toTopOf="@id/version"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
