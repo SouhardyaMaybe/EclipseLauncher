@@ -6,7 +6,6 @@ import static me.shadow.eclipselauncher.core.Tools.currentDisplayMetrics;
 import android.Manifest;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -75,12 +74,11 @@ import me.shadow.eclipselauncher.ui.fragment.BaseFragment;
 import me.shadow.eclipselauncher.ui.fragment.DownloadFragment;
 import me.shadow.eclipselauncher.ui.fragment.DownloadModFragment;
 import me.shadow.eclipselauncher.ui.fragment.SettingsFragment;
-import me.shadow.eclipselauncher.ui.subassembly.settingsbutton.ButtonType;
-import me.shadow.eclipselauncher.ui.subassembly.settingsbutton.SettingsButtonWrapper;
+import me.shadow.eclipselauncher.ui.fragment.VersionManagerFragment;
+import me.shadow.eclipselauncher.ui.fragment.VersionsListFragment;
 import me.shadow.eclipselauncher.ui.subassembly.view.DraggableViewWrapper;
 import me.shadow.eclipselauncher.utils.StoragePermissionsUtils;
 import me.shadow.eclipselauncher.utils.EclipseTools;
-import me.shadow.eclipselauncher.utils.anim.ViewAnimUtils;
 import me.shadow.eclipselauncher.utils.file.FileTools;
 import me.shadow.eclipselauncher.utils.image.ImageUtils;
 
@@ -116,19 +114,28 @@ public class LauncherActivity extends BaseActivity {
             });
 
     private ActivityLauncherBinding binding;
-    private SettingsButtonWrapper mSettingsButtonWrapper;
     private ProgressServiceKeeper mProgressServiceKeeper;
     private NotificationManager mNotificationManager;
     private Future<?> checkNotice;
 
-    /* Allows to switch from one button "type" to another */
+    /* Keeps the bottom navigation bar selection in sync with the visible fragment */
     private final FragmentManager.FragmentLifecycleCallbacks mFragmentCallbackListener = new FragmentManager.FragmentLifecycleCallbacks() {
         @Override
         public void onFragmentResumed(@NonNull FragmentManager fm, @NonNull Fragment f) {
+            int itemId;
             if (f instanceof MainMenuFragment) {
-                mSettingsButtonWrapper.setButtonType(ButtonType.SETTINGS);
+                itemId = R.id.nav_home;
+            } else if (f instanceof VersionsListFragment || f instanceof VersionManagerFragment) {
+                itemId = R.id.nav_versions;
+            } else if (f instanceof DownloadFragment || f instanceof DownloadModFragment) {
+                itemId = R.id.nav_downloads;
+            } else if (f instanceof SettingsFragment) {
+                itemId = R.id.nav_settings;
             } else {
-                mSettingsButtonWrapper.setButtonType(ButtonType.HOME);
+                return;
+            }
+            if (binding.navigationBar.getSelectedItemId() != itemId) {
+                binding.navigationBar.setSelectedItemId(itemId);
             }
         }
     };
@@ -405,24 +412,26 @@ public class LauncherActivity extends BaseActivity {
     private void processViews() {
         refreshBackground();
         setPageOpacity(AllSettings.getPageOpacity().getValue());
-        mSettingsButtonWrapper = new SettingsButtonWrapper(binding.settingButton);
-        mSettingsButtonWrapper.setOnTypeChangeListener(type -> ViewAnimUtils.setViewAnim(binding.settingButton, Animations.Pulse));
-        binding.downloadButton.setOnClickListener(v -> {
+        binding.navigationBar.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
             Fragment fragment = getSupportFragmentManager().findFragmentById(binding.containerFragment.getId());
-            if (fragment != null && !(fragment instanceof DownloadFragment || fragment instanceof DownloadModFragment)) {
-                ViewAnimUtils.setViewAnim(binding.downloadButton, Animations.Pulse);
-                EclipseTools.swapFragmentWithAnim(fragment, DownloadFragment.class, DownloadFragment.TAG, null);
+            if (fragment == null) return true;
+            if (itemId == R.id.nav_home) {
+                if (!(fragment instanceof MainMenuFragment)) Tools.backToMainMenu(this);
+            } else if (itemId == R.id.nav_versions) {
+                if (!(fragment instanceof VersionsListFragment) && !(fragment instanceof VersionManagerFragment)) {
+                    EclipseTools.swapFragmentWithAnim(fragment, VersionsListFragment.class, VersionsListFragment.TAG, null);
+                }
+            } else if (itemId == R.id.nav_downloads) {
+                if (!(fragment instanceof DownloadFragment) && !(fragment instanceof DownloadModFragment)) {
+                    EclipseTools.swapFragmentWithAnim(fragment, DownloadFragment.class, DownloadFragment.TAG, null);
+                }
+            } else if (itemId == R.id.nav_settings) {
+                if (!(fragment instanceof SettingsFragment)) {
+                    EclipseTools.swapFragmentWithAnim(fragment, SettingsFragment.class, SettingsFragment.TAG, null);
+                }
             }
-        });
-        binding.settingButton.setOnClickListener(v -> {
-            ViewAnimUtils.setViewAnim(binding.settingButton, Animations.Pulse);
-            Fragment fragment = getSupportFragmentManager().findFragmentById(binding.containerFragment.getId());
-            if (fragment instanceof MainMenuFragment) {
-                EclipseTools.swapFragmentWithAnim(fragment, SettingsFragment.class, SettingsFragment.TAG, null);
-            } else {
-                // The setting button doubles as a home button now
-                Tools.backToMainMenu(this);
-            }
+            return true;
         });
         binding.appTitleText.setText(InfoDistributor.APP_NAME);
         binding.progressLayout.observe(ProgressLayout.DOWNLOAD_MINECRAFT);
@@ -579,19 +588,13 @@ public class LauncherActivity extends BaseActivity {
                         palette.getLightMutedColor(0xFFFFFFFF) :
                         palette.getDarkMutedColor(0xFFFFFFFF);
 
-                ColorStateList colorStateList = ColorStateList.valueOf(mutedColor);
                 binding.appTitleText.setTextColor(mutedColor);
-                binding.downloadButton.setImageTintList(colorStateList);
-                binding.settingButton.setImageTintList(colorStateList);
 
                 return;
             }
         }
         binding.topLayout.setBackgroundColor(topBarSurface);
         binding.appTitleText.setTextColor(MaterialColors.getColor(this, R.attr.colorOnSurface, 0));
-        ColorStateList colorStateList = ColorStateList.valueOf(MaterialColors.getColor(this, R.attr.colorOnSurface, 0));
-        binding.downloadButton.setImageTintList(colorStateList);
-        binding.settingButton.setImageTintList(colorStateList);
     }
 
     @SuppressWarnings("SameParameterValue")

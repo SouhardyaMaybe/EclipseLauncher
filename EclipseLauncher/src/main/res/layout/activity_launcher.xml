@@ -30,36 +30,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageButton
-            android:id="@+id/download_button"
-            android:layout_width="@dimen/_40sdp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:layout_marginVertical="@dimen/_3sdp"
-            android:background="@drawable/icon_button_tonal_background"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_download"
-            android:scaleX="1.04"
-            android:scaleY="1.04"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/setting_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="?attr/colorOnSurface" />
-
-        <ImageButton
-            android:id="@+id/setting_button"
-            android:layout_width="@dimen/_40sdp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="@dimen/_8sdp"
-            android:layout_marginVertical="@dimen/_3sdp"
-            android:background="@drawable/icon_button_tonal_background"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_menu_settings"
-            android:tint="?attr/colorOnSurface"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Holding most of the dynamic content -->
@@ -93,23 +63,34 @@
         android:layout_height="wrap_content"
 
         android:layout_marginEnd="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/navigation_bar"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.bottomnavigation.NavigationBarView
+        android:id="@+id/navigation_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSurfaceContainer"
+        app:itemHorizontalTranslationEnabled="false"
+        app:itemIconTint="@color/nav_item_tint"
+        app:itemTextColor="@color/nav_item_tint"
+        app:labelVisibilityMode="labeled"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/notice_layout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="@dimen/_12sdp"
+        android:layout_marginHorizontal="@dimen/_16sdp"
+        android:layout_marginVertical="@dimen/_24sdp"
         android:background="@drawable/background_card"
         android:padding="@dimen/_12sdp"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/notice_guideline"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_layout"
-        app:layout_constraintVertical_bias="0.333">
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/notice_title_view"
@@ -166,14 +147,5 @@
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/notice_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.35"/>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

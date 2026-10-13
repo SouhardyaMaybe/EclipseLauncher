@@ -647,4 +647,10 @@
     <string name="newbie_guide_mod_import">Select a Mod file in the native file manager to import it into the current Mod folder.</string>
     <string name="newbie_guide_mod_download">Click to enter the Mod download page where you can search and download Mods online.</string>
     <string name="newbie_guide_game_menu">You can drag the game menu floating window to any position on the screen.</string>
+
+    <!-- Bottom navigation bar -->
+    <string name="nav_home">Home</string>
+    <string name="nav_versions">Versions</string>
+    <string name="nav_downloads">Downloads</string>
+    <string name="nav_settings">Settings</string>
 </resources>
