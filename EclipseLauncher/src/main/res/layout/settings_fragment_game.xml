@@ -49,6 +49,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/version_isolation_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -83,6 +85,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/versionCustomInfo_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -139,6 +143,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/autoSetGameLanguage_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -175,6 +181,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameLanguageOverridden_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -209,6 +217,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/setGameLanguage_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -255,6 +265,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/install_jre_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -281,6 +293,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/selectRuntimeMode_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -290,6 +304,8 @@
                     android:text="@string/setting_java_select_runtime_desc" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/selectRuntimeMode_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -316,6 +332,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/javaArgs_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -352,6 +370,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/allocation_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -383,6 +403,8 @@
                     android:stepSize="0" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/allocation_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -411,6 +433,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/java_sandbox_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -465,6 +489,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuShowMemory_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -500,6 +526,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuShowFPS_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -534,6 +562,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuMemoryText_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -569,6 +599,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuLocation_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -596,6 +628,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuInfoRefreshRate_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -618,6 +652,8 @@
                     android:stepSize="0" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuInfoRefreshRate_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -646,6 +682,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuAlpha_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -668,6 +706,8 @@
                     android:stepSize="0" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/gameMenuAlpha_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

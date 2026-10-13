@@ -212,6 +212,7 @@
                         android:text="@string/setting_version_custom_info_title" />
 
                     <TextView
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/custom_info_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -237,6 +238,7 @@
                         android:text="@string/setting_java_args_title" />
 
                     <TextView
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/jvm_args_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -207,6 +207,8 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/resolution_scaler_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -345,6 +347,8 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/timeLongPressTrigger_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -414,6 +418,8 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/mouse_speed_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -567,6 +573,8 @@
                             tools:ignore="HardcodedText" />
 
                         <TextView
+                            android:textSize="@dimen/_12ssp"
+                            android:textColor="?attr/colorOnSurfaceVariant"
                             android:id="@+id/gyro_sensitivity_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -726,6 +734,8 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/hotbar_width_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -795,6 +805,8 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/hotbar_height_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

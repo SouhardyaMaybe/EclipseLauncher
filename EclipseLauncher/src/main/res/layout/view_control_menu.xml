@@ -232,6 +232,8 @@
                         tools:ignore="HardcodedText" />
 
                     <TextView
+                        android:textSize="@dimen/_12ssp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
                         android:id="@+id/snapping_distance_value"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

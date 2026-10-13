@@ -49,6 +49,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/checkLibraries_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -85,6 +87,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/verifyManifest_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -121,6 +125,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/resourceImageCache_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -156,6 +162,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/addFullResourceName_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -192,6 +200,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/maxDownloadThreads_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -214,6 +224,8 @@
                     android:stepSize="0" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/maxDownloadThreads_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -261,6 +273,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/launcherTheme_value"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -287,6 +301,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/custom_background_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -314,6 +330,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/animation_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -350,6 +368,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/animationSpeed_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -372,6 +392,8 @@
                     android:stepSize="0" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/animationSpeed_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -400,6 +422,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/pageOpacity_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -422,6 +446,8 @@
                     android:stepSize="0" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/pageOpacity_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -469,6 +495,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/enableLogOutput_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -504,6 +532,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/quitLauncher_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -539,6 +569,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/clean_up_cache_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -565,6 +597,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/check_update_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -592,6 +626,8 @@
                     android:textColor="@color/black_or_white" />
 
                 <TextView
+                    android:textSize="@dimen/_12ssp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:id="@+id/notification_permission_request_summary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
