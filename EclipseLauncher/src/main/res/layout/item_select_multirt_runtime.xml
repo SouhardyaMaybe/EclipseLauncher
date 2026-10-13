@@ -15,7 +15,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_8sdp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/black_or_white"
         android:textSize="@dimen/_14ssp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,6 +24,7 @@
         tools:text="Java 8" />
 
     <TextView
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:id="@+id/multirt_view_java_version_full"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -35,6 +36,7 @@
         tools:text="1.8.0_422" />
 
     <TextView
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:id="@+id/multirt_provided_by_launcher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

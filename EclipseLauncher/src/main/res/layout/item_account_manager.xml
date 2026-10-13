@@ -28,6 +28,7 @@
         android:layout_marginHorizontal="@dimen/_16sdp"
         android:textSize="@dimen/_14ssp"
         android:textStyle="bold"
+        android:textColor="@color/black_or_white"
         app:layout_constraintEnd_toStartOf="@+id/refresh"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toTopOf="@+id/icon" />
@@ -37,6 +38,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_16sdp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:textSize="@dimen/_12ssp"
         app:layout_constraintEnd_toStartOf="@+id/refresh"
         app:layout_constraintStart_toEndOf="@+id/icon"
         app:layout_constraintTop_toBottomOf="@+id/name" />
@@ -49,6 +52,7 @@
         android:text="@string/account_add"
         android:textSize="@dimen/_14ssp"
         android:textStyle="bold"
+        android:textColor="@color/black_or_white"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/refresh"

@@ -8,12 +8,13 @@
     android:paddingHorizontal="@dimen/_8sdp">
 
     <TextView
+        android:textStyle="bold"
         android:id="@+id/multirt_view_java_version"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_16sdp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/black_or_white"
         android:textSize="@dimen/_12ssp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,22 +24,24 @@
         tools:text="Java 8" />
 
     <TextView
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:id="@+id/multirt_view_java_version_full"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginStart="@dimen/_16sdp"
-        android:textSize="@dimen/_10ssp"
+        android:textSize="@dimen/_12ssp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/multirt_view_java_version"
         tools:text="1.8.0_292" />
 
     <TextView
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:id="@+id/multirt_provided_by_launcher"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_12sdp"
-        android:textSize="@dimen/_10ssp"
+        android:textSize="@dimen/_12ssp"
         android:text="@string/multirt_provided_by_launcher"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="@+id/multirt_view_java_version_full"

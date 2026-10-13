@@ -49,13 +49,14 @@
     </LinearLayout>
 
     <TextView
+        android:textStyle="bold"
         android:id="@+id/title_textview"
         style="@style/TextAppearance.AppCompat.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginHorizontal="@dimen/_8sdp"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/black_or_white"
         android:textSize="@dimen/_12ssp"
         android:singleLine="true"
         tools:text="Mod Title"
@@ -80,13 +81,14 @@
         app:layout_constraintTop_toBottomOf="@+id/title_textview"/>
 
     <TextView
+        android:textColor="?attr/colorOnSurfaceVariant"
         android:id="@+id/body_textview"
         style="@style/TextAppearance.AppCompat.Body1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:ellipsize="end"
         android:singleLine="true"
-        android:textSize="@dimen/_11ssp"
+        android:textSize="@dimen/_12ssp"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/title_textview"

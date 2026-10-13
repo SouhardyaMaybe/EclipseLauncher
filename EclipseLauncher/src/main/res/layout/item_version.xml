@@ -40,6 +40,9 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:textColor="@color/black_or_white"
+            android:textSize="@dimen/_13ssp"
+            android:textStyle="bold"
             android:id="@+id/version_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

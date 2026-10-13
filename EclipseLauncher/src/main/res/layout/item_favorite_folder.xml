@@ -11,6 +11,8 @@
         android:layout_centerVertical="true"
         android:paddingHorizontal="@dimen/_8sdp"
         android:maxLines="2"
+        android:textSize="@dimen/_13ssp"
+        android:textStyle="bold"
         android:textColor="@color/black_or_white"/>
 
 </me.shadow.eclipselauncher.ui.layout.AnimRelativeLayout>

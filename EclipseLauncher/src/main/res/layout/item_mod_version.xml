@@ -35,13 +35,14 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
+        android:textStyle="bold"
         android:id="@+id/title_textview"
         style="@style/TextAppearance.AppCompat.Body2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/_12sdp"
         android:ellipsize="end"
-        android:textColor="?attr/colorOnSurface"
+        android:textColor="@color/black_or_white"
         android:textSize="@dimen/_13ssp"
         app:layout_constraintEnd_toStartOf="@+id/download_link"
         app:layout_constraintHorizontal_bias="0.0"

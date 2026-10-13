@@ -16,7 +16,9 @@
         android:layout_gravity="center"
         android:singleLine="true"
         android:text="@string/option_edit_controls"
-        android:textSize="@dimen/_14ssp"
+        android:letterSpacing="0.02"
+        android:textColor="@color/black_or_white"
+        android:textSize="@dimen/_16ssp"
         android:textStyle="bold" />
     
     <ScrollView
@@ -41,6 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/controls_info_file_name"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -64,6 +67,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/controls_info_name"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     app:layout_constraintStart_toStartOf="@+id/name_edit"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,6 +99,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/controls_info_version"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,6 +123,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/controls_info_author"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     app:layout_constraintStart_toStartOf="@+id/author_edit"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -143,7 +149,8 @@
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/controls_info_desc"/>
+                android:text="@string/controls_info_desc"
+                android:textColor="?attr/colorOnSurfaceVariant" />
 
             <me.shadow.eclipselauncher.ui.view.AnimEditText
                 android:id="@+id/desc_edit"

@@ -29,6 +29,9 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:textColor="@color/black_or_white"
+            android:textSize="@dimen/_13ssp"
+            android:textStyle="bold"
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,6 +40,8 @@
             tools:ignore="HardcodedText" />
 
         <TextView
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="@dimen/_12ssp"
             android:id="@+id/path"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

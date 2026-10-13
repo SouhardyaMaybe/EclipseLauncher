@@ -36,7 +36,9 @@
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:text="File Name"
-            android:textSize="@dimen/_11sdp"/>
+            android:textColor="@color/black_or_white"
+            android:textSize="@dimen/_13ssp"
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:id="@+id/info_layout"
@@ -51,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="Time"
-                android:textSize="@dimen/_8sdp"/>
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="@dimen/_12ssp"/>
 
             <TextView
                 android:id="@+id/size"
@@ -60,7 +63,8 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:singleLine="true"
                 android:text="Size"
-                android:textSize="@dimen/_8sdp"/>
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="@dimen/_12ssp"/>
 
         </LinearLayout>
 

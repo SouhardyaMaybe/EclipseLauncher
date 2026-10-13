@@ -20,19 +20,21 @@
         app:layout_constraintTop_toTopOf="parent" >
 
         <TextView
+            android:textStyle="bold"
             android:id="@+id/renderer_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
             android:textSize="@dimen/_11sdp"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="@color/black_or_white" />
 
         <TextView
+            android:textColor="?attr/colorOnSurfaceVariant"
             android:id="@+id/renderer_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:singleLine="true"
-            android:textSize="@dimen/_10sdp" />
+            android:textSize="@dimen/_12ssp" />
 
     </LinearLayout>
 

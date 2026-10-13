@@ -16,7 +16,9 @@
         android:layout_gravity="center"
         android:singleLine="true"
         android:text="@string/generic_tip"
-        android:textSize="@dimen/_14ssp"
+        android:letterSpacing="0.02"
+        android:textColor="@color/black_or_white"
+        android:textSize="@dimen/_16ssp"
         android:textStyle="bold" />
 
     <ScrollView
@@ -38,6 +40,7 @@
                 android:layout_marginHorizontal="@dimen/_8sdp"
                 android:visibility="gone"
                 android:gravity="center_horizontal"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="@dimen/_12ssp" />
 
             <androidx.constraintlayout.widget.ConstraintLayout

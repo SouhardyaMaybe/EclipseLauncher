@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/generic_name"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -49,6 +50,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/customctrl_size"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/editName_editText"
             tools:visibility="visible" />
@@ -82,6 +84,7 @@
             android:layout_height="0dp"
             android:gravity="center"
             android:text="x"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintBottom_toBottomOf="@+id/editSize_editTextX"
             app:layout_constraintEnd_toStartOf="@id/editSize_editTextY"
             app:layout_constraintStart_toEndOf="@id/editSize_editTextX"
@@ -93,6 +96,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/customctrl_mapping"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editSize_editTextX" />
 
@@ -247,6 +251,7 @@
             android:layout_marginTop="@dimen/_2sdp"
             android:gravity="center"
             android:text="@string/customctrl_orientation"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mapping_3_textview" />
 
@@ -318,6 +323,7 @@
             android:gravity="center_vertical"
             android:paddingEnd="@dimen/_5sdp"
             android:text="@string/customctrl_background_color"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:drawableEndIntegerScaling="true"
             app:drawableEndSize="@dimen/_20sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -334,6 +340,7 @@
             android:gravity="center"
             android:paddingEnd="@dimen/_5sdp"
             android:text="@string/customctrl_stroke_width"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/editStrokeColor_textView" />
 
@@ -355,6 +362,7 @@
             android:layout_height="0dp"
             android:gravity="center"
             android:text="100%"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintBottom_toBottomOf="@id/editStrokeWidth_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/editStrokeWidth_textView" />
@@ -369,6 +377,7 @@
             android:gravity="center_vertical"
             android:paddingEnd="@dimen/_5sdp"
             android:text="@string/customctrl_stroke_color"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:drawableEndIntegerScaling="true"
             app:drawableEndSize="@dimen/_20sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -383,6 +392,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/customctrl_corner_radius"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/editStrokeWidth_seekbar" />
 
@@ -403,6 +413,7 @@
             android:layout_height="0dp"
             android:gravity="center"
             android:text="100%"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintBottom_toBottomOf="@id/editCornerRadius_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/editCornerRadius_textView" />
@@ -414,6 +425,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/customctrl_button_opacity"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editCornerRadius_seekbar" />
 
@@ -434,6 +446,7 @@
             android:layout_height="0dp"
             android:gravity="center"
             android:text="100%"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintBottom_toBottomOf="@id/editButtonOpacity_textView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/editButtonOpacity_textView" />
@@ -444,6 +457,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/controls_visibility"
+            android:textColor="?attr/colorOnSurfaceVariant"
             app:layout_constraintTop_toBottomOf="@+id/editButtonOpacity_seekbar"
             app:layout_constraintStart_toStartOf="parent" />
 

@@ -35,8 +35,9 @@
             android:layout_marginTop="@dimen/_8sdp"
             android:singleLine="true"
             android:text="@string/file_tips"
+            android:letterSpacing="0.02"
             android:textColor="@color/black_or_white"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_16ssp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +65,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="@dimen/_8sdp"
                     android:gravity="center_horizontal"
-                    android:textColor="@color/black_or_white"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="@dimen/_12ssp" />
             </LinearLayout>
         </ScrollView>
