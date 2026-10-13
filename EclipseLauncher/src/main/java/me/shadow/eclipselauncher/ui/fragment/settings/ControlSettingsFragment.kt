@@ -16,7 +16,7 @@ import me.shadow.eclipselauncher.setting.AllSettings
 import me.shadow.eclipselauncher.ui.fragment.CustomMouseFragment
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.BaseSettingsWrapper
-import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
+import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SliderSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import me.shadow.eclipselauncher.utils.EclipseTools
 import fr.spse.gamepad_remapper.Remapper
@@ -55,7 +55,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             binding.disableDoubleTap
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.timeLongPressTrigger,
             binding.timeLongPressTriggerLayout,
@@ -66,7 +66,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             "ms"
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.buttonScale,
             binding.buttonscaleLayout,
@@ -84,7 +84,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             binding.buttonAllCaps
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.mouseScale,
             binding.mousescaleLayout,
@@ -95,7 +95,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             "%"
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.mouseSpeed,
             binding.mousespeedLayout,
@@ -134,7 +134,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             binding.enableGyro
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.gyroSensitivity,
             binding.gyroSensitivityLayout,
@@ -145,7 +145,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
             "%"
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.gyroSampleRate,
             binding.gyroSampleRateLayout,
@@ -200,7 +200,7 @@ class ControlSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fra
                 .show()
         }
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.deadZoneScale,
             binding.gamepadDeadzoneScaleLayout,

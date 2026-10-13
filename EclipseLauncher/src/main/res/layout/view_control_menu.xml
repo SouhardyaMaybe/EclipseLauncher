@@ -206,15 +206,17 @@
                         android:textSize="@dimen/_16sdp"
                         tools:ignore="HardcodedText" />
 
-                    <SeekBar
-                        android:id="@+id/snapping_distance"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/snapping_distance_remove"
-                        android:layout_toStartOf="@id/snapping_distance_add"
-                        android:max="30"/>
+                    <com.google.android.material.slider.Slider                    android:id="@+id/snapping_distance"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/snapping_distance_remove"
+                    android:layout_toStartOf="@id/snapping_distance_add"
+                    app:valueFrom="0"
+                    app:valueTo="30"
+                    app:value="0"
+                    app:stepSize="1" />
 
                     <TextView
                         android:id="@+id/snapping_distance_add"

@@ -181,16 +181,17 @@
                         android:textSize="@dimen/_16sdp"
                         tools:ignore="HardcodedText" />
 
-                    <SeekBar
-                        android:id="@+id/resolution_scaler"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/resolution_scaler_remove"
-                        android:layout_toStartOf="@id/resolution_scaler_add"
-                        android:min="25"
-                        android:max="300"/>
+                    <com.google.android.material.slider.Slider                    android:id="@+id/resolution_scaler"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/resolution_scaler_remove"
+                    android:layout_toStartOf="@id/resolution_scaler_add"
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                     <TextView
                         android:id="@+id/resolution_scaler_add"
@@ -318,16 +319,17 @@
                         android:textSize="@dimen/_16sdp"
                         tools:ignore="HardcodedText" />
 
-                    <SeekBar
-                        android:id="@+id/timeLongPressTrigger"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/timeLongPressTrigger_remove"
-                        android:layout_toStartOf="@id/timeLongPressTrigger_add"
-                        android:max="1000"
-                        android:min="100"/>
+                    <com.google.android.material.slider.Slider                    android:id="@+id/timeLongPressTrigger"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/timeLongPressTrigger_remove"
+                    android:layout_toStartOf="@id/timeLongPressTrigger_add"
+                    app:valueFrom="100"
+                    app:valueTo="1000"
+                    app:value="100"
+                    app:stepSize="1" />
 
                     <TextView
                         android:id="@+id/timeLongPressTrigger_add"
@@ -386,16 +388,17 @@
                         android:textSize="@dimen/_16sdp"
                         tools:ignore="HardcodedText" />
 
-                    <SeekBar
-                        android:id="@+id/mouse_speed"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/mouse_speed_remove"
-                        android:layout_toStartOf="@id/mouse_speed_add"
-                        android:max="300"
-                        android:min="25"/>
+                    <com.google.android.material.slider.Slider                    android:id="@+id/mouse_speed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/mouse_speed_remove"
+                    android:layout_toStartOf="@id/mouse_speed_add"
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                     <TextView
                         android:id="@+id/mouse_speed_add"
@@ -538,16 +541,17 @@
                             android:textSize="@dimen/_16sdp"
                             tools:ignore="HardcodedText" />
 
-                        <SeekBar
-                            android:id="@+id/gyro_sensitivity"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_8sdp"
-                            android:layout_centerVertical="true"
-                            android:layout_toEndOf="@id/gyro_sensitivity_remove"
-                            android:layout_toStartOf="@id/gyro_sensitivity_add"
-                            android:max="300"
-                            android:min="25"/>
+                        <com.google.android.material.slider.Slider                    android:id="@+id/gyro_sensitivity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/gyro_sensitivity_remove"
+                    android:layout_toStartOf="@id/gyro_sensitivity_add"
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                         <TextView
                             android:id="@+id/gyro_sensitivity_add"
@@ -696,15 +700,17 @@
                         android:textSize="@dimen/_16sdp"
                         tools:ignore="HardcodedText" />
 
-                    <SeekBar
-                        android:id="@+id/hotbar_width"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/hotbar_width_remove"
-                        android:layout_toStartOf="@id/hotbar_width_add"
-                        android:min="40"/>
+                    <com.google.android.material.slider.Slider                    android:id="@+id/hotbar_width"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/hotbar_width_remove"
+                    android:layout_toStartOf="@id/hotbar_width_add"
+                    app:valueFrom="40"
+                    app:valueTo="100"
+                    app:value="40"
+                    app:stepSize="1" />
 
                     <TextView
                         android:id="@+id/hotbar_width_add"
@@ -763,15 +769,17 @@
                         android:textSize="@dimen/_16sdp"
                         tools:ignore="HardcodedText" />
 
-                    <SeekBar
-                        android:id="@+id/hotbar_height"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_8sdp"
-                        android:layout_centerVertical="true"
-                        android:layout_toEndOf="@id/hotbar_height_remove"
-                        android:layout_toStartOf="@id/hotbar_height_add"
-                        android:min="20"/>
+                    <com.google.android.material.slider.Slider                    android:id="@+id/hotbar_height"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/hotbar_height_remove"
+                    android:layout_toStartOf="@id/hotbar_height_add"
+                    app:valueFrom="20"
+                    app:valueTo="100"
+                    app:value="20"
+                    app:stepSize="1" />
 
                     <TextView
                         android:id="@+id/hotbar_height_add"

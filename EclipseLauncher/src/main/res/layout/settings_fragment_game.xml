@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -365,15 +366,17 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginHorizontal="@dimen/_12sdp" />
 
-                <SeekBar
-                    android:id="@+id/allocation"
+                <com.google.android.material.slider.Slider                    android:id="@+id/allocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/allocation_value"
                     android:layout_alignBottom="@+id/allocation_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/allocation_value"
-                    android:min="256" />
+                    app:valueFrom="256"
+                    app:valueTo="8192"
+                    app:value="256"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/allocation_value"
@@ -598,16 +601,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_game_menu_info_refresh_rate_desc" />
 
-                <SeekBar
-                    android:id="@+id/gameMenuInfoRefreshRate"
+                <com.google.android.material.slider.Slider                    android:id="@+id/gameMenuInfoRefreshRate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/gameMenuInfoRefreshRate_value"
                     android:layout_alignBottom="@+id/gameMenuInfoRefreshRate_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gameMenuInfoRefreshRate_value"
-                    android:max="5000"
-                    android:min="500" />
+                    app:valueFrom="500"
+                    app:valueTo="5000"
+                    app:value="500"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gameMenuInfoRefreshRate_value"
@@ -647,16 +651,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_game_menu_alpha_desc" />
 
-                <SeekBar
-                    android:id="@+id/gameMenuAlpha"
+                <com.google.android.material.slider.Slider                    android:id="@+id/gameMenuAlpha"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/gameMenuAlpha_value"
                     android:layout_alignBottom="@+id/gameMenuAlpha_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gameMenuAlpha_value"
-                    android:max="100"
-                    android:min="20" />
+                    app:valueFrom="20"
+                    app:valueTo="100"
+                    app:value="20"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gameMenuAlpha_value"

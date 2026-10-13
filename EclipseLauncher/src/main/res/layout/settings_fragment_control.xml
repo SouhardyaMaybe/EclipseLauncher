@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -125,16 +126,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_longpress_trigger_desc" />
 
-                <SeekBar
-                    android:id="@+id/timeLongPressTrigger"
+                <com.google.android.material.slider.Slider                    android:id="@+id/timeLongPressTrigger"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/timeLongPressTrigger_value"
                     android:layout_alignBottom="@+id/timeLongPressTrigger_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/timeLongPressTrigger_value"
-                    android:max="1000"
-                    android:min="100" />
+                    app:valueFrom="100"
+                    app:valueTo="1000"
+                    app:value="100"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/timeLongPressTrigger_value"
@@ -193,16 +195,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_button_scale_desc" />
 
-                <SeekBar
-                    android:id="@+id/buttonscale"
+                <com.google.android.material.slider.Slider                    android:id="@+id/buttonscale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/buttonscale_value"
                     android:layout_alignBottom="@+id/buttonscale_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/buttonscale_value"
-                    android:max="250"
-                    android:min="80" />
+                    app:valueFrom="80"
+                    app:valueTo="250"
+                    app:value="80"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/buttonscale_value"
@@ -296,16 +299,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_mouse_scale_desc" />
 
-                <SeekBar
-                    android:id="@+id/mousescale"
+                <com.google.android.material.slider.Slider                    android:id="@+id/mousescale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/mousescale_value"
                     android:layout_alignBottom="@+id/mousescale_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/mousescale_value"
-                    android:max="300"
-                    android:min="25" />
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/mousescale_value"
@@ -345,16 +349,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_mouse_speed_desc" />
 
-                <SeekBar
-                    android:id="@+id/mousespeed"
+                <com.google.android.material.slider.Slider                    android:id="@+id/mousespeed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/mousespeed_value"
                     android:layout_alignBottom="@+id/mousespeed_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/mousespeed_value"
-                    android:max="300"
-                    android:min="25" />
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/mousespeed_value"
@@ -507,16 +512,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_gyro_sensitivity_desc" />
 
-                <SeekBar
-                    android:id="@+id/gyroSensitivity"
+                <com.google.android.material.slider.Slider                    android:id="@+id/gyroSensitivity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/gyroSensitivity_value"
                     android:layout_alignBottom="@+id/gyroSensitivity_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gyroSensitivity_value"
-                    android:max="300"
-                    android:min="25" />
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gyroSensitivity_value"
@@ -556,16 +562,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_gyro_sample_rate_description" />
 
-                <SeekBar
-                    android:id="@+id/gyroSampleRate"
+                <com.google.android.material.slider.Slider                    android:id="@+id/gyroSampleRate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/gyroSampleRate_value"
                     android:layout_alignBottom="@+id/gyroSampleRate_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gyroSampleRate_value"
-                    android:max="50"
-                    android:min="5" />
+                    app:valueFrom="5"
+                    app:valueTo="50"
+                    app:value="5"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gyroSampleRate_value"
@@ -782,16 +789,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_deadzone_scale_desc" />
 
-                <SeekBar
-                    android:id="@+id/gamepad_deadzone_scale"
+                <com.google.android.material.slider.Slider                    android:id="@+id/gamepad_deadzone_scale"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/gamepad_deadzone_scale_value"
                     android:layout_alignBottom="@+id/gamepad_deadzone_scale_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gamepad_deadzone_scale_value"
-                    android:max="200"
-                    android:min="50" />
+                    app:valueFrom="50"
+                    app:valueTo="200"
+                    app:value="50"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gamepad_deadzone_scale_value"

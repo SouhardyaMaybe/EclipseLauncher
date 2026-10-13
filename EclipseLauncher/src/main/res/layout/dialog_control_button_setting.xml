@@ -337,14 +337,17 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/editStrokeColor_textView" />
 
-        <SeekBar
-            android:id="@+id/editStrokeWidth_seekbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_36sdp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.538"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editStrokeWidth_textView" />
+        <com.google.android.material.slider.Slider                    android:id="@+id/editStrokeWidth_seekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_36sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.538"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editStrokeWidth_textView"
+                    app:valueFrom="0"
+                    app:valueTo="100"
+                    app:value="0"
+                    app:stepSize="1" />
 
         <TextView
             android:id="@+id/editStrokeWidth_textView_percent"
@@ -383,13 +386,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/editStrokeWidth_seekbar" />
 
-        <SeekBar
-            android:id="@+id/editCornerRadius_seekbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_36sdp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editCornerRadius_textView" />
+        <com.google.android.material.slider.Slider                    android:id="@+id/editCornerRadius_seekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_36sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/editCornerRadius_textView"
+                    app:valueFrom="0"
+                    app:valueTo="100"
+                    app:value="0"
+                    app:stepSize="1" />
 
         <TextView
             android:id="@+id/editCornerRadius_textView_percent"
@@ -411,13 +417,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editCornerRadius_seekbar" />
 
-        <SeekBar
-            android:id="@+id/editButtonOpacity_seekbar"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/_36sdp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/editButtonOpacity_textView" />
+        <com.google.android.material.slider.Slider                    android:id="@+id/editButtonOpacity_seekbar"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/_36sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/editButtonOpacity_textView"
+                    app:valueFrom="0"
+                    app:valueTo="100"
+                    app:value="0"
+                    app:stepSize="1" />
 
         <TextView
             android:id="@+id/editButtonOpacity_textView_percent"

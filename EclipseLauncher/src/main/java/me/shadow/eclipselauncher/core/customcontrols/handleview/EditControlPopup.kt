@@ -14,7 +14,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
 import android.widget.EditText
-import android.widget.SeekBar
+import com.google.android.material.slider.Slider
 import android.widget.Spinner
 import androidx.appcompat.widget.SwitchCompat
 import android.widget.TextView
@@ -88,9 +88,9 @@ class EditControlPopup {
 
     protected lateinit var mOrientationSpinner: Spinner
     protected var mKeycodeTextviews = arrayOfNulls<TextView>(4)
-    protected lateinit var mStrokeWidthSeekbar: SeekBar
-    protected lateinit var mCornerRadiusSeekbar: SeekBar
-    protected lateinit var mAlphaSeekbar: SeekBar
+    protected lateinit var mStrokeWidthSlider: Slider
+    protected lateinit var mCornerRadiusSlider: Slider
+    protected lateinit var mAlphaSlider: Slider
     protected lateinit var mStrokePercentTextView: TextView
     protected lateinit var mCornerRadiusPercentTextView: TextView
     protected lateinit var mAlphaPercentTextView: TextView
@@ -314,9 +314,12 @@ class EditControlPopup {
         mWidthEditText.setText(data.getWidth().toString())
         mHeightEditText.setText(data.getHeight().toString())
 
-        mAlphaSeekbar.setProgress((data.opacity * 100).toInt())
-        mStrokeWidthSeekbar.setProgress(data.strokeWidth.toInt() * 10)
-        mCornerRadiusSeekbar.setProgress(data.cornerRadius.toInt())
+        mAlphaSlider.value = (data.opacity * 100).toInt().toFloat()
+                .coerceIn(mAlphaSlider.valueFrom, mAlphaSlider.valueTo)
+        mStrokeWidthSlider.value = (data.strokeWidth.toInt() * 10).toFloat()
+                .coerceIn(mStrokeWidthSlider.valueFrom, mStrokeWidthSlider.valueTo)
+        mCornerRadiusSlider.value = data.cornerRadius.toInt().toFloat()
+                .coerceIn(mCornerRadiusSlider.valueFrom, mCornerRadiusSlider.valueTo)
 
         setPercentageText(mAlphaPercentTextView, (data.opacity * 100).toInt())
         setPercentageText(mStrokePercentTextView, data.strokeWidth.toInt() * 10)
@@ -378,7 +381,7 @@ class EditControlPopup {
         mNameEditText.visibility = View.GONE
 
         mCornerRadiusTextView.visibility = View.GONE
-        mCornerRadiusSeekbar.visibility = View.GONE
+        mCornerRadiusSlider.visibility = View.GONE
         mCornerRadiusPercentTextView.visibility = View.GONE
 
         mSwipeableSwitch.visibility = View.GONE
@@ -431,9 +434,9 @@ class EditControlPopup {
         mKeycodeTextviews[2] = mScrollView.findViewById(R.id.mapping_3_textview)
         mKeycodeTextviews[3] = mScrollView.findViewById(R.id.mapping_4_textview)
         mOrientationSpinner = mScrollView.findViewById(R.id.editOrientation_spinner)
-        mStrokeWidthSeekbar = mScrollView.findViewById(R.id.editStrokeWidth_seekbar)
-        mCornerRadiusSeekbar = mScrollView.findViewById(R.id.editCornerRadius_seekbar)
-        mAlphaSeekbar = mScrollView.findViewById(R.id.editButtonOpacity_seekbar)
+        mStrokeWidthSlider = mScrollView.findViewById(R.id.editStrokeWidth_seekbar)
+        mCornerRadiusSlider = mScrollView.findViewById(R.id.editCornerRadius_seekbar)
+        mAlphaSlider = mScrollView.findViewById(R.id.editButtonOpacity_seekbar)
         mSelectBackgroundColor = mScrollView.findViewById(R.id.editBackgroundColor_textView)
         mSelectStrokeColor = mScrollView.findViewById(R.id.editStrokeColor_textView)
         mStrokePercentTextView = mScrollView.findViewById(R.id.editStrokeWidth_textView_percent)
@@ -529,48 +532,30 @@ class EditControlPopup {
             }
         }
 
-        mAlphaSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        mAlphaSlider.addOnSliderChangeListener(object : Slider.OnSliderChangeListener {
+            override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
                 if (internalChanges) return
-                mCurrentlyEditedButton!!.getProperties().opacity = mAlphaSeekbar.progress / 100f
-                mCurrentlyEditedButton!!.getControlView().alpha = mAlphaSeekbar.progress / 100f
-                setPercentageText(mAlphaPercentTextView, progress)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                mCurrentlyEditedButton!!.getProperties().opacity = value / 100f
+                mCurrentlyEditedButton!!.getControlView().alpha = value / 100f
+                setPercentageText(mAlphaPercentTextView, value.toInt())
             }
         })
 
-        mStrokeWidthSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        mStrokeWidthSlider.addOnSliderChangeListener(object : Slider.OnSliderChangeListener {
+            override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
                 if (internalChanges) return
-                mCurrentlyEditedButton!!.getProperties().strokeWidth = mStrokeWidthSeekbar.progress / 10f
+                mCurrentlyEditedButton!!.getProperties().strokeWidth = value / 10f
                 mCurrentlyEditedButton!!.setBackground()
-                setPercentageText(mStrokePercentTextView, progress)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                setPercentageText(mStrokePercentTextView, value.toInt())
             }
         })
 
-        mCornerRadiusSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        mCornerRadiusSlider.addOnSliderChangeListener(object : Slider.OnSliderChangeListener {
+            override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
                 if (internalChanges) return
-                mCurrentlyEditedButton!!.getProperties().cornerRadius = mCornerRadiusSeekbar.progress.toFloat()
+                mCurrentlyEditedButton!!.getProperties().cornerRadius = value
                 mCurrentlyEditedButton!!.setBackground()
-                setPercentageText(mCornerRadiusPercentTextView, progress)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                setPercentageText(mCornerRadiusPercentTextView, value.toInt())
             }
         })
 

@@ -15,7 +15,7 @@ import me.shadow.eclipselauncher.ui.fragment.CustomBackgroundFragment
 import me.shadow.eclipselauncher.ui.fragment.FragmentWithAnim
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.BaseSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.ListSettingsWrapper
-import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
+import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SliderSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import me.shadow.eclipselauncher.utils.CleanUpCache.Companion.start
 import me.shadow.eclipselauncher.utils.EclipseTools
@@ -70,7 +70,7 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             binding.addFullResourceName
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.maxDownloadThreads,
             binding.maxDownloadThreadsLayout,
@@ -111,7 +111,7 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             binding.animation
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.animationSpeed,
             binding.animationSpeedLayout,
@@ -122,7 +122,7 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             "ms"
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.pageOpacity,
             binding.pageOpacityLayout,
@@ -131,7 +131,7 @@ class LauncherSettingsFragment() : AbstractSettingsFragment(R.layout.settings_fr
             binding.pageOpacityValue,
             binding.pageOpacity,
             "%"
-        ).setOnSeekBarProgressChangeListener {
+        ).setOnSliderProgressChangeListener {
             EventBus.getDefault().post(PageOpacityChangeEvent(it))
         }
 

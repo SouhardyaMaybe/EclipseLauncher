@@ -15,7 +15,7 @@ import me.shadow.eclipselauncher.task.TaskExecutors
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.BaseSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.EditTextSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.ListSettingsWrapper
-import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
+import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SliderSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import me.shadow.eclipselauncher.utils.file.FileTools.Companion.formatFileSize
 import me.shadow.eclipselauncher.utils.platform.MemoryUtils.Companion.getFreeDeviceMemory
@@ -119,7 +119,7 @@ class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
         ).toInt()
         else deviceRam - (if (deviceRam < 3064) 800 else 1024) //To have a minimum for the device to breathe
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.ramAllocation.value,
             binding.allocationLayout,
@@ -129,16 +129,17 @@ class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
             binding.allocation,
             "MB"
         ) { wrapper ->
-            wrapper.seekbarView.max = maxRAM
-            wrapper.seekbarView.progress = AllSettings.ramAllocation.value.getValue()
-            wrapper.setSeekBarValueTextView()
+            wrapper.sliderView.valueTo = maxRAM.toFloat()
+            wrapper.sliderView.value = AllSettings.ramAllocation.value.getValue()
+                .toFloat().coerceIn(wrapper.sliderView.valueFrom, wrapper.sliderView.valueTo)
+            wrapper.setSliderValueTextView()
 
-            updateMemoryInfo(context, wrapper.seekbarView.progress.toLong())
+            updateMemoryInfo(context, wrapper.sliderView.value.toLong())
         }.apply {
-            setOnSeekBarProgressChangeListener {
+            setOnSliderProgressChangeListener {
                 updateMemoryInfo(
                     requireContext(),
-                    seekbarView.progress.toLong()
+                    sliderView.value.toLong()
                 )
             }
         }
@@ -187,7 +188,7 @@ class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
             R.array.game_menu_location_names, R.array.game_menu_location_values
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.gameMenuInfoRefreshRate,
             binding.gameMenuInfoRefreshRateLayout,
@@ -198,7 +199,7 @@ class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
             "ms"
         )
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.gameMenuAlpha,
             binding.gameMenuAlphaLayout,
@@ -207,7 +208,7 @@ class GameSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragment
             binding.gameMenuAlphaValue,
             binding.gameMenuAlpha,
             "%"
-        ).setOnSeekBarProgressChangeListener { progress ->
+        ).setOnSliderProgressChangeListener { progress ->
             setGameMenuAlpha(progress.toFloat() / 100F)
         }
 

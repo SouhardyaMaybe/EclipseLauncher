@@ -28,7 +28,7 @@ import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CompoundButton;
-import android.widget.SeekBar;
+import com.google.android.material.slider.Slider;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -541,23 +541,23 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         else return super.dispatchTrackballEvent(ev);
     }
 
-    private class MenuSettingsInitListener implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener, OnSpinnerItemSelectedListener<HotbarType>, DrawerLayout.DrawerListener {
+    private class MenuSettingsInitListener implements View.OnClickListener, Slider.OnSliderChangeListener, Slider.OnSliderTouchListener, CompoundButton.OnCheckedChangeListener, OnSpinnerItemSelectedListener<HotbarType>, DrawerLayout.DrawerListener {
         private final ViewGameMenuBinding binding;
 
         public MenuSettingsInitListener(ViewGameMenuBinding binding) {
             this.binding = binding;
             //Initialize the state
-            this.binding.hotbarWidth.setMax(currentDisplayMetrics.widthPixels / 2);
-            this.binding.hotbarHeight.setMax(currentDisplayMetrics.heightPixels / 2);
+            this.binding.hotbarWidth.setValueTo(currentDisplayMetrics.widthPixels / 2);
+            this.binding.hotbarHeight.setValueTo(currentDisplayMetrics.heightPixels / 2);
 
-            //Initialize the SeekBar's value
-            MenuUtils.initSeekBarValue(this.binding.resolutionScaler, AllSettings.getResolutionRatio().getValue(), this.binding.resolutionScalerValue, "%");
+            //Initialize the slider's value
+            MenuUtils.initSliderValue(this.binding.resolutionScaler, AllSettings.getResolutionRatio().getValue(), this.binding.resolutionScalerValue, "%");
             binding.resolutionScalerPreview.setText(VideoSettingsFragment.getResolutionRatioPreview(getResources(), AllSettings.getResolutionRatio().getValue()));
-            MenuUtils.initSeekBarValue(this.binding.timeLongPressTrigger, AllSettings.getTimeLongPressTrigger().getValue(), this.binding.timeLongPressTriggerValue, "ms");
-            MenuUtils.initSeekBarValue(this.binding.mouseSpeed, AllSettings.getMouseSpeed().getValue(), this.binding.mouseSpeedValue, "%");
-            MenuUtils.initSeekBarValue(this.binding.gyroSensitivity, AllSettings.getGyroSensitivity().getValue(), this.binding.gyroSensitivityValue, "%");
-            MenuUtils.initSeekBarValue(this.binding.hotbarHeight, AllSettings.getHotbarHeight().getValue().getValue(), this.binding.hotbarHeightValue, "px");
-            MenuUtils.initSeekBarValue(this.binding.hotbarWidth, AllSettings.getHotbarWidth().getValue().getValue(), this.binding.hotbarWidthValue, "px");
+            MenuUtils.initSliderValue(this.binding.timeLongPressTrigger, AllSettings.getTimeLongPressTrigger().getValue(), this.binding.timeLongPressTriggerValue, "ms");
+            MenuUtils.initSliderValue(this.binding.mouseSpeed, AllSettings.getMouseSpeed().getValue(), this.binding.mouseSpeedValue, "%");
+            MenuUtils.initSliderValue(this.binding.gyroSensitivity, AllSettings.getGyroSensitivity().getValue(), this.binding.gyroSensitivityValue, "%");
+            MenuUtils.initSliderValue(this.binding.hotbarHeight, AllSettings.getHotbarHeight().getValue().getValue(), this.binding.hotbarHeightValue, "px");
+            MenuUtils.initSliderValue(this.binding.hotbarWidth, AllSettings.getHotbarWidth().getValue().getValue(), this.binding.hotbarWidthValue, "px");
 
             //Initialize the Switch's state
             this.binding.openMemoryInfo.setChecked(AllSettings.getGameMenuShowMemory().getValue());
@@ -580,7 +580,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.openFpsInfo.setOnCheckedChangeListener(this);
             this.binding.openFpsInfoLayout.setOnClickListener(this);
 
-            this.binding.resolutionScaler.setOnSeekBarChangeListener(this);
+            this.binding.resolutionScaler.addOnSliderChangeListener(this);            this.binding.resolutionScaler.addOnSliderTouchListener(this);
             this.binding.resolutionScalerRemove.setOnClickListener(this);
             this.binding.resolutionScalerAdd.setOnClickListener(this);
 
@@ -590,11 +590,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.disableDoubleTap.setOnCheckedChangeListener(this);
             this.binding.disableDoubleTapLayout.setOnClickListener(this);
 
-            this.binding.timeLongPressTrigger.setOnSeekBarChangeListener(this);
+            this.binding.timeLongPressTrigger.addOnSliderChangeListener(this);            this.binding.timeLongPressTrigger.addOnSliderTouchListener(this);
             this.binding.timeLongPressTriggerRemove.setOnClickListener(this);
             this.binding.timeLongPressTriggerAdd.setOnClickListener(this);
 
-            this.binding.mouseSpeed.setOnSeekBarChangeListener(this);
+            this.binding.mouseSpeed.addOnSliderChangeListener(this);            this.binding.mouseSpeed.addOnSliderTouchListener(this);
             this.binding.mouseSpeedRemove.setOnClickListener(this);
             this.binding.mouseSpeedAdd.setOnClickListener(this);
 
@@ -605,7 +605,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.enableGyro.setOnCheckedChangeListener(this);
             this.binding.enableGyroLayout.setOnClickListener(this);
 
-            this.binding.gyroSensitivity.setOnSeekBarChangeListener(this);
+            this.binding.gyroSensitivity.addOnSliderChangeListener(this);            this.binding.gyroSensitivity.addOnSliderTouchListener(this);
             this.binding.gyroSensitivityRemove.setOnClickListener(this);
             this.binding.gyroSensitivityAdd.setOnClickListener(this);
 
@@ -625,11 +625,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.hotbarType.setOnSpinnerItemSelectedListener(this);
             this.binding.hotbarType.selectItemByIndex(HotbarUtils.getCurrentTypeIndex());
 
-            this.binding.hotbarHeight.setOnSeekBarChangeListener(this);
+            this.binding.hotbarHeight.addOnSliderChangeListener(this);            this.binding.hotbarHeight.addOnSliderTouchListener(this);
             this.binding.hotbarHeightRemove.setOnClickListener(this);
             this.binding.hotbarHeightAdd.setOnClickListener(this);
 
-            this.binding.hotbarWidth.setOnSeekBarChangeListener(this);
+            this.binding.hotbarWidth.addOnSliderChangeListener(this);            this.binding.hotbarWidth.addOnSliderTouchListener(this);
             this.binding.hotbarWidthRemove.setOnClickListener(this);
             this.binding.hotbarWidthAdd.setOnClickListener(this);
         }
@@ -686,45 +686,45 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             else if (v == binding.sendCustomKey) dialogSendCustomKey();
             else if (v == binding.openMemoryInfoLayout) MenuUtils.toggleSwitchState(binding.openMemoryInfo);
             else if (v == binding.openFpsInfoLayout) MenuUtils.toggleSwitchState(binding.openFpsInfo);
-            else if (v == binding.resolutionScalerRemove) MenuUtils.adjustSeekbar(binding.resolutionScaler, -1);
-            else if (v == binding.resolutionScalerAdd) MenuUtils.adjustSeekbar(binding.resolutionScaler, 1);
+            else if (v == binding.resolutionScalerRemove) MenuUtils.adjustSlider(binding.resolutionScaler, -1);
+            else if (v == binding.resolutionScalerAdd) MenuUtils.adjustSlider(binding.resolutionScaler, 1);
             else if (v == binding.disableGesturesLayout) MenuUtils.toggleSwitchState(binding.disableGestures);
             else if (v == binding.disableDoubleTapLayout) MenuUtils.toggleSwitchState(binding.disableDoubleTap);
-            else if (v == binding.timeLongPressTriggerRemove) MenuUtils.adjustSeekbar(binding.timeLongPressTrigger, -1);
-            else if (v == binding.timeLongPressTriggerAdd) MenuUtils.adjustSeekbar(binding.timeLongPressTrigger, 1);
-            else if (v == binding.mouseSpeedRemove) MenuUtils.adjustSeekbar(binding.mouseSpeed, -1);
-            else if (v == binding.mouseSpeedAdd) MenuUtils.adjustSeekbar(binding.mouseSpeed, 1);
+            else if (v == binding.timeLongPressTriggerRemove) MenuUtils.adjustSlider(binding.timeLongPressTrigger, -1);
+            else if (v == binding.timeLongPressTriggerAdd) MenuUtils.adjustSlider(binding.timeLongPressTrigger, 1);
+            else if (v == binding.mouseSpeedRemove) MenuUtils.adjustSlider(binding.mouseSpeed, -1);
+            else if (v == binding.mouseSpeedAdd) MenuUtils.adjustSlider(binding.mouseSpeed, 1);
             else if (v == binding.customMouse) new SelectMouseDialog(MainActivity.this, () -> MainActivity.binding.mainTouchpad.updateMouseDrawable()).show();
             else if (v == binding.replacementCustomcontrol) replacementCustomControls();
             else if (v == binding.editControl) openCustomControls();
             else if (v == binding.enableGyroLayout) MenuUtils.toggleSwitchState(binding.enableGyro);
-            else if (v == binding.gyroSensitivityRemove) MenuUtils.adjustSeekbar(binding.gyroSensitivity, -1);
-            else if (v == binding.gyroSensitivityAdd) MenuUtils.adjustSeekbar(binding.gyroSensitivity, 1);
+            else if (v == binding.gyroSensitivityRemove) MenuUtils.adjustSlider(binding.gyroSensitivity, -1);
+            else if (v == binding.gyroSensitivityAdd) MenuUtils.adjustSlider(binding.gyroSensitivity, 1);
             else if (v == binding.gyroInvertXLayout) MenuUtils.toggleSwitchState(binding.gyroInvertX);
             else if (v == binding.gyroInvertYLayout) MenuUtils.toggleSwitchState(binding.gyroInvertY);
-            else if (v == binding.hotbarWidthRemove) MenuUtils.adjustSeekbar(binding.hotbarWidth, -1);
-            else if (v == binding.hotbarWidthAdd) MenuUtils.adjustSeekbar(binding.hotbarWidth, 1);
-            else if (v == binding.hotbarHeightRemove) MenuUtils.adjustSeekbar(binding.hotbarHeight, -1);
-            else if (v == binding.hotbarHeightAdd) MenuUtils.adjustSeekbar(binding.hotbarHeight, 1);
+            else if (v == binding.hotbarWidthRemove) MenuUtils.adjustSlider(binding.hotbarWidth, -1);
+            else if (v == binding.hotbarWidthAdd) MenuUtils.adjustSlider(binding.hotbarWidth, 1);
+            else if (v == binding.hotbarHeightRemove) MenuUtils.adjustSlider(binding.hotbarHeight, -1);
+            else if (v == binding.hotbarHeightAdd) MenuUtils.adjustSlider(binding.hotbarHeight, 1);
         }
 
         @Override
         @SuppressLint("SetTextI18n")
-        public void onProgressChanged(SeekBar s, int progress, boolean fromUser) {
-            updateSeekbarValue(s, !fromUser);
+        public void onValueChange(@NonNull Slider s, float value, boolean fromUser) {
+            updateSliderValue(s, !fromUser);
         }
-        @Override public void onStartTrackingTouch(SeekBar s) {}
-        @Override public void onStopTrackingTouch(SeekBar s) {
-            updateSeekbarValue(s, true);
+        @Override public void onStartTrackingTouch(@NonNull Slider s) {}
+        @Override public void onStopTrackingTouch(@NonNull Slider s) {
+            updateSliderValue(s, true);
         }
 
-        private void updateSeekbarValue(SeekBar seekbar, boolean saveValue) {
-            int progress = seekbar == null ? 0 : seekbar.getProgress();
+        private void updateSliderValue(Slider seekbar, boolean saveValue) {
+            int progress = seekbar == null ? 0 : (int) seekbar.getValue();
 
             if (seekbar == binding.resolutionScaler) {
                 if (saveValue) AllSettings.getResolutionRatio().put(progress).save();
 
-                MenuUtils.updateSeekbarValue(progress, binding.resolutionScalerValue, "%");
+                MenuUtils.updateSliderValue(progress, binding.resolutionScalerValue, "%");
                 binding.resolutionScalerPreview.setText(VideoSettingsFragment.getResolutionRatioPreview(getResources(), progress));
 
                 AllStaticSettings.scaleFactor = progress / 100f;
@@ -732,27 +732,27 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             } else if (seekbar == binding.timeLongPressTrigger) {
                 if (saveValue) AllSettings.getTimeLongPressTrigger().put(progress).save();
 
-                MenuUtils.updateSeekbarValue(progress, binding.timeLongPressTriggerValue, "ms");
+                MenuUtils.updateSliderValue(progress, binding.timeLongPressTriggerValue, "ms");
                 AllStaticSettings.timeLongPressTrigger = progress;
             } else if (seekbar == binding.mouseSpeed) {
                 if (saveValue) AllSettings.getMouseSpeed().put(progress).save();
 
-                MenuUtils.updateSeekbarValue(progress, binding.mouseSpeedValue, "%");
+                MenuUtils.updateSliderValue(progress, binding.mouseSpeedValue, "%");
             } else if (seekbar == binding.gyroSensitivity) {
                 if (saveValue) AllSettings.getGyroSensitivity().put(progress).save();
 
-                MenuUtils.updateSeekbarValue(progress, binding.gyroSensitivityValue, "%");
+                MenuUtils.updateSliderValue(progress, binding.gyroSensitivityValue, "%");
                 AllStaticSettings.gyroSensitivity = progress;
             } else if (seekbar == binding.hotbarWidth) {
                 if (saveValue) AllSettings.getHotbarWidth().getValue().put(progress).save();
 
-                MenuUtils.updateSeekbarValue(progress, binding.hotbarWidthValue, "px");
-                EventBus.getDefault().post(new HotbarChangeEvent(progress, binding.hotbarHeight.getProgress()));
+                MenuUtils.updateSliderValue(progress, binding.hotbarWidthValue, "px");
+                EventBus.getDefault().post(new HotbarChangeEvent(progress, (int) binding.hotbarHeight.getValue()));
             } else if (seekbar == binding.hotbarHeight) {
                 if (saveValue) AllSettings.getHotbarHeight().getValue().put(progress).save();
 
-                MenuUtils.updateSeekbarValue(progress, binding.hotbarHeightValue, "px");
-                EventBus.getDefault().post(new HotbarChangeEvent(binding.hotbarWidth.getProgress(), progress));
+                MenuUtils.updateSliderValue(progress, binding.hotbarHeightValue, "px");
+                EventBus.getDefault().post(new HotbarChangeEvent((int) binding.hotbarWidth.getValue(), progress));
             }
         }
 
@@ -800,8 +800,8 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             } else if (t1 == HotbarType.MANUALLY) {
                 binding.hotbarWidthLayout.setVisibility(View.VISIBLE);
                 binding.hotbarHeightLayout.setVisibility(View.VISIBLE);
-                binding.hotbarWidth.setProgress(AllSettings.getHotbarWidth().getValue().getValue());
-                binding.hotbarHeight.setProgress(AllSettings.getHotbarHeight().getValue().getValue());
+                binding.hotbarWidth.setValue(AllSettings.getHotbarWidth().getValue().getValue());
+                binding.hotbarHeight.setValue(AllSettings.getHotbarHeight().getValue().getValue());
             }
 
             AllSettings.getHotbarType().put(t1.getValueName()).save();

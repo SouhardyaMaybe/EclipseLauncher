@@ -9,7 +9,7 @@ import me.shadow.eclipselauncher.anim.animations.Animations
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.SettingsFragmentExperimentalBinding
 import me.shadow.eclipselauncher.setting.AllSettings
-import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
+import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SliderSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 
 class ExperimentalSettingsFragment :

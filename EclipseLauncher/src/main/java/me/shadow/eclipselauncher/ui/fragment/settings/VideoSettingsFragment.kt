@@ -26,7 +26,7 @@ import me.shadow.eclipselauncher.ui.dialog.LocalRendererPluginDialog
 import me.shadow.eclipselauncher.ui.dialog.TipDialog
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.BaseSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.ListSettingsWrapper
-import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SeekBarSettingsWrapper
+import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SliderSettingsWrapper
 import me.shadow.eclipselauncher.ui.fragment.settings.wrapper.SwitchSettingsWrapper
 import me.shadow.eclipselauncher.utils.EclipseTools
 import me.shadow.eclipselauncher.utils.file.FileTools
@@ -167,7 +167,7 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             ignoreNotchLauncher.setGone()
         }
 
-        SeekBarSettingsWrapper(
+        SliderSettingsWrapper(
             context,
             AllSettings.resolutionRatio,
             binding.resolutionRatioLayout,
@@ -176,7 +176,7 @@ class VideoSettingsFragment : AbstractSettingsFragment(R.layout.settings_fragmen
             binding.resolutionRatioValue,
             binding.resolutionRatio,
             "%"
-        ).setOnSeekBarProgressChangeListener { progress ->
+        ).setOnSliderProgressChangeListener { progress ->
             changeResolutionRatioPreview(progress)
         }
 

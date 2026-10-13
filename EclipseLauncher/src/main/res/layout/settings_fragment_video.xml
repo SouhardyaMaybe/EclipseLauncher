@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -241,16 +242,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_resolution_scaler_desc" />
 
-                <SeekBar
-                    android:id="@+id/resolutionRatio"
+                <com.google.android.material.slider.Slider                    android:id="@+id/resolutionRatio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/resolutionRatio_value"
                     android:layout_alignBottom="@+id/resolutionRatio_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/resolutionRatio_preview"
-                    android:max="300"
-                    android:min="25" />
+                    app:valueFrom="25"
+                    app:valueTo="300"
+                    app:value="25"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/resolutionRatio_preview"

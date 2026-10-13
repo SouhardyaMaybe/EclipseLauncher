@@ -5,7 +5,7 @@ import android.content.Intent
 import android.provider.DocumentsContract
 import android.view.View
 import android.widget.CompoundButton
-import android.widget.SeekBar
+import com.google.android.material.slider.Slider
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.databinding.ViewControlMenuBinding
 import me.shadow.eclipselauncher.setting.AllSettings
@@ -22,13 +22,13 @@ class ControlMenu(
     private val binding: ViewControlMenuBinding,
     private val controlLayout: ControlLayout,
     private val export: Boolean
-) : View.OnClickListener, SeekBar.OnSeekBarChangeListener, CompoundButton.OnCheckedChangeListener {
+) : View.OnClickListener, Slider.OnSliderChangeListener, Slider.OnSliderTouchListener, CompoundButton.OnCheckedChangeListener {
     init {
         val listener = this
         binding.apply {
             snapping.isChecked = AllSettings.buttonSnapping.getValue()
 
-            MenuUtils.initSeekBarValue(snappingDistance, AllSettings.buttonSnappingDistance.getValue(), snappingDistanceValue, "dp")
+            MenuUtils.initSliderValue(snappingDistance, AllSettings.buttonSnappingDistance.getValue(), snappingDistanceValue, "dp")
 
             addButton.setOnClickListener(listener)
             addDrawer.setOnClickListener(listener)
@@ -41,7 +41,8 @@ class ControlMenu(
 
             snappingLayout.setOnClickListener(listener)
             snapping.setOnCheckedChangeListener(listener)
-            snappingDistance.setOnSeekBarChangeListener(listener)
+            snappingDistance.addOnSliderChangeListener(listener)
+            snappingDistance.addOnSliderTouchListener(listener)
             snappingDistanceAdd.setOnClickListener(listener)
             snappingDistanceRemove.setOnClickListener(listener)
             selectDefault.setOnClickListener(listener)
@@ -83,8 +84,8 @@ class ControlMenu(
                 }
 
                 snappingLayout -> MenuUtils.toggleSwitchState(snapping)
-                snappingDistanceAdd -> MenuUtils.adjustSeekbar(snappingDistance, 1)
-                snappingDistanceRemove -> MenuUtils.adjustSeekbar(snappingDistance, -1)
+                snappingDistanceAdd -> MenuUtils.adjustSlider(snappingDistance, 1)
+                snappingDistanceRemove -> MenuUtils.adjustSlider(snappingDistance, -1)
                 selectDefault -> controlLayout.openSetDefaultDialog()
 
                 exit -> controlLayout.openExitDialog(exitListener)
@@ -93,24 +94,24 @@ class ControlMenu(
         }
     }
 
-    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        updateSeekbarValue(seekBar, !fromUser)
+    override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
+        updateSliderValue(slider, !fromUser)
     }
 
-    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+    override fun onStartTrackingTouch(slider: Slider) {}
 
-    override fun onStopTrackingTouch(seekBar: SeekBar?) {
-        updateSeekbarValue(seekBar, true)
+    override fun onStopTrackingTouch(slider: Slider) {
+        updateSliderValue(slider, true)
     }
 
-    private fun updateSeekbarValue(seekBar: SeekBar?, saveValue: Boolean) {
-        val progress = seekBar?.progress ?: 0
+    private fun updateSliderValue(slider: Slider?, saveValue: Boolean) {
+        val progress = slider?.value?.toInt() ?: 0
 
         binding.apply {
-            when (seekBar) {
+            when (slider) {
                 snappingDistance -> {
                     if (saveValue) AllSettings.buttonSnappingDistance.put(progress).save()
-                    MenuUtils.updateSeekbarValue(progress, snappingDistanceValue, "dp")
+                    MenuUtils.updateSliderValue(progress, snappingDistanceValue, "dp")
                 }
                 else -> {}
             }

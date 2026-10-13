@@ -4,28 +4,28 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.text.InputType
 import android.view.View
-import android.widget.SeekBar
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import com.google.android.material.slider.Slider
+import com.google.android.material.slider.Slider.OnSliderChangeListener
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.setting.unit.IntSettingUnit
 import me.shadow.eclipselauncher.ui.dialog.EditTextDialog
 
 @SuppressLint("UseSwitchCompatOrMaterialCode", "StringFormatInvalid")
-class SeekBarSettingsWrapper(
+class SliderSettingsWrapper(
     val context: Context,
     val unit: IntSettingUnit,
     val mainView: View,
     val titleView: TextView,
     val summaryView: TextView,
     val valueView: TextView,
-    val seekbarView: SeekBar,
+    val sliderView: Slider,
     val suffix: String,
     onStartListener: OnStartInit?
 ) : AbstractSettingsWrapper(mainView) {
-    private var listener: OnSeekBarProgressChangeListener? = null
+    private var listener: OnSliderProgressChangeListener? = null
 
     constructor(
         context: Context,
@@ -34,7 +34,7 @@ class SeekBarSettingsWrapper(
         titleView: TextView,
         summaryView: TextView,
         valueView: TextView,
-        seekbarView: SeekBar,
+        sliderView: Slider,
         suffix: String,
     ) : this(
         context,
@@ -43,7 +43,7 @@ class SeekBarSettingsWrapper(
         titleView,
         summaryView,
         valueView,
-        seekbarView,
+        sliderView,
         suffix,
         null
     )
@@ -51,35 +51,31 @@ class SeekBarSettingsWrapper(
     init {
         onStartListener?.onStart(this)
 
-        seekbarView.progress = unit.getValue()
-        valueView.background = ContextCompat.getDrawable(context, R.drawable.background_text)
-        setSeekBarValueTextView()
+        // Slider enforces valueFrom <= value <= valueTo (it throws instead of
+        // clamping like SeekBar did), so every write goes through a clamped setter.
+        sliderView.value = unit.getValue().toFloat().coerceIn(sliderView.valueFrom, sliderView.valueTo)
 
-        seekbarView.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            fun updateSeekbarValue(saveValue: Boolean) {
-                val progress = seekbarView.progress
+        valueView.background = ContextCompat.getDrawable(context, R.drawable.background_text)
+        setSliderValueTextView()
+
+        sliderView.addOnSliderChangeListener(object : OnSliderChangeListener {
+            fun updateSliderValue(saveValue: Boolean) {
+                val progress = sliderView.value.toInt()
 
                 listener?.onChange(progress)
                 if (saveValue) unit.put(progress).save()
-                setSeekBarValueTextView()
+                setSliderValueTextView()
                 checkShowRebootDialog(context)
             }
 
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                updateSeekbarValue(!fromUser)
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                updateSeekbarValue(true)
+            override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
+                updateSliderValue(!fromUser)
             }
         })
 
         mainView.setOnClickListener {
             EditTextDialog.Builder(context)
-                .setEditText(seekbarView.progress.toString())
+                .setEditText(sliderView.value.toInt().toString())
                 .setInputType(InputType.TYPE_CLASS_NUMBER)
                 .setTitle(titleView.text.toString())
                 .setMessage(summaryView.text.toString())
@@ -90,48 +86,49 @@ class SeekBarSettingsWrapper(
                     val value: Int
                     try {
                         value = string.toInt()
-                    } catch (e: NumberFormatException) {
-                        e("SeekBarSettingsWrapper", "The data is illegal", e)
+                    } catch (ex: NumberFormatException) {
+                        e("SliderSettingsWrapper", "The data is illegal", ex)
 
                         editBox.error = context.getString(R.string.generic_input_invalid)
                         return@setConfirmListener false
                     }
 
-                    if (value < seekbarView.min) {
+                    if (value < sliderView.valueFrom.toInt()) {
                         val minValue =
-                            String.format("%s %s", seekbarView.min, suffix)
+                            String.format("%s %s", sliderView.valueFrom.toInt(), suffix)
                         editBox.error =
                             context.getString(R.string.generic_input_too_small, minValue)
                         return@setConfirmListener false
                     }
-                    if (value > seekbarView.max) {
+                    if (value > sliderView.valueTo.toInt()) {
                         val maxValue =
-                            String.format("%s %s", seekbarView.max, suffix)
-                        editBox.error = context.getString(R.string.generic_input_too_big, maxValue)
+                            String.format("%s %s", sliderView.valueTo.toInt(), suffix)
+                        editBox.error =
+                            context.getString(R.string.generic_input_too_big, maxValue)
                         return@setConfirmListener false
                     }
 
-                    seekbarView.progress = value
+                    sliderView.value = value.toFloat().coerceIn(sliderView.valueFrom, sliderView.valueTo)
                     true
                 }.showDialog()
         }
     }
 
-    fun setSeekBarValueTextView() {
-        val text = "${seekbarView.progress} $suffix".trim()
+    fun setSliderValueTextView() {
+        val text = "${sliderView.value.toInt()} $suffix".trim()
         valueView.text = text
     }
 
-    fun setOnSeekBarProgressChangeListener(listener: OnSeekBarProgressChangeListener) {
+    fun setOnSliderProgressChangeListener(listener: OnSliderProgressChangeListener) {
         this.listener = listener
     }
 
-    // Some cases need to run before the seek bar is wrapped, e.g. adjusting the max or min value dynamically
+    // Some cases need to run before the slider is wrapped, e.g. adjusting the max or min value dynamically
     fun interface OnStartInit {
-        fun onStart(wrapper: SeekBarSettingsWrapper)
+        fun onStart(wrapper: SliderSettingsWrapper)
     }
 
-    fun interface OnSeekBarProgressChangeListener {
+    fun interface OnSliderProgressChangeListener {
         fun onChange(progress: Int)
     }
 }

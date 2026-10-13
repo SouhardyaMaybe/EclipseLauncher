@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -198,16 +199,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_max_download_threads_desc" />
 
-                <SeekBar
-                    android:id="@+id/maxDownloadThreads"
+                <com.google.android.material.slider.Slider                    android:id="@+id/maxDownloadThreads"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/maxDownloadThreads_value"
                     android:layout_alignBottom="@+id/maxDownloadThreads_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/maxDownloadThreads_value"
-                    android:max="128"
-                    android:min="1" />
+                    app:valueFrom="1"
+                    app:valueTo="128"
+                    app:value="1"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/maxDownloadThreads_value"
@@ -354,16 +356,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_animation_speed_desc" />
 
-                <SeekBar
-                    android:id="@+id/animationSpeed"
+                <com.google.android.material.slider.Slider                    android:id="@+id/animationSpeed"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/animationSpeed_value"
                     android:layout_alignBottom="@+id/animationSpeed_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/animationSpeed_value"
-                    android:max="1500"
-                    android:min="300" />
+                    app:valueFrom="300"
+                    app:valueTo="1500"
+                    app:value="300"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/animationSpeed_value"
@@ -403,16 +406,17 @@
                     android:layout_marginHorizontal="@dimen/_12sdp"
                     android:text="@string/setting_page_opacity_desc" />
 
-                <SeekBar
-                    android:id="@+id/pageOpacity"
+                <com.google.android.material.slider.Slider                    android:id="@+id/pageOpacity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignTop="@+id/pageOpacity_value"
                     android:layout_alignBottom="@+id/pageOpacity_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/pageOpacity_value"
-                    android:max="100"
-                    android:min="50" />
+                    app:valueFrom="50"
+                    app:valueTo="100"
+                    app:value="50"
+                    app:stepSize="1" />
 
                 <TextView
                     android:id="@+id/pageOpacity_value"
