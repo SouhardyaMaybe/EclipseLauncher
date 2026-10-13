@@ -22,8 +22,8 @@ import me.shadow.eclipselauncher.R;
  */
 public class TextProgressBar extends LinearLayout {
 
-    private final TextView mLabel;
-    private final LinearProgressIndicator mIndicator;
+    private TextView mLabel;
+    private LinearProgressIndicator mIndicator;
 
     public TextProgressBar(Context context) {
         super(context);
