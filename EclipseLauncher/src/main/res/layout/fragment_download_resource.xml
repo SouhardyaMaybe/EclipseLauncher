@@ -57,6 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/generic_loading"
+                android:textColor="?attr/colorOnSurfaceVariant"
                 android:textSize="@dimen/_14ssp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -70,6 +71,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_item"
             android:padding="@dimen/_12sdp"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="@dimen/_12ssp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
             app:layout_constraintEnd_toEndOf="@+id/recycler_view"
@@ -130,6 +133,9 @@
                 android:layout_marginHorizontal="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_12sdp"
                 android:text="@string/download_ui_search"
+                android:textColor="@color/black_or_white"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <me.shadow.eclipselauncher.ui.view.AnimEditText
@@ -191,6 +197,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/download_ui_mc_version"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="@dimen/_12ssp"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <me.shadow.eclipselauncher.ui.view.AnimTextView
@@ -219,6 +227,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/download_ui_platform"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="@dimen/_12ssp"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <com.skydoves.powerspinner.PowerSpinnerView
@@ -249,6 +259,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/download_ui_sort_by"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="@dimen/_12ssp"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <com.skydoves.powerspinner.PowerSpinnerView
@@ -279,6 +291,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/download_ui_category"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="@dimen/_12ssp"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <com.skydoves.powerspinner.PowerSpinnerView
@@ -309,6 +323,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/download_ui_modloader"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="@dimen/_12ssp"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <com.skydoves.powerspinner.PowerSpinnerView

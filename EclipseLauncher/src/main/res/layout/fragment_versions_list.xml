@@ -138,7 +138,9 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:text="@string/version_manager_title"
-                android:textColor="?attr/colorOnSurface"
+                android:textSize="@dimen/_16ssp"
+                android:textColor="@color/black_or_white"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -204,7 +206,8 @@
                 android:layout_marginStart="@dimen/_12sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:text="@string/profiles_path_title"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/black_or_white"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

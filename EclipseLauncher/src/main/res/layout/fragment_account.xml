@@ -186,7 +186,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="@color/black_or_white"
+                    android:textColor="?attr/colorOnSurfaceVariant"
                     android:textSize="@dimen/_12ssp"
                     android:visibility="gone" />
 

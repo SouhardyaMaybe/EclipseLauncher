@@ -49,6 +49,8 @@
                 android:text="@string/controls_nothing"
                 android:background="@drawable/background_item"
                 android:padding="@dimen/_12sdp"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="@dimen/_12ssp"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +64,9 @@
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:text="@string/custom_control_title"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="@color/black_or_white"
+                android:textSize="@dimen/_16ssp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -105,6 +109,8 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_12sdp"
                 android:text="@string/controls_tip_set_default"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="@dimen/_12ssp"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <include

@@ -97,7 +97,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:text="@string/controller_remapper_operating_mode"
-                    android:textColor="?android:attr/textColorPrimary" />
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="@dimen/_12ssp" />
 
                 <Spinner
                     android:id="@+id/gamepad_remapper_mode_spinner"

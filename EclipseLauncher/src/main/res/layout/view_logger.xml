@@ -20,6 +20,8 @@
         android:paddingHorizontal="@dimen/_25sdp"
         android:text="@string/log_view_label_log_output"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/black_or_white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/top_log_view"
         app:layout_constraintStart_toStartOf="@+id/top_log_view"
         app:layout_constraintTop_toTopOf="parent" />
