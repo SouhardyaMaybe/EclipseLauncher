@@ -101,6 +101,14 @@ class ControlMenu(
     override fun onStartTrackingTouch(slider: Slider) {}
 
     override fun onStopTrackingTouch(slider: Slider) {
+        // Track is continuous (stepSize 0) for a smooth bar; snap back to a whole
+        // number so the saved value stays an exact integer step.
+        val snapped = Math.round(slider.value)
+            .coerceIn(slider.valueFrom.toInt(), slider.valueTo.toInt())
+            .toFloat()
+        if (snapped != slider.value) {
+            slider.value = snapped
+        }
         updateSliderValue(slider, true)
     }
 

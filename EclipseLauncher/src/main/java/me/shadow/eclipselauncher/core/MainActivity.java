@@ -715,6 +715,12 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         }
         @Override public void onStartTrackingTouch(@NonNull Slider s) {}
         @Override public void onStopTrackingTouch(@NonNull Slider s) {
+            // Track is continuous (stepSize 0) for a smooth bar; snap back to a
+            // whole number so the saved value stays an exact integer step.
+            float snapped = Math.round(s.getValue());
+            if (snapped != s.getValue()) {
+                s.setValue(snapped);
+            }
             updateSliderValue(s, true);
         }
 

@@ -191,7 +191,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                     <TextView
                         android:id="@+id/resolution_scaler_add"
@@ -329,7 +329,7 @@
                     android:valueFrom="100"
                     android:valueTo="1000"
                     android:value="100"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                     <TextView
                         android:id="@+id/timeLongPressTrigger_add"
@@ -398,7 +398,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                     <TextView
                         android:id="@+id/mouse_speed_add"
@@ -551,7 +551,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                         <TextView
                             android:id="@+id/gyro_sensitivity_add"
@@ -710,7 +710,7 @@
                     android:valueFrom="40"
                     android:valueTo="100"
                     android:value="40"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                     <TextView
                         android:id="@+id/hotbar_width_add"
@@ -779,7 +779,7 @@
                     android:valueFrom="20"
                     android:valueTo="100"
                     android:value="20"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                     <TextView
                         android:id="@+id/hotbar_height_add"

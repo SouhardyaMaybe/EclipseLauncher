@@ -73,6 +73,22 @@ class SliderSettingsWrapper(
             }
         })
 
+        // stepSize is 0 so the track draws as a smooth bar instead of discrete
+        // ticks. Snap the thumb back to a whole number the moment the user lets
+        // go, so the stored setting still moves in exact +/-1 steps.
+        sliderView.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {}
+
+            override fun onStopTrackingTouch(slider: Slider) {
+                val snapped = Math.round(slider.value)
+                    .coerceIn(slider.valueFrom.toInt(), slider.valueTo.toInt())
+                    .toFloat()
+                if (snapped != slider.value) {
+                    slider.value = snapped
+                }
+            }
+        })
+
         mainView.setOnClickListener {
             EditTextDialog.Builder(context)
                 .setEditText(sliderView.value.toInt().toString())

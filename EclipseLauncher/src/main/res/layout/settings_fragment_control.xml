@@ -136,7 +136,7 @@
                     android:valueFrom="100"
                     android:valueTo="1000"
                     android:value="100"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/timeLongPressTrigger_value"
@@ -205,7 +205,7 @@
                     android:valueFrom="80"
                     android:valueTo="250"
                     android:value="80"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/buttonscale_value"
@@ -309,7 +309,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/mousescale_value"
@@ -359,7 +359,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/mousespeed_value"
@@ -522,7 +522,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/gyroSensitivity_value"
@@ -572,7 +572,7 @@
                     android:valueFrom="5"
                     android:valueTo="50"
                     android:value="5"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/gyroSampleRate_value"
@@ -799,7 +799,7 @@
                     android:valueFrom="50"
                     android:valueTo="200"
                     android:value="50"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/gamepad_deadzone_scale_value"

@@ -252,7 +252,7 @@
                     android:valueFrom="25"
                     android:valueTo="300"
                     android:value="25"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
                 <TextView
                     android:id="@+id/resolutionRatio_preview"

@@ -347,7 +347,7 @@
                     android:valueFrom="0"
                     android:valueTo="100"
                     android:value="0"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
         <TextView
             android:id="@+id/editStrokeWidth_textView_percent"
@@ -395,7 +395,7 @@
                     android:valueFrom="0"
                     android:valueTo="100"
                     android:value="0"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
         <TextView
             android:id="@+id/editCornerRadius_textView_percent"
@@ -426,7 +426,7 @@
                     android:valueFrom="0"
                     android:valueTo="100"
                     android:value="0"
-                    android:stepSize="1" />
+                    android:stepSize="0" />
 
         <TextView
             android:id="@+id/editButtonOpacity_textView_percent"

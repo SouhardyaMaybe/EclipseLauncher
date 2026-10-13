@@ -14,7 +14,10 @@ class MenuUtils {
          */
         @JvmStatic
         fun adjustSlider(slider: Slider, v: Int) {
-            slider.value = (slider.value + v).coerceIn(slider.valueFrom, slider.valueTo)
+            // Sliders use a continuous (smooth) track; round so the + / - buttons
+            // always land on a whole number.
+            val target = Math.round(slider.value + v).toFloat()
+            slider.value = target.coerceIn(slider.valueFrom, slider.valueTo)
         }
 
         /**

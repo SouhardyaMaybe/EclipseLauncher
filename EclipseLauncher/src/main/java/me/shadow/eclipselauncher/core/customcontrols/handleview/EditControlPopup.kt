@@ -559,6 +559,21 @@ class EditControlPopup {
             }
         })
 
+        // These sliders draw a continuous (smooth) track now, so snap the thumb
+        // back to a whole number on release to keep the integer +/-1 feel.
+        val snapToWholeNumber = object : Slider.OnSliderTouchListener {
+            override fun onStartTrackingTouch(slider: Slider) {}
+            override fun onStopTrackingTouch(slider: Slider) {
+                val snapped = Math.round(slider.value)
+                    .coerceIn(slider.valueFrom.toInt(), slider.valueTo.toInt())
+                    .toFloat()
+                if (snapped != slider.value) slider.value = snapped
+            }
+        }
+        mAlphaSlider.addOnSliderTouchListener(snapToWholeNumber)
+        mStrokeWidthSlider.addOnSliderTouchListener(snapToWholeNumber)
+        mCornerRadiusSlider.addOnSliderTouchListener(snapToWholeNumber)
+
         for (i in mKeycodeSpinners.indices) {
             val finalI = i
             mKeycodeTextviews[i]!!.setOnClickListener {
