@@ -2,7 +2,7 @@
 <resources>
     <style name="EclipseShapeAppearance" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">@dimen/_2sdp</item>
+        <item name="cornerSize">@dimen/_12sdp</item>
     </style>
 
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">

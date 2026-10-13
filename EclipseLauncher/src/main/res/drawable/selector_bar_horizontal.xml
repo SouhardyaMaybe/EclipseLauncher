@@ -2,7 +2,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape>
-            <corners android:radius="@dimen/_6sdp" />
+            <corners android:radius="@dimen/_12sdp" />
             <solid android:color="@color/button_background"/>
         </shape>
     </item>
