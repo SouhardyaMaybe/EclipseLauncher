@@ -1311,7 +1311,7 @@ public class GLFW
             return buttonData;
         }else return null;
     }
-    public static ByteBuffer glfwGetjoystickHats(int jid) {
+    public static ByteBuffer glfwGetJoystickHats(int jid) {
         return null;
     }
     public static boolean glfwJoystickIsGamepad(int jid) {
@@ -1528,5 +1528,101 @@ public class GLFW
     }
 
     public static void glfwRestoreWindow(@NativeType("GLFWwindow *") long window) {
+    }
+
+    // ------------------------------------------------------------------
+    // Android-friendly parity stubs. Minecraft 26.x and some Fabric mods
+    // call into these GLFW entry points. They are implemented against the
+    // single emulated monitor / single window model used throughout this
+    // class, so every one of them is a safe no-op or a sensible default.
+    // ------------------------------------------------------------------
+
+    private static long mGLFWWindowUserPointer;
+
+    /** Returns the emulated monitor's name, mirroring the device surface. */
+    @Nullable
+    @NativeType("char const *")
+    public static String glfwGetMonitorName(@NativeType("GLFWmonitor *") long monitor) {
+        return "Android Surface (" + mGLFWWindowWidth + "x" + mGLFWWindowHeight + ")";
+    }
+
+    public static void glfwSetMonitorUserPointer(@NativeType("GLFWmonitor *") long monitor, @NativeType("void *") long pointer) {
+    }
+
+    @NativeType("void *")
+    public static long glfwGetMonitorUserPointer(@NativeType("GLFWmonitor *") long monitor) {
+        return 0L;
+    }
+
+    public static void glfwSetWindowUserPointer(@NativeType("GLFWwindow *") long window, @NativeType("void *") long pointer) {
+        mGLFWWindowUserPointer = pointer;
+    }
+
+    @NativeType("void *")
+    public static long glfwGetWindowUserPointer(@NativeType("GLFWwindow *") long window) {
+        return mGLFWWindowUserPointer;
+    }
+
+    public static float glfwGetWindowOpacity(@NativeType("GLFWwindow *") long window) {
+        return 1.0f;
+    }
+
+    public static void glfwSetWindowOpacity(@NativeType("GLFWwindow *") long window, float opacity) {
+    }
+
+    public static void glfwIconifyWindow(@NativeType("GLFWwindow *") long window) {
+    }
+
+    public static void glfwSetGamma(@NativeType("GLFWmonitor *") long monitor, float gamma) {
+    }
+
+    public static void glfwSetWindowAspectRatio(@NativeType("GLFWwindow *") long window, int width, int height) {
+    }
+
+    public static void glfwInitAllocator(@NativeType("GLFWallocator *") GLFWAllocator allocator) {
+    }
+
+    public static void glfwResetPreeditText(@NativeType("GLFWwindow *") long window) {
+    }
+
+    @Nullable
+    public static IntBuffer glfwGetPreeditCandidate(@NativeType("GLFWwindow *") long window, int index) {
+        return null;
+    }
+
+    public static void glfwGetPreeditCursorRectangle(@NativeType("GLFWwindow *") long window,
+                                                     @NativeType("int *") @Nullable IntBuffer x,
+                                                     @NativeType("int *") @Nullable IntBuffer y,
+                                                     @NativeType("int *") @Nullable IntBuffer w,
+                                                     @NativeType("int *") @Nullable IntBuffer h) {
+    }
+
+    public static void glfwGetPreeditCursorRectangle(@NativeType("GLFWwindow *") long window,
+                                                     @Nullable @NativeType("int *") int[] x,
+                                                     @Nullable @NativeType("int *") int[] y,
+                                                     @Nullable @NativeType("int *") int[] w,
+                                                     @Nullable @NativeType("int *") int[] h) {
+    }
+
+    public static void glfwSetPreeditCursorRectangle(@NativeType("GLFWwindow *") long window, int x, int y, int w, int h) {
+    }
+
+    /** GL entry points are resolved by the platform OpenGL binding on Android, so no address is exposed here. */
+    @NativeType("void *")
+    public static long glfwGetProcAddress(@NativeType("char const *") ByteBuffer procname) {
+        return 0L;
+    }
+
+    @NativeType("void *")
+    public static long glfwGetProcAddress(@NativeType("char const *") CharSequence procname) {
+        return 0L;
+    }
+
+    public static long glfwCreateWindow(int width, int height, @Nullable @NativeType("char const *") ByteBuffer title, long monitor, long share) {
+        return glfwCreateWindow(width, height, title == null ? null : memUTF8(title), monitor, share);
+    }
+
+    public static boolean glfwExtensionSupported(@NativeType("char const *") ByteBuffer extension) {
+        return glfwExtensionSupported(memUTF8(extension));
     }
 }
