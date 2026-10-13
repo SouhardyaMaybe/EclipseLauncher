@@ -162,7 +162,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/title_view"
-                app:indeterminate="true" />
+                android:indeterminate="true" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

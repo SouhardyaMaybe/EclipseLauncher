@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.google.android.material.slider.Slider
-import com.google.android.material.slider.Slider.OnSliderChangeListener
+import com.google.android.material.slider.Slider.OnChangeListener
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.feature.log.Logging.e
 import me.shadow.eclipselauncher.setting.unit.IntSettingUnit
@@ -58,7 +58,7 @@ class SliderSettingsWrapper(
         valueView.background = ContextCompat.getDrawable(context, R.drawable.background_text)
         setSliderValueTextView()
 
-        sliderView.addOnSliderChangeListener(object : OnSliderChangeListener {
+        sliderView.addOnChangeListener(object : OnChangeListener {
             fun updateSliderValue(saveValue: Boolean) {
                 val progress = sliderView.value.toInt()
 

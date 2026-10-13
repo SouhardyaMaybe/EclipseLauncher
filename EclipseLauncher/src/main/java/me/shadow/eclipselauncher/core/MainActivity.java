@@ -541,7 +541,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
         else return super.dispatchTrackballEvent(ev);
     }
 
-    private class MenuSettingsInitListener implements View.OnClickListener, Slider.OnSliderChangeListener, Slider.OnSliderTouchListener, CompoundButton.OnCheckedChangeListener, OnSpinnerItemSelectedListener<HotbarType>, DrawerLayout.DrawerListener {
+    private class MenuSettingsInitListener implements View.OnClickListener, Slider.OnChangeListener, Slider.OnSliderTouchListener, CompoundButton.OnCheckedChangeListener, OnSpinnerItemSelectedListener<HotbarType>, DrawerLayout.DrawerListener {
         private final ViewGameMenuBinding binding;
 
         public MenuSettingsInitListener(ViewGameMenuBinding binding) {
@@ -580,7 +580,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.openFpsInfo.setOnCheckedChangeListener(this);
             this.binding.openFpsInfoLayout.setOnClickListener(this);
 
-            this.binding.resolutionScaler.addOnSliderChangeListener(this);            this.binding.resolutionScaler.addOnSliderTouchListener(this);
+            this.binding.resolutionScaler.addOnChangeListener(this);            this.binding.resolutionScaler.addOnSliderTouchListener(this);
             this.binding.resolutionScalerRemove.setOnClickListener(this);
             this.binding.resolutionScalerAdd.setOnClickListener(this);
 
@@ -590,11 +590,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.disableDoubleTap.setOnCheckedChangeListener(this);
             this.binding.disableDoubleTapLayout.setOnClickListener(this);
 
-            this.binding.timeLongPressTrigger.addOnSliderChangeListener(this);            this.binding.timeLongPressTrigger.addOnSliderTouchListener(this);
+            this.binding.timeLongPressTrigger.addOnChangeListener(this);            this.binding.timeLongPressTrigger.addOnSliderTouchListener(this);
             this.binding.timeLongPressTriggerRemove.setOnClickListener(this);
             this.binding.timeLongPressTriggerAdd.setOnClickListener(this);
 
-            this.binding.mouseSpeed.addOnSliderChangeListener(this);            this.binding.mouseSpeed.addOnSliderTouchListener(this);
+            this.binding.mouseSpeed.addOnChangeListener(this);            this.binding.mouseSpeed.addOnSliderTouchListener(this);
             this.binding.mouseSpeedRemove.setOnClickListener(this);
             this.binding.mouseSpeedAdd.setOnClickListener(this);
 
@@ -605,7 +605,7 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.enableGyro.setOnCheckedChangeListener(this);
             this.binding.enableGyroLayout.setOnClickListener(this);
 
-            this.binding.gyroSensitivity.addOnSliderChangeListener(this);            this.binding.gyroSensitivity.addOnSliderTouchListener(this);
+            this.binding.gyroSensitivity.addOnChangeListener(this);            this.binding.gyroSensitivity.addOnSliderTouchListener(this);
             this.binding.gyroSensitivityRemove.setOnClickListener(this);
             this.binding.gyroSensitivityAdd.setOnClickListener(this);
 
@@ -625,11 +625,11 @@ public class MainActivity extends BaseActivity implements ControlButtonMenuListe
             this.binding.hotbarType.setOnSpinnerItemSelectedListener(this);
             this.binding.hotbarType.selectItemByIndex(HotbarUtils.getCurrentTypeIndex());
 
-            this.binding.hotbarHeight.addOnSliderChangeListener(this);            this.binding.hotbarHeight.addOnSliderTouchListener(this);
+            this.binding.hotbarHeight.addOnChangeListener(this);            this.binding.hotbarHeight.addOnSliderTouchListener(this);
             this.binding.hotbarHeightRemove.setOnClickListener(this);
             this.binding.hotbarHeightAdd.setOnClickListener(this);
 
-            this.binding.hotbarWidth.addOnSliderChangeListener(this);            this.binding.hotbarWidth.addOnSliderTouchListener(this);
+            this.binding.hotbarWidth.addOnChangeListener(this);            this.binding.hotbarWidth.addOnSliderTouchListener(this);
             this.binding.hotbarWidthRemove.setOnClickListener(this);
             this.binding.hotbarWidthAdd.setOnClickListener(this);
         }

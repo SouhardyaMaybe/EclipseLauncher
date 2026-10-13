@@ -22,7 +22,7 @@ class ControlMenu(
     private val binding: ViewControlMenuBinding,
     private val controlLayout: ControlLayout,
     private val export: Boolean
-) : View.OnClickListener, Slider.OnSliderChangeListener, Slider.OnSliderTouchListener, CompoundButton.OnCheckedChangeListener {
+) : View.OnClickListener, Slider.OnChangeListener, Slider.OnSliderTouchListener, CompoundButton.OnCheckedChangeListener {
     init {
         val listener = this
         binding.apply {
@@ -41,7 +41,7 @@ class ControlMenu(
 
             snappingLayout.setOnClickListener(listener)
             snapping.setOnCheckedChangeListener(listener)
-            snappingDistance.addOnSliderChangeListener(listener)
+            snappingDistance.addOnChangeListener(listener)
             snappingDistance.addOnSliderTouchListener(listener)
             snappingDistanceAdd.setOnClickListener(listener)
             snappingDistanceRemove.setOnClickListener(listener)

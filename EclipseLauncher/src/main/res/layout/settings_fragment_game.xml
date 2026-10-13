@@ -373,10 +373,10 @@
                     android:layout_alignBottom="@+id/allocation_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/allocation_value"
-                    app:valueFrom="256"
-                    app:valueTo="8192"
-                    app:value="256"
-                    app:stepSize="1" />
+                    android:valueFrom="256"
+                    android:valueTo="8192"
+                    android:value="256"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/allocation_value"
@@ -608,10 +608,10 @@
                     android:layout_alignBottom="@+id/gameMenuInfoRefreshRate_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gameMenuInfoRefreshRate_value"
-                    app:valueFrom="500"
-                    app:valueTo="5000"
-                    app:value="500"
-                    app:stepSize="1" />
+                    android:valueFrom="500"
+                    android:valueTo="5000"
+                    android:value="500"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gameMenuInfoRefreshRate_value"
@@ -658,10 +658,10 @@
                     android:layout_alignBottom="@+id/gameMenuAlpha_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/gameMenuAlpha_value"
-                    app:valueFrom="20"
-                    app:valueTo="100"
-                    app:value="20"
-                    app:stepSize="1" />
+                    android:valueFrom="20"
+                    android:valueTo="100"
+                    android:value="20"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/gameMenuAlpha_value"

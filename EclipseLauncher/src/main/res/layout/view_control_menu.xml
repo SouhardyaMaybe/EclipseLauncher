@@ -213,10 +213,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/snapping_distance_remove"
                     android:layout_toStartOf="@id/snapping_distance_add"
-                    app:valueFrom="0"
-                    app:valueTo="30"
-                    app:value="0"
-                    app:stepSize="1" />
+                    android:valueFrom="0"
+                    android:valueTo="30"
+                    android:value="0"
+                    android:stepSize="1" />
 
                     <TextView
                         android:id="@+id/snapping_distance_add"

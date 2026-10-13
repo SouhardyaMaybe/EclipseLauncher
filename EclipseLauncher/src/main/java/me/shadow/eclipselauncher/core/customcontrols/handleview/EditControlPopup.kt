@@ -532,7 +532,7 @@ class EditControlPopup {
             }
         }
 
-        mAlphaSlider.addOnSliderChangeListener(object : Slider.OnSliderChangeListener {
+        mAlphaSlider.addOnChangeListener(object : Slider.OnChangeListener {
             override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
                 if (internalChanges) return
                 mCurrentlyEditedButton!!.getProperties().opacity = value / 100f
@@ -541,7 +541,7 @@ class EditControlPopup {
             }
         })
 
-        mStrokeWidthSlider.addOnSliderChangeListener(object : Slider.OnSliderChangeListener {
+        mStrokeWidthSlider.addOnChangeListener(object : Slider.OnChangeListener {
             override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
                 if (internalChanges) return
                 mCurrentlyEditedButton!!.getProperties().strokeWidth = value / 10f
@@ -550,7 +550,7 @@ class EditControlPopup {
             }
         })
 
-        mCornerRadiusSlider.addOnSliderChangeListener(object : Slider.OnSliderChangeListener {
+        mCornerRadiusSlider.addOnChangeListener(object : Slider.OnChangeListener {
             override fun onValueChange(slider: Slider, value: Float, fromUser: Boolean) {
                 if (internalChanges) return
                 mCurrentlyEditedButton!!.getProperties().cornerRadius = value

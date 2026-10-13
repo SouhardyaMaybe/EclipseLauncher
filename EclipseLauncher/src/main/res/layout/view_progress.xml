@@ -12,7 +12,7 @@
         android:layout_height="@dimen/_30sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:indeterminate="true"
+        android:indeterminate="true"
         app:indicatorSize="@dimen/_28sdp"
         app:trackThickness="@dimen/_4sdp" />
 

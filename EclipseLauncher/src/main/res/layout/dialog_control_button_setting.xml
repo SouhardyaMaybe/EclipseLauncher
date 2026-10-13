@@ -344,10 +344,10 @@
                     app:layout_constraintHorizontal_bias="0.538"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/editStrokeWidth_textView"
-                    app:valueFrom="0"
-                    app:valueTo="100"
-                    app:value="0"
-                    app:stepSize="1" />
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    android:value="0"
+                    android:stepSize="1" />
 
         <TextView
             android:id="@+id/editStrokeWidth_textView_percent"
@@ -392,10 +392,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/editCornerRadius_textView"
-                    app:valueFrom="0"
-                    app:valueTo="100"
-                    app:value="0"
-                    app:stepSize="1" />
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    android:value="0"
+                    android:stepSize="1" />
 
         <TextView
             android:id="@+id/editCornerRadius_textView_percent"
@@ -423,10 +423,10 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/editButtonOpacity_textView"
-                    app:valueFrom="0"
-                    app:valueTo="100"
-                    app:value="0"
-                    app:stepSize="1" />
+                    android:valueFrom="0"
+                    android:valueTo="100"
+                    android:value="0"
+                    android:stepSize="1" />
 
         <TextView
             android:id="@+id/editButtonOpacity_textView_percent"

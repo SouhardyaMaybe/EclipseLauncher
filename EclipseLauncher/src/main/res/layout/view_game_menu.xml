@@ -188,10 +188,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/resolution_scaler_remove"
                     android:layout_toStartOf="@id/resolution_scaler_add"
-                    app:valueFrom="25"
-                    app:valueTo="300"
-                    app:value="25"
-                    app:stepSize="1" />
+                    android:valueFrom="25"
+                    android:valueTo="300"
+                    android:value="25"
+                    android:stepSize="1" />
 
                     <TextView
                         android:id="@+id/resolution_scaler_add"
@@ -326,10 +326,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/timeLongPressTrigger_remove"
                     android:layout_toStartOf="@id/timeLongPressTrigger_add"
-                    app:valueFrom="100"
-                    app:valueTo="1000"
-                    app:value="100"
-                    app:stepSize="1" />
+                    android:valueFrom="100"
+                    android:valueTo="1000"
+                    android:value="100"
+                    android:stepSize="1" />
 
                     <TextView
                         android:id="@+id/timeLongPressTrigger_add"
@@ -395,10 +395,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/mouse_speed_remove"
                     android:layout_toStartOf="@id/mouse_speed_add"
-                    app:valueFrom="25"
-                    app:valueTo="300"
-                    app:value="25"
-                    app:stepSize="1" />
+                    android:valueFrom="25"
+                    android:valueTo="300"
+                    android:value="25"
+                    android:stepSize="1" />
 
                     <TextView
                         android:id="@+id/mouse_speed_add"
@@ -548,10 +548,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/gyro_sensitivity_remove"
                     android:layout_toStartOf="@id/gyro_sensitivity_add"
-                    app:valueFrom="25"
-                    app:valueTo="300"
-                    app:value="25"
-                    app:stepSize="1" />
+                    android:valueFrom="25"
+                    android:valueTo="300"
+                    android:value="25"
+                    android:stepSize="1" />
 
                         <TextView
                             android:id="@+id/gyro_sensitivity_add"
@@ -707,10 +707,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/hotbar_width_remove"
                     android:layout_toStartOf="@id/hotbar_width_add"
-                    app:valueFrom="40"
-                    app:valueTo="100"
-                    app:value="40"
-                    app:stepSize="1" />
+                    android:valueFrom="40"
+                    android:valueTo="100"
+                    android:value="40"
+                    android:stepSize="1" />
 
                     <TextView
                         android:id="@+id/hotbar_width_add"
@@ -776,10 +776,10 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/hotbar_height_remove"
                     android:layout_toStartOf="@id/hotbar_height_add"
-                    app:valueFrom="20"
-                    app:valueTo="100"
-                    app:value="20"
-                    app:stepSize="1" />
+                    android:valueFrom="20"
+                    android:valueTo="100"
+                    android:value="20"
+                    android:stepSize="1" />
 
                     <TextView
                         android:id="@+id/hotbar_height_add"

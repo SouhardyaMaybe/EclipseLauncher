@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.progressindicator.LinearProgressIndicator xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:indeterminate="true"
+    android:indeterminate="true"
     app:indicatorColor="?attr/colorPrimary"
     app:trackColor="?attr/colorSurfaceContainer"
     android:layout_width="match_parent"

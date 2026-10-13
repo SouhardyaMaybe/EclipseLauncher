@@ -206,10 +206,10 @@
                     android:layout_alignBottom="@+id/maxDownloadThreads_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/maxDownloadThreads_value"
-                    app:valueFrom="1"
-                    app:valueTo="128"
-                    app:value="1"
-                    app:stepSize="1" />
+                    android:valueFrom="1"
+                    android:valueTo="128"
+                    android:value="1"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/maxDownloadThreads_value"
@@ -363,10 +363,10 @@
                     android:layout_alignBottom="@+id/animationSpeed_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/animationSpeed_value"
-                    app:valueFrom="300"
-                    app:valueTo="1500"
-                    app:value="300"
-                    app:stepSize="1" />
+                    android:valueFrom="300"
+                    android:valueTo="1500"
+                    android:value="300"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/animationSpeed_value"
@@ -413,10 +413,10 @@
                     android:layout_alignBottom="@+id/pageOpacity_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/pageOpacity_value"
-                    app:valueFrom="50"
-                    app:valueTo="100"
-                    app:value="50"
-                    app:stepSize="1" />
+                    android:valueFrom="50"
+                    android:valueTo="100"
+                    android:value="50"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/pageOpacity_value"

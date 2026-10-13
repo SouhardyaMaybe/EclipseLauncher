@@ -249,10 +249,10 @@
                     android:layout_alignBottom="@+id/resolutionRatio_value"
                     android:layout_alignParentStart="true"
                     android:layout_toStartOf="@id/resolutionRatio_preview"
-                    app:valueFrom="25"
-                    app:valueTo="300"
-                    app:value="25"
-                    app:stepSize="1" />
+                    android:valueFrom="25"
+                    android:valueTo="300"
+                    android:value="25"
+                    android:stepSize="1" />
 
                 <TextView
                     android:id="@+id/resolutionRatio_preview"
