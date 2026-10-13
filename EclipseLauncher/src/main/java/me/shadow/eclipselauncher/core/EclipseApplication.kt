@@ -9,7 +9,6 @@ import android.os.Build
 import android.util.Log
 
 import androidx.appcompat.app.AppCompatDelegate
-import com.google.android.material.color.DynamicColors
 import androidx.core.app.ActivityCompat
 
 import me.shadow.eclipselauncher.InfoDistributor
@@ -34,9 +33,8 @@ class EclipseApplication : Application() {
     override fun onCreate() {
         ContextExecutor.setApplication(this)
 
-        // Material You: adopt the wallpaper's dynamic color scheme on Android 12+,
-        // falling back to the Eclipse palette baked into the theme otherwise
-        DynamicColors.applyToActivitiesIfAvailable(this)
+        // Two fixed themes only: the light and dark Eclipse violet palettes are
+        // baked into the DayNight resource sets, wallpaper colors are never adopted.
 
         // The uncaught-exception hook is the JVM's crash-reporting entry point and has no
         // coroutine equivalent, so it stays a plain Thread handler, exactly like before.

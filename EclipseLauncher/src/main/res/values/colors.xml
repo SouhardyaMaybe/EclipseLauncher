@@ -5,7 +5,7 @@
     <color name="background_app">#BDD9DD</color>
     <color name="background_app_error">#DDBDBD</color>
     <color name="background_overlay">#CFCFCF</color>
-    <color name="background_status_bar">#EDEDED</color>
+    <color name="background_status_bar">#E9E6F5</color>
     <color name="background_menu_top">#2D8B9C</color>
     <color name="background_menu_top_error">#9C2D2D</color>
     <color name="background_menu_element">#3299AB</color>
@@ -37,4 +37,38 @@
     <color name="icon_color">#151515</color>
 
     <color name="primary_text">#0E0E0E</color>
+
+    <!-- Fixed "Eclipse" violet palette, light mode.
+         These shadow material's m3_sys_color_light_* defaults so the app never
+         picks up dynamic wallpaper colors or the stock baseline palette. -->
+    <color name="m3_sys_color_light_primary">#5B4ACF</color>
+    <color name="m3_sys_color_light_on_primary">#FFFFFF</color>
+    <color name="m3_sys_color_light_primary_container">#DDD5FF</color>
+    <color name="m3_sys_color_light_on_primary_container">#140F5E</color>
+    <color name="m3_sys_color_light_secondary">#62558A</color>
+    <color name="m3_sys_color_light_on_secondary">#FFFFFF</color>
+    <color name="m3_sys_color_light_secondary_container">#E6DDFF</color>
+    <color name="m3_sys_color_light_on_secondary_container">#1D1550</color>
+    <color name="m3_sys_color_light_tertiary">#7A4F86</color>
+    <color name="m3_sys_color_light_on_tertiary">#FFFFFF</color>
+    <color name="m3_sys_color_light_tertiary_container">#FBDFFF</color>
+    <color name="m3_sys_color_light_on_tertiary_container">#31103A</color>
+    <color name="m3_sys_color_light_background">#F7F5FF</color>
+    <color name="m3_sys_color_light_on_background">#1B1B24</color>
+    <color name="m3_sys_color_light_surface">#F7F5FF</color>
+    <color name="m3_sys_color_light_on_surface">#1B1B24</color>
+    <color name="m3_sys_color_light_surface_variant">#E5E1F2</color>
+    <color name="m3_sys_color_light_on_surface_variant">#47445C</color>
+    <color name="m3_sys_color_light_surface_dim">#DAD7E6</color>
+    <color name="m3_sys_color_light_surface_bright">#FAF8FF</color>
+    <color name="m3_sys_color_light_surface_container_lowest">#FFFFFF</color>
+    <color name="m3_sys_color_light_surface_container_low">#F2F0FC</color>
+    <color name="m3_sys_color_light_surface_container">#ECEAF7</color>
+    <color name="m3_sys_color_light_surface_container_high">#E6E3F1</color>
+    <color name="m3_sys_color_light_surface_container_highest">#E1DEEB</color>
+    <color name="m3_sys_color_light_outline">#777390</color>
+    <color name="m3_sys_color_light_outline_variant">#C7C2DB</color>
+    <color name="m3_sys_color_light_inverse_surface">#31303B</color>
+    <color name="m3_sys_color_light_inverse_on_surface">#F5F1FA</color>
+    <color name="m3_sys_color_light_inverse_primary">#BEB1FF</color>
 </resources>
