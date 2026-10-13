@@ -35,36 +35,4 @@
 
     <color name="primary_text">#FFFFFF</color>
 
-    <!-- Fixed "Eclipse" violet palette, dark mode ("eclipse night").
-         Shadows material's m3_sys_color_dark_* defaults. -->
-    <color name="m3_sys_color_dark_primary">#B9ADFF</color>
-    <color name="m3_sys_color_dark_on_primary">#241C6B</color>
-    <color name="m3_sys_color_dark_primary_container">#403597</color>
-    <color name="m3_sys_color_dark_on_primary_container">#E4DFFF</color>
-    <color name="m3_sys_color_dark_secondary">#CBC3EB</color>
-    <color name="m3_sys_color_dark_on_secondary">#2C2450</color>
-    <color name="m3_sys_color_dark_secondary_container">#47406B</color>
-    <color name="m3_sys_color_dark_on_secondary_container">#E6DDFF</color>
-    <color name="m3_sys_color_dark_tertiary">#E8B8E4</color>
-    <color name="m3_sys_color_dark_on_tertiary">#42174A</color>
-    <color name="m3_sys_color_dark_tertiary_container">#5B2F63</color>
-    <color name="m3_sys_color_dark_on_tertiary_container">#FFD8FE</color>
-    <color name="m3_sys_color_dark_background">#131118</color>
-    <color name="m3_sys_color_dark_on_background">#E7E4F0</color>
-    <color name="m3_sys_color_dark_surface">#131118</color>
-    <color name="m3_sys_color_dark_on_surface">#E7E4F0</color>
-    <color name="m3_sys_color_dark_surface_variant">#464358</color>
-    <color name="m3_sys_color_dark_on_surface_variant">#C8C4DB</color>
-    <color name="m3_sys_color_dark_surface_dim">#131118</color>
-    <color name="m3_sys_color_dark_surface_bright">#393741</color>
-    <color name="m3_sys_color_dark_surface_container_lowest">#0E0C14</color>
-    <color name="m3_sys_color_dark_surface_container_low">#1B1922</color>
-    <color name="m3_sys_color_dark_surface_container">#1F1D27</color>
-    <color name="m3_sys_color_dark_surface_container_high">#2A2733</color>
-    <color name="m3_sys_color_dark_surface_container_highest">#35323F</color>
-    <color name="m3_sys_color_dark_outline">#918EA6</color>
-    <color name="m3_sys_color_dark_outline_variant">#47445C</color>
-    <color name="m3_sys_color_dark_inverse_surface">#E7E4F0</color>
-    <color name="m3_sys_color_dark_inverse_on_surface">#31303B</color>
-    <color name="m3_sys_color_dark_inverse_primary">#5B4ACF</color>
 </resources>
