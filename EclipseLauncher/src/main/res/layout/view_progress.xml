@@ -6,12 +6,15 @@
     android:layout_height="match_parent"
     android:background="@color/menu_overlay">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_generic_progressbar"
         android:layout_width="@dimen/_40sdp"
         android:layout_height="@dimen/_30sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:indeterminate="true"
+        app:indicatorSize="@dimen/_28sdp"
+        app:trackThickness="@dimen/_4sdp" />
 
     <TextView
         android:id="@+id/progress_textview"

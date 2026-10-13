@@ -21,7 +21,6 @@ class ProgressDialog(
         setContentView(binding.root)
         setCancelable(false)
 
-        binding.progressBar.setMax(1000)
         binding.cancelButton.setOnClickListener {
             if (!listener.onClick()) return@setOnClickListener
             dismiss()
@@ -41,12 +40,13 @@ class ProgressDialog(
     }
 
     fun updateProgress(progress: Double, total: Double) {
-        val doubleValue = progress / total * 1000
-        val intValue = doubleValue.toInt()
+        // Material indicators work on a 0..100 scale (the stock ProgressBar used 0..1000)
+        val doubleValue = progress / total * 100
+        val intValue = doubleValue.toInt().coerceIn(0, 100)
 
         binding.progressBar.apply {
             visibility = if (doubleValue > 0) View.VISIBLE else View.GONE
-            setProgress(intValue, AllSettings.animation.getValue())
+            setProgressCompat(intValue, AllSettings.animation.getValue())
         }
     }
 

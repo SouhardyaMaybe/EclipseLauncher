@@ -8,13 +8,13 @@
     android:paddingHorizontal="@dimen/_12sdp"
     android:minWidth="@dimen/dialog_min_width">
 
-    <ProgressBar
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progressView"
-        style="?android:attr/progressBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_12sdp"
-        android:progressTint="?attr/colorPrimary"
+        app:indicatorColor="?attr/colorPrimary"
+        app:indeterminate="true"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/textView"
         app:layout_constraintTop_toTopOf="@+id/textView" />
@@ -55,12 +55,11 @@
             app:layout_constraintHorizontal_weight="1.5"
             tools:ignore="HardcodedText" />
 
-        <ProgressBar
+        <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="0dp"
-            android:progressTint="?attr/colorPrimary"
-            android:progressBackgroundTint="?attr/colorSurfaceContainer"
+            app:indicatorColor="?attr/colorPrimary"
+            app:trackColor="?attr/colorSurfaceContainer"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/_4sdp"
             android:visibility="gone"

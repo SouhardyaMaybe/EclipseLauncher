@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ProgressBar xmlns:android="http://schemas.android.com/apk/res/android"
-    style="?android:attr/progressBarStyleHorizontal"
+<com.google.android.material.progressindicator.LinearProgressIndicator xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:indeterminate="true"
+    app:indicatorColor="?attr/colorPrimary"
+    app:trackColor="?attr/colorSurfaceContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:indeterminate="true"
-    android:padding="@dimen/_4sdp"
-    android:progressTint="?attr/colorPrimary"
-    android:progressBackgroundTint="?attr/colorSurfaceContainer">
-</ProgressBar>
+    android:padding="@dimen/_4sdp" />

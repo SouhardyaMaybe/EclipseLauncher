@@ -1,67 +1,81 @@
 package me.shadow.eclipselauncher.mcgui;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.widget.ProgressBar;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.StringRes;
-import androidx.core.content.res.ResourcesCompat;
+
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import me.shadow.eclipselauncher.R;
 
-public class TextProgressBar extends ProgressBar {
+/**
+ * Progress row used by {@link ProgressLayout}: a label beside a Material 3
+ * determinate indicator. Keeps the setText/setProgress/setTextPadding surface
+ * that ProgressLayout drives it with.
+ */
+public class TextProgressBar extends LinearLayout {
 
-    private int mTextPadding = 0;
-    public TextProgressBar(Context context) {super(context, null, android.R.attr.progressBarStyleHorizontal); init();}
+    private final TextView mLabel;
+    private final LinearProgressIndicator mIndicator;
 
-    public TextProgressBar(Context context, AttributeSet attrs) {super(context, attrs, android.R.attr.progressBarStyleHorizontal); init();}
+    public TextProgressBar(Context context) {
+        super(context);
+        init();
+    }
+
+    public TextProgressBar(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
     public TextProgressBar(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, android.R.attr.progressBarStyleHorizontal);
-        init();
-    }
-    public TextProgressBar(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, android.R.attr.progressBarStyleHorizontal, defStyleRes);
+        super(context, attrs, defStyleAttr);
         init();
     }
 
-    private Paint mTextPaint;
-    private String mText = "";
+    private void init() {
+        setOrientation(HORIZONTAL);
+        setGravity(Gravity.CENTER_VERTICAL);
 
-    private void init(){
-        setProgressDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.view_text_progressbar, getContext().getTheme()));
+        mLabel = new TextView(getContext());
+        mLabel.setSingleLine(true);
+        mLabel.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(R.dimen._11ssp));
+        mLabel.setPaintFlags(mLabel.getPaintFlags() | Paint.FAKE_BOLD_TEXT_FLAG);
+        mLabel.setTextColor(MaterialColors.getColor(this, R.attr.colorOnSurface));
+        mLabel.setPadding(0, 0, 0, 0);
+        addView(mLabel, new LayoutParams(0, LayoutParams.MATCH_PARENT, 2f));
+
+        mIndicator = new LinearProgressIndicator(getContext());
+        mIndicator.setIndeterminate(false);
+        mIndicator.setIndicatorColor(MaterialColors.getColor(this, R.attr.colorPrimary));
+        mIndicator.setTrackColor(MaterialColors.getColor(this, R.attr.colorSurfaceContainerHighest));
+        addView(mIndicator, new LayoutParams(0, LayoutParams.MATCH_PARENT, 1f));
+
         setProgress(0);
-        mTextPaint = new Paint();
-        mTextPaint.setColor(Color.WHITE);
-        mTextPaint.setFlags(Paint.FAKE_BOLD_TEXT_FLAG);
-        mTextPaint.setAntiAlias(true);
     }
 
-    @Override
-    protected synchronized void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        mTextPaint.setTextSize((float) ((getHeight()- getPaddingBottom() - getPaddingTop()) * 0.55));
-        mTextPaint.setColor(MaterialColors.getColor(this, R.attr.colorOnSurface));
-        int xPos = (int) Math.max(Math.min((getProgress() * getWidth() / getMax()) + mTextPadding, getWidth() - mTextPaint.measureText(mText) - mTextPadding) , mTextPadding);
-        int yPos = (int) ((getHeight() / 2) - ((mTextPaint.descent() + mTextPaint.ascent()) / 2)) ;
-
-        canvas.drawText(mText, xPos, yPos, mTextPaint);
+    /** 0..100, animated like every other Material indicator in the launcher. */
+    public final void setProgress(int progress) {
+        mIndicator.setProgressCompat(Math.max(0, Math.min(100, progress)), true);
     }
-
 
     public final void setText(@StringRes int resid) {
         setText(getContext().getResources().getText(resid).toString());
     }
 
-    public final void setText(String text){
-        mText = text;
-        invalidate();
+    public final void setText(String text) {
+        mLabel.setText(text);
     }
 
-    public final void setTextPadding(int padding){
-        mTextPadding = padding;
+    public final void setTextPadding(int padding) {
+        mLabel.setPadding(padding, 0, padding, 0);
     }
 }
