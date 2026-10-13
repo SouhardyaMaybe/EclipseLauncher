@@ -82,8 +82,8 @@ class PlayerModelView @JvmOverloads constructor(
     private val texturePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { isFilterBitmap = false }
     private val clipPath = Path()
     private val matrix = Matrix()
-    private val srcPoints = FloatArray(6)
-    private val dstPoints = FloatArray(6)
+    private val srcPoints = FloatArray(8)
+    private val dstPoints = FloatArray(8)
 
     init {
         rebuild()
@@ -329,18 +329,73 @@ class PlayerModelView @JvmOverloads constructor(
                 }
             }
 
-            // Two affine triangles cover the quad exactly
-            drawTriangle(
-                canvas, texture,
-                face.u0, face.v0, face.u1, face.v0, face.u1, face.v1,
-                px[b], py[b], px[b + 1], py[b + 1], px[b + 2], py[b + 2]
-            )
-            drawTriangle(
-                canvas, texture,
-                face.u0, face.v0, face.u1, face.v1, face.u0, face.v1,
-                px[b], py[b], px[b + 2], py[b + 2], px[b + 3], py[b + 3]
-            )
+            // Draw the whole quad in one perspective pass. Splitting it into two
+            // affine triangles leaves a hairline seam along the shared diagonal
+            // (the two halves approximate the perspective map independently, so
+            // their texture coords disagree there). A single projective mapping
+            // has no such seam.
+            if (!drawQuad(
+                    canvas, texture,
+                    face.u0, face.v0, face.u1, face.v1,
+                    px[b], py[b], px[b + 1], py[b + 1],
+                    px[b + 2], py[b + 2], px[b + 3], py[b + 3]
+                )
+            ) {
+                // Rare fallback: two affine triangles for a quad the perspective
+                // solve rejects (fully collapsed / degenerate).
+                drawTriangle(
+                    canvas, texture,
+                    face.u0, face.v0, face.u1, face.v0, face.u1, face.v1,
+                    px[b], py[b], px[b + 1], py[b + 1], px[b + 2], py[b + 2]
+                )
+                drawTriangle(
+                    canvas, texture,
+                    face.u0, face.v0, face.u1, face.v1, face.u0, face.v1,
+                    px[b], py[b], px[b + 2], py[b + 2], px[b + 3], py[b + 3]
+                )
+            }
         }
+    }
+
+    /**
+     * Texture-map one projected quad in a single pass. [setPolyToPoly] with four
+     * points builds a projective transform, so the bitmap is warped onto the
+     * screen-space quadrilateral exactly — no triangle split, no diagonal seam.
+     * Returns false only if the perspective solve rejects a degenerate quad, in
+     * which case the caller falls back to two affine triangles.
+     */
+    private fun drawQuad(
+        canvas: Canvas,
+        texture: Bitmap,
+        u0: Float, v0: Float, u1: Float, v1: Float,
+        q0x: Float, q0y: Float, q1x: Float, q1y: Float,
+        q2x: Float, q2y: Float, q3x: Float, q3y: Float
+    ): Boolean {
+        // Texture corners in the same TL, TR, BR, BL order as the screen quad
+        srcPoints[0] = u0; srcPoints[1] = v0
+        srcPoints[2] = u1; srcPoints[3] = v0
+        srcPoints[4] = u1; srcPoints[5] = v1
+        srcPoints[6] = u0; srcPoints[7] = v1
+
+        dstPoints[0] = q0x; dstPoints[1] = q0y
+        dstPoints[2] = q1x; dstPoints[3] = q1y
+        dstPoints[4] = q2x; dstPoints[5] = q2y
+        dstPoints[6] = q3x; dstPoints[7] = q3y
+
+        if (!matrix.setPolyToPoly(srcPoints, 0, dstPoints, 0, 4)) return false
+
+        clipPath.rewind()
+        clipPath.moveTo(q0x, q0y)
+        clipPath.lineTo(q1x, q1y)
+        clipPath.lineTo(q2x, q2y)
+        clipPath.lineTo(q3x, q3y)
+        clipPath.close()
+
+        canvas.save()
+        canvas.clipPath(clipPath)
+        canvas.drawBitmap(texture, matrix, texturePaint)
+        canvas.restore()
+        return true
     }
 
     private fun drawTriangle(
