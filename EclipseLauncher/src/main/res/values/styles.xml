@@ -18,6 +18,17 @@
         <item name="cornerSize">@dimen/_28sdp</item>
     </style>
 
+    <!-- Section headers for grouped settings/lists: small, bold, spaced and
+         uppercased so they read as modern category labels, not plain rows. -->
+    <style name="EclipseSectionHeader">
+        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.08</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
     <style name="AppTheme" parent="@style/Theme.Material3.DayNight.NoActionBar">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
@@ -27,7 +38,7 @@
         <item name="android:navigationBarColor">?attr/colorSurface</item>
         <item name="android:scrollbarThumbHorizontal">?attr/colorOutline</item>
         <item name="android:scrollbarThumbVertical">?attr/colorOutline</item>
-        <item name="android:textSize">@dimen/_12ssp</item>
+        <item name="android:textSize">@dimen/_13ssp</item>
         <item name="shapeAppearanceSmallComponent">@style/EclipseShapeAppearance</item>
         <item name="shapeAppearanceMediumComponent">@style/EclipseShapeMedium</item>
         <item name="shapeAppearanceLargeComponent">@style/EclipseShapeLarge</item>

@@ -23,6 +23,7 @@
             android:paddingVertical="@dimen/_12sdp">
 
             <TextView
+                style="@style/EclipseSectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
@@ -37,6 +38,7 @@
                 android:padding="@dimen/_12sdp">
 
                 <TextView
+                style="@style/EclipseSectionHeader"
                     android:id="@+id/disableGestures_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -175,6 +177,7 @@
                 android:background="?android:attr/selectableItemBackground">
 
                 <TextView
+                style="@style/EclipseSectionHeader"
                     android:id="@+id/buttonscale_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -279,6 +282,7 @@
                 android:background="?android:attr/selectableItemBackground">
 
                 <TextView
+                style="@style/EclipseSectionHeader"
                     android:id="@+id/mousescale_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -458,6 +462,7 @@
                 android:padding="@dimen/_12sdp">
 
                 <TextView
+                style="@style/EclipseSectionHeader"
                     android:id="@+id/enableGyro_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

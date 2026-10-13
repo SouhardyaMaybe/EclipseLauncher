@@ -23,6 +23,7 @@
             android:paddingVertical="@dimen/_12sdp">
 
             <TextView
+                style="@style/EclipseSectionHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/_12sdp"
