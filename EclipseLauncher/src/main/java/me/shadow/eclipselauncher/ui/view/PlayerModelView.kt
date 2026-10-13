@@ -78,7 +78,8 @@ class PlayerModelView @JvmOverloads constructor(
     private var lastX = 0f
     private var lastY = 0f
 
-    private val texturePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    // Nearest sampling keeps the skin's pixel art crisp at every rotation
+    private val texturePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { isFilterBitmap = false }
     private val clipPath = Path()
     private val matrix = Matrix()
     private val srcPoints = FloatArray(6)
@@ -156,9 +157,10 @@ class PlayerModelView @JvmOverloads constructor(
             skinBox(-4.25f, 19.75f, -2.25f, 0.25f, 32.25f, 2.25f, 0, 32, 4, 12, 4)
             skinBox(-0.25f, 19.75f, -2.25f, 4.25f, 32.25f, 2.25f, 0, 48, 4, 12, 4)
         }
-        // Cape, hung behind the shoulders; flipped so the decorated side faces outwards
+        // Cape, hung behind the shoulders; flipped so the decorated side faces outwards.
+        // The cape art starts at (1,1): the texture carries a 1px transparent border.
         cape?.let {
-            addBox(result, it, true, -5f, 8f, -3f, 5f, 24f, -2f, 0, 0, 10, 16, 1, true)
+            addBox(result, it, true, -5f, 8f, -3f, 5f, 24f, -2f, 1, 1, 10, 16, 1, true)
         }
         return result
     }

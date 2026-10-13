@@ -28,7 +28,10 @@ object SkinLoader {
                 Files.newInputStream(skin.toPath()).use { stream ->
                     val bitmap = BitmapFactory.decodeStream(stream)
                         ?: throw IOException("Failed to read the skin picture and try to parse it to a bitmap")
-                    return BitmapDrawable(context.resources, getAvatar(bitmap, size))
+                    return BitmapDrawable(context.resources, getAvatar(bitmap, size)).apply {
+                        // Nearest-neighbour keeps the pixel art crisp when scaled
+                        setFilterBitmap(false)
+                    }
                 }
             } catch (e: Exception) {
                 //Local skin loading failed, log it and try loading the default "steve" avatar later
@@ -42,7 +45,10 @@ object SkinLoader {
     private fun getDefaultAvatar(context: Context, size: Int): Drawable {
         val stream = context.assets.open("steve.png")
         val bitmap = BitmapFactory.decodeStream(stream)!!
-        return BitmapDrawable(context.resources, getAvatar(bitmap, size))
+        return BitmapDrawable(context.resources, getAvatar(bitmap, size)).apply {
+            // Nearest-neighbour keeps the pixel art crisp when scaled
+            setFilterBitmap(false)
+        }
     }
 
     @JvmStatic
