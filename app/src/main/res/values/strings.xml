@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eclipse Launcher</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_instances">Instances</string>
+    <string name="nav_discover">Discover</string>
+    <string name="nav_downloads">Downloads</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home -->
+    <string name="home_eyebrow">MINECRAFT: JAVA EDITION</string>
+    <string name="home_title">Eclipse</string>
+    <string name="home_subtitle">A quiet place to run Minecraft: Java Edition on Android.</string>
+    <string name="home_hero_title">No instance yet</string>
+    <string name="home_hero_body">Create an instance to choose a Minecraft version and a loader. The installer is not connected in this build.</string>
+    <string name="home_setup">Set up an instance</string>
+    <string name="home_status_shell">Shell only</string>
+    <string name="home_status_body">This build proves the app shell, theme, navigation and process boundaries. It does not install or launch Minecraft.</string>
+    <string name="home_truth_title">What is real here</string>
+    <string name="home_truth_body">The five destinations, the brand palette, the adaptive icon and the separate game and installer activities are real. Every value about a game, account or download will come from a verified source later, never from a placeholder.</string>
+
+    <!-- Instances -->
+    <string name="instances_title">Instances</string>
+    <string name="instances_body">Each instance will own a Minecraft version, a loader, a mod set and a worlds directory. Nothing has been created yet.</string>
+    <string name="instances_empty_title">No instances</string>
+    <string name="instances_empty_body">The instance editor arrives with the install pipeline. This screen does not pretend an instance exists.</string>
+
+    <!-- Discover -->
+    <string name="discover_title">Discover</string>
+    <string name="discover_body">Modrinth search will live here once the network and install layers exist. No project data is shown in this build.</string>
+    <string name="discover_empty_title">Discovery is not connected</string>
+    <string name="discover_empty_body">A search field that returns nothing would be a lie. This screen will appear when the Modrinth client and the install sheet are real.</string>
+
+    <!-- Downloads -->
+    <string name="downloads_title">Downloads</string>
+    <string name="downloads_body">Active, queued and finished transactions will be listed here, with the reason for every stop.</string>
+    <string name="downloads_empty_title">Nothing in the queue</string>
+    <string name="downloads_empty_body">Downloads are persisted transactions, not an in-memory spinner. The queue will survive a process death when the installer is wired up.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_dynamic_color">Use system colors</string>
+    <string name="settings_dynamic_color_summary">Off by default. The brand palette keeps Eclipse recognizable and preserves status contrast.</string>
+    <string name="settings_about">About</string>
+    <string name="settings_version">Version</string>
+    <string name="settings_license">License</string>
+    <string name="settings_license_value">Apache-2.0</string>
+    <string name="settings_source">Source</string>
+    <string name="settings_source_value">github.com/SouhardyaMaybe/EclipseLauncher</string>
+    <string name="settings_disclaimer">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</string>
+    <string name="settings_trademark">Eclipse Launcher is not affiliated with the Eclipse Foundation.</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_arc">Eclipse arc</string>
+</resources>

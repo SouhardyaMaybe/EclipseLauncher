@@ -23,7 +23,7 @@ Eclipse Launcher is an **original implementation with auditable provenance**. We
 
 | Component | Upstream | License | Our changes | Status |
 |---|---|---|---|---|
-| **EclipseLauncher app** | original | Apache-2.0 | all | planned |
+| **EclipseLauncher app** | original | Apache-2.0 | all | shell in progress |
 | **EclipseRuntime** | original | Apache-2.0 | all | planned |
 | **Sandpaper** | original | Apache-2.0 | all | planned |
 | **Sash** | original | Apache-2.0 | all | planned |
@@ -32,7 +32,7 @@ Eclipse Launcher is an **original implementation with auditable provenance**. We
 | **EclipseJRE** | [OpenJDK jdk25u](https://github.com/openjdk/jdk25u), tag `jdk-25.0.4+4` | GPL-2.0 + Classpath Exception | Android platform patches, jlink image, 16 KB link flags | **audit required** |
 | **EclipseNatives / LWJGL** | [LWJGL 3.4.3](https://github.com/LWJGL/lwjgl3) | BSD-3-Clause | Android platform target, `pw_` JNI bridge, EGL/GLES loading | **rebuild required** |
 | **EclipseNatives / OpenAL Soft** | [OpenAL Soft](https://github.com/kcat/openal-soft), pin `7f9c6de` | LGPL-2.0-or-later | Official OpenSL ES backend, Android build | **rebuild required** |
-| **EclipseSDL3** | [SDL 3.4.16](https://github.com/libsdl-org/SDL) | Zlib | Embeddable `dev.shadow` Java bridge, `pw_host` handover, big-core affinity | **cleanup required** |
+| **EclipseSDL3** | [SDL 3.4.16](https://github.com/libsdl-org/SDL) | Zlib | Embeddable `dev.shadow` Java bridge, `pw_host` handover, big-core affinity | cleanup pushed; CI validation pending |
 | **EclipseFFmpeg** | [FFmpeg 7.1.5](https://ffmpeg.org/) | LGPL-2.1+ or GPL-2.0+ depending on flags | Android build, plugin APK | optional; GPL build must be isolated |
 | **FreeType** | [freetype](https://gitlab.freedesktop.org/freetype/freetype), 2.14.3 | FTL or GPL-2.0 | Android build | shippable under FTL |
 | **Shaderc** | [google/shaderc](https://github.com/google/shaderc) | Apache-2.0 | Android build | shippable |
@@ -102,7 +102,7 @@ A release without a manifest is not a release.
 
 1. **EclipseJRE** builds from official `jdk25u`, but its Android patch set is a squashed diff containing OpenJDK, AOSP (Apache-2.0), BSD and other code. The origin of every hunk is not yet documented. **Do not publish a JRE release until the patch set is re-derived or fully attributed.**
 2. **EclipseNative** release `native-v1.1.0` is built from FCL forks. It is useful for bring-up but **not shippable** under this policy.
-3. **EclipseSDL3** `sdl3-v1.0.0` is built from upstream SDL 3.4.16 with original Eclipse changes and is the first component that passes the policy.
+3. **EclipseSDL3** `sdl3-v1.0.0` predates the `pw_host`/`dev.shadow` cleanup. The cleaned source is pushed and its CI is the gate; a release must be rebuilt from that commit before it can be consumed.
 4. **EclipseComponents** contains Cacio (GPL-2.0), MioLibPatcher (no license), MioFabricAgent (no source) and installer-agent (LGPL-3.0). It must be rewritten, not patched around.
 5. **16 KB alignment** of the published JRE and native AARs has not yet been verified. The launcher’s release gate will reject any `.so` whose `PT_LOAD` alignment is below `0x4000`, and any APK whose uncompressed `.so` entries are not 16 KB zip-aligned.
 

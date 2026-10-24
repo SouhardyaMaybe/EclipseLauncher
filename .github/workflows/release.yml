@@ -29,7 +29,7 @@ jobs:
     outputs:
       app: ${{ steps.check.outputs.app }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
       - id: check
@@ -41,21 +41,21 @@ jobs:
     if: needs.detect.outputs.app == 'true'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: "25"
-      - uses: android-actions/setup-android@v3
+      - uses: android-actions/setup-android@v4
       - name: Install SDK packages
         run: |
           yes | sdkmanager --licenses >/dev/null
           sdkmanager "platforms;android-36" "build-tools;36.0.0"
-      - uses: gradle/actions/setup-gradle@v4
+      - uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "9.4.0"
+          gradle-version: "9.6.0"
       - name: Require release signing material
         if: ${{ !inputs.dry_run }}
         env:
@@ -71,15 +71,10 @@ jobs:
           ECLIPSE_KEYSTORE_PASSWORD: ${{ secrets.ECLIPSE_KEYSTORE_PASSWORD }}
           ECLIPSE_KEY_ALIAS: ${{ secrets.ECLIPSE_KEY_ALIAS }}
           ECLIPSE_KEY_PASSWORD: ${{ secrets.ECLIPSE_KEY_PASSWORD }}
-        run: |
-          if [ -x ./gradlew ]; then
-            ./gradlew :app:assembleRelease --no-daemon --stacktrace
-          else
-            gradle :app:assembleRelease --no-daemon --stacktrace
-          fi
+        run: gradle :app:assembleRelease --no-daemon --stacktrace
       - name: 16 KB gate
         run: python3 scripts/check-elf-alignment.py --zip app/build/outputs/apk/release/app-release.apk
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: eclipse-launcher-release
           path: app/build/outputs/apk/release/*.apk
@@ -92,10 +87,10 @@ jobs:
     if: needs.detect.outputs.app == 'true' && !inputs.dry_run
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: eclipse-launcher-release
           path: dist

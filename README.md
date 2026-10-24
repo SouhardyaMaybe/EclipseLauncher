@@ -42,6 +42,22 @@ All JNI entry points use the **`pw_`** prefix and are registered through a singl
 
 ---
 
+## Current implementation
+
+The repository now contains the first executable shell:
+
+| Module | Contents |
+|---|---|
+| `:app` | `MainActivity`, Navigation 3 host, `AppContainer`, the five screens |
+| `:designsystem` | Brand palette, status tokens, type, shapes, paper card, status rule, arc |
+| `:core:common` | `Failure` taxonomy, `AppResult`, `EpochClock` |
+| `:core:model` | `InstanceSummary`, `InstanceId`, `LoaderKind` |
+| `:host` | `GameActivity` in `:game` and `InstallerActivity` in `:installer` |
+
+It is a shell, not a launcher: it installs nothing, authenticates nobody and launches no game. The screens say that plainly. The next milestone is the Phase 0 spike set in doc 12: JRE boot, SDL window/EGL, Vulkan probe, Sandpaper triangle and installer transaction.
+
+---
+
 ## Engineering rules
 
 1. **CI is the only build environment.** Every binary is produced by a pinned GitHub Actions workflow. A release is a tag plus a successful workflow run.
@@ -63,7 +79,7 @@ push / PR ──► CI: provenance, docs, Gradle build, native checks
 tag v*    ──► Release: assemble APK, sign, checksum, publish GitHub Release
 ```
 
-- CI runs on `ubuntu-24.04` with pinned JDK, NDK, CMake and Gradle versions.
+- CI runs on `ubuntu-24.04` with pinned JDK 25, Gradle 9.6.0, AGP 9.4.0 and Kotlin 2.4.21.
 - Native components are downloaded from pinned GitHub Releases by SHA-256; they are never rebuilt in the app repo.
 - Release signing uses repository secrets; debug builds use a CI-generated debug key.
 - Every APK is checked for 16 KB ELF alignment before publication; the manifest must declare `extractNativeLibs="true"` so HotSpot can `dlopen` real files.
@@ -75,9 +91,9 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 ## Status
 
 - Research dossier: chapters 00–14 complete; implementation gated on sign-off.
-- Infrastructure repos: existing; being cleaned to the official-upstream policy.
-- Launcher code: scaffold begins after the architecture sign-off.
-- No production APK has been released yet.
+- Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNative, EclipseJRE and EclipseComponents still need their official-upstream rework.
+- Launcher code: first shell scaffolded (`:app`, `:designsystem`, `:core:*`, `:host`); CI builds the debug APK.
+- No production APK has been released yet, and no release signing secrets are configured.
 
 ---
 
