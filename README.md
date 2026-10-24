@@ -28,12 +28,12 @@ The product promise:
 | Component | Repository / location | Responsibility | License |
 |---|---|---|---|
 | **EclipseLauncher** | this repo | Android app, UI, auth, installer, launch planner, instance manager | Apache-2.0 |
-| **EclipseJRE** | `SouhardyaMaybe/EclipseJRE` | OpenJDK 8/17/21/25 cross-built for Android; `libjvm.so`, modules, JLI | GPL-2.0 + Classpath Exception |
-| **EclipseNatives** | `SouhardyaMaybe/EclipseNative` | LWJGL 3 Android natives, OpenAL Soft, FreeType, Shaderc | BSD-3-Clause, LGPL-2.0+, Apache-2.0, FTL |
-| **EclipseSDL3** | `SouhardyaMaybe/EclipseSDL3` | SDL 3.4.x for Android with the Eclipse driver-handover seam | Zlib |
+| **EclipseJRE** | `SouhardyaMaybe/EclipseJRE` | OpenJDK 25 cross-built for Android; `libjvm.so`, jlink modules, headless `java.desktop` | GPL-2.0 + Classpath Exception |
+| **EclipseNatives** | `SouhardyaMaybe/EclipseNative` | Official-upstream LWJGL 3, OpenAL Soft, FreeType, Shaderc, SPIRV-Cross, VMA and STB built for Android | BSD-3-Clause, LGPL-2.0+, FTL, Apache-2.0 |
+| **EclipseSDL3** | `SouhardyaMaybe/EclipseSDL3` | SDL 3.4.x for Android with the embeddable `dev.shadow` Java bridge | Zlib |
 | **EclipseRuntime** | `runtime/` (this repo) | Component resolver, downloader, verifier, installer, rollback | Apache-2.0 |
-| **Sandpaper** | `sandpaper/` (this repo) | Renderer policy and translation layer: Vulkan, GLES, GL compatibility | Apache-2.0 |
-| **Sash** | `sash/` (this repo) | Minimal `java.awt` shim for Minecraft and mods, backed by Android | Apache-2.0 |
+| **Sandpaper** | `sandpaper/` (this repo) | Desktop GL 3.3 core on GLES 3.2 compatibility runtime, plus the Vulkan capability probe and backend policy | Apache-2.0 |
+| **Sash** | `sash/` (this repo) | *Deferred to v1.1.* Patches Android-backed `Toolkit`/`ImageIO` into `java.desktop`; v1 uses real headless AWT | Apache-2.0 |
 | **Foreman** | `foreman/` (this repo) | Forge/NeoForge installer engine and processor runner | Apache-2.0 |
 | **Crowbar** | `crowbar/` (this repo) | Deterministic library patchers, renamers and jar transforms | Apache-2.0 |
 | **EclipseFFmpeg** | `SouhardyaMaybe/EclipseFFmpeg` | Optional FFmpeg plugin for ReplayMod and video export | LGPL/GPL (optional plugin) |
@@ -46,7 +46,7 @@ All JNI entry points use the **`pw_`** prefix and are registered through a singl
 
 1. **CI is the only build environment.** Every binary is produced by a pinned GitHub Actions workflow. A release is a tag plus a successful workflow run.
 2. **No checked-in binaries.** APKs, AARs, JREs, natives and generated components are release assets, never repository content.
-3. **Official upstreams only.** OpenJDK, LWJGL, SDL, OpenAL Soft, Oboe, FreeType, Shaderc, SPIRV-Cross, VMA and FFmpeg are consumed from their official projects. No code from PojavLauncher, Amethyst, FCL, Zalith, or other launchers.
+3. **Official upstreams only.** OpenJDK, LWJGL, SDL, OpenAL Soft, FreeType, Shaderc, SPIRV-Cross, VMA and FFmpeg are consumed from their official projects at pinned revisions. No code from PojavLauncher, Amethyst, FCL, Zalith, or other launchers, and no GPU driver forks (Turnip, Zink) or namespace bypasses.
 4. **Original implementation.** The launcher, Sandpaper, Sash, Foreman, Crowbar and EclipseRuntime are written for this project. Third-party behavior is researched and documented; source code is not copied.
 5. **Provenance is auditable.** Every release carries `BUILD-MANIFEST.json`, `SHA256SUMS.txt`, and a component ledger with upstream URL, commit, toolchain and license.
 6. **Copyleft is isolated, not hidden.** OpenJDK and OpenAL are separate components with their notices and source links. Our Apache-2.0 code does not absorb copyleft code.
@@ -66,7 +66,7 @@ tag v*    ──► Release: assemble APK, sign, checksum, publish GitHub Releas
 - CI runs on `ubuntu-24.04` with pinned JDK, NDK, CMake and Gradle versions.
 - Native components are downloaded from pinned GitHub Releases by SHA-256; they are never rebuilt in the app repo.
 - Release signing uses repository secrets; debug builds use a CI-generated debug key.
-- Every APK is checked for 16 KB ELF alignment and zip alignment before publication.
+- Every APK is checked for 16 KB ELF alignment before publication; the manifest must declare `extractNativeLibs="true"` so HotSpot can `dlopen` real files.
 
 See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE.md`](PROVENANCE.md) for the component ledger.
 
@@ -74,7 +74,7 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 
 ## Status
 
-- Research dossier: chapters 00–03 complete; 04–14 in progress.
+- Research dossier: chapters 00–05 complete; 06–14 in progress.
 - Infrastructure repos: existing; being cleaned to the official-upstream policy.
 - Launcher code: scaffold begins after the architecture sign-off.
 - No production APK has been released yet.

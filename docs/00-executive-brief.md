@@ -34,11 +34,11 @@ A launcher is a small operating system for one game. The layers are:
 ├──────────────────────────────────────────────────────────────┤
 │ Launch planner: classpath, JVM args, natives, game args      │
 ├──────────────────────────────────────────────────────────────┤
-│ Game process: libeclipse-exec → libjvm.so → JLI_Launch       │
+│ Game process: JNI_CreateJavaVM → HotSpot 25 → Main.main     │
 ├──────────────────────────────────────────────────────────────┤
-│ Window/input: SDL3 (26.3+) or GLFW shim (≤26.2) → EGL       │
+│ Window/input: EclipseSDL3 3.4.x → EGL / Vulkan WSI          │
 ├──────────────────────────────────────────────────────────────┤
-│ Graphics: Vulkan (26.2+) or OpenGL via MobileGlues/GL4ES     │
+│ Graphics: native Vulkan 1.2, else Sandpaper (GL 3.3 → GLES) │
 ├──────────────────────────────────────────────────────────────┤
 │ Android: Surface, Audio, Input, Storage, Keystore, LMK       │
 └──────────────────────────────────────────────────────────────┘
@@ -102,7 +102,7 @@ The UI, installer, and mod manager are **large but well-understood**. The top th
 - Use **OpenJDK 25 mobile** (GPLv2+CE) as the runtime.
 - Use **LWJGL 3.4.3** (BSD-3) with Android patches and our own natives.
 - Use **SDL 3.4.x** (zlib) for the 26.3 window/input path.
-- Use **MobileGlues** (LGPL-2.1) and **NG-GL4ES** (MIT) as dynamically loaded renderer plugins.
+- Write **Sandpaper**, an original GL 3.3-core-on-GLES-3.2 compatibility runtime; no MobileGlues, NG-GL4ES, Zink or Turnip.
 - Do **not** copy FCL/Zalith (GPL-3.0) code. Study behavior, reimplement.
 - Keep the original code **Apache-2.0**; ship third-party notices and LGPL source/relink rights.
 
@@ -112,8 +112,8 @@ The UI, installer, and mod manager are **large but well-understood**. The top th
 :app process                          :game process
 ┌─────────────────────┐   Intent      ┌──────────────────────────┐
 │ Compose UI          │ ────────────► │ GameActivity + Surface   │
-│ ViewModels          │               │ libeclipse-exec.so       │
-│ Installer/Auth      │ ◄──────────── │ libjvm.so + JLI_Launch   │
+│ ViewModels          │               │ ART: SDL3 Java bridge    │
+│ Installer/Auth      │ ◄──────────── │ HotSpot 25: Minecraft    │
 │ Download service    │   logs/state  │ SDL3 + EGL/Vulkan        │
 └─────────────────────┘               └──────────────────────────┘
 ```
@@ -127,19 +127,16 @@ The UI, installer, and mod manager are **large but well-understood**. The top th
 
 ```
 Device probe:
-  Vulkan >= 1.2 + required features? ──yes──► Minecraft Vulkan backend
+  Vulkan 1.2 + all 26.3 extensions/features? ──yes──► Minecraft Vulkan backend
         │ no
         ▼
-  GLES 3.2 + good driver? ──yes──► MobileGlues (desktop GL → GLES)
+  GLES 3.2 present? ──yes──► Sandpaper (desktop GL 3.3 → GLES 3.2)
         │ no
         ▼
-  GLES 3.0 ──► NG-GL4ES (compatibility)
-        │ no
-        ▼
-  Explain why, offer Zink/ANGLE/advanced, reduce settings
+  Explain why; offer reduced settings and a compatibility screen
 ```
 
-Never show six renderer names on first launch. Show **“Recommended for your device”**, a one-line reason, and an Advanced door.
+Never show six renderer names on first launch. Show **“Recommended for your device”**, a one-line reason, and an Advanced door. There is no Zink, Turnip or ANGLE rung: v1 uses the system drivers only, and Sandpaper is the single GL fallback.
 
 ### 5.4 Auth policy
 

@@ -89,8 +89,8 @@ Amethyst is the community successor to PojavLauncher, forked from Pojav's `v3_op
 
 ### 3.4 Lessons for Eclipse
 
-- The `JLI_Launch` model works; keep it, but isolate it in a `:game` process.
-- Renderer plugins must be **dynamically loadable** and independently updatable.
+- The in-process JVM model works, but call `JNI_CreateJavaVM`, not `JLI_Launch`; isolate it in a `:game` process so crashes do not take the UI down.
+- Renderer plugins must be **dynamically loadable** and independently updatable; our v1 has one first-party GL fallback (Sandpaper), not a plugin zoo.
 - Do not let the compatibility matrix become a README claim; make it **runtime-detected**.
 
 ---

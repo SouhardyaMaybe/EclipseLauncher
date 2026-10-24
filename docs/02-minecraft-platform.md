@@ -322,9 +322,9 @@ A correct 26.3 launch vector looks like:
   --versionType release
 ```
 
-On Android we do **not** execute `<jre>/bin/java` as a child process. We load `libjli.so`, resolve `JLI_Launch`, and pass the same argument vector inside the `:game` process. This preserves the desktop launch contract while keeping Android lifecycle and surface ownership in native code.
+On Android we do **not** execute `<jre>/bin/java` as a child process. The v1 launcher `dlopen`s `libjvm.so` and calls `JNI_CreateJavaVM` with the same option vector, then invokes the main class in-process. This preserves the desktop launch contract while keeping Android lifecycle and surface ownership in native code. **Correction (doc 05):** the Pojav-era `JLI_Launch` route is not used, because `JLI_Launch` is the `bin/java` entry point and calls `exit()`; calling it would terminate `:game` before the launcher can flush logs or report a failure.
 
-**Observed:** Pojav/Amethyst use exactly this `dlopen("libjli.so") → dlsym("JLI_Launch") → JLI_Launch(argc, argv, …)` pattern. The Java side supplies `-Djava.home`, `-Djava.io.tmpdir`, `-Duser.home`, `-Dos.name=Linux`, `-Dos.version=Android-…`, `-Djava.library.path`, and the LWJGL/Vulkan library names.
+**Observed:** Pojav/Amethyst instead `dlopen("libjli.so") → dlsym("JLI_Launch") → JLI_Launch(argc, argv, …)`. Either way, the Java side supplies `-Djava.home`, `-Djava.io.tmpdir`, `-Duser.home`, `-Dos.name=Linux`, `-Dos.version=Android-…`, `-Djava.library.path`, and the LWJGL/Vulkan library names.
 
 ---
 

@@ -57,7 +57,7 @@ This dossier treats each layer with primary-source evidence, then proposes a pro
 | UI | Kotlin + Jetpack Compose + **Material 3 (1.4.x) + M3 Expressive**, Navigation 3, adaptive layouts | Current stable stack; M3 Expressive gives a differentiated, accessible visual language |
 | Process model | UI process + isolated `:game` process | JVM crashes, native driver crashes, and OOM kills must not take down the launcher |
 | Runtime | Custom **OpenJDK 25 mobile** per ABI, bundled or first-run downloaded | 26.3 requires Java 25; no official Android JRE exists |
-| Graphics | **Auto**: native Vulkan on capable devices, MobileGlues/NG-GL4ES OpenGL fallback, Zink advanced | Matches 26.3 direction without betting the product on experimental Vulkan |
+| Graphics | **Auto**: native Vulkan 1.2 when the probe passes, otherwise **Sandpaper** (desktop GL 3.3 → GLES 3.2); system drivers only | Matches 26.3's own backend selector without betting the product on driver replacement |
 | Auth | **OAuth 2.0 device code** with our own Entra public client; apply for AppID allowlist immediately | No redirect hijack surface, no client secret, best for touch/controller; allowlist is mandatory |
 | Content | Modrinth first; CurseForge via official API/key or import; no bundled game assets | Licensing and API terms; Modrinth has a clean public API and `.mrpack` format |
 | Scope | Phone/tablet first; controller + touch; no Bedrock, no piracy, no iOS | Focus; avoids legal and engineering sprawl |
@@ -81,7 +81,7 @@ This dossier treats each layer with primary-source evidence, then proposes a pro
 | 02 | [Minecraft platform](02-minecraft-platform.md) | Versions, 26.x changes, metadata, launch contract, Java, libraries, assets |
 | 03 | [Mod loaders and content](03-mod-loaders-and-content.md) | Fabric/Quilt/NeoForge/Forge, modpacks, APIs, install algorithms |
 | 04 | [Android platform](04-android-platform.md) | Storage, SAF, native code, 16 KB, Play, performance, thermals |
-| 05 | [Runtime and graphics](05-runtime-and-graphics.md) | JVM launch, EGL/SDL, renderers, Vulkan, audio, input |
+| 05 | [Runtime and graphics](05-runtime-and-graphics.md) | Two-VM model, EclipseJRE, JVM launch, SDL3, Vulkan, Sandpaper |
 | 06 | [Authentication and compliance](06-authentication.md) | Microsoft chain, AppID allowlist, tokens, EULA, branding |
 | 07 | [Install pipeline](07-install-pipeline.md) | Planner, downloader, integrity, recovery, modpack install |
 | 08 | [Product design](08-product-design.md) | Strategy, IA, flows, screens, onboarding, in-game overlay |
@@ -100,7 +100,7 @@ This dossier treats each layer with primary-source evidence, then proposes a pro
 Every non-obvious claim is labeled one of:
 
 - **Verified** — read from a primary source (Mojang JSON, Microsoft docs, Android docs, license text) on 2026-10-24.
-- **Observed** — read from a current open-source implementation (Amethyst, FCL, Zalith, MobileGlues, LWJGL).
+- **Observed** — read from a primary artifact or measured on a device (LWJGL native jars, `client-26.3.jar`, Amethyst/FCL releases, the API 36 test device).
 - **Inference** — reasoned from verified facts; needs a spike or device test.
 - **Open** — unknown or changing; tracked in the risk register.
 

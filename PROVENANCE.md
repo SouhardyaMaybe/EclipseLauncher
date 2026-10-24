@@ -31,11 +31,10 @@ Eclipse Launcher is an **original implementation with auditable provenance**. We
 | **Crowbar** | original | Apache-2.0 | all | planned |
 | **EclipseJRE** | [OpenJDK jdk25u](https://github.com/openjdk/jdk25u), tag `jdk-25.0.4+4` | GPL-2.0 + Classpath Exception | Android platform patches, jlink image, 16 KB link flags | **audit required** |
 | **EclipseNatives / LWJGL** | [LWJGL 3.4.3](https://github.com/LWJGL/lwjgl3) | BSD-3-Clause | Android platform target, `pw_` JNI bridge, EGL/GLES loading | **rebuild required** |
-| **EclipseNatives / OpenAL Soft** | [OpenAL Soft](https://github.com/kcat/openal-soft) | LGPL-2.0-or-later | Oboe backend, Android build | **rebuild required** |
-| **EclipseSDL3** | [SDL 3.4.16](https://github.com/libsdl-org/SDL) | Zlib | Eclipse driver handover (`eclipseexec`), big-core affinity, JNI bindings | shippable |
+| **EclipseNatives / OpenAL Soft** | [OpenAL Soft](https://github.com/kcat/openal-soft), pin `7f9c6de` | LGPL-2.0-or-later | Official OpenSL ES backend, Android build | **rebuild required** |
+| **EclipseSDL3** | [SDL 3.4.16](https://github.com/libsdl-org/SDL) | Zlib | Embeddable `dev.shadow` Java bridge, `pw_host` handover, big-core affinity | **cleanup required** |
 | **EclipseFFmpeg** | [FFmpeg 7.1.5](https://ffmpeg.org/) | LGPL-2.1+ or GPL-2.0+ depending on flags | Android build, plugin APK | optional; GPL build must be isolated |
-| **Oboe** | [google/oboe](https://github.com/google/oboe) | Apache-2.0 | none | shippable |
-| **FreeType** | [freetype](https://gitlab.freedesktop.org/freetype/freetype) | FTL or GPL-2.0 | Android build | shippable under FTL |
+| **FreeType** | [freetype](https://gitlab.freedesktop.org/freetype/freetype), 2.14.3 | FTL or GPL-2.0 | Android build | shippable under FTL |
 | **Shaderc** | [google/shaderc](https://github.com/google/shaderc) | Apache-2.0 | Android build | shippable |
 | **SPIRV-Cross** | [KhronosGroup/SPIRV-Cross](https://github.com/KhronosGroup/SPIRV-Cross) | Apache-2.0 | Android build | shippable |
 | **Vulkan Memory Allocator** | [GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator](https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator) | MIT | Android build | shippable |
@@ -49,7 +48,7 @@ These are present in older Eclipse infrastructure snapshots. They are **research
 | Component | Why it cannot ship | Disposition |
 |---|---|---|
 | **FCL-Team/lwjgl3** | Unofficial Android fork; violates the official-upstream rule; provenance and patch ownership unclear | Replace with official LWJGL 3.4.3 + our own Android platform patch |
-| **FCL-Team/OpenAL** | Unofficial fork; same problem | Replace with official OpenAL Soft + our own Oboe backend patch |
+| **FCL-Team/OpenAL** | Unofficial fork; same problem | Replace with official OpenAL Soft + the upstream OpenSL ES backend |
 | **MioLibPatcher** | No license file, no license statement; author retains all rights | Drop; implement the needed transform in **Crowbar** |
 | **MioFabricAgent** | No public source, no license; opaque binary | Drop; implement Fabric profile handling in **Foreman** |
 | **Cacio / caciocavallo** | GPL-2.0; large AWT/Swing backend; conflicts with the original-code policy | Replace with **Sash** |
@@ -68,7 +67,7 @@ Copyleft is not automatically a problem. **Hidden** copyleft is.
 - **OpenJDK** is GPL-2.0 + Classpath Exception. The Classpath Exception permits our Apache-2.0 launcher to link to the JVM. We publish the exact OpenJDK source, patches and build scripts for every JRE release.
 - **OpenAL Soft** is LGPL-2.0-or-later. We ship it as a separate shared library, publish its source and build scripts, and keep it dynamically linked so it can be replaced.
 - **FFmpeg** is LGPL-2.1+ by default; the current `--enable-gpl` build (x264/x265) is GPL-2.0+. It is an **optional plugin APK**, not part of the core launcher, and its source is published with the plugin.
-- **SDL3, LWJGL, Oboe, FreeType (FTL), Shaderc, SPIRV-Cross, VMA** are permissive and ship with their notices.
+- **SDL3, LWJGL, FreeType (FTL), Shaderc, SPIRV-Cross, VMA** are permissive and ship with their notices.
 
 No GPL/LGPL source is copied into the Apache-2.0 app source tree. No notice is removed. No license is renamed to “MIT” to make a directory look uniform.
 

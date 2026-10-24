@@ -900,7 +900,7 @@ Therefore:
 ```text
 if instance has sodium, iris, oculus, embeddium, rubidium,
    optifine, canvas, nvidium, vulkanmod, or a shader mod:
-     default renderer = OpenGL path (MobileGlues / NG-GL4ES / system GL)
+     default renderer = OpenGL path (Sandpaper GL 3.3 → GLES 3.2, or system GL for diagnostics)
      if user forces Minecraft Vulkan:
          warning: "Sodium/Iris/shader mods are built for OpenGL.
                    This instance will probably crash or render incorrectly."
