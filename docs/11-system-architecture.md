@@ -1170,7 +1170,7 @@ The 16 KB check is fail-closed: a component with any `PT_LOAD` segment below 16 
 | Navigation 3 | 1.2.0 |
 | NDK | r28c or newer |
 | CMake | pinned in `build-logic` |
-| `compileSdk` / `targetSdk` | 36 |
+| `compileSdk` / `targetSdk` | 37 / 36 |
 | `minSdk` | 26 |
 
 Every version lives in `gradle/libs.versions.toml`; convention plugins in `build-logic/` apply compiler options, Compose, lint and test config. No module repeats a version.

@@ -12,7 +12,7 @@
 |---|---|---|
 | Minimum SDK | **26** (Android 8.0) | Pointer capture, adaptive icons, modern audio; below this the JVM/native surface is not worth supporting |
 | Target SDK | **36** (Android 16) for v1; move to 37 when the runtime is ready | Play requires 36 from 2026-08-31; API 37 adds native-DCL, local-network and reflection restrictions |
-| Compile SDK | **36** | Matches AGP 9.x and the installed platform |
+| Compile SDK | **37** (Android 17) | Compose 1.12.1 and Navigation 3 1.2.0 require `minCompileSdk=37`; compiling against newer APIs does not change runtime behaviour |
 | ABI | **arm64-v8a** first; x86_64 for emulator; armeabi-v7a deferred | Java 25 + 16 KB + native stack is heavy; 32-bit is a separate engineering and memory problem |
 | Page size | **16 KB compliant** for every shipped `.so` and every uncompressed `.so` in the APK | Play deadline 2027-02-01; 16 KB devices already exist |
 | Storage | Instances in `getExternalFilesDir("instances")`; runtime in internal app storage; import/export via SAF | No broad storage permission; user-visible instance folder without `MANAGE_EXTERNAL_STORAGE` |
@@ -57,7 +57,7 @@ Android 17 (API 37) adds four constraints that hit a Minecraft launcher directly
 3. **`ACCESS_LOCAL_NETWORK` is a runtime permission.** LAN multiplayer and local discovery need it. It is in the `NEARBY_DEVICES` group, so users who granted another nearby permission may not see a second prompt.
 4. **Background audio is hardened.** Background playback/focus/volume changes require a foreground service with while-in-use capability (or exact alarms for `USAGE_ALARM`). Eclipse Launcher avoids the requirement entirely: when the game is not visible it pauses and stops audio, so `:game` never plays in the background and does not need a media-playback service type.
 
-**Inference:** targeting 37 immediately is unnecessary risk. Target 36 for v1, run an API 37 test matrix, and raise the target only after Fabric/NeoForge and the JRE pass.
+**Inference:** targeting 37 immediately is unnecessary risk. Target 36 for v1, run an API 37 test matrix, and raise the target only after Fabric/NeoForge and the JRE pass. **Compiling** against 37 is a separate, safe decision: the Compose 1.12.1 and Navigation 3 1.2.0 AARs declare `minCompileSdk=37`, and `compileSdk` only widens the API surface visible at build time. API 37 ships as the `platforms;android-37.0` package, with `37.1` and `37.2` as QPR increments; the build installs `37.0` so a QPR-only API cannot slip in.
 
 ---
 
@@ -277,7 +277,7 @@ EclipseSDL3 can pin the render thread to the SoC's big cores (`SDL_HINT_ECLIPSE_
 |---|---|---|
 | `minSdk` | 26 | API floor |
 | `targetSdk` | 36 | Play deadline; API 37 after testing |
-| `compileSdk` | 36 | AGP 9.x |
+| `compileSdk` | 37 | Required by Compose 1.12.1 / Navigation 3 1.2.0 AAR metadata; AGP 9.4 supports up to 37. Platform package `platforms;android-37.0` |
 | `android:appCategory` | `game` on the game activity/application | Large-screen orientation exemption; Game Mode |
 | `android:extractNativeLibs` | `true` | HotSpot's `dlopen` needs a real read-only file; the APK's native dir is extracted by the installer |
 | `android:largeHeap` | `false` | Does not help the JVM; hides memory problems |
