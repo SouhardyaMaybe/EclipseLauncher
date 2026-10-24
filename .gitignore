@@ -21,3 +21,7 @@ captures/
 # Local output
 dist/
 out/
+
+# Python verification scripts
+__pycache__/
+*.pyc
