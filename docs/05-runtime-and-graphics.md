@@ -176,14 +176,14 @@ The cost is a first-run download. The launcher shows the size, resumes it, verif
 ### 4.1 Sequence
 
 ```
-GameActivity.onCreate (ART)
+GameActivity.onCreate (ART, already in :game)
   ├─ System.load(nativeLibraryDir + "/libSDL3.so")
+  ├─ System.load(nativeLibraryDir + "/libeclipse_host.so")
   ├─ EclipseSDL.attach(this)
   ├─ setContentView(EclipseSurfaceView + Compose overlay)
-  └─ start GameService (process :game)
-        └─ on surfaceCreated:
+  └─ EclipseSurfaceView.surfaceCreated:
              ├─ EclipseSDL.nativeSetupJNI()          // captures ART's JavaVM
-             ├─ native pw_game_start(config)          // new native thread
+             ├─ native pw_host_start(config)          // new native thread
              │    ├─ chdir(instance/game)
              │    ├─ dup2(stdout/stderr -> logs/)
              │    ├─ dlopen(libjvm.so, RTLD_NOW|RTLD_GLOBAL)

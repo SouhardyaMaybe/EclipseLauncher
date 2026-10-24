@@ -13,7 +13,7 @@
 
 ## What this is
 
-Eclipse Launcher installs Minecraft: Java Edition, authenticates a Microsoft account, manages isolated instances and mods, and launches the game inside a bundled OpenJDK 25 runtime with a touch/gamepad-first interface.
+Eclipse Launcher installs Minecraft: Java Edition, authenticates a Microsoft account, manages isolated instances and mods, and launches the game inside a verified OpenJDK 25 runtime with a touch/gamepad-first interface.
 
 It is **not** a Bedrock launcher, a piracy tool, an offline-auth bypass, a server host, or a cheat client.
 
@@ -74,7 +74,7 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 
 ## Status
 
-- Research dossier: chapters 00–05 complete; 06–14 in progress.
+- Research dossier: chapters 00–14 complete; implementation gated on sign-off.
 - Infrastructure repos: existing; being cleaned to the official-upstream policy.
 - Launcher code: scaffold begins after the architecture sign-off.
 - No production APK has been released yet.

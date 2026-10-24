@@ -72,7 +72,7 @@ Each layer has a failure mode that looks like “the launcher is broken” to a 
 | 2 | **JRE 25 on Android** | No official Android build; custom OpenJDK port; bionic/SELinux/signal/AWT patches; per-ABI | Yes — engineering, but expensive |
 | 3 | **SDL3 + Vulkan integration** | Minecraft now owns the window via SDL3; Android surface, input, IME, gamepad, Vulkan WSI; experimental backend | Yes — but requires device spikes |
 | 4 | **Renderer/driver fragmentation** | Adreno/Mali/PowerVR/Xclipse; GLES 3.x; Vulkan 1.1 vs 1.2; thermal throttling | Partly — auto-detection + fallbacks |
-| 5 | **Distribution policy** | Play forbids downloading executable code outside Play | Yes — choose direct/F-Droid distribution |
+| 5 | **Distribution policy** | Play forbids downloading executable code outside Play | Yes — ship signed GitHub Releases and a direct APK; F-Droid later, separately reviewed |
 
 The UI, installer, and mod manager are **large but well-understood**. The top three are the schedule.
 
@@ -100,7 +100,7 @@ The UI, installer, and mod manager are **large but well-understood**. The top th
 
 - Write the app, installer, auth, launcher planner, and UI from scratch in Kotlin.
 - Use **OpenJDK 25 mobile** (GPLv2+CE) as the runtime.
-- Use **LWJGL 3.4.3** (BSD-3) with Android patches and our own natives.
+- Use **LWJGL 3.4.3** (BSD-3) with Android builds of the official native libraries.
 - Use **SDL 3.4.x** (zlib) for the 26.3 window/input path.
 - Write **Sandpaper**, an original GL 3.3-core-on-GLES-3.2 compatibility runtime; no MobileGlues, NG-GL4ES, Zink or Turnip.
 - Do **not** copy FCL/Zalith (GPL-3.0) code. Study behavior, reimplement.
@@ -145,14 +145,14 @@ Never show six renderer names on first launch. Show **“Recommended for your de
 - Then Xbox Live → XSTS → `login_with_xbox` → entitlements → profile.
 - Store only the refresh token, encrypted with an Android Keystore key.
 - **Apply for Mojang AppID approval in Phase 0.** Without it, the auth chain ends in 403.
-- Demo mode is supported; piracy/offline auth is not.
+- Demo mode is a candidate only if 26.3 accepts `--demo` without a real token; piracy and offline authentication are not supported either way.
 
 ### 5.5 Distribution
 
-- GitHub Releases (signed APK + SHA-256 + changelog).
-- F-Droid (if we can meet its reproducibility/no-blob constraints; the JRE is the hard part).
-- Direct APK with in-app update check (download + `PackageInstaller`, user consent).
+- GitHub Releases (signed APK + SHA-256 + SBOM + changelog).
+- Direct APK with an in-app update check (download + certificate/SHA-256 verification + `PackageInstaller`, user consent).
 - **No Play at launch.** Revisit only with a legal opinion and a bundled-everything variant.
+- **F-Droid later, as a separately reviewed flavor.** Its no-blob/reproducibility rules conflict with a downloaded JRE, so it is not a v1 promise.
 
 ---
 
@@ -165,13 +165,13 @@ Never show six renderer names on first launch. Show **“Recommended for your de
 | 0 | Research sign-off, AppID application, JRE/SDL/Vulkan spikes | 3–4 weeks |
 | 1 | App shell, design system, metadata, installer, downloads, instances | 5–7 weeks |
 | 2 | JVM 25 launch, LWJGL/SDL window, vanilla 26.3, logs | 6–8 weeks |
-| 3 | Auth + accounts + demo mode + AppID integration | 3–4 weeks |
+| 3 | Auth + accounts + AppID integration | 3–4 weeks |
 | 4 | Fabric/Quilt/NeoForge/Forge, Modrinth modpacks, content browser | 5–7 weeks |
 | 5 | Renderer matrix, Vulkan auto, controls editor, overlay, performance | 6–8 weeks |
 | 6 | Beta, hardening, docs, release | 4–5 weeks |
 | **Total** | | **32–43 weeks** (8–10 months) |
 
-A solo developer should expect **12–18 months** for the same scope, or a reduced v1 (vanilla + Fabric + one renderer) in **6–9 months**.
+A solo developer should expect **14–18 months** for the same scope, or a reduced v1 (vanilla + Fabric + Vulkan-first) in **9–12 months**.
 
 ### 6.2 Cost drivers
 
@@ -203,7 +203,7 @@ Mojang's notice: new third-party apps must request access via the review form; e
 2. Publish a real website/privacy policy/support contact.
 3. Submit the AppID review form with client ID, tenant ID, website, justification, ownership-verification description.
 4. Wait for weekly review; do not resubmit repeatedly.
-5. In parallel, build demo mode and the installer so the product is testable without auth.
+5. In parallel, build the installer and a no-auth test path with a stub main class so the product is testable without auth.
 
 **Fallback if denied:** the product cannot ship public Microsoft auth. Options: appeal with evidence; pivot to a “bring your own approved AppID” enterprise/developer build (not consumer-friendly); or stop. Do not ship a bypass or borrow another launcher's client ID.
 
@@ -211,7 +211,7 @@ Mojang's notice: new third-party apps must request access via the review form; e
 
 Play's policy text is explicit: apps may not download executable code (dex, JAR, .so) from a source other than Play, except code that runs in a VM/interpreter providing indirect Android API access. A Minecraft launcher downloads `client.jar` and native runtime components. The VM exception is arguable but not a safe assumption. [S13]
 
-**Actions:** ship direct/F-Droid; keep the APK self-contained where possible; publish hashes/signatures; provide an in-app updater with explicit consent; revisit Play only with counsel.
+**Actions:** ship signed GitHub Releases and a direct APK; keep the APK self-contained where possible; publish hashes/signatures; provide an in-app updater with explicit consent; revisit Play only with counsel.
 
 ---
 
@@ -225,11 +225,11 @@ EclipseLauncher's design thesis:
 2. **Progressive disclosure.** Auto by default; advanced settings behind a clearly labeled door, with explanations.
 3. **Evidence, not options.** “Vulkan is unavailable because your driver lacks `VK_KHR_push_descriptor`” beats a disabled toggle.
 4. **Recovery is a feature.** Every error screen has: what happened, why, what we tried, and one recommended fix.
-5. **Calm visual language.** Dark-first, warm solar accent, generous spacing, expressive but not noisy motion.
+5. **Calm visual language.** Warm paper-and-ink surfaces, one amber accent, generous spacing, expressive but not noisy motion.
 6. **Touch and controller are equal citizens.** 48 dp targets, safe areas, focus order, no hover-only affordances.
 7. **Privacy is visible.** “Your token is encrypted on this device; we never see your password” is part of onboarding, not a policy page.
 
-Visual direction: **“solar eclipse”** — a dark disk, a thin corona ring, warm amber and cool violet accents; rounded expressive shapes; restrained motion; no Minecraft textures or logos.
+Visual direction: **“field instrument”** — warm neutral surfaces, deep ink, a thin eclipse arc, amber primary and teal secondary; rounded expressive shapes; restrained motion; no Minecraft textures or logos. Dynamic color is an opt-in, not the default.
 
 ---
 
@@ -252,10 +252,10 @@ Visual direction: **“solar eclipse”** — a dark disk, a thin corona ring, w
 ## 10. What we need from the user before scaffolding
 
 1. **License choice:** Apache-2.0 clean-room (recommended) vs GPL-3.0 ecosystem reuse.
-2. **Distribution:** direct/F-Droid only (recommended) vs attempt Play later.
+2. **Distribution:** GitHub Releases + direct APK (recommended), F-Droid later, no Play at launch.
 3. **Auth applicant:** who owns the Entra tenant/domain and will submit the AppID form.
 4. **Device priority:** arm64-only v1 (recommended) vs arm64 + armeabi-v7a + x86_64.
-5. **Design direction:** approve the “solar eclipse / calm dashboard” thesis and the Home/Instance/Downloads IA.
+5. **Design direction:** approve the “field instrument” thesis and the Home/Instances/Discover/Downloads/Settings IA.
 6. **Scope:** vanilla + Fabric + Modrinth for v1 (recommended) vs all loaders/CurseForge at launch.
 
 If these are accepted, Phase 0 starts with the five spikes and the AppID submission — not with UI code.

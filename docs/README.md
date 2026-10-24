@@ -1,6 +1,6 @@
 # EclipseLauncher — Research Dossier
 
-**Status:** research complete enough for architecture sign-off. No production code has been written.
+**Status:** dossier complete (chapters 00–14) and ready for architecture sign-off. No production code has been written.
 **Research date:** 2026-10-24
 **Target:** Android (phone, tablet, foldable, Chromebook; controller and touch first)
 **Game target:** Minecraft: Java Edition, current release **26.3** (2026-09-15) and current snapshot **26.4-snapshot-5** (2026-10-20)
@@ -36,7 +36,7 @@ This dossier treats each layer with primary-source evidence, then proposes a pro
 
 5. **New third-party apps need Mojang AppID approval.** Since 2023, Mojang manually allowlists new applications that call Java Edition game service APIs. Unapproved Entra apps receive **HTTP 403 “Invalid app registration”** at `login_with_xbox`. Approval is weekly and requires ownership verification, a real app identity, and a compliant name. This is a **go/no-go gate**, not a paperwork detail. [Mojang notice](https://help.minecraft.net/hc/en-us/articles/16254801392141), [review form](https://aka.ms/mce-reviewappid), [2026 Q&A report](https://learn.microsoft.com/en-my/answers/questions/5984225/minecraft-services-http-403-invalid-app-registrati)
 
-6. **Google Play is a poor fit.** Play's Device and Network Abuse policy forbids downloading executable code (dex/JAR/.so) from outside Play, with a narrow VM/interpreter exception. A launcher downloads `client.jar` and native runtimes by design. Distributing on Play would require a legal/policy review and likely a bundled-everything design; the realistic channels are **GitHub Releases, F-Droid, and direct APK**. [Play policy](https://support.google.com/googleplay/android-developer/answer/16559646)
+6. **Google Play is a poor fit.** Play's Device and Network Abuse policy forbids downloading executable code (dex/JAR/.so) from outside Play, with a narrow VM/interpreter exception. A launcher downloads `client.jar` and native runtimes by design. Distributing on Play would require a legal/policy review and likely a bundled-everything design; the v1 channels are **GitHub Releases and a direct APK**, with F-Droid only as a later, separately reviewed flavor. [Play policy](https://support.google.com/googleplay/android-developer/answer/16559646)
 
 7. **Android 16 / target API 36 and 16 KB pages are mandatory for Play, and good hygiene regardless.** New apps and updates must target API 36 from 2026-08-31; 16 KB-compatible 64-bit native code is required for Play updates from 2027-02-01. AGP 8.5.1+ and NDK r28+ handle ELF alignment; every `.so` we ship (JVM, LWJGL, SDL3, renderers, OpenAL) must comply. [target API](https://developer.android.com/google/play/requirements/target-sdk), [16 KB](https://developer.android.com/guide/practices/page-sizes)
 
@@ -52,14 +52,14 @@ This dossier treats each layer with primary-source evidence, then proposes a pro
 
 | Decision | Recommendation | Why |
 |---|---|---|
-| Distribution | GitHub Releases + F-Droid + direct APK; **no Play at launch** | Play executable-code policy conflicts with the core product; avoids 16 KB/target-SDK deadline pressure for v1 while still meeting both technically |
+| Distribution | GitHub Releases + direct APK; **F-Droid later, no Play at launch** | Play executable-code policy conflicts with the core product; F-Droid's no-blob/reproducibility rules need a separate flavor because the JRE is downloaded |
 | License | **Apache-2.0** for original code; LGPL/MIT components dynamically linked with notices | Clean-room avoids GPL contamination from FCL/Zalith; permissive core invites contributors and OEM/community reuse |
 | UI | Kotlin + Jetpack Compose + **Material 3 (1.4.x) + M3 Expressive**, Navigation 3, adaptive layouts | Current stable stack; M3 Expressive gives a differentiated, accessible visual language |
 | Process model | UI process + isolated `:game` process | JVM crashes, native driver crashes, and OOM kills must not take down the launcher |
-| Runtime | Custom **OpenJDK 25 mobile** per ABI, bundled or first-run downloaded | 26.3 requires Java 25; no official Android JRE exists |
+| Runtime | EclipseJRE, a custom **OpenJDK 25** per ABI, downloaded and installed as a verified read-only component | 26.3 requires Java 25; no official Android JRE exists, and a 120–180 MB bundled APK is not the default |
 | Graphics | **Auto**: native Vulkan 1.2 when the probe passes, otherwise **Sandpaper** (desktop GL 3.3 → GLES 3.2); system drivers only | Matches 26.3's own backend selector without betting the product on driver replacement |
 | Auth | **OAuth 2.0 device code** with our own Entra public client; apply for AppID allowlist immediately | No redirect hijack surface, no client secret, best for touch/controller; allowlist is mandatory |
-| Content | Modrinth first; CurseForge via official API/key or import; no bundled game assets | Licensing and API terms; Modrinth has a clean public API and `.mrpack` format |
+| Content | **Modrinth only in v1**; CurseForge deferred to v1.1; no bundled game assets | Licensing and API terms; Modrinth has a clean public API and `.mrpack` format |
 | Scope | Phone/tablet first; controller + touch; no Bedrock, no piracy, no iOS | Focus; avoids legal and engineering sprawl |
 
 **Go/no-go gates**
