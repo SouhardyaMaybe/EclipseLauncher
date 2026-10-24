@@ -241,55 +241,59 @@ The critical path is **JRE → SDL → launch → Fabric → beta**, not the UI.
 ### 6.1 Principles
 
 - **GitHub Actions only.** No local build is authoritative; a release is whatever CI produced from a tag.
-- **Pinned toolchains.** JDK 25, Gradle wrapper with checksum, NDK r28c, CMake, AGP 9.4.0, Kotlin 2.4.21.
-- **Actions pinned by commit SHA**, not by tag. Dependabot updates them with review.
+- **Pinned toolchains.** JDK 25, Gradle 9.6.0, NDK r28c, CMake, AGP 9.4.0, Kotlin 2.4.21. The Gradle wrapper with `distributionSha256Sum` lands before the first release build; until then the version is pinned in the workflow and provided by `setup-gradle`.
+- **Actions pinned by commit SHA**, not by tag, with the release tag in a trailing comment. Dependabot updates them with review.
 - **No binaries in git.** APKs, `.so`, JRE archives, `client.jar` and packs are build outputs or downloads.
 - **Fail closed.** A missing hash, a 4 KB `.so`, an unsigned APK or an unapproved AppID stops the release.
 
 ### 6.2 Workflows
 
+Two workflows exist today; the rest of the table is the target state, and a
+workflow is only listed as planned until it has run green.
+
 | Workflow | Trigger | Jobs |
 |---|---|---|
-| `docs.yml` | push, PR | `check-docs.py`, link check, chapter index, spelling (optional) |
-| `ci.yml` | push, PR | lint, detekt/ktlint, unit tests, `assembleDebug` arm64 + x86_64 |
-| `native.yml` | push touching `native/`, `sandpaper/` | CMake build, symbol allowlist, `readelf` 16 KB gate, size report |
-| `instrumented.yml` | nightly, manual | API 36 emulator: install stub, launch stub main, crash, recover, screenshot |
-| `release.yml` | tag `v*` | signed release APKs, `apksigner verify`, SHA-256, SBOM, draft GitHub Release |
-| `components.yml` | in each component repo | build, 16 KB gate, manifest, signature, release |
+| `ci.yml` | push to `main`, pull request, manual | Docs + provenance + Python syntax; JDK 25 and SDK 37; `:core:common:test`; debug APK; **binary-manifest gate**; **16 KB gate**; unsigned release dry run; the same two gates on the release APK; both APKs uploaded for 7 days |
+| `release.yml` | tag `v*`, manual with an existing tag and `dry_run` | Signing secrets required unless dry-run; signed release APK; binary-manifest and 16 KB gates; `SHA256SUMS.txt` and `BUILD-MANIFEST.json`; `gh release create --verify-tag` |
+| `docs.yml` (planned) | push, PR | Split the documentation checks out of `ci.yml` once they take longer than a minute; link check and chapter index stay here |
+| `native.yml` (planned) | push touching `native/`, `sandpaper/` | CMake build, symbol allowlist, `readelf` 16 KB gate, size report |
+| `instrumented.yml` (planned) | nightly, manual | API 36 emulator: install, launch, crash, recover, screenshot |
+| `components.yml` (planned, each component repo) | push, tag | Build, 16 KB gate, manifest, signature, release |
 
-### 6.3 `release.yml` sketch
+What `ci.yml` proves today: the app compiles against API 37, the JVM core
+tests pass, both variants package, the merged manifest names the three
+activities and their `:game` / `:installer` processes, `extractNativeLibs` is
+true, release is not debuggable, only the two declared ABIs ship, and every
+64-bit `.so` in both APKs passes the structural 16 KB rules.
 
-```yaml
-name: release
-on:
-  push:
-    tags: ["v*"]
-permissions:
-  contents: write
-jobs:
-  build:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@<sha>
-      - uses: actions/setup-java@<sha>
-        with: { distribution: temurin, java-version: "25" }
-      - uses: gradle/actions/setup-gradle@<sha>
-      - run: ./gradlew :app:assembleRelease --no-daemon
-      - run: ./gradlew :app:lintRelease :app:testReleaseUnitTest
-      - run: python3 scripts/check-elf-alignment.py app/build/outputs/apk/release
-      - run: apksigner verify --print-certs app/build/outputs/apk/release/*.apk
-      - run: sha256sum app/build/outputs/apk/release/*.apk > SHA256SUMS
-      - uses: actions/upload-artifact@<sha>
-      - uses: softprops/action-gh-release@<sha>
-        with:
-          draft: true
-          files: |
-            app/build/outputs/apk/release/*.apk
-            SHA256SUMS
-            sbom.spdx.json
-```
+What it does not prove yet: that the app launches, that the manifest gate
+sees a signed APK, or that lint/ktlint pass — those are deliberately not
+claimed. The first two arrive with `instrumented.yml` and the signing secrets;
+lint joins `ci.yml` with the first feature module, when its output stops being
+dominated by scaffold warnings.
 
-The real workflow adds: secret checks, a clean-tree check, a tag/version match check, a changelog check, and a manual approval environment for the signing step.
+### 6.3 `release.yml` as implemented
+
+The sketch below was replaced by the real pipeline; keeping the sketch in sync
+with the file is cheaper than rediscovering the differences during a release.
+
+1. Check out the tag (`workflow_dispatch` takes an existing tag name, so a
+   dry run builds exactly what a tag would).
+2. Install JDK 25, SDK platform `android-37.0`, build-tools 36.0.0.
+3. Unless `dry_run` is set, fail before compiling when
+   `ECLIPSE_KEYSTORE_BASE64` is absent. The key material is never echoed.
+4. `:app:assembleRelease`; `scripts/check-apk-manifest.py` asserts the final
+   package id, version, activities, processes, `extractNativeLibs` and the
+   absence of `debuggable`; `scripts/check-elf-alignment.py` checks every
+   packaged `.so`.
+5. Upload the APK as an artifact, then in the publish job download it, write
+   `SHA256SUMS.txt` and `BUILD-MANIFEST.json` (version, commit, timestamp,
+   per-file SHA-256 and size) and create the GitHub Release with
+   `--verify-tag`.
+
+Still open before the first public release: a tag/`versionName` match check,
+an APK signature verification step (`apksigner verify --print-certs`), an
+SBOM, and a required-reviewer environment around the signing step.
 
 ### 6.4 Signing and key custody
 

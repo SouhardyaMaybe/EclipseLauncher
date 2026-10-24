@@ -91,8 +91,8 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 ## Status
 
 - Research dossier: chapters 00–14 complete; implementation gated on sign-off.
+- Launcher code: first shell scaffolded (`:app`, `:designsystem`, `:core:*`, `:host`). CI compiles the JVM core, runs its tests, builds debug and unsigned release APKs, and verifies both with a binary-manifest gate and a 16 KB ELF gate.
 - Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNative, EclipseJRE and EclipseComponents still need their official-upstream rework.
-- Launcher code: first shell scaffolded (`:app`, `:designsystem`, `:core:*`, `:host`); CI builds the debug APK.
 - No production APK has been released yet, and no release signing secrets are configured.
 
 ---
