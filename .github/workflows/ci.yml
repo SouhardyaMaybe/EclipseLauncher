@@ -23,19 +23,18 @@ jobs:
         run: python3 scripts/check-docs.py
       - name: Reject forbidden components
         run: bash scripts/check-provenance.sh
+      - name: Check the verification scripts themselves
+        run: python3 -m py_compile scripts/*.py
 
   detect:
     name: Detect source layout
     runs-on: ubuntu-24.04
     outputs:
       app: ${{ steps.check.outputs.app }}
-      jni: ${{ steps.check.outputs.jni }}
     steps:
       - uses: actions/checkout@v7
       - id: check
-        run: |
-          echo "app=$(test -f app/build.gradle.kts && echo true || echo false)" >> "$GITHUB_OUTPUT"
-          echo "jni=$(find app/src/main/jniLibs -name '*.so' -print -quit 2>/dev/null | grep -q . && echo true || echo false)" >> "$GITHUB_OUTPUT"
+        run: echo "app=$(test -f app/build.gradle.kts && echo true || echo false)" >> "$GITHUB_OUTPUT"
 
   android:
     name: Android build
@@ -56,18 +55,45 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
         with:
           gradle-version: "9.6.0"
+
       - name: Compile the JVM core and its tests
         run: gradle :core:common:test --no-daemon --stacktrace
+
       - name: Assemble debug APK
         run: gradle :app:assembleDebug --no-daemon --stacktrace
-      - name: 16 KB native and zip gate
-        if: needs.detect.outputs.jni == 'true'
+
+      - name: Verify the debug APK
         run: |
-          python3 scripts/check-elf-alignment.py --dir app/src/main/jniLibs
-          python3 scripts/check-elf-alignment.py --zip app/build/outputs/apk/debug/app-debug.apk
+          set -euo pipefail
+          apk=$(ls app/build/outputs/apk/debug/*.apk | head -1)
+          python3 scripts/check-apk-manifest.py "$apk" \
+            --app-id dev.shadow.eclipselauncher.debug --debug
+          python3 scripts/check-elf-alignment.py --zip "$apk"
+
+      # The release path is exercised on every push, without signing material.
+      # R8, resource shrinking and the release manifest are where a build
+      # usually breaks, and finding that on a tag is too late.
+      - name: Assemble unsigned release (dry run)
+        run: gradle :app:assembleRelease --no-daemon --stacktrace
+
+      - name: Verify the release APK
+        run: |
+          set -euo pipefail
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          python3 scripts/check-apk-manifest.py "$apk" \
+            --app-id dev.shadow.eclipselauncher --release
+          python3 scripts/check-elf-alignment.py --zip "$apk"
+
       - uses: actions/upload-artifact@v7
         with:
           name: eclipse-launcher-debug
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: eclipse-launcher-release-unsigned
+          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
           retention-days: 7

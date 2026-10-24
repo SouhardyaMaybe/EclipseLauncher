@@ -278,6 +278,7 @@ EclipseSDL3 can pin the render thread to the SoC's big cores (`SDL_HINT_ECLIPSE_
 | `minSdk` | 26 | API floor |
 | `targetSdk` | 36 | Play deadline; API 37 after testing |
 | `compileSdk` | 37 | Required by Compose 1.12.1 / Navigation 3 1.2.0 AAR metadata; AGP 9.4 supports up to 37. Platform package `platforms;android-37.0` |
+| `ndk.abiFilters` | `arm64-v8a`, `x86_64` | v1 ships one ABI; the other exists for CI. Filtering stops a transitive dependency from adding an untested 32-bit library |
 | `android:appCategory` | `game` on the game activity/application | Large-screen orientation exemption; Game Mode |
 | `android:extractNativeLibs` | `true` | HotSpot's `dlopen` needs a real read-only file; the APK's native dir is extracted by the installer |
 | `android:largeHeap` | `false` | Does not help the JVM; hides memory problems |

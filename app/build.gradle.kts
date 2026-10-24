@@ -30,6 +30,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        // v1 ships arm64-v8a; x86_64 exists for the emulator and CI. The
+        // 32-bit ABIs are deferred (docs/04 §1, docs/11 §14.2), and filtering
+        // here keeps a transitive dependency from quietly adding an ABI that
+        // would never be tested.
+        ndk {
+            abiFilters += listOf("arm64-v8a", "x86_64")
+        }
     }
 
     buildFeatures {

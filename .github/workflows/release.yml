@@ -72,8 +72,13 @@ jobs:
           ECLIPSE_KEY_ALIAS: ${{ secrets.ECLIPSE_KEY_ALIAS }}
           ECLIPSE_KEY_PASSWORD: ${{ secrets.ECLIPSE_KEY_PASSWORD }}
         run: gradle :app:assembleRelease --no-daemon --stacktrace
-      - name: 16 KB gate
-        run: python3 scripts/check-elf-alignment.py --zip app/build/outputs/apk/release/app-release.apk
+      - name: Verify the release APK
+        run: |
+          set -euo pipefail
+          apk=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          python3 scripts/check-apk-manifest.py "$apk" \
+            --app-id dev.shadow.eclipselauncher --release
+          python3 scripts/check-elf-alignment.py --zip "$apk"
       - uses: actions/upload-artifact@v7
         with:
           name: eclipse-launcher-release
