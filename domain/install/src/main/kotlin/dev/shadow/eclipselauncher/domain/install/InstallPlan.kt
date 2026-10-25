@@ -12,6 +12,8 @@ import dev.shadow.eclipselauncher.domain.mojang.AssetIndex
 import dev.shadow.eclipselauncher.domain.mojang.MetadataException
 import dev.shadow.eclipselauncher.domain.mojang.ResolvedVersion
 import dev.shadow.eclipselauncher.domain.mojang.VersionResolver
+import java.net.URI
+import java.net.URISyntaxException
 
 /** The role of a download, used for progress copy and repair policy. */
 enum class DownloadKind {
@@ -204,6 +206,7 @@ object InstallPlanBuilder {
         val actualUrl = url
             ?: throw MetadataException("$kind has no URL")
         if (actualUrl.isBlank()) throw MetadataException("$kind has no URL")
+        requireHttps(actualUrl, kind)
         val digest = sha1
             ?: throw MetadataException("$kind has no SHA-1")
         if (!SHA1.matches(digest)) {
@@ -220,6 +223,32 @@ object InstallPlanBuilder {
             size = actualSize,
             destination = destination,
         )
+    }
+
+    /**
+     * The full host allowlist lives in the network layer, because it has to
+     * re-check every redirect. This guard is the cheaper first line: a plan
+     * never contains cleartext, credentials in the authority, or a non-443
+     * port, so a broken metadata entry fails before a single byte is fetched.
+     */
+    private fun requireHttps(url: String, kind: DownloadKind) {
+        val uri = try {
+            URI(url)
+        } catch (error: URISyntaxException) {
+            throw MetadataException("$kind has an invalid URL: ${error.message}")
+        }
+        if (!uri.scheme.equals("https", ignoreCase = true)) {
+            throw MetadataException("$kind is not HTTPS: $url")
+        }
+        if (uri.host.isNullOrBlank()) {
+            throw MetadataException("$kind has no host: $url")
+        }
+        if (uri.userInfo != null) {
+            throw MetadataException("$kind URL contains credentials: $url")
+        }
+        if (uri.port != -1 && uri.port != 443) {
+            throw MetadataException("$kind uses a non-443 port: $url")
+        }
     }
 
     private fun ensureUniqueDestinations(items: List<DownloadItem>) {

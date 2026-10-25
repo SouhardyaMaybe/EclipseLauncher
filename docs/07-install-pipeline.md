@@ -343,6 +343,8 @@ The last two checks are product decisions: it is cheaper to say “this device c
 - Cancel stops scheduling, lets in-flight requests finish, and keeps `.part` files for resume.
 - Pause is a first-class state, not a cancelled install.
 
+**Implementation note (2026-10-25):** the first store and executor are sequential and do not resume yet. They write `<destination>.part`, hash while streaming, verify size and SHA-1, fsync, rename atomically, and delete the `.part` on failure or pause. Cancellation is polled between 64 KiB chunks, so a large client jar can pause promptly. Range requests, `.part` retention, the 6-connection scheduler and digest-mismatch retry remain open.
+
 **Observed:** 26.3's assets are 5,147 small objects. Per-request overhead dominates; batching is impossible (one hash per object), so concurrency and connection reuse matter more than raw bandwidth.
 
 ### 5.5 Materialise

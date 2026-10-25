@@ -124,6 +124,46 @@ class InstallPlanTest {
     }
 
     @Test
+    fun `a cleartext download URL is rejected`() {
+        val result = InstallPlanBuilder.build(
+            version(client = download(clientHash, 10, "http://example.invalid/client.jar")),
+            assets(),
+        )
+
+        assertThat(result).isInstanceOf(AppResult.Error::class.java)
+        assertThat((result as AppResult.Error).failure.code)
+            .isEqualTo("INSTALL_PLAN_INVALID")
+    }
+
+    @Test
+    fun `a URL with credentials is rejected`() {
+        val result = InstallPlanBuilder.build(
+            version(
+                client = download(
+                    clientHash,
+                    10,
+                    "https://user:secret@example.invalid/client.jar",
+                ),
+            ),
+            assets(),
+        )
+
+        assertThat(result).isInstanceOf(AppResult.Error::class.java)
+    }
+
+    @Test
+    fun `a non-443 port is rejected`() {
+        val result = InstallPlanBuilder.build(
+            version(
+                client = download(clientHash, 10, "https://example.invalid:8443/client.jar"),
+            ),
+            assets(),
+        )
+
+        assertThat(result).isInstanceOf(AppResult.Error::class.java)
+    }
+
+    @Test
     fun `layout rejects a traversal in a version id`() {
         assertThrows(MetadataException::class.java) {
             InstallLayout().clientPath("../outside")
