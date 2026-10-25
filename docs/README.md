@@ -54,7 +54,7 @@ This dossier treats each layer with primary-source evidence, then proposes a pro
 |---|---|---|
 | Distribution | GitHub Releases + direct APK; **F-Droid later, no Play at launch** | Play executable-code policy conflicts with the core product; F-Droid's no-blob/reproducibility rules need a separate flavor because the JRE is downloaded |
 | License | **Apache-2.0** for original code; LGPL/MIT components dynamically linked with notices | Clean-room avoids GPL contamination from FCL/Zalith; permissive core invites contributors and OEM/community reuse |
-| UI | Kotlin + Jetpack Compose + **Material 3 (1.4.x) + M3 Expressive**, Navigation 3, adaptive layouts | Current stable stack; M3 Expressive gives a differentiated, accessible visual language |
+| UI | Kotlin + Jetpack Compose + **Material 3 (1.4.x) + M3 Expressive**, project-owned back stack, adaptive layouts | Current stable stack; M3 Expressive gives a differentiated, accessible visual language |
 | Process model | UI process + isolated `:game` process | JVM crashes, native driver crashes, and OOM kills must not take down the launcher |
 | Runtime | EclipseJRE, a custom **OpenJDK 25** per ABI, downloaded and installed as a verified read-only component | 26.3 requires Java 25; no official Android JRE exists, and a 120–180 MB bundled APK is not the default |
 | Graphics | **Auto**: native Vulkan 1.2 when the probe passes, otherwise **Sandpaper** (desktop GL 3.3 → GLES 3.2); system drivers only | Matches 26.3's own backend selector without betting the product on driver replacement |

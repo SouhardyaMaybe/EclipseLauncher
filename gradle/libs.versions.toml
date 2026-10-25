@@ -5,11 +5,11 @@ kotlin = "2.4.21"
 
 # Android platform.
 #
-# compileSdk is 37 because Compose 1.12.1 and Navigation 3 1.2.0 publish AAR
-# metadata with minCompileSdk=37; compiling against newer APIs grants no
-# runtime behaviour. targetSdk stays at 36 until the API 37 restrictions
-# (static final fields, native DCL, local network, background audio) pass the
-# runtime matrix. See docs/04 §2.3 and §9.1.
+# compileSdk is 37 because Compose 1.12.1 publishes AAR metadata with
+# minCompileSdk=37; compiling against newer APIs grants no runtime behaviour.
+# targetSdk stays at 36 until the API 37 restrictions (static final fields,
+# native DCL, local network, background audio) pass the runtime matrix. See
+# docs/04 §2.3 and §9.1.
 compileSdk = "37"
 targetSdk = "36"
 minSdk = "26"

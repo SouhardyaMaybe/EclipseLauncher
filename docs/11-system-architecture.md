@@ -1167,7 +1167,7 @@ The 16 KB check is fail-closed: a component with any `PT_LOAD` segment below 16 
 | AGP | 9.4.0 |
 | Kotlin | 2.4.21 |
 | Compose Material 3 | 1.4.0 |
-| Navigation 3 | 1.2.0 |
+| Navigation | Project-owned back stack (no Navigation 3 dependency) |
 | NDK | r28c or newer |
 | CMake | pinned in `build-logic` |
 | `compileSdk` / `targetSdk` | 37 / 36 |
