@@ -138,3 +138,27 @@ data class JavaVersion(
     val component: String,
     val majorVersion: Int,
 )
+
+/**
+ * The asset index is a content-addressed map. The key is the logical asset
+ * name; the value is the SHA-1 and size of the object under `objects/<2>/`.
+ */
+@Serializable
+data class AssetIndex(
+    val objects: Map<String, AssetObject> = emptyMap(),
+)
+
+@Serializable
+data class AssetObject(
+    val hash: String,
+    val size: Long,
+) {
+    init {
+        require(hash.matches(SHA1)) { "asset hash is not a SHA-1: $hash" }
+        require(size >= 0) { "asset size must not be negative: $size" }
+    }
+
+    companion object {
+        private val SHA1 = Regex("[0-9a-f]{40}")
+    }
+}

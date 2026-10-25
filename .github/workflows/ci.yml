@@ -57,7 +57,7 @@ jobs:
           gradle-version: "9.6.0"
 
       - name: Compile the JVM core and its tests
-        run: gradle :core:common:test :domain:mojang:test --no-daemon --stacktrace
+        run: gradle :core:common:test :domain:mojang:test :domain:install:test --no-daemon --stacktrace
 
       - name: Assemble debug APK
         run: gradle :app:assembleDebug --no-daemon --stacktrace

@@ -23,6 +23,9 @@ object MojangMetadata {
     fun parseVersion(json: String): AppResult<VersionJson> =
         parse(json) { MojangJson.decodeFromString<VersionJson>(it) }
 
+    fun parseAssetIndex(json: String): AppResult<AssetIndex> =
+        parse(json) { MojangJson.decodeFromString<AssetIndex>(it) }
+
     fun findVersion(manifest: VersionManifest, id: String): VersionSummary? =
         manifest.versions.firstOrNull { it.id == id }
 

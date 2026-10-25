@@ -53,6 +53,7 @@ The repository contains the signed-off single-screen launcher shell:
 | `:core:common` | `Failure` taxonomy, `AppResult`, `EpochClock` |
 | `:core:model` | `InstanceSummary`, `InstanceId`, `LoaderKind` |
 | `:domain:mojang` | Official version manifest/version JSON models, ordered rule evaluation, Maven coordinates, argument templates and the Android library resolver. Pure JVM and unit-tested in CI. |
+| `:domain:install` | Asset-index model and a deterministic, content-addressed download plan for the client, libraries, assets, asset index and logging config. Pure JVM and unit-tested in CI. |
 | `:host` | `GameActivity` in `:game` and `InstallerActivity` in `:installer` |
 
 What works today:
