@@ -13,10 +13,14 @@ import dev.shadow.eclipselauncher.core.common.UserAction
 import java.io.IOException
 import java.nio.channels.FileChannel
 import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.FileVisitResult
 import java.nio.file.Files
+import java.nio.file.LinkOption
 import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
 import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
+import java.nio.file.attribute.BasicFileAttributes
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -126,12 +130,22 @@ class InstanceTransaction(
             )
         }
 
+        val finalRoot = root.resolve(id)
         val staging = root.resolve(STAGING_DIR).resolve(txid)
         if (Files.exists(staging)) deleteTree(staging)
         Files.createDirectories(staging)
         for (directory in SKELETON) {
             Files.createDirectories(staging.resolve(directory))
         }
+
+        // The transaction replaces the metadata tree, but the player's game
+        // directory is not launcher-managed. Hard-link it into the new tree
+        // (falling back to a copy) so a repair or version change cannot delete
+        // mods, worlds, options or screenshots. Symlinks are skipped.
+        val copiedUserFiles = preserveUserContent(
+            source = finalRoot.resolve(USER_CONTENT_DIR),
+            target = staging.resolve(USER_CONTENT_DIR),
+        )
 
         val createdAt = clock.nowEpochMillis()
         val planHash = plan.planHash
@@ -162,9 +176,16 @@ class InstanceTransaction(
         writeNew(staging.resolve(INSTANCE_FILE), InstallJson.encodeToString(record))
         writeNew(staging.resolve(MANIFEST_FILE), InstallJson.encodeToString(manifest))
         writeNew(staging.resolve(PLAN_FILE), InstallJson.encodeToString(plan))
+        // Only the three documents are new bytes. User content is hard-linked
+        // from the old tree, so opening it for a write-fsync could fail on a
+        // read-only mod or save. Fsync the documents and the directory entries
+        // instead.
+        forceFile(staging.resolve(INSTANCE_FILE))
+        forceFile(staging.resolve(MANIFEST_FILE))
+        forceFile(staging.resolve(PLAN_FILE))
+        copiedUserFiles.forEach { forceFile(it) }
         forceTree(staging)
 
-        val finalRoot = root.resolve(id)
         val backupRelative = if (Files.exists(finalRoot)) {
             Files.createDirectories(root.resolve(TRASH_DIR))
             val candidate = "$TRASH_DIR/$id-$txid"
@@ -275,6 +296,50 @@ class InstanceTransaction(
         }
     }
 
+    /**
+     * Preserves everything under the old `game/` directory. A hard link keeps
+     * large saves and modpacks from being duplicated; a filesystem that does
+     * not support links gets a normal copy. Symlinked files and directories
+     * are skipped so a hostile tree cannot make the launcher read elsewhere.
+     */
+    private fun preserveUserContent(source: Path, target: Path): List<Path> {
+        if (!Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)) return emptyList()
+        val copied = mutableListOf<Path>()
+        Files.walkFileTree(
+            source,
+            object : SimpleFileVisitor<Path>() {
+                override fun preVisitDirectory(
+                    directory: Path,
+                    attributes: BasicFileAttributes,
+                ): FileVisitResult {
+                    if (Files.isSymbolicLink(directory)) return FileVisitResult.SKIP_SUBTREE
+                    Files.createDirectories(target.resolve(source.relativize(directory)))
+                    return FileVisitResult.CONTINUE
+                }
+
+                override fun visitFile(
+                    file: Path,
+                    attributes: BasicFileAttributes,
+                ): FileVisitResult {
+                    if (Files.isSymbolicLink(file)) return FileVisitResult.CONTINUE
+                    val destination = target.resolve(source.relativize(file))
+                    Files.createDirectories(destination.parent)
+                    try {
+                        Files.createLink(destination, file)
+                    } catch (_: IOException) {
+                        Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING)
+                        copied += destination
+                    } catch (_: UnsupportedOperationException) {
+                        Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING)
+                        copied += destination
+                    }
+                    return FileVisitResult.CONTINUE
+                }
+            },
+        )
+        return copied
+    }
+
     private fun readJournal(): InstallJournal? {
         if (!Files.isRegularFile(journalPath)) return null
         val text = try {
@@ -311,9 +376,8 @@ class InstanceTransaction(
 
     private fun forceTree(path: Path) {
         Files.walk(path).use { stream ->
-            stream.filter { Files.isRegularFile(it) }.forEach { forceFile(it) }
+            stream.filter { Files.isDirectory(it) }.forEach { forceDirectory(it) }
         }
-        forceDirectory(path)
     }
 
     private fun forceFile(path: Path) {
@@ -430,6 +494,7 @@ class InstanceTransaction(
         const val JOURNAL_FILE = "journal.json"
         const val STAGING_DIR = ".staging"
         const val TRASH_DIR = ".trash"
+        const val USER_CONTENT_DIR = "game"
         const val STATE_PREPARED = "prepared"
         const val STATE_COMMITTING = "committing"
         const val STATE_COMMITTED = "committed"

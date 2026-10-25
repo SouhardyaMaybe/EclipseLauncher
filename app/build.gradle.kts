@@ -125,6 +125,9 @@ kotlin {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:model"))
+    implementation(project(":core:network"))
+    implementation(project(":domain:install"))
+    implementation(project(":domain:mojang"))
     implementation(project(":designsystem"))
     implementation(project(":host"))
 

@@ -5,6 +5,7 @@
 package dev.shadow.eclipselauncher.domain.install
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 /** The schema version of `instance.json`, `manifest.json` and `plan.json`. */
@@ -60,3 +61,14 @@ val InstallJson: Json = Json {
     ignoreUnknownKeys = true
     explicitNulls = false
 }
+
+/**
+ * Readers for the two documents the app reopens after a restart. They live
+ * here so the Android module does not need its own serialization setup, and a
+ * malformed file surfaces as one exception the caller can treat as absent.
+ */
+fun decodeInstanceManifest(text: String): InstanceManifest =
+    InstallJson.decodeFromString(text)
+
+fun decodeInstallPlan(text: String): InstallPlan =
+    InstallJson.decodeFromString(text)

@@ -38,6 +38,14 @@ class LauncherState(context: Context) {
     var instance: InstanceSummary? by mutableStateOf(readInstance())
         private set
 
+    /**
+     * True when the selected instance has a committed manifest. This is a
+     * cheap flag, not a verification: Play starts a repair when it is false,
+     * and a full verifier pass can replace it later without changing the UI.
+     */
+    var instanceInstalled: Boolean by mutableStateOf(false)
+        private set
+
     var curseForgeKey: String by mutableStateOf(
         prefs.getString(KEY_CURSEFORGE, "").orEmpty(),
     )
@@ -47,6 +55,10 @@ class LauncherState(context: Context) {
         prefs.getBoolean(KEY_AUTO_DEPENDENCIES, true),
     )
         private set
+
+    init {
+        instanceInstalled = hasManifest(instance)
+    }
 
     fun updateAccountName(value: String) {
         val clean = value.trim().ifBlank { DEFAULT_ACCOUNT_NAME }
@@ -81,6 +93,7 @@ class LauncherState(context: Context) {
             .apply()
 
         instance = summary
+        instanceInstalled = false
         ensureInstanceDirectories(summary)
         LogStore.bootstrapOnce(logsDir(summary))
         return summary
@@ -91,6 +104,7 @@ class LauncherState(context: Context) {
         val cleanName = name.trim().ifBlank { current.name }
         val cleanVersion = minecraftVersion.trim().ifBlank { current.minecraftVersion }
         val updated = current.copy(name = cleanName, minecraftVersion = cleanVersion)
+        val versionChanged = cleanVersion != current.minecraftVersion
 
         prefs.edit()
             .putString(KEY_INSTANCE_NAME, updated.name)
@@ -98,7 +112,15 @@ class LauncherState(context: Context) {
             .apply()
 
         instance = updated
+        // Renaming an installed instance does not invalidate its files. A
+        // version change does, so Play starts a fresh plan on the next tap.
+        if (versionChanged) instanceInstalled = false
         ensureInstanceDirectories(updated)
+    }
+
+    /** Called after the transaction commits a manifest for the current instance. */
+    fun markInstanceInstalled() {
+        instanceInstalled = hasManifest(instance)
     }
 
     fun updateCurseForgeKey(value: String) {
@@ -121,14 +143,17 @@ class LauncherState(context: Context) {
             ?: File(minecraftDir, "logs")
 
     fun contentDir(type: ContentType, summary: InstanceSummary? = instance): File =
-        File(instanceDir(summary), type.directory)
+        File(instanceDir(summary), "game/${type.directory}")
 
     fun ensureInstanceDirectories(summary: InstanceSummary) {
         ContentType.entries.forEach { type ->
-            File(instanceDir(summary), type.directory).mkdirs()
+            File(instanceDir(summary), "game/${type.directory}").mkdirs()
         }
         logsDir(summary).mkdirs()
     }
+
+    private fun hasManifest(summary: InstanceSummary?): Boolean =
+        summary != null && File(instanceDir(summary), "manifest.json").isFile
 
     private fun readInstance(): InstanceSummary? {
         val id = prefs.getString(KEY_INSTANCE_ID, null)?.takeIf { it.isNotBlank() } ?: return null

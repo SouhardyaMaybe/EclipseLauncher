@@ -204,6 +204,39 @@ class InstanceTransactionTest {
     }
 
     @Test
+    fun `replacing an instance preserves user content under game`() {
+        val store = newStore()
+        val instances = newInstances()
+        val items = items()
+        storeAll(store, items)
+        val old = instances.resolve("test-instance")
+        Files.createDirectories(old.resolve("game/mods"))
+        Files.createDirectories(old.resolve("game/saves/world"))
+        Files.write(old.resolve("game/mods/example.jar"), "mod".toByteArray())
+        Files.write(old.resolve("game/saves/world/level.dat"), "world".toByteArray())
+        Files.write(old.resolve("game/options.txt"), "fov:0.5".toByteArray())
+
+        val installed = InstanceTransaction(instances, store, clock).install(
+            id = "test-instance",
+            name = "New Name",
+            minecraftVersion = "26.3",
+            loader = "VANILLA",
+            plan = planOf(items),
+            txid = "tx-2",
+        ).requireSuccess()
+
+        assertThat(
+            Files.readAllBytes(installed.root.resolve("game/mods/example.jar")),
+        ).isEqualTo("mod".toByteArray())
+        assertThat(
+            Files.readAllBytes(installed.root.resolve("game/saves/world/level.dat")),
+        ).isEqualTo("world".toByteArray())
+        assertThat(
+            Files.readAllBytes(installed.root.resolve("game/options.txt")),
+        ).isEqualTo("fov:0.5".toByteArray())
+    }
+
+    @Test
     fun `recovery discards a prepared staging tree`() {
         val store = newStore()
         val instances = newInstances()

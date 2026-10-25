@@ -25,13 +25,13 @@ Eclipse Launcher is an Android launcher for **Minecraft: Java Edition**. It is n
 | Quick Actions | **Controls**, **Manage Logs**, **File Manager**, **Manage Content**, **Install a .jar**. No other rows, tiles or cards. |
 | Navigation | No bottom navigation, rail or drawer. Pushed screens use the system back gesture. Dialogs cover tasks, instance editing and confirmations. |
 | Accounts | **Local account** is kept. Microsoft device-code sign-in is present as a visibly unconfigured path until the project owns an Entra client ID. No Ely.by or other third-party account provider. |
-| Create Instance | The reference layout: centered section titles, a divider, and full-width buttons. Vanilla and Fabric create a local instance; Quilt, Forge, NeoForge, OptiFine and Modpack are visible placeholders. |
+| Create Instance | The reference layout: centered section titles, a divider, and full-width buttons. Vanilla creates the instance and starts the official-file install; Fabric creates a local instance and says the loader is not connected; Quilt, Forge, NeoForge, OptiFine and Modpack are visible placeholders. |
 | Manage Content | **Installed** / **Discover** top tabs, then content types: Mods, Resource Packs, Data Packs, Shaders, Worlds, Modpacks. Discover filters: game version, loader, Modrinth/CurseForge, plus auto-install required dependencies. |
 | CurseForge | No bundled key. The source is **Coming soon** until the user adds their own key in **Settings → Miscellaneous**; clearing the key returns it to Coming soon. |
 | Logs | `.minecraft/logs/<instance>/`; first start creates `latestlog.txt`; the next process start renames the previous file to `YYYY-MM-DD_HH-mm-ss.txt` and creates a new `latestlog.txt`. Multiselect, copy, paste, cut, delete, rename, share and an in-app text viewer. |
 | File Manager | Opens the app-private `.minecraft` tree, read/write, with the reference launcher's in-app picker behaviour. It is a browser, not a shortcuts hub. |
 | Install a .jar | Tapping the row opens the system document picker. A selected `.jar` is handed straight to the installer process; there is no extra target or run screen. |
-| Play | Kept in the reference launcher's bottom-bar position. In this build it explains that the game runtime is not connected rather than faking progress. |
+| Play | Kept in the reference launcher's bottom-bar position. Starts the Vanilla install when the instance has no committed manifest; once installed it explains that the game runtime is not connected rather than faking progress. |
 | Visual system | Ore-inspired dark palette, Monocraft for chrome, system sans for prose, original 12×12 pixel glyphs, square bevels and 2 dp borders. |
 | Accessibility | 200% font scale, 48 dp targets, WCAG 2.2 AA contrast, visible focus, labels on every icon, no fake progress. |
 
@@ -51,12 +51,13 @@ The signed-off surface is implemented. Backend services arrive behind it without
 | Capability | State in this build | Honest surface |
 |---|---|---|
 | Local instance record and directories | Connected | Creating Vanilla/Fabric writes the record and the `.minecraft` tree. |
+| Vanilla game-file install | Connected | The official manifest, version JSON and asset index feed a deterministic plan; the client, libraries, assets and logging config download into the shared store and commit atomically. |
 | Log rotation and file operations | Connected | Real files, real rename/copy/cut/delete/share. |
 | `.jar` handoff | Connected to the installer process | The installer process shows the selected file; the pipeline is not connected yet. |
 | Microsoft device-code auth | Not configured | The Accounts screen says so. `ECLIPSE_MS_CLIENT_ID` is empty by default. |
 | Modrinth catalogue | Not connected | Discover shows real filters and an honest "Catalogue not connected" empty state. |
 | CurseForge catalogue | Not connected | Disabled with "Coming soon" until a user key exists; a saved key enables the source, not a fictional catalogue. |
-| Game runtime, JRE and natives | Not connected | Play explains that the runtime is not connected. No fake progress. |
+| Game runtime, JRE and natives | Not connected | The game files install; Play then explains that the runtime is not connected. No fake progress. |
 | Quilt, Forge, NeoForge, OptiFine installers | Placeholder | Buttons exist and say "coming soon"; they do not create a broken instance. |
 
 ### 1.4 Deferred beyond v1
@@ -122,7 +123,7 @@ The user who wants to run five instances simultaneously, benchmark every GPU, or
 | "Install this modpack." | Format ambiguity, loader mismatch, failed downloads | Discover → Modpacks, with game-version and loader filters and dependency handling. |
 | "Why did it crash?" | Log file, no context, "exit code 1" | Manage Logs opens the instance log directory and an in-app viewer; crash reporting builds on it. |
 | "Make the controls usable." | Desktop keybind assumptions | Controls is a first-class Quick Action; presets and per-control sizing arrive with the runtime. |
-| "Don't lose my world." | Launcher wipes or re-creates the instance | Transactional installs later; the File Manager and Logs never delete user content without confirmation. |
+| "Don't lose my world." | Launcher wipes or re-creates the instance | Transactional installs preserve `game/` across repair and version changes; the File Manager and Logs never delete user content without confirmation. |
 | "Tell me the truth about my device." | "Vulkan on/off" toggle that lies | Probe result with the exact missing extension/feature and a recommended path. |
 | "Sign in without typing a password on a TV." | Redirect flows and WebViews | Device code with a short, copyable code and a browser on any device. |
 
@@ -223,7 +224,8 @@ The reference launcher puts the five jobs a player actually performs — control
 
 - Opened by the Tasks icon.
 - Empty state: **No tasks** and one sentence explaining what will appear there.
-- Each task shows a title, a detail line, and **Pause** / **Resume** and **Cancel**. There is no percentage unless a real transaction reports one.
+- Each running task shows its real phase, completed files and bytes, and **Pause** / **Cancel**. A paused task shows **Resume** / **Cancel**; a failed task shows the stable code and **Retry** when retrying can help.
+- A progress bar appears only after the plan exists. There is no percentage while metadata is being resolved.
 - The badge counts tasks in the registry; it does not invent background work.
 
 ### 7.3 Create Instance
@@ -247,7 +249,7 @@ The layout follows the reference launcher literally:
 
 - Centered section titles, thick dividers, full-width square buttons, generous vertical spacing.
 - No cards, chips, badges or explanatory rows inside the picker.
-- **Vanilla** and **Fabric** create a local instance with the default game version and return to the main page.
+- **Vanilla** creates a local instance with the default game version, returns to the main page and starts the official-file install. **Fabric** creates a local instance and says the loader is not connected; it does not start a download.
 - **Quilt**, **Forge**, **NeoForge** and **OptiFine** show a "coming soon" message. They do not create an instance.
 - **Modpack** opens Manage Content → Discover → Modpacks.
 - The instance editor (pencil) changes the name and Minecraft version; the loader is shown read-only.
@@ -328,8 +330,10 @@ The key is stored on the device only. It is never bundled, logged or uploaded. A
 
 - The Play button is always in the bottom bar, in the reference launcher's position.
 - With no instance, it is disabled and the bar offers creation.
-- With an instance but no runtime, it opens a message: **Game runtime not connected**, with one sentence explaining that this build creates and manages the instance but does not install or launch Minecraft.
-- No progress bar, no fake download, no "almost there" state.
+- With a Vanilla instance that has no committed manifest, it starts the official-file install and opens the Tasks dialog. Pause, resume, retry and cancel are real worker controls.
+- With an installed instance, it opens a message: **Game runtime not connected**, with one sentence explaining that this build downloads the game files but does not launch Minecraft.
+- With a Fabric instance, it says the loader is local-only until loader installation exists.
+- No fake progress, no invented download, no "almost there" state.
 
 ---
 
@@ -338,8 +342,8 @@ The key is stored on the device only. It is never bundled, logged or uploaded. A
 ### 8.1 The current first run
 
 1. The app opens on the main page with a local account named **Player** and no instance.
-2. The player taps the instance bar or the edit pencil, chooses a loader, and gets a local instance.
-3. The instance bar now shows the name, version and loader; Play explains that the runtime is not connected.
+2. The player taps the instance bar or the edit pencil, chooses a loader, and gets a local instance. Vanilla starts the official-file install immediately; Fabric stays local-only.
+3. The instance bar now shows the name, version and loader. The Tasks dialog shows real install progress; when the install commits, Play explains that the runtime is not connected.
 4. Logs and the File Manager are immediately usable; the log directory is created with the instance.
 
 There is no multi-page welcome tour, no forced Microsoft sign-in, and no permission request on first launch.
@@ -536,7 +540,7 @@ No promotional notifications. No "come back" nudges.
 - [ ] Manage Logs follows the `latestlog.txt` rotation rule and supports multiselect, copy, paste, cut, delete, rename, share and the in-app viewer.
 - [ ] File Manager opens `.minecraft`, supports read/write operations and is not a shortcuts hub.
 - [ ] Install a .jar opens the picker and hands a valid file straight to the installer process.
-- [ ] Play is honest about the missing runtime; no fake progress.
+- [ ] Play starts a real Vanilla install when none is committed, then is honest about the missing runtime; no fake progress.
 - [ ] 200% font scale does not clip a label or hide a button.
 - [ ] TalkBack can read every screen and activate every primary action.
 - [ ] No screen shows a raw exception, `null`, or an unlabelled spinner.

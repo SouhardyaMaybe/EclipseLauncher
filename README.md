@@ -48,19 +48,20 @@ The repository contains the signed-off single-screen launcher shell:
 
 | Module | Contents |
 |---|---|
-| `:app` | `MainActivity`, the `EclipseApp` back stack, `AppContainer`, local instance/account state, log rotation, file operations, task registry, and the Quick Actions surface |
+| `:app` | `MainActivity`, the `EclipseApp` back stack, `AppContainer`, local instance/account state, the install coordinator, log rotation, file operations, task progress, and the Quick Actions surface |
 | `:designsystem` | Ore-inspired palette, Monocraft typography, square shapes, original 12 × 12 pixel glyphs, bevel buttons, menu rows, tabs, panels and dialogs |
 | `:core:common` | `Failure` taxonomy, `AppResult`, `EpochClock` |
 | `:core:model` | `InstanceSummary`, `InstanceId`, `LoaderKind` |
 | `:core:network` | `DownloadSource`, strict HTTPS/host/port policy, manual redirects, `Retry-After` and backoff. Pure JVM and unit-tested against a local HTTP server. |
 | `:domain:mojang` | Official version manifest/version JSON models, ordered rule evaluation, Maven coordinates, argument templates and the Android library resolver. Pure JVM and unit-tested in CI. |
-| `:domain:install` | Asset-index model, deterministic content-addressed download plan, and a verified sequential artifact store with `.part` writes, SHA-1/size checks, atomic rename, cancellation and byte progress. Pure JVM and unit-tested in CI. |
+| `:domain:install` | Asset-index model, deterministic content-addressed download plan, verified sequential artifact store, staged/journaled instance transaction, `FAST`/`FULL` verifier and refcounted store GC. Pure JVM and unit-tested in CI. |
 | `:host` | `GameActivity` in `:game` and `InstallerActivity` in `:installer` |
 
 What works today:
 
 - **Main page:** account bar, exactly one **Quick Actions** section (Controls, Manage Logs, File Manager, Manage Content, Install a .jar), and the bottom instance selector + edit pencil + Play bar.
-- **Create Instance:** the reference launcher's centered, full-width-button layout. Vanilla and Fabric create a local instance; Quilt, Forge, NeoForge and OptiFine are visible placeholders; Modpack opens Discover → Modpacks.
+- **Create Instance:** the reference launcher's centered, full-width-button layout. Vanilla creates the instance and starts a real download of the official game files; Fabric creates a local instance and says the loader is not connected; Quilt, Forge, NeoForge and OptiFine are visible placeholders; Modpack opens Discover → Modpacks.
+- **Vanilla install:** Play or Create Instance fetches Mojang's official manifest, version JSON and asset index, resolves the Linux/arm64 (or x86_64) rules, builds a deterministic plan, downloads the client, libraries, assets and logging config into the shared store, and commits the instance atomically. The Tasks dialog shows real file/byte progress and drives pause, resume, retry and cancel.
 - **Manage Content:** Installed/Discover tabs, six content types, game-version/loader/source filters, and an auto-install-dependencies setting. Modrinth and CurseForge catalogue clients are not connected yet, so Discover says so.
 - **Manage Logs:** `.minecraft/logs/<instance>/` with `latestlog.txt` rotation, multiselect, copy/cut/paste, rename, delete, share and an in-app text viewer.
 - **File Manager:** read/write browser rooted at `.minecraft`, with folder creation, rename, delete, copy/cut/paste and share.
@@ -69,9 +70,9 @@ What works today:
 - **Accounts:** local account is kept without a warning note. Microsoft device-code sign-in is visibly unconfigured until the project's own Entra client ID is supplied through `ECLIPSE_MS_CLIENT_ID`; no third-party launcher client ID is bundled.
 - **Metadata core:** the pure-JVM `:domain:mojang` module parses official Mojang manifests and version JSON, evaluates ordered OS/arch/feature rules, resolves Maven coordinates and argument templates, and builds the Java classpath while dropping every desktop native for EclipseNatives.
 - **Network core:** `:core:network` opens downloads only through a strict HTTPS/port-443/host policy, follows redirects manually with a five-hop limit and re-checks each hop, honours `Retry-After` on 429/503, and retries 5xx with capped exponential backoff. It reports stable `NET_*` codes instead of leaking URLs.
-- **Install core:** `:domain:install` turns resolved metadata and an asset index into a deterministic download plan, then stores each object through `<destination>.part` with streaming SHA-1 and size verification, an fsync and an atomic rename. It reports real completed bytes, counts already-verified objects, and stops mid-file on pause. A staged, journaled transaction commits the instance atomically, a verifier checks `FAST` or `FULL`, and a refcounted collector removes unreferenced store objects after a seven-day grace. It is not yet wired to a download or install screen.
+- **Install core:** `:domain:install` turns resolved metadata and an asset index into a deterministic download plan, then stores each object through `<destination>.part` with streaming SHA-1 and size verification, an fsync and an atomic rename. It reports real completed bytes, counts already-verified objects, and stops mid-file on pause. A staged, journaled transaction commits the instance atomically, a verifier checks `FAST` or `FULL`, and a refcounted collector removes unreferenced store objects after a seven-day grace.
 
-It is still a shell, not a complete launcher: it does not install or launch Minecraft, and it does not authenticate a Microsoft account yet. The screens say that plainly. The next milestone is the Phase 0 spike set in doc 12: JRE boot, SDL window/EGL, Vulkan probe, Sandpaper triangle and installer transaction.
+It is still not a complete launcher: it installs the Vanilla game files but does not launch Minecraft, and it does not authenticate a Microsoft account yet. The screens say that plainly. The next milestone is the Phase 0 spike set in doc 12: JRE boot, SDL window/EGL, Vulkan probe and the launch path.
 
 ---
 
@@ -108,7 +109,7 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 ## Status
 
 - Research dossier: chapters 00–14 complete; implementation gated on sign-off.
-- Launcher code: the signed-off single-screen Quick Actions UI is implemented on top of the original `:app`, `:designsystem`, `:core:*` and `:host` modules. CI compiles the JVM core, runs its tests, builds debug and unsigned release APKs, and verifies both with a binary-manifest gate and a 16 KB ELF gate.
+- Launcher code: the signed-off single-screen Quick Actions UI is implemented on top of the original `:app`, `:designsystem`, `:core:*` and `:host` modules. Vanilla download and commit are wired end to end; launching, authentication and loader installs are not. CI compiles the JVM core and the app, runs their unit tests, builds debug and unsigned release APKs, and verifies both with a binary-manifest gate and a 16 KB ELF gate.
 - Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNatives rework is pushed and its CI now builds, packages and verifies both ABIs; EclipseJRE and EclipseComponents still need their official-upstream rework.
 - No production APK has been released yet, and no release signing secrets are configured.
 

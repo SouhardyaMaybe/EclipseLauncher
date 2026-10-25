@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import dev.shadow.eclipselauncher.EclipseApplication
 import dev.shadow.eclipselauncher.R
+import dev.shadow.eclipselauncher.core.model.InstanceSummary
 import dev.shadow.eclipselauncher.core.model.LoaderKind
 import dev.shadow.eclipselauncher.data.ContentType
 import dev.shadow.eclipselauncher.data.LogStore
@@ -112,6 +113,7 @@ fun EclipseApp() {
         val state = container.state
         val tasks = container.tasks
         val clipboard = container.fileClipboard
+        val installer = container.installer
 
         val backStack = rememberSaveable(
             saver = listSaver<SnapshotStateList<AppScreen>, String>(
@@ -129,6 +131,7 @@ fun EclipseApp() {
         var showPlayNotice by remember { mutableStateOf(false) }
         var showJarNotice by remember { mutableStateOf(false) }
         var pendingLoader by remember { mutableStateOf<LoaderKind?>(null) }
+        var localOnlyLoader by remember { mutableStateOf<LoaderKind?>(null) }
         var editingInstance by remember { mutableStateOf(false) }
 
         fun navigate(next: AppScreen) {
@@ -142,6 +145,14 @@ fun EclipseApp() {
         fun goHome() {
             backStack.clear()
             backStack.add(AppScreen.Home)
+        }
+
+        fun startInstall(instance: InstanceSummary) {
+            installer.start(
+                instance = instance,
+                onInstalled = { state.markInstanceInstalled() },
+            )
+            showTasks = true
         }
 
         LaunchedEffect(Unit) {
@@ -198,7 +209,17 @@ fun EclipseApp() {
                         editingInstance = true
                     }
                 },
-                onPlayClick = { showPlayNotice = true },
+                onPlayClick = {
+                    val instance = state.instance
+                    when {
+                        instance == null -> navigate(AppScreen.CreateInstance)
+                        instance.loader != LoaderKind.VANILLA ->
+                            localOnlyLoader = instance.loader
+
+                        !state.instanceInstalled -> startInstall(instance)
+                        else -> showPlayNotice = true
+                    }
+                },
             )
 
             AppScreen.CreateInstance -> CreateInstanceScreen(
@@ -219,10 +240,18 @@ fun EclipseApp() {
                             )
                         }
 
-                        LoaderKind.VANILLA,
+                        LoaderKind.VANILLA -> {
+                            state.instance?.let(installer::cancel)
+                            val instance = state.createInstance(loader)
+                            goHome()
+                            startInstall(instance)
+                        }
+
                         LoaderKind.FABRIC -> {
+                            state.instance?.let(installer::cancel)
                             state.createInstance(loader)
                             goHome()
+                            localOnlyLoader = loader
                         }
                     }
                 },
@@ -322,12 +351,25 @@ fun EclipseApp() {
             )
         }
 
+        localOnlyLoader?.let { loader ->
+            val loaderName = loader.displayName()
+            MessageDialog(
+                title = stringResource(R.string.install_loader_local_title, loaderName),
+                body = stringResource(R.string.install_loader_local_body, loaderName),
+                onDismiss = { localOnlyLoader = null },
+            )
+        }
+
         if (editingInstance) {
             state.instance?.let { instance ->
                 InstanceEditorDialog(
                     instance = instance,
                     onDismiss = { editingInstance = false },
                     onSave = { name, version ->
+                        val previous = state.instance
+                        if (previous != null && version.trim() != previous.minecraftVersion) {
+                            installer.cancel(previous)
+                        }
                         state.updateInstance(name, version)
                         editingInstance = false
                     },

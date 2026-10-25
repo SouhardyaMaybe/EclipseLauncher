@@ -8,6 +8,7 @@ import android.content.Context
 import dev.shadow.eclipselauncher.core.common.EpochClock
 import dev.shadow.eclipselauncher.core.common.SystemEpochClock
 import dev.shadow.eclipselauncher.data.FileClipboard
+import dev.shadow.eclipselauncher.data.InstallCoordinator
 import dev.shadow.eclipselauncher.data.LauncherState
 import dev.shadow.eclipselauncher.data.TaskCenter
 
@@ -25,4 +26,16 @@ class AppContainer(context: Context) {
     val tasks = TaskCenter()
 
     val fileClipboard = FileClipboard()
+
+    val installer = InstallCoordinator(
+        context = appContext,
+        minecraftDir = state.minecraftDir,
+        tasks = tasks,
+    )
+
+    init {
+        // A crash during a commit leaves a journal. Recover it before the user
+        // can start another install; the transaction repeats this check too.
+        installer.recover()
+    }
 }

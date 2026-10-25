@@ -46,15 +46,29 @@
     <string name="home_new_instance">New instance</string>
     <string name="home_no_instance">No instance</string>
     <string name="home_play">Play</string>
-    <string name="home_play_unavailable_body">This build creates and manages the instance, but it does not install or launch Minecraft yet.</string>
+    <string name="home_play_unavailable_body">This build downloads and installs the Vanilla game files, but it does not launch Minecraft yet.</string>
     <string name="home_play_unavailable_title">Game runtime not connected</string>
     <string name="home_quick_actions">Quick Actions</string>
     <string name="home_tasks">Tasks</string>
     <string name="home_tasks_cancel">Cancel</string>
-    <string name="home_tasks_empty_body">Installs, downloads and log exports will appear here while they run.</string>
+    <string name="home_tasks_empty_body">Installs and downloads appear here while they run.</string>
     <string name="home_tasks_empty_title">No tasks</string>
+    <string name="home_tasks_failed">The task failed</string>
     <string name="home_tasks_pause">Pause</string>
+    <string name="home_tasks_paused">Paused</string>
+    <string name="home_tasks_phase_committing">Committing instance</string>
+    <string name="home_tasks_phase_downloading">Downloading</string>
+    <string name="home_tasks_phase_preparing">Preparing metadata</string>
+    <string name="home_tasks_progress_bytes">%1$s of %2$s</string>
+    <string name="home_tasks_progress_files">%1$d of %2$d files</string>
     <string name="home_tasks_resume">Resume</string>
+    <string name="home_tasks_retry">Retry</string>
+
+    <!-- Install -->
+    <string name="install_loader_local_body">This build creates the %1$s instance, but it does not install the %1$s loader yet. Choose a Vanilla instance to download the game.</string>
+    <string name="install_loader_local_title">%1$s is local-only</string>
+    <string name="install_recovery_title">Recovering an interrupted install</string>
+    <string name="install_task_title">Installing Minecraft %1$s</string>
 
     <!-- Create instance -->
     <string name="create_instance_coming_soon_body">The %1$s loader is a placeholder in this build. Choose Vanilla, Fabric or Modpack to create a local instance.</string>
