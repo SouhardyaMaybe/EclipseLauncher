@@ -83,7 +83,7 @@ fun AccountsScreen(
             Spacer(Modifier.height(12.dp))
             EclipseBevelButton(
                 text = stringResource(R.string.account_local_save),
-                onClick = { state.setAccountName(name) },
+                onClick = { state.updateAccountName(name) },
                 primary = true,
             )
 

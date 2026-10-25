@@ -107,7 +107,7 @@ fun SettingsScreen(
                 ) {
                     EclipseBevelButton(
                         text = stringResource(R.string.settings_curseforge_save),
-                        onClick = { state.setCurseForgeKey(keyDraft) },
+                        onClick = { state.updateCurseForgeKey(keyDraft) },
                         modifier = Modifier.weight(1f),
                         primary = true,
                         height = 48.dp,
@@ -116,7 +116,7 @@ fun SettingsScreen(
                         EclipseBevelButton(
                             text = stringResource(R.string.settings_curseforge_clear),
                             onClick = {
-                                state.setCurseForgeKey("")
+                                state.updateCurseForgeKey("")
                                 keyDraft = ""
                             },
                             modifier = Modifier.weight(1f),

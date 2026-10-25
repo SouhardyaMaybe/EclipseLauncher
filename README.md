@@ -44,17 +44,28 @@ All JNI entry points use the **`pw_`** prefix and are registered through a singl
 
 ## Current implementation
 
-The repository now contains the first executable shell:
+The repository contains the signed-off single-screen launcher shell:
 
 | Module | Contents |
 |---|---|
-| `:app` | `MainActivity`, Navigation 3 host, `AppContainer`, the five screens |
-| `:designsystem` | Brand palette, status tokens, type, shapes, paper card, status rule, arc |
+| `:app` | `MainActivity`, the `EclipseApp` back stack, `AppContainer`, local instance/account state, log rotation, file operations, task registry, and the Quick Actions surface |
+| `:designsystem` | Ore-inspired palette, Monocraft typography, square shapes, original 12 × 12 pixel glyphs, bevel buttons, menu rows, tabs, panels and dialogs |
 | `:core:common` | `Failure` taxonomy, `AppResult`, `EpochClock` |
 | `:core:model` | `InstanceSummary`, `InstanceId`, `LoaderKind` |
 | `:host` | `GameActivity` in `:game` and `InstallerActivity` in `:installer` |
 
-It is a shell, not a launcher: it installs nothing, authenticates nobody and launches no game. The screens say that plainly. The next milestone is the Phase 0 spike set in doc 12: JRE boot, SDL window/EGL, Vulkan probe, Sandpaper triangle and installer transaction.
+What works today:
+
+- **Main page:** account bar, exactly one **Quick Actions** section (Controls, Manage Logs, File Manager, Manage Content, Install a .jar), and the bottom instance selector + edit pencil + Play bar.
+- **Create Instance:** the reference launcher's centered, full-width-button layout. Vanilla and Fabric create a local instance; Quilt, Forge, NeoForge and OptiFine are visible placeholders; Modpack opens Discover → Modpacks.
+- **Manage Content:** Installed/Discover tabs, six content types, game-version/loader/source filters, and an auto-install-dependencies setting. Modrinth and CurseForge catalogue clients are not connected yet, so Discover says so.
+- **Manage Logs:** `.minecraft/logs/<instance>/` with `latestlog.txt` rotation, multiselect, copy/cut/paste, rename, delete, share and an in-app text viewer.
+- **File Manager:** read/write browser rooted at `.minecraft`, with folder creation, rename, delete, copy/cut/paste and share.
+- **Install a .jar:** system picker → direct handoff to `InstallerActivity`; no extra target/run screen.
+- **Settings:** local account, Ore theme value, CurseForge API key (stored on device only; source stays **Coming soon** until a key is saved), license and disclaimers.
+- **Accounts:** local account is kept without a warning note. Microsoft device-code sign-in is visibly unconfigured until the project's own Entra client ID is supplied through `ECLIPSE_MS_CLIENT_ID`; no third-party launcher client ID is bundled.
+
+It is still a shell, not a complete launcher: it does not install or launch Minecraft, and it does not authenticate a Microsoft account yet. The screens say that plainly. The next milestone is the Phase 0 spike set in doc 12: JRE boot, SDL window/EGL, Vulkan probe, Sandpaper triangle and installer transaction.
 
 ---
 
@@ -91,8 +102,8 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 ## Status
 
 - Research dossier: chapters 00–14 complete; implementation gated on sign-off.
-- Launcher code: first shell scaffolded (`:app`, `:designsystem`, `:core:*`, `:host`). CI compiles the JVM core, runs its tests, builds debug and unsigned release APKs, and verifies both with a binary-manifest gate and a 16 KB ELF gate.
-- Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNative, EclipseJRE and EclipseComponents still need their official-upstream rework.
+- Launcher code: the signed-off single-screen Quick Actions UI is implemented on top of the original `:app`, `:designsystem`, `:core:*` and `:host` modules. CI compiles the JVM core, runs its tests, builds debug and unsigned release APKs, and verifies both with a binary-manifest gate and a 16 KB ELF gate.
+- Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNatives rework is pushed; EclipseJRE and EclipseComponents still need their official-upstream rework.
 - No production APK has been released yet, and no release signing secrets are configured.
 
 ---

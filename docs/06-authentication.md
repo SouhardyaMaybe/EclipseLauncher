@@ -11,9 +11,10 @@
 
 | Question | Answer |
 |---|---|
-| Which accounts work? | Microsoft accounts only. Legacy Mojang accounts were migrated and no longer authenticate. |
+| Which accounts work? | Microsoft accounts for a real Minecraft session. A **Local account** is a device-local display profile for the launcher UI; it does not authenticate, prove ownership or launch online. Ely.by and other third-party providers are removed. |
 | Which OAuth flow? | **Device authorization grant** (RFC 8628) against the `consumers` tenant, public client, no secret. |
 | Which scope? | `XboxLive.signin offline_access`. `openid profile` is not needed for launch. |
+| Where does the client ID come from? | The project's own Entra public-client registration, supplied as `ECLIPSE_MS_CLIENT_ID` at build time. The default is empty, and no third-party launcher client ID is bundled. |
 | Where does the chain end? | A Minecraft Services access token, a profile UUID/name, and an entitlement check. |
 | What is the hard gate? | Mojang's **AppID allowlist**. An unapproved client gets HTTP 403 `Invalid app registration` at `login_with_xbox`. |
 | What is stored? | The Microsoft refresh token, encrypted with an Android Keystore key; the profile and expiry metadata in plain JSON. |
@@ -414,11 +415,17 @@ files/accounts/index.json # ordered account list, active account id
 
 ### 9.1 First run
 
-1. **Welcome** — one sentence, the Minecraft disclaimer, and “Sign in with Microsoft”.
-2. **Device code** — large code, Copy, Open browser. The screen explains that the browser can be on another device.
-3. **Progress** — “Waiting…”, then “Checking ownership…”, then “Loading profile…”.
-4. **Success** — avatar/name, “Java Edition owned”, and the first instance suggestion.
-5. **Failure** — the exact stage, the exact reason, and one primary action.
+The signed-off v1 surface does not force a Microsoft sign-in:
+
+1. **Main page** — a local account named **Player** is active, and no instance exists yet.
+2. **Create Instance** — the player chooses Vanilla or Fabric and gets a local instance. Quilt, Forge, NeoForge and OptiFine are visible placeholders.
+3. **Accounts** — the local account can be renamed. There is no extra warning note on it. Microsoft sign-in is a separate, clearly labelled path.
+4. **Microsoft device code (when configured)** — large code, Copy, Open browser. The screen explains that the browser can be on another device.
+5. **Progress** — “Waiting…”, then “Checking ownership…”, then “Loading profile…”.
+6. **Success** — avatar/name, “Java Edition owned”, and the first instance suggestion.
+7. **Failure** — the exact stage, the exact reason, and one primary action.
+
+When `ECLIPSE_MS_CLIENT_ID` is empty, the Microsoft action is disabled and the screen says sign-in is not configured in this build. It does not fall back to another launcher's client ID, and it does not pretend the local account is an online session.
 
 The flow should take under 60 seconds on a phone with a password manager. It must survive rotation, process death and a trip to the browser.
 
@@ -608,6 +615,8 @@ The launcher's HTTP layer is injected with a base URL in debug builds only; rele
 7. **Demo mode is separate and only ships if 26.3 accepts it without a real token.**
 8. **The required Minecraft disclaimer and a non-affiliation statement ship in the app, the README and the release page.**
 9. **The “Eclipse” trademark risk is documented and reviewed before 1.0.**
+10. **A local account is kept as a device-local display profile.** It carries no warning note, does not authenticate, and cannot launch online play.
+11. **No third-party launcher client ID ships.** Microsoft auth uses the project's own Entra registration or stays visibly unconfigured; Ely.by and other alternative providers are removed.
 
 ## 14. Open questions
 

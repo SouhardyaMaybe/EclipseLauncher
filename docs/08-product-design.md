@@ -1,7 +1,7 @@
 # 08 — Product design
 
-**Status:** product draft for sign-off, 2026-10-24.
-**Scope:** who Eclipse Launcher is for, what it promises, how the screens fit together, what every state looks like, how touch and controller input work, and how the product recovers when the game does not start. Visual tokens and component specifications are in [09 — Design system](09-design-system.md); the research behind them is in [10 — Design research and skills](10-design-research-and-skills.md).
+**Status:** signed off 2026-10-25. This revision replaces the five-destination shell with the single-screen Quick Actions surface that ships in v1.
+**Scope:** who Eclipse Launcher is for, what the signed-off v1 surface promises, how its screens fit together, what every state looks like, how touch and controller input work, and how the product recovers when the game does not start. Visual tokens and component specifications are in [09 — Design system](09-design-system.md); the research behind them is in [10 — Design research and skills](10-design-research-and-skills.md).
 **Evidence:** the competitor teardown in [01](01-landscape.md), the Android constraints in [04](04-android-platform.md), the launch/runtime model in [05](05-runtime-and-graphics.md), and the installer contract in [07](07-install-pipeline.md).
 **Labels:** **Verified**, **Observed**, **Inference**, **Decision**.
 
@@ -17,40 +17,57 @@ Eclipse Launcher is an Android launcher for **Minecraft: Java Edition**. It is n
 2. **Make modded play understandable** without turning the home screen into a control panel.
 3. **Turn failure into a next step** instead of a black screen, a silent crash or a log file the player cannot read.
 
-### 1.1 What v1 is
+### 1.1 What the signed-off v1 surface contains
 
-| Area | v1 |
+| Area | Signed-off v1 |
 |---|---|
-| Game versions | Current release (26.3) and snapshots; older releases on request |
-| Loaders | Vanilla, **Fabric** |
-| Content | **Modrinth** search, install, update; `.mrpack` packs |
-| Accounts | Microsoft device-code sign-in; multiple accounts |
-| Renderer | Native Vulkan 1.2 when the probe passes; otherwise Sandpaper GL 3.3 → GLES 3.2 |
-| Input | Touch overlay, physical mouse/keyboard, gamepad |
-| Distribution | GitHub Releases; no Play at launch |
-| Recovery | Crash detection, safe mode, log/report export, component repair |
+| Main page | One screen. Account bar at the top, exactly one section (**Quick Actions**), instance selector + edit + **Play** at the bottom. |
+| Quick Actions | **Controls**, **Manage Logs**, **File Manager**, **Manage Content**, **Install a .jar**. No other rows, tiles or cards. |
+| Navigation | No bottom navigation, rail or drawer. Pushed screens use the system back gesture. Dialogs cover tasks, instance editing and confirmations. |
+| Accounts | **Local account** is kept. Microsoft device-code sign-in is present as a visibly unconfigured path until the project owns an Entra client ID. No Ely.by or other third-party account provider. |
+| Create Instance | The reference layout: centered section titles, a divider, and full-width buttons. Vanilla and Fabric create a local instance; Quilt, Forge, NeoForge, OptiFine and Modpack are visible placeholders. |
+| Manage Content | **Installed** / **Discover** top tabs, then content types: Mods, Resource Packs, Data Packs, Shaders, Worlds, Modpacks. Discover filters: game version, loader, Modrinth/CurseForge, plus auto-install required dependencies. |
+| CurseForge | No bundled key. The source is **Coming soon** until the user adds their own key in **Settings → Miscellaneous**; clearing the key returns it to Coming soon. |
+| Logs | `.minecraft/logs/<instance>/`; first start creates `latestlog.txt`; the next process start renames the previous file to `YYYY-MM-DD_HH-mm-ss.txt` and creates a new `latestlog.txt`. Multiselect, copy, paste, cut, delete, rename, share and an in-app text viewer. |
+| File Manager | Opens the app-private `.minecraft` tree, read/write, with the reference launcher's in-app picker behaviour. It is a browser, not a shortcuts hub. |
+| Install a .jar | Tapping the row opens the system document picker. A selected `.jar` is handed straight to the installer process; there is no extra target or run screen. |
+| Play | Kept in the reference launcher's bottom-bar position. In this build it explains that the game runtime is not connected rather than faking progress. |
+| Visual system | Ore-inspired dark palette, Monocraft for chrome, system sans for prose, original 12×12 pixel glyphs, square bevels and 2 dp borders. |
+| Accessibility | 200% font scale, 48 dp targets, WCAG 2.2 AA contrast, visible focus, labels on every icon, no fake progress. |
 
 ### 1.2 What v1 is not
 
 - Not Play Store-first. Play's executable-code policy conflicts with downloading `client.jar` and runtimes.
-- Not a piracy tool. No offline auth, no alt manager, no bundled game files.
+- Not a piracy tool. No offline auth, no alt manager, no bundled game files, no "local account" launch bypass.
 - Not a Bedrock launcher.
 - Not a general-purpose Android file manager or emulator front-end.
 - Not a social platform. No friends list, chat network or marketplace of our own.
 - Not a benchmarking tool. Performance numbers exist to help the player, not to win screenshots.
 
-### 1.3 The scope boundary
+### 1.3 Connected in this build, and deliberately not connected
 
-| Deferred to v1.1 | Why |
+The signed-off surface is implemented. Backend services arrive behind it without adding a second navigation model.
+
+| Capability | State in this build | Honest surface |
+|---|---|---|
+| Local instance record and directories | Connected | Creating Vanilla/Fabric writes the record and the `.minecraft` tree. |
+| Log rotation and file operations | Connected | Real files, real rename/copy/cut/delete/share. |
+| `.jar` handoff | Connected to the installer process | The installer process shows the selected file; the pipeline is not connected yet. |
+| Microsoft device-code auth | Not configured | The Accounts screen says so. `ECLIPSE_MS_CLIENT_ID` is empty by default. |
+| Modrinth catalogue | Not connected | Discover shows real filters and an honest "Catalogue not connected" empty state. |
+| CurseForge catalogue | Not connected | Disabled with "Coming soon" until a user key exists; a saved key enables the source, not a fictional catalogue. |
+| Game runtime, JRE and natives | Not connected | Play explains that the runtime is not connected. No fake progress. |
+| Quilt, Forge, NeoForge, OptiFine installers | Placeholder | Buttons exist and say "coming soon"; they do not create a broken instance. |
+
+### 1.4 Deferred beyond v1
+
+| Deferred | Why |
 |---|---|
-| Quilt, NeoForge | Installer processors and a second loader matrix need their own test cycle |
-| Forge creation | Import-only until Foreman is proven |
-| CurseForge | API key, terms and rate limits; Modrinth covers the v1 content story |
-| OptiFine | Proprietary, invasive, unsupported |
-| Sash / custom AWT | v1 uses real headless `java.desktop`; Sash is a later compatibility layer |
-| Shader packs | Iris/Sodium are OpenGL renderer mods; support is content-dependent, not a v1 promise |
-| Resolution scaling, HDR | Surface and swapchain complexity; not needed for first-play |
-| Cloud sync | Account and privacy surface; local export is enough |
+| Full Quilt, Forge, NeoForge and OptiFine installers | Installer processors and a second loader matrix need their own test cycle. |
+| CurseForge catalogue client | API terms, rate limits and a user-supplied key; the settings path exists first. |
+| Modrinth search, install, update and `.mrpack` import | The UI is ready; the network client is the next milestone. |
+| Sash / custom AWT | v1 uses real headless `java.desktop`; Sash is a later compatibility layer. |
+| Cloud sync, telemetry, social features | Privacy surface; local export is enough. |
 
 ---
 
@@ -60,20 +77,20 @@ Eclipse Launcher is an Android launcher for **Minecraft: Java Edition**. It is n
 
 - Has a Microsoft account and owns Java Edition.
 - Plays on a phone or tablet because the PC is not always available.
-- Knows what “Fabric” and “shaders” mean, but does not want to configure a JVM.
+- Knows what "Fabric" and "shaders" mean, but does not want to configure a JVM.
 - Tried a legacy launcher, hit a crash or a 403, and does not know which layer failed.
 - Wants: sign in, pick a version, play; keep the world; not lose settings.
 
-**Design consequence:** the default path must never ask about heap, GC, renderer or JVM flags. Those exist, but behind “Advanced”.
+**Design consequence:** the default path must never ask about heap, GC, renderer or JVM flags. Those exist later, behind an advanced screen.
 
 ### 2.2 Secondary: the modpack player
 
-- Installs packs from Modrinth, often 100–300 mods.
+- Installs packs from Modrinth or CurseForge, often 100–300 mods.
 - Cares about pack version, loader version, mod updates and world compatibility.
 - Willing to read a log if the launcher points at the right line.
 - Wants: install a pack, update it without losing the world, disable a mod when it breaks.
 
-**Design consequence:** instance detail is a first-class screen, not a long-press menu. Pack metadata, loader and mod list are visible without entering settings.
+**Design consequence:** Manage Content is one surface with **Installed** and **Discover** views. The player does not need a second navigation tree to find a mod or a pack.
 
 ### 2.3 Tertiary: the couch/controller player
 
@@ -89,7 +106,7 @@ Eclipse Launcher is an Android launcher for **Minecraft: Java Edition**. It is n
 - Needs to understand what will be downloaded, how much space it takes, and whether a Microsoft Family is required.
 - Wants: no surprise purchases, no hidden downloads, clear consent.
 
-**Design consequence:** the install summary names sizes and sources; child-account errors explain the Family step; no dark-pattern “continue” that hides a 650 MB download.
+**Design consequence:** the install summary names sizes and sources; child-account errors explain the Family step; no dark-pattern "continue" that hides a 650 MB download.
 
 ### 2.5 Anti-persona
 
@@ -101,13 +118,13 @@ The user who wants to run five instances simultaneously, benchmark every GPU, or
 
 | Job | Current pain | Eclipse response |
 |---|---|---|
-| “Let me play the version I already have.” | Launcher updates, account expiry, renderer confusion | Home shows the last instance with one primary **Play**; the plan is precomputed |
-| “Install this modpack.” | Format ambiguity, loader mismatch, failed downloads | `.mrpack` import with a resolved dependency summary and a single install transaction |
-| “Why did it crash?” | Log file, no context, “exit code 1” | Structured report: stage, signal, library, last lines, one-tap safe mode |
-| “Make the controls usable.” | Desktop keybind assumptions | Touch overlay with presets and per-control sizing; gamepad mapping |
-| “Don't lose my world.” | Launcher wipes or re-creates the instance | Transactional installs, user files never in the managed manifest, export |
-| “Tell me the truth about my device.” | “Vulkan on/off” toggle that lies | Probe result with the exact missing extension/feature and a recommended path |
-| “Sign in without typing a password on a TV.” | Redirect flows and WebViews | Device code with a short, copyable code and a browser on any device |
+| "Let me play the version I already have." | Launcher updates, account expiry, renderer confusion | The bottom bar always shows the selected instance and one primary **Play** action. |
+| "Install this modpack." | Format ambiguity, loader mismatch, failed downloads | Discover → Modpacks, with game-version and loader filters and dependency handling. |
+| "Why did it crash?" | Log file, no context, "exit code 1" | Manage Logs opens the instance log directory and an in-app viewer; crash reporting builds on it. |
+| "Make the controls usable." | Desktop keybind assumptions | Controls is a first-class Quick Action; presets and per-control sizing arrive with the runtime. |
+| "Don't lose my world." | Launcher wipes or re-creates the instance | Transactional installs later; the File Manager and Logs never delete user content without confirmation. |
+| "Tell me the truth about my device." | "Vulkan on/off" toggle that lies | Probe result with the exact missing extension/feature and a recommended path. |
+| "Sign in without typing a password on a TV." | Redirect flows and WebViews | Device code with a short, copyable code and a browser on any device. |
 
 ---
 
@@ -116,31 +133,24 @@ The user who wants to run five instances simultaneously, benchmark every GPU, or
 1. **Play is the verb.** Every screen has one obvious next action. If a screen has three equal-weight buttons, it is wrong.
 2. **Evidence over toggles.** Show the probe result, the measured heap, the actual missing extension. Do not offer a switch that cannot work.
 3. **Progressive disclosure.** Defaults are good; advanced controls are one level down and searchable.
-4. **Never lie about state.** “Installed” means verified. “Running” means the surface is alive. “Crashed” means we have a reason.
+4. **Never lie about state.** "Installed" means verified. "Running" means the surface is alive. "Crashed" means we have a reason.
 5. **Recovery is a feature, not an error page.** The crash screen is designed with the same care as the home screen.
 6. **Respect user content.** Worlds, options, screenshots and manually added mods are never deleted by repair, update or uninstall without explicit confirmation.
 7. **Offline shell.** The launcher opens, lists instances and reads logs without a network. Only installation and sign-in require connectivity.
 8. **One-handed by default.** Primary actions live in the lower third on phones; destructive actions do not.
 9. **Accessible is the baseline.** Large text, TalkBack, switch access, reduced motion and high contrast are not a later theme.
-10. **No dark patterns.** No fake urgency, no pre-checked bundles, no hidden downloads, no “rate us” interruption.
+10. **No dark patterns.** No fake urgency, no pre-checked bundles, no hidden downloads, no "rate us" interruption.
 
 ---
 
 ## 5. Success metrics
 
-Metrics are **local-first and opt-in**. The launcher computes them on-device; nothing is uploaded unless the user exports a report or opts into diagnostics.
-
-| Metric | Definition | v1 target |
-|---|---|---|
-| Time to first world | First launch → world fully loaded, median on T1 | < 4 min after install |
-| First-launch success | Launches reaching the main menu / total first launches | ≥ 85% on supported devices |
-| Launch success (steady state) | Launches reaching a world / total launches | ≥ 95% |
-| Recovery success | Crashed launches recovered by safe mode without reinstall | ≥ 70% |
-| Install completion | Installs completed / started, excluding user cancel | ≥ 90% |
-| Time to install vanilla | 100 Mbit/s, T1 device | < 6 min |
-| Touch-control adoption | Sessions with overlay enabled / game sessions | Informational |
-| Account auth success | Device-code flows completed / started | ≥ 80% (excluding user cancel) |
-| Crash-report export | Crashed sessions with an exported report | ≥ 40% |
+| Signal | Target |
+|---|---|
+| Time to install vanilla | 100 Mbit/s, T1 device: < 6 min |
+| Touch-control adoption | Sessions with overlay enabled / game sessions: informational |
+| Account auth success | Device-code flows completed / started: ≥ 80% (excluding user cancel) |
+| Crash-report export | Crashed sessions with an exported report: ≥ 40% |
 
 **Guardrails:** uninstall rate after a crash, support issues per 1,000 installs, ANR rate, UI-process OOM rate. A feature that improves time-to-play but raises crash-related uninstalls is not a win.
 
@@ -148,305 +158,237 @@ Metrics are **local-first and opt-in**. The launcher computes them on-device; no
 
 ## 6. Information architecture
 
-### 6.1 Top level
+### 6.1 The single surface
 
 ```
-Home            Instances          Discover           Downloads         Settings
-├─ Continue      ├─ All             ├─ Modpacks        ├─ Active          ├─ Account
-├─ Last played   ├─ Vanilla         ├─ Mods            ├─ Queued          ├─ Appearance
-├─ Quick actions ├─ Modded          ├─ Resource packs  └─ History         ├─ Controls
-└─ Status        └─ Import          └─ Shaders?*                         ├─ Storage
-                                                                          ├─ Diagnostics
-                                                                          └─ About
+┌──────────────────────────────────────────────────────┐
+│  [account]  Player                         [tasks] ⚙ │  account bar
+├──────────────────────────────────────────────────────┤
+│                                                      │
+│                    QUICK ACTIONS                     │  exactly one
+│  ──────────────────────────────────────────────────  │  section
+│  [icon]  Controls                                  > │
+│  ──────────────────────────────────────────────────  │
+│  [icon]  Manage Logs                               > │
+│  ──────────────────────────────────────────────────  │
+│  [icon]  File Manager                              > │
+│  ──────────────────────────────────────────────────  │
+│  [icon]  Manage Content                            > │
+│  ──────────────────────────────────────────────────  │
+│  [icon]  Install a .jar                            > │
+│  ──────────────────────────────────────────────────  │
+│                                                      │
+├──────────────────────────────────────────────────────┤
+│  New Instance · 26.3 · Fabric          [edit] [PLAY] │  instance bar
+└──────────────────────────────────────────────────────┘
 ```
 
-`*` Shaders are content-dependent; the Discover tab shows them only when a compatible renderer mod is present or the user asks.
+There is no second main page and no top-level tab bar. The account bar, Quick Actions section and instance bar are chrome around one surface, not additional sections.
 
-### 6.2 Adaptive navigation
+### 6.2 Pushed screens
 
-| Window class | Navigation | Content |
+| Screen | Opened from | Back behaviour |
 |---|---|---|
-| Compact (< 600 dp) | Bottom bar, 5 destinations | Single pane; detail pushes |
-| Medium (600–839 dp) | Navigation rail | List-detail |
-| Expanded (≥ 840 dp) | Permanent drawer | List-detail-detail |
-| Desktop/freeform | Drawer + toolbar | Resizable panes |
+| **Create Instance** | Instance bar → New instance; edit pencil when no instance exists; Modpack row | Returns to the main page. |
+| **Controls** | Quick Actions → Controls | Returns to the main page. |
+| **Manage Logs** | Quick Actions → Manage Logs | Exits selection mode first, then returns. |
+| **File Manager** | Quick Actions → File Manager; "Open folder" from content | Goes up one folder, then returns. |
+| **Manage Content** | Quick Actions → Manage Content; Create Instance → Modpack | Returns to the main page. |
+| **Settings** | Gear in the account bar | Returns to the main page. |
+| **Accounts** | Account area or Settings → Account | Returns to Settings or the main page. |
+| **Text viewer** | A log or text file | Returns to the browser that opened it. |
 
-Built with Compose Material 3 adaptive APIs and Navigation 3. The game activity is separate and full-screen; it does not participate in the adaptive layout.
+Dialogs do not create history entries: **Tasks**, **Edit instance**, **Rename**, **Delete**, **Message** and **Name prompt** are overlays on the current screen.
 
-### 6.3 Why five destinations
+### 6.3 Why one surface
 
-Home, Instances, Discover, Downloads, Settings map to the five jobs. Account is not a destination; it is a chip in the top bar and a section in Settings. Logs are not a destination; they live in instance detail and diagnostics.
+The reference launcher puts the five jobs a player actually performs — controls, logs, files, content and local `.jar` installs — on one screen, with the selected instance and Play always visible. Splitting those jobs across a five-tab shell adds navigation without adding capability. The single surface keeps the primary action in the lower third, keeps account and tasks in the top bar, and lets Manage Content own the Installed/Discover split where it belongs.
 
-**Decision:** no “store” tab. Discover is content discovery, not commerce. There are no prices, carts or checkout.
+**Decision:** no bottom navigation, no navigation rail, no drawer in v1. A tablet or Chromebook gets the same surface with more breathing room, not a different information architecture.
 
 ---
 
 ## 7. Screen-by-screen
 
-### 7.1 Home
+### 7.1 Main page
+
+- **Account bar (top):** local account name and "Local account" subtitle on the left; **Tasks** icon (small, 48 dp target) immediately left of **Settings** on the right. The Tasks icon carries a numeric badge when tasks are active.
+- **Quick Actions:** centered heading, 2 dp divider, then exactly five full-width rows. Each row has an original pixel icon, a label and a chevron. Row height is at least 66 dp; the whole row is the target.
+- **Instance bar (bottom):** instance name and `version · loader` on the left, a chevron indicating a selector, an edit pencil, and a green **Play** button. The selector opens a menu with **Edit instance** (when one exists) and **New instance**. The pencil edits the current instance, or creates one when none exists.
+- **No inline progress panel.** Installs, downloads and exports live in the Tasks dialog.
+
+**Empty state:** the instance bar reads **No instance** and **Create an instance**; Play is disabled. There is no fake instance, no default `1.7.10`, and no placeholder row on the main page.
+
+### 7.2 Tasks dialog
+
+- Opened by the Tasks icon.
+- Empty state: **No tasks** and one sentence explaining what will appear there.
+- Each task shows a title, a detail line, and **Pause** / **Resume** and **Cancel**. There is no percentage unless a real transaction reports one.
+- The badge counts tasks in the registry; it does not invent background work.
+
+### 7.3 Create Instance
+
+The layout follows the reference launcher literally:
 
 ```
-┌──────────────────────────────────────────────┐
-│  Eclipse            [account chip]  [search] │
-│                                              │
-│  ┌────────────────────────────────────────┐  │
-│  │  Continue                              │  │
-│  │  Aether SMP · Fabric 0.20.1 · 26.3     │  │
-│  │  Last played 2h ago · 1.2 GB           │  │
-│  │                                        │  │
-│  │            [   PLAY   ]                │  │
-│  └────────────────────────────────────────┘  │
-│                                              │
-│  Quick actions                               │
-│  [ New instance ] [ Import pack ] [ Repair ] │
-│                                              │
-│  Recent                                      │
-│  • Creative Test · 26.3 · yesterday          │
-│  • Vanilla 26.3 · 3 days ago                 │
-│                                              │
-│  [Home] [Instances] [Discover] [Downloads] [Settings] │
-└──────────────────────────────────────────────┘
+                 Create Instance
+  ──────────────────────────────────────────────
+              Vanilla-like versions
+  [                Vanilla                   ]
+  [                OptiFine                  ]
+
+                  Modded versions
+  [                 Fabric                   ]
+  [                 Quilt                    ]
+  [                 Forge                    ]
+  [                NeoForge                  ]
+  [                 Modpack                  ]
 ```
 
-Rules:
+- Centered section titles, thick dividers, full-width square buttons, generous vertical spacing.
+- No cards, chips, badges or explanatory rows inside the picker.
+- **Vanilla** and **Fabric** create a local instance with the default game version and return to the main page.
+- **Quilt**, **Forge**, **NeoForge** and **OptiFine** show a "coming soon" message. They do not create an instance.
+- **Modpack** opens Manage Content → Discover → Modpacks.
+- The instance editor (pencil) changes the name and Minecraft version; the loader is shown read-only.
 
-- The hero card is the **active instance**, not a generic welcome. If none exists, it becomes a “Create your first instance” card.
-- **Play** is the largest target on the screen, at least 56 dp tall, lower half on phones.
-- The status line answers: what version, what loader, when last played, how big.
-- If the account is expired or the instance is broken, the primary button changes to **Fix** / **Sign in** with a one-line reason.
-- “Quick actions” are text buttons, not a grid of six icons.
-- Recent instances are a compact list; tapping opens detail, long-press offers Play/Export/Delete.
+### 7.4 Manage Content
 
-**Empty state:** a single illustration, one sentence, and **Create instance**. No carousel, no feature tour.
+**Top-level tabs:** **Installed** | **Discover**.
+**Content-type tabs:** Mods, Resource Packs, Data Packs, Shaders, Worlds, Modpacks. The type row scrolls horizontally rather than shrinking labels.
 
-### 7.2 Instances
+**Installed**
 
-- Segmented filter: **All / Vanilla / Modded / Packs**.
-- Each row: icon or generated color tile, name, version + loader, size, last played, status dot.
-- Sort: last played (default), name, size, date created.
-- Multi-select via long-press for export/delete; no drag-to-reorder in v1.
-- FAB: **New instance**; secondary action in overflow: **Import**.
+- Lists the real contents of `.minecraft/instances/<instance>/<type>/` (Worlds uses `saves/`).
+- A file row opens a details dialog with **Open**, **Open folder**, **Share** and **Delete**. Destructive actions confirm first.
+- Empty state: **Nothing installed**, with a sentence that points to Discover or File Manager.
 
-**Status vocabulary:** Ready, Needs repair, Needs sign-in, Updating, Broken (with reason). Never “Unknown” without a path to diagnostics.
+**Discover**
 
-### 7.3 Instance detail
+- Filters: **Game version**, **Loader**, **Source** (Modrinth / CurseForge).
+- **Auto-install required dependencies** is a real setting, persisted on the device.
+- No visual sort control. Mod version lists, when the catalogue client arrives, follow Modrinth's default oldest → newest order.
+- Compatibility choice, when versions exist: newest compatible release, then beta, then alpha. If none is compatible, install is disabled with the reason.
+- CurseForge is disabled and labelled **Coming soon** until a key is saved. A saved key enables the source; clearing it returns to Coming soon.
+- Worlds are not a Modrinth category, so Discover → Worlds explains that and offers the installed browser.
+- With no catalogue client, the screen shows **Catalogue not connected** and does not invent projects.
 
-Header: icon, name (editable inline), version, loader, size, last played. Primary **Play**; overflow: Export, Duplicate, Delete.
+### 7.5 Manage Logs
 
-Tabs:
+- Directory: `.minecraft/logs/<instance>/`.
+- On the first launcher start for an instance, create `latestlog.txt`.
+- On the next process start, rename the previous `latestlog.txt` to `YYYY-MM-DD_HH-mm-ss.txt` and create a new `latestlog.txt`. Activity recreation is not a new start.
+- List shows file name and size, newest first.
+- **Select** enters multiselect. Actions: **Copy**, **Cut**, **Paste**, **Rename** (one file), **Delete** (confirmed), **Share** (files only).
+- Tapping a file opens the in-app text viewer. Binary files show **No preview** with Share; files larger than the preview limit show the first part with a clear notice.
+- Empty state: **No logs yet**, with the rotation rule in one sentence.
+- No instance: **No instance**, with a sentence explaining that logs need an instance.
 
-| Tab | Content |
-|---|---|
-| **Overview** | Launch summary, device fit, recent activity, worlds, quick settings (render distance, heap preset) |
-| **Content** | Mods, resource packs, shader packs; enable/disable, update, add from Modrinth; dependency warnings |
-| **Worlds** | Saves with size, last played, game mode if readable; export/import; open folder |
-| **Logs** | Latest log tail, crash reports, “Export diagnostics” |
-| **Settings** | Per-instance overrides: renderer, heap, resolution, JVM args (advanced), Java runtime |
+### 7.6 File Manager
 
-**Decision:** “Content” is a tab, not a separate destination. A player thinks in instances, not in global mod lists.
+- Root is the app-private `.minecraft` directory. It is a browser, not a shortcuts hub.
+- Read/write: open folders, open text files in the viewer, create folders, rename, delete, copy, cut, paste, share.
+- Path bar shows `.minecraft` plus the relative path.
+- **Up** goes to the parent; system Back does the same, then leaves the screen. Selection mode is exited before navigation.
+- New folder and rename use a name prompt that rejects empty names, slashes and existing names.
+- Destructive actions confirm and state that they cannot be undone.
+- Empty folder: **This folder is empty**, with a sentence about files added to the instance.
 
-### 7.4 Create instance
+### 7.7 Install a .jar
 
-A three-step sheet, not a wizard with seven pages:
+- Tapping the Quick Action opens the system document picker directly.
+- The picker accepts any document so providers that do not label `.jar` files still work; the display name is checked for a `.jar` suffix.
+- A valid file is handed to `InstallerActivity` with a read grant and the `modUri` extra. The installer process opens immediately and shows the selected file. There is no second target/run screen.
+- A non-`.jar` selection shows a short message and returns to the main page.
 
-1. **Version** — release/snapshot toggle, search, recommended badge. Show release date and Java requirement.
-2. **Loader** — Vanilla, Fabric (stable), with the loader version behind “Choose version”. Quilt/NeoForge show “Coming in 1.1” and are disabled, not hidden.
-3. **Name & review** — generated name (`Vanilla 26.3`), editable; size estimate; device-fit line (“Vulkan 1.2 detected — recommended path” or “GLES 3.2 — Sandpaper compatibility”); **Create**.
+### 7.8 Settings
 
-Advanced (collapsed): custom resolution, heap preset, JVM args, data directory. Changing these later is allowed.
+Sections are a flat list, not a dashboard:
 
-### 7.5 Discover
+1. **Account** — opens the Accounts screen.
+2. **Appearance** — theme value (Ore, dark) in this build.
+3. **Miscellaneous** — **CurseForge API key** field, Save, Clear, and a status line: **CurseForge: Coming soon** or **CurseForge: enabled on this device**.
+4. **About** — version, Apache-2.0 license, source, Monocraft OFL notice, Minecraft disclaimer, Eclipse Foundation non-affiliation.
 
-- Search field with debounce; recent searches; no auto-suggest that leaks keystrokes.
-- Chips: Modpacks, Mods, Resource packs, Shaders (conditional).
-- Cards show title, author, downloads, last updated, supported MC versions, loader badges.
-- Project detail: description, gallery, versions, dependencies, license, external links.
-- Install sheet: target instance (or new), version, required dependencies, size, “This pack includes 187 files” summary.
+The key is stored on the device only. It is never bundled, logged or uploaded. A blank key keeps CurseForge disabled.
 
-**Trust:** show the source (Modrinth), the license, and whether the file is hosted on Modrinth. Never show a download button for a file we cannot hash.
+### 7.9 Accounts
 
-### 7.6 Downloads
+- **Local account** is the active account in this build. The player can edit the display name. There is no extra warning note on the local account.
+- **Microsoft account** explains that sign-in uses the device-code flow and that this build has no client ID. The action is disabled until the project's own Entra registration supplies `ECLIPSE_MS_CLIENT_ID`.
+- No Ely.by, no alternative auth provider, no offline-auth claim.
+- A successful Microsoft flow will add an account; the local account remains available as a separate, clearly labelled option.
 
-- Active: phase, percent, bytes, speed, ETA, pause/cancel.
-- Queued: order, size, reason for waiting.
-- History: completed/failed/cancelled, with “Retry” and “View log”.
-- A failed download expands inline to the exact file, HTTP status and next action; no modal.
+### 7.10 Controls
 
-### 7.7 Settings
+- The screen exists as a Quick Action and explains that touch, keyboard, mouse and gamepad mapping arrive with the game runtime.
+- No fake sliders or toggles that do not affect a running game.
 
-Top-level sections:
+### 7.11 Play
 
-1. **Account** — active account, add/switch, sign out, re-auth.
-2. **Appearance** — theme (system/light/dark), dynamic color, UI scale, reduced motion.
-3. **Controls** — touch overlay presets, button size/opacity, gamepad deadzones, keyboard layout.
-4. **Game defaults** — heap preset, renderer policy, render distance, FPS cap, audio.
-5. **Storage** — install location, used/free, GC, move instance.
-6. **Diagnostics** — log level, export report, renderer probe, component status.
-7. **About** — version, licenses, source, privacy, disclaimer.
-
-**Rule:** settings are searchable, and every setting explains its default in one sentence. “Advanced” is a section, not a junk drawer.
-
-### 7.8 Launch overlay
-
-The launch sequence is a full-screen surface with a small status card:
-
-```
-Preparing Aether SMP
-✓ Verifying files
-✓ Starting runtime
-• Loading Minecraft…
-[ Cancel ]
-```
-
-- Progress is staged, not a fake infinite spinner.
-- The card can be dismissed to a pill; the game surface takes over when ready.
-- On failure, the card expands into the crash sheet (below).
-- The back gesture cancels a launch that has not reached the game; once the game is running, Back is Escape.
-
-### 7.9 Crash sheet
-
-```
-Minecraft stopped unexpectedly
-Stage: graphics initialization
-Signal: SIGSEGV in libsandpaper.so +0x1a24c
-
-What this usually means
-The GL compatibility layer crashed while creating the context.
-
-[ Try safe mode ]  [ Export report ]  [ Close ]
-```
-
-- **Stage** is one of: install, verify, JVM start, game init, graphics init, world load, runtime.
-- **Signal/library/offset** is shown in monospace, copyable.
-- **What this usually means** is a short, honest explanation; if we do not know, say so.
-- Safe mode is the primary action when the same instance crashed twice within 10 minutes.
-- “Export report” opens the file list before sharing.
-
-### 7.10 Safe mode
-
-A normal launch with a recorded flag, presented as a checklist:
-
-- Disable mods (move `mods/` to `mods.disabled-<timestamp>/`)
-- Force OpenGL (skip Vulkan)
-- Lower heap to 1 GB and render distance to 4
-- Reset renderer cache
-- Start anyway
-
-Each item explains what it changes and how to undo it. The launcher never silently applies safe mode.
-
-### 7.11 In-game overlay
-
-A small, translucent handle at the screen edge opens:
-
-- **Pause / Resume** (sends Escape or the game's pause)
-- **Controls** (toggle overlay, edit layout)
-- **Keyboard** (show IME)
-- **Screenshot** (capture the surface, save to Pictures/Eclipse)
-- **Performance** (FPS, frame time, memory, renderer)
-- **Exit game** (confirm; graceful `_exit` after save)
-
-The overlay is an Android view above the surface, not an in-game mod. It must not steal input from the game when closed. It respects cutouts and the IME inset.
+- The Play button is always in the bottom bar, in the reference launcher's position.
+- With no instance, it is disabled and the bar offers creation.
+- With an instance but no runtime, it opens a message: **Game runtime not connected**, with one sentence explaining that this build creates and manages the instance but does not install or launch Minecraft.
+- No progress bar, no fake download, no "almost there" state.
 
 ---
 
-## 8. First-run and onboarding
+## 8. First run and onboarding
 
-### 8.1 The four minutes
+### 8.1 The current first run
 
-| Minute | What happens | What the user sees |
-|---|---|---|
-| 0:00 | Welcome | One sentence, disclaimer, **Get started** |
-| 0:20 | Sign in | Device code, Copy/Open browser, progress |
-| 1:30 | Device check | “Your device: Vulkan 1.2 / 8 GB / arm64 — recommended path: Vulkan” |
-| 2:00 | Runtime download | Size, speed, pause; “You can keep using the app” |
-| 3:30 | Create instance | Version preselected to latest release; **Create** |
-| 4:00 | Play | Hero card with **Play** |
+1. The app opens on the main page with a local account named **Player** and no instance.
+2. The player taps the instance bar or the edit pencil, chooses a loader, and gets a local instance.
+3. The instance bar now shows the name, version and loader; Play explains that the runtime is not connected.
+4. Logs and the File Manager are immediately usable; the log directory is created with the instance.
 
-If the user is already signed in (reinstall with a restored account? tokens are not backed up), skip to device check. If offline, allow browsing and explain that sign-in/download need a connection.
+There is no multi-page welcome tour, no forced Microsoft sign-in, and no permission request on first launch.
 
 ### 8.2 What we ask, and what we do not
 
-We ask:
-
-- Microsoft sign-in (required to play).
-- Nothing else. No email, no username, no birthday, no marketing consent.
-
-We infer:
-
-- Device RAM, ABI, API, GPU strings, GLES/Vulkan capability.
-- Free storage.
-- Whether a controller is connected.
-
-We do not ask the user to choose a renderer, heap, GC, JVM version or resolution on first run.
+- We ask for a loader and a name only when the player creates an instance.
+- We do not ask for a Microsoft password in our UI.
+- We do not request storage permissions; all launcher files live in app-private storage.
+- We do not pre-select a game version we cannot install.
 
 ### 8.3 Permission timing
 
-| Permission | When | Why |
-|---|---|---|
-| Notifications | After the first download is queued | Progress and completion |
-| `ACCESS_LOCAL_NETWORK` (API 37+) | When the user opens “LAN world” or “Add server” | Multiplayer discovery |
-| Storage/SAF | When importing/exporting | No broad storage permission |
-| Camera/mic | Never | Not a feature |
-
-No permission prompt on first launch before the user understands why.
+- **Notifications:** only when a real long-running task exists.
+- **Network:** declared for future catalogue/auth work; the shell opens offline.
+- **Storage:** none; the File Manager is scoped to `.minecraft`.
 
 ---
 
 ## 9. Touch controls
 
+The control overlay is a runtime feature. The product requirements are recorded here so the UI does not grow a second, conflicting control surface:
+
 ### 9.1 Default layout
 
-```
-┌──────────────────────────────────────────────┐
-│ [pause]                            [F3?]     │
-│                                              │
-│                                      [jump]  │
-│      ┌───────────────┐                       │
-│      │               │               [sneak] │
-│      │   look area   │                       │
-│      │               │      [inventory]      │
-│      └───────────────┘                       │
-│   [◀] [▲] [▼] [▶]        [attack] [use]      │
-│   [hotbar 1..9]                              │
-└──────────────────────────────────────────────┘
-```
-
-- Look area: relative mouse deltas; one finger; ignores pointers that started on a button.
-- Movement: a virtual stick or D-pad (user choice); default D-pad for precision.
-- Attack/use: tap vs hold semantics match desktop left/right click.
-- Sneak, jump, inventory, drop, swap hands: reachable without moving the thumb far.
-- Hotbar: a compact strip; scroll wheel emulation on the look area edge is optional.
-- Pause: always visible, small, in the top-left safe area.
+- Left thumb: a 4-way movement pad with a visible dead zone.
+- Right thumb: look area with tap-to-attack and hold-to-place.
+- Hotbar strip above the right thumb; inventory and chat buttons at the edges.
+- Every control has a 48 dp minimum target and a visible pressed state.
 
 ### 9.2 Customisation
 
-- Presets: **Survival**, **Creative**, **PvP**, **Builder**, **Minimal**.
-- Per-control: size (36–72 dp), opacity (30–100%), position (drag with snap), haptics on/off.
-- Global: left-handed mirror, UI scale, “hide in menus”.
-- Reset to preset; export/import layout as JSON.
-- Layout editor is a separate mode with a grid, safe-area guides and a “test” sandbox.
+- Presets: **Default**, **Left-handed**, **Compact**, **Large**, **Custom**.
+- Per-control size, opacity and position; reset to preset.
+- Changes preview on the launcher surface before the game starts.
 
 ### 9.3 Mouse mode
 
-- Toggle in the overlay or a three-finger tap (configurable).
-- Requests pointer capture; hides the cursor; sends raw relative deltas.
-- Right-click and middle-click map to use/pick-block.
-- A small “mouse mode” pill shows how to exit.
-- Physical mouse: the same path; the overlay hides when a hardware pointer is detected, with a manual override.
+- A virtual cursor with left/right click, scroll and drag.
+- Useful for inventory-heavy mods and for testing; not the default.
 
 ### 9.4 Gamepad
 
-- SDL's mapping database plus a launcher-level remap screen.
+- SDL mapping database plus a launcher-level remap screen.
 - Focus navigation on all launcher screens; gamepad B is Back, A is Activate, Menu opens the overlay.
-- Deadzones: per-stick, 0–30%, default 10%; show the raw value.
-- Rumble: on by default, disabled in Battery Saver.
-- Hot-plug: pause the game and show “Controller disconnected” only if it was the active input.
 
 ### 9.5 Keyboard
 
-- Physical keyboard scancodes pass through.
-- IME opens for chat; committed text goes to the game, not to a hidden field.
-- `KEYCODE_BACK` maps to Escape while the game is focused; predictive back is disabled inside `GameActivity`.
+- Physical keyboard and mouse are forwarded to the game surface.
 - Modifier combos (Ctrl, Alt, Shift) are forwarded; sticky modifiers are a v1.1 accessibility feature.
 
 ---
@@ -455,8 +397,8 @@ No permission prompt on first launch before the user understands why.
 
 ### 10.1 Every screen has five states
 
-1. **Loading** — skeleton, not a spinner on a blank page.
-2. **Empty** — one sentence, one action.
+1. **Loading** — a real read or a short, honest "Loading…"; never a fake percentage.
+2. **Empty** — one sentence and, when useful, one action.
 3. **Content** — the normal case.
 4. **Partial** — some data loaded, some failed; show what works.
 5. **Error** — what happened, why, what next, and a way to copy details.
@@ -467,23 +409,24 @@ No permission prompt on first launch before the user understands why.
 
 Examples:
 
-- “**Minecraft could not start.** Your device has GLES 3.1; this version needs GLES 3.2. Try a lower Minecraft version or a different device.”
-- “**The download stopped.** The connection closed after 312 MB. It will resume from where it stopped.”
-- “**Mojang has not approved this build.** Sign-in is unavailable in this development build. Use a release build or contact the project.”
-- “**This account does not own Java Edition.** It may own Bedrock. Switch account or buy Java Edition.”
+- "**Minecraft could not start.** Your device has GLES 3.1; this version needs GLES 3.2. Try a lower Minecraft version or a different device."
+- "**The download stopped.** The connection closed after 312 MB. It will resume from where it stopped."
+- "**Mojang has not approved this build.** Sign-in is unavailable in this development build. Use a release build or contact the project."
+- "**This account does not own Java Edition.** It may own Bedrock. Switch account or buy Java Edition."
+- "**Catalogue not connected.** The filters are real, but the Modrinth client is not part of this build yet."
 
-Avoid: “Error”, “Something went wrong”, “Oops”, “Invalid state”, “Exception”, “null”.
+Avoid: "Error", "Something went wrong", "Oops", "Invalid state", "Exception", "null".
 
 ### 10.3 Terminology
 
 | Use | Not |
 |---|---|
 | Instance | Profile, installation, setup |
-| Version | Game version, MC version (in body text, “Minecraft 26.3”) |
-| Loader | Mod loader (in body text, “Fabric”) |
+| Version | Game version, MC version (in body text, "Minecraft 26.3") |
+| Loader | Mod loader (in body text, "Fabric") |
 | Content | Mods/packs (when referring to the category) |
 | Sign in | Login, authenticate |
-| Runtime | JRE, Java (in advanced screens, “Java runtime”) |
+| Runtime | JRE, Java (in advanced screens, "Java runtime") |
 | Renderer | Graphics backend, GL translation layer |
 | Crash report | Log, stack trace |
 
@@ -491,12 +434,12 @@ Avoid: “Error”, “Something went wrong”, “Oops”, “Invalid state”,
 
 | Channel | Content | Priority |
 |---|---|---|
-| Downloads | Progress, paused, complete, failed | Low, ongoing |
-| Game | “Minecraft is ready” only if the user left the app during launch | Default |
+| Tasks | Progress, paused, complete, failed | Low, ongoing |
+| Game | "Minecraft is ready" only if the user left the app during launch | Default |
 | Account | Re-authentication required | Default |
 | Storage | Low space before an install | Default |
 
-No promotional notifications. No “come back” nudges.
+No promotional notifications. No "come back" nudges.
 
 ---
 
@@ -504,72 +447,47 @@ No promotional notifications. No “come back” nudges.
 
 ### 11.1 Standards
 
-- WCAG 2.2 AA for contrast, target size, focus, labels and motion.
-- Android accessibility: TalkBack, Switch Access, font scale up to 200%, display size, high-contrast text, reduced motion.
-- Material 3 accessibility guidance for state layers and focus.
+- WCAG 2.2 AA for contrast and target size.
+- Android accessibility: TalkBack, Switch Access, font scale up to 200%, display size, RTL.
+- The game surface is a special case: the launcher chrome must remain accessible, but the game's own UI is not reimplemented.
 
 ### 11.2 Requirements
 
-| Area | Requirement |
-|---|---|
-| Touch targets | ≥ 48 × 48 dp; the Play button ≥ 56 dp |
-| Contrast | 4.5:1 body text, 3:1 large text and UI icons |
-| Color | Status never conveyed by color alone; icon + text |
-| Text | Scales to 200% without clipping; no fixed-height text containers |
-| Focus | Visible 2 dp ring, logical order, focus restored after dialogs |
-| Screen reader | Every icon has a label; decorative images are skipped; progress announces percent at intervals, not every frame |
-| Motion | Reduced-motion setting removes parallax, springs and large transitions |
-| Audio | No essential information is audio-only; haptics are supplementary |
-| Timing | No time-limited UI except the device code, which shows a countdown and a regenerate button |
-| Logs | Monospace text is selectable and copyable; a “copy” action is always available |
+- Every icon button has a content description; decorative pixel glyphs are skipped.
+- Every action is reachable by keyboard/D-pad; focus is visible and restored after a dialog.
+- Touch targets are at least 48 × 48 dp; menu rows are at least 66 dp.
+- Text does not clip at 200% font scale. Long labels wrap to two lines; rows grow rather than ellipsize a primary action.
+- Status is never conveyed by color alone; a label or icon accompanies it.
+- No fake progress. A spinner only appears when a real operation is running.
+- Dialogs trap focus, restore it on close, and have a labelled dismiss action.
+- Motion is limited to press states and short fades; reduced-motion settings remove the fade.
 
 ### 11.3 The game surface
 
-The launcher cannot make Minecraft itself accessible. It can:
-
-- provide a readable pause/overlay;
-- expose gamepad-only navigation;
-- avoid overlays that cover subtitles or chat;
-- offer a “high contrast touch controls” theme;
-- document that Minecraft's own accessibility settings are inside the game.
-
-**Open:** whether Android's accessibility services can meaningfully inspect the SDL surface. Assume no; do not promise it.
+- The overlay is reachable without a mouse.
+- Controls scale with the device and with the user's size setting.
+- The launcher never draws over a system permission dialog or the keyboard.
 
 ---
 
 ## 12. Localization and internationalisation
 
-- All user-facing strings in `strings.xml`; no concatenated sentences.
-- Plurals for files, minutes, mods, worlds.
-- RTL layouts mirror navigation and controls, but **not** the game surface or the touch look area (the game's coordinate system is not mirrored).
-- Dates and numbers via `DateTimeFormatter`/`NumberFormat` with the user's locale.
-- Font fallback for CJK, Arabic, Hebrew, Devanagari; the UI font must include or fall back cleanly.
-- Error details (HTTP status, signal, library) are not translated; the explanation around them is.
-- Device-code instructions use Microsoft's localized `message` when available, with our own translation as fallback.
-- Translation is community-driven after v1; English ships first, with a glossary and screenshots for translators.
-
-**Open:** Minecraft itself has its own language setting; the launcher should default the game language to the system language on first instance creation, but never override an existing `options.txt`.
+- English ships first. All user-facing strings live in `strings.xml`; no hard-coded UI copy in Kotlin.
+- RTL mirrors navigation and row chevrons, but not the game surface or the touch look area.
+- Monocraft covers Latin; the system sans fallback covers CJK, Arabic, Hebrew and Devanagari. Long prose uses the system sans face for this reason.
+- Dates use the device locale; log archive names use a fixed, sortable `yyyy-MM-dd_HH-mm-ss` pattern.
+- File sizes use Android's formatter; paths are shown as relative to `.minecraft` where possible.
 
 ---
 
 ## 13. Performance as UX
 
-| Interaction | Budget | Consequence if missed |
-|---|---|---|
-| Cold app start to Home content | < 1.5 s | Skeleton; no blank screen |
-| Tab switch | < 100 ms | Content is cached; no re-fetch |
-| Instance detail open | < 200 ms | Read from Room, not disk scan |
-| Play tap → launch overlay | < 150 ms | Plan is precomputed |
-| Plan verify (FAST) | < 2 s | Staged progress with file count |
-| Scroll | 120 fps on 120 Hz panels | No bitmap decode on the main thread |
-| Overlay open | < 100 ms | Pre-inflated view |
-
-Rules:
-
-- No disk I/O on the main thread.
-- No full asset scan on Home; sizes come from the manifest.
-- Images decoded at the target size; no 4K pack icons in a 48 dp row.
-- The UI process stays under 150 MB RSS; the game process is separate.
+- The main page does no network work and no full asset scan.
+- File listings happen on demand; the UI does not block on a directory with thousands of entries without a loading state.
+- Log previews are capped and read off the main thread.
+- The app opens offline and shows the instance, logs and files.
+- Cold start target: < 1.5 s to the main page on a T1 device; no blank screen.
+- The launcher process must not hold the game surface or the JVM.
 
 ---
 
@@ -577,51 +495,50 @@ Rules:
 
 ### 14.1 Prototype sequence
 
-| Prototype | Question | Method |
-|---|---|---|
-| Paper: Home + Create | Is the primary action obvious? | 5 users, 5-second test |
-| Figma: crash sheet | Can a non-expert choose the right recovery? | 8 users, scenario tasks |
-| Compose: touch overlay | Can a player survive the first night? | 6 users, 20-minute session |
-| Compose: device-code flow | Can a user sign in on a TV with a phone? | 6 users, no assistance |
-| Device: install + launch | Where does it actually fail? | 10 devices, instrumented build |
+1. Static main page with the five Quick Actions rows and the bottom bar.
+2. Real local instance creation and log rotation.
+3. File Manager operations and the text viewer.
+4. Manage Content Installed/Discover split with the honest not-connected states.
+5. Microsoft device-code flow with the project's own client ID.
+6. Modrinth catalogue and dependency resolution.
+7. Runtime launch, controls and crash recovery.
 
 ### 14.2 Usability tasks
 
-1. “Install Minecraft 26.3 and start a world.”
-2. “Install this modpack and join a world.”
-3. “Your game crashed after adding a mod. Get it running again.”
-4. “Switch to your second account.”
-5. “Play with a controller only.”
-6. “Find out why Vulkan is not available on this device.”
-7. “Export your world to another device.”
-
-Success criteria: task completion, time, wrong turns, verbalised confusion, and whether the user reads the error text.
+| Task | Question |
+|---|---|
+| Find the log for the current instance | Is Manage Logs discoverable from the main page? |
+| Create a Fabric instance | Is the loader picker's layout clear without explanatory copy? |
+| Find and delete a mod | Does Installed → Mods behave like a file browser? |
+| Install a local `.jar` | Is the direct picker-and-run flow obvious? |
+| Add a CurseForge key | Is Settings → Miscellaneous findable? |
+| Read the screen at 200% font | Does any primary action clip or disappear? |
 
 ### 14.3 What would falsify the design
 
-- Users cannot find **Play** because the hero card looks like a banner.
-- Users interpret “safe mode” as “the game is broken forever”.
-- Users cannot complete device code without a second person.
-- The touch overlay covers the hotbar or the chat.
-- The crash sheet's technical detail scares users away from the export button.
-- The instance list becomes a junk drawer after ten instances.
-
-Each of these triggers a design iteration, not a copy tweak.
+- Players cannot find logs or files from the single surface.
+- The five Quick Actions rows read as a settings menu rather than the five jobs.
+- The bottom instance selector is mistaken for a second navigation bar.
+- Manage Content's two tab rows are confusing without a visible content-type label.
+- The direct `.jar` flow feels unsafe because there is no confirmation; if so, add a one-line confirmation, not a second screen.
 
 ---
 
 ## 15. v1 acceptance criteria
 
-- [ ] A new user can sign in, install vanilla 26.3, and reach a world without reading documentation.
-- [ ] A Fabric instance installs and launches with the same flow.
-- [ ] A Modrinth pack installs, shows its loader and file count, and launches or fails with a specific reason.
-- [ ] Every failure state names a stage and offers one primary next action.
-- [ ] Safe mode recovers a mod-caused crash without deleting the world.
-- [ ] Touch controls are usable for movement, look, attack, place, inventory and chat.
-- [ ] A gamepad can complete onboarding and launch a world without touch.
-- [ ] TalkBack can read every screen and activate every primary action.
+- [ ] The main page has exactly one section, Quick Actions, with exactly the five signed-off rows.
+- [ ] The account bar shows the local account, Tasks (with badge) and Settings in that order.
+- [ ] The bottom bar keeps the instance selector, edit pencil and Play in the reference position.
+- [ ] No Wiki, Discord, social link, default `1.7.10`, or dummy row appears on the main page.
+- [ ] Create Instance uses centered titles, dividers and full-width buttons; placeholder loaders say "coming soon".
+- [ ] Manage Content has Installed/Discover then the six content types; Discover has version, loader, source and dependency toggle, and no sort control.
+- [ ] CurseForge is Coming soon until a user key is saved; clearing the key returns it to Coming soon.
+- [ ] Manage Logs follows the `latestlog.txt` rotation rule and supports multiselect, copy, paste, cut, delete, rename, share and the in-app viewer.
+- [ ] File Manager opens `.minecraft`, supports read/write operations and is not a shortcuts hub.
+- [ ] Install a .jar opens the picker and hands a valid file straight to the installer process.
+- [ ] Play is honest about the missing runtime; no fake progress.
 - [ ] 200% font scale does not clip a label or hide a button.
-- [ ] The app opens offline and shows instances and logs.
+- [ ] TalkBack can read every screen and activate every primary action.
 - [ ] No screen shows a raw exception, `null`, or an unlabelled spinner.
 - [ ] Every destructive action confirms and explains what is kept.
 
@@ -629,23 +546,27 @@ Each of these triggers a design iteration, not a copy tweak.
 
 ## 16. Decisions for sign-off
 
-1. **Five top-level destinations:** Home, Instances, Discover, Downloads, Settings.
-2. **One hero instance and one primary Play action**; no dashboard of metrics on Home.
-3. **Instance detail is a first-class screen with Overview, Content, Worlds, Logs, Settings.**
-4. **Create is a three-step sheet, not a wizard; advanced options are collapsed.**
-5. **Touch overlay with five presets and per-control customisation.**
-6. **Crash sheet with stage, signal, plain-language cause and safe mode as the primary recovery.**
-7. **Local-first, opt-in metrics; no analytics SDK.**
-8. **WCAG 2.2 AA and 200% font scale are release gates, not stretch goals.**
-9. **English first, community localization after v1.**
-10. **No social, store, or cloud features in v1.**
+1. **One main screen with a single Quick Actions section**, not five top-level destinations.
+2. **Account bar + Quick Actions + instance/Play bar** is the complete main-page structure.
+3. **Tasks is an icon-only button left of Settings**, with a badge and a dialog; no inline progress.
+4. **Manage Content merges Browse and Manage** into Installed/Discover plus content types.
+5. **Discover has no visual sort control**; version lists follow Modrinth's oldest → newest order when connected.
+6. **Compatibility preference is release → beta → alpha**, newest first; none disables install.
+7. **Create Instance copies the reference launcher's centered, full-width-button layout.**
+8. **Install a .jar is a direct picker-and-run flow**, with no extra screen.
+9. **The local account stays, without a warning note; Ely.by is removed.**
+10. **No third-party launcher client ID is shipped**; Microsoft auth waits for the project's own Entra registration.
+11. **CurseForge uses a user-supplied key**, stored locally, and stays Coming soon otherwise.
+12. **Ore-inspired dark palette, Monocraft chrome, system sans prose, original pixel icons.**
+13. **WCAG 2.2 AA, 48 dp targets and 200% font scale are release gates, not stretch goals.**
+14. **No social, store, cloud, Wiki or Discord surfaces in v1.**
 
 ## 17. Open questions
 
-- Does the target audience expect a “Java arguments” box on the instance screen, or is hiding it behind Advanced acceptable?
+- Does the target audience expect a "Java arguments" box on the instance screen, or is hiding it behind Advanced acceptable?
 - Is a virtual stick or a D-pad the better default for Minecraft on touch?
 - How much of the in-game overlay can be drawn without hurting frame time on a T1 device?
-- Does Android TV-style focus navigation need a different Home layout, or does the adaptive rail suffice?
+- Does Android TV-style focus navigation need a different main-page layout, or does the single column suffice?
 - Should Discover show shader packs before a renderer mod is installed?
 - What is the minimum viable accessibility test device set (TalkBack, switch access, large font, RTL)?
 - Can the device-code flow be completed entirely with a controller on a TV?

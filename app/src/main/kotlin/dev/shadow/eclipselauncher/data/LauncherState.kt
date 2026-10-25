@@ -48,7 +48,7 @@ class LauncherState(context: Context) {
     )
         private set
 
-    fun setAccountName(value: String) {
+    fun updateAccountName(value: String) {
         val clean = value.trim().ifBlank { DEFAULT_ACCOUNT_NAME }
         prefs.edit().putString(KEY_ACCOUNT_NAME, clean).apply()
         accountName = clean
@@ -101,13 +101,13 @@ class LauncherState(context: Context) {
         ensureInstanceDirectories(updated)
     }
 
-    fun setCurseForgeKey(value: String) {
+    fun updateCurseForgeKey(value: String) {
         val clean = value.trim()
         prefs.edit().putString(KEY_CURSEFORGE, clean).apply()
         curseForgeKey = clean
     }
 
-    fun setAutoInstallDependencies(value: Boolean) {
+    fun updateAutoInstallDependencies(value: Boolean) {
         prefs.edit().putBoolean(KEY_AUTO_DEPENDENCIES, value).apply()
         autoInstallDependencies = value
     }

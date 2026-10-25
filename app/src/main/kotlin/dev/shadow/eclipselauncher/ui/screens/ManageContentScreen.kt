@@ -381,7 +381,7 @@ private fun ColumnScope.DiscoverContent(
             }
             Switch(
                 checked = state.autoInstallDependencies,
-                onCheckedChange = state::setAutoInstallDependencies,
+                onCheckedChange = state::updateAutoInstallDependencies,
             )
         }
         EclipseDivider()
