@@ -85,6 +85,65 @@ class ArtifactStore(root: Path) {
     }
 
     /**
+     * Bytes the executor still has to fetch, using existence and size only.
+     * This is the input to the space preflight; [isVerified] and the executor
+     * still check SHA-1 before an object is accepted. A same-size corrupt file
+     * may be counted as present here and downloaded again later, which only
+     * makes the reservation slightly optimistic; the 512 MiB headroom covers
+     * that case.
+     */
+    fun missingBytes(items: List<DownloadItem>): AppResult<Long> {
+        if (items.any { it.size < 0L }) {
+            return AppResult.Error(
+                Failure(
+                    code = "INSTALL_PLAN_INVALID",
+                    stage = FailureStage.STORAGE,
+                    retryable = false,
+                    userMessage = "The install plan contains a negative file size.",
+                    userAction = UserAction.NONE,
+                    technicalDetail = "a download item had a negative size",
+                ),
+            )
+        }
+        return try {
+            var total = 0L
+            for (item in items) {
+                val file = pathFor(item.destination)
+                val present = Files.isRegularFile(file) && Files.size(file) == item.size
+                if (!present) total = saturatedAdd(total, item.size)
+            }
+            AppResult.Success(total)
+        } catch (error: StoreException) {
+            AppResult.Error(
+                Failure(
+                    code = error.code,
+                    stage = error.stage,
+                    retryable = error.retryable,
+                    userMessage = error.message ?: "A storage path is not valid.",
+                    userAction = UserAction.NONE,
+                    technicalDetail = error.message,
+                ),
+            )
+        } catch (error: IOException) {
+            AppResult.Error(
+                Failure(
+                    code = "STORAGE_IO",
+                    stage = FailureStage.STORAGE,
+                    retryable = true,
+                    userMessage = "The launcher could not inspect the download store.",
+                    userAction = UserAction.RETRY,
+                    technicalDetail = error.message,
+                ),
+            )
+        }
+    }
+
+    private fun saturatedAdd(left: Long, right: Long): Long {
+        val result = left + right
+        return if (result < left) Long.MAX_VALUE else result
+    }
+
+    /**
      * Stores one item. Returns the number of bytes read from the source; a
      * verified existing object returns zero and does not touch the network.
      *

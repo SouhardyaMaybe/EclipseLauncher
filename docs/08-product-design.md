@@ -52,6 +52,7 @@ The signed-off surface is implemented. Backend services arrive behind it without
 |---|---|---|
 | Local instance record and directories | Connected | Creating Vanilla/Fabric writes the record and the `.minecraft` tree. |
 | Vanilla game-file install | Connected | The official manifest, version JSON and asset index feed a deterministic plan; the client, libraries, assets and logging config download into the shared store and commit atomically. |
+| Device and space preflight | Connected | The launcher requires `arm64-v8a` or `x86_64` and reserves missing bytes + 15% scratch + 512 MiB before the first download. Runtime and account checks wait for those components. |
 | Log rotation and file operations | Connected | Real files, real rename/copy/cut/delete/share. |
 | `.jar` handoff | Connected to the installer process | The installer process shows the selected file; the pipeline is not connected yet. |
 | Microsoft device-code auth | Not configured | The Accounts screen says so. `ECLIPSE_MS_CLIENT_ID` is empty by default. |

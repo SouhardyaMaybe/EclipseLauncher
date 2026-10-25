@@ -88,6 +88,39 @@ class ArtifactStoreTest {
     }
 
     @Test
+    fun `missing bytes counts only absent objects`() {
+        val store = newStore()
+        val present = "hello".toByteArray()
+        val absent = "world".toByteArray()
+        store.store(item(present), FakeSource(mapOf(url to present)))
+
+        val missing = store.missingBytes(
+            listOf(
+                item(present),
+                item(
+                    body = absent,
+                    destination = "libraries/com/example/other/1.0/other-1.0.jar",
+                    url = "https://example.invalid/other-1.0.jar",
+                ),
+            ),
+        ).requireSuccess()
+
+        assertThat(missing).isEqualTo(absent.size.toLong())
+    }
+
+    @Test
+    fun `missing bytes fails closed on an unsafe plan path`() {
+        val store = newStore()
+
+        val failure = store.missingBytes(
+            listOf(item("hello".toByteArray(), destination = "../escape.jar")),
+        ).requireFailure()
+
+        assertThat(failure.code).isEqualTo("STORAGE_PATH_INVALID")
+        assertThat(failure.stage).isEqualTo(FailureStage.STORAGE)
+    }
+
+    @Test
     fun `a digest mismatch removes the object and the partial file`() {
         val store = newStore()
         val body = "hello".toByteArray()

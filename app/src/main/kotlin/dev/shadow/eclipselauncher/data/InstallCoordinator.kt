@@ -21,6 +21,7 @@ import dev.shadow.eclipselauncher.domain.install.ArtifactStore
 import dev.shadow.eclipselauncher.domain.install.InstallExecutor
 import dev.shadow.eclipselauncher.domain.install.InstallPlan
 import dev.shadow.eclipselauncher.domain.install.InstallPlanBuilder
+import dev.shadow.eclipselauncher.domain.install.InstallPreflight
 import dev.shadow.eclipselauncher.domain.install.InstallProgress
 import dev.shadow.eclipselauncher.domain.install.InstanceTransaction
 import dev.shadow.eclipselauncher.domain.install.decodeInstallPlan
@@ -164,6 +165,13 @@ class InstallCoordinator(
     private fun runInstall(run: InstallRun): () -> Unit {
         onMain { tasks.setPhase(run.taskId, TaskPhase.PREPARING) }
 
+        // The APK ships arm64-v8a and x86_64 only. Reject an unsupported CPU
+        // before metadata or bytes are fetched; the runtime cannot load there.
+        val abis = Build.SUPPORTED_ABIS.toList()
+        if (DevicePreflight.supportedAbi(abis) == null) {
+            return { fail(run, DevicePreflight.abiFailure(abis)) }
+        }
+
         val planResult = run.plan?.let { AppResult.Success(it) } ?: preparePlan(run)
         val plan = when (planResult) {
             is AppResult.Error -> return terminalFor(run, planResult.failure)
@@ -172,6 +180,21 @@ class InstallCoordinator(
         run.plan = plan
         if (run.cancelled) return {}
         if (run.paused) return { pause(run) }
+
+        val missingBytes = when (val result = store.missingBytes(plan.downloads)) {
+            is AppResult.Error -> return terminalFor(run, result.failure)
+            is AppResult.Success -> result.value
+        }
+        val availableBytes = minecraftDir.usableSpace
+        // A zero reading means the platform could not report free space, not
+        // that the volume is exactly full. Proceed and let a real write fail;
+        // blocking every install on an unavailable statistic would be worse.
+        if (availableBytes > 0L) {
+            when (val space = InstallPreflight.checkSpace(missingBytes, availableBytes)) {
+                is AppResult.Error -> return terminalFor(run, space.failure)
+                is AppResult.Success -> Unit
+            }
+        }
 
         onMain { tasks.setPhase(run.taskId, TaskPhase.DOWNLOADING) }
         val download = executor.execute(
@@ -274,11 +297,8 @@ class InstallCoordinator(
      * by EclipseNatives.
      */
     private fun launchContext(): LaunchContext {
-        val abi = Build.SUPPORTED_ABIS.firstOrNull().orEmpty()
-        val arch = when {
-            abi.startsWith("x86_64") -> "x86_64"
-            else -> "arm64"
-        }
+        val abi = DevicePreflight.supportedAbi(Build.SUPPORTED_ABIS.toList())
+        val arch = if (abi == "x86_64") "x86_64" else "arm64"
         return LaunchContext(osName = "linux", osArch = arch)
     }
 

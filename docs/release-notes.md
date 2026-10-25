@@ -24,9 +24,10 @@ downloaded from Mojang on demand.
   OptiFine are visible placeholders; Modpack opens Discover → Modpacks.
 - **Vanilla install:** Play or Create Instance fetches Mojang's official
   version manifest, version JSON and asset index, resolves the Linux/arm64 (or
-  x86_64) rules, builds a deterministic plan, downloads the client, libraries,
-  assets and logging config into a shared content-addressed store, verifies
-  every size and SHA-1, and commits the instance atomically.
+  x86_64) rules, builds a deterministic plan, checks the device ABI and free
+  space, downloads the client, libraries, assets and logging config into a
+  shared content-addressed store, verifies every size and SHA-1, and commits
+  the instance atomically.
 - **Tasks:** the Tasks icon opens a dialog with real phase, file and byte
   progress. Pause stops the worker between chunks; Resume reuses the plan and
   skips verified objects; Retry re-runs a failed attempt; Cancel removes the
@@ -78,8 +79,11 @@ downloaded from Mojang on demand.
   installable yet; the Modpack row opens the Discover tab.
 - The installer process currently shows the selected `.jar`; `.jar` execution
   is not connected yet.
-- Free-space, ABI and runtime preflight are not wired. A failed download
-  surfaces as a task failure with a stable code.
+- Free-space and ABI preflight are wired: the launcher reserves the missing
+  bytes, 15% scratch and 512 MiB headroom, and rejects a device without
+  `arm64-v8a` or `x86_64` before downloading. Runtime and account preflight
+  are not possible in this build. Other failures surface as a task failure
+  with a stable code.
 - A pending install plan is held in memory only. After the app process is
   killed, the install restarts from metadata; already verified store objects
   are reused.

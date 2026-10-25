@@ -331,7 +331,7 @@ The planner emits a deterministic JSON document:
 
 The last two checks are product decisions: it is cheaper to say “this device cannot run 26.3” before the download than after it.
 
-**Implementation note (2026-10-25):** the Android coordinator currently checks only that the selected version exists in the official manifest. Free-space, ABI, runtime and account preflight remain open; a missing file or a failed request becomes a task failure with a stable code instead of a silent partial install.
+**Implementation note (2026-10-25):** the Android coordinator checks the selected version exists in the official manifest, rejects a device whose `SUPPORTED_ABIS` has neither `arm64-v8a` nor `x86_64`, and runs the space contract before the first download. `ArtifactStore.missingBytes` counts absent or wrong-sized objects with a fast existence/size check, `InstallPreflight` adds the 15% scratch and 512 MiB headroom, and a shortfall becomes `STORAGE_NOT_ENOUGH_SPACE` with `FREE_SPACE` as the offered action. Runtime and account preflight remain open because this build has no runtime or online account. A missing file or a failed request becomes a task failure with a stable code instead of a silent partial install.
 
 ### 5.4 Acquire
 
