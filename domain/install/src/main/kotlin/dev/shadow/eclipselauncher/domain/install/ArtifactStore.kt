@@ -295,6 +295,7 @@ class InstallExecutor(
                     stage = FailureStage.INSTALL,
                     retryable = true,
                     message = "The install was paused before the next file.",
+                    userAction = UserAction.NONE,
                 )
             }
 
