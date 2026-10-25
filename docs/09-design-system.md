@@ -292,7 +292,7 @@ All chrome icons are original 12 × 12 patterns drawn by `EclipsePixelIcon`. Eac
 
 ### 7.10 File rows and path bar
 
-- **Path bar:** relative path (`labelSmall`, muted) with optional trailing actions; two lines maximum.
+- **Path bar:** status-bar inset, 48 dp back button with an `ARROW_LEFT` glyph, relative path (`labelSmall`, muted) with optional trailing actions; two lines maximum. Used by Manage Logs and File Manager instead of a separate title bar.
 - **File row:** 52 dp minimum, optional 20 dp selection box, 24 dp folder/file glyph, name `labelLarge`, detail `labelSmall`, trailing chevron for folders.
 - Selected row uses `Control`; selected icon uses `Primary`.
 - 1 dp divider inset to the text start.
@@ -305,11 +305,11 @@ All chrome icons are original 12 × 12 patterns drawn by `EclipsePixelIcon`. Eac
 - Paste is enabled only when the clipboard has entries; rename only for one item; share only for files.
 - Destructive actions open a confirmation dialog.
 
-### 7.12 Top bar (pushed screens)
+### 7.12 Back row (pushed screens)
 
-- 52 dp minimum, `AccountBar` background, status-bar inset.
-- Back icon button (48 dp), title `titleMedium`, optional trailing actions.
-- Back label is "Back" for TalkBack.
+- 52 dp minimum, status-bar inset, 48 dp back target, `ARROW_LEFT` glyph and a **Back** label.
+- Used at the top of Settings, its detail screens, Accounts, Manage Content and the auth/local panes.
+- File browsers use the path bar's back button instead of a separate row. The old title top bar is retired from pushed screens; the viewer uses its own logger-style bar.
 
 ### 7.13 Task badge and Tasks dialog
 
@@ -317,6 +317,26 @@ All chrome icons are original 12 × 12 patterns drawn by `EclipsePixelIcon`. Eac
 - Dialog: title **Tasks**, empty state or a scrollable list of title/detail/actions.
 - Each task: **Pause** or **Resume**, plus **Cancel**. No fake percentage.
 - The badge counts registry entries; it is not a decoration.
+
+### 7.14 Preference row
+
+- Full-width row, 66 dp minimum, 22 dp start padding, 16 dp end padding.
+- 30 dp pixel icon, 22 dp gap, title `labelLarge`, optional summary `labelSmall` in `Muted`, trailing 16 dp chevron.
+- Used for Settings categories and account rows. It is a button, not a card: no background, no elevation.
+- Disabled rows dim to `Disabled` and do not navigate.
+
+### 7.15 Content card and search row
+
+- **Content card:** `Panel` background, 2 dp `Border`, 2 dp inner gap, 65 dp thumbnail cell with a 34 dp `Primary` pixel glyph, title `labelLarge`, type/size line `bodySmall` in `Muted`, optional badge in `Primary`. Whole card is the target.
+- **Search row:** square `OutlinedTextField` with a placeholder, plus an optional 48 dp filter button carrying the `FILTER` glyph. The filter button opens the content filter dialog; no inline filter chips.
+- Cards are used for installed content; catalogue results will use the same card when a client is connected.
+
+### 7.16 Bottom action rows
+
+- **Two-button row:** `BottomBar` background, 1 dp top divider, navigation-bar inset, two full-width bevel buttons side by side (52 dp). Used by Manage Logs (**Select** / **Share latest**) and File Manager (**New folder** / **Select**).
+- **Single-button row:** the same bar with one full-width bevel button and optional supporting sentence. Used by Discover → Modpacks (**Import local modpack**).
+- The footer is part of the column, not an overlay; the list keeps its last row above it.
+- Selection mode replaces the footer with the selection action bar so destructive actions stay visible.
 
 ---
 
@@ -362,7 +382,8 @@ All chrome icons are original 12 × 12 patterns drawn by `EclipsePixelIcon`. Eac
       EclipseStatusColors.kt  // semantic status
       EclipseTheme.kt         // MaterialTheme + status local
     component/
-      EclipseComponents.kt    // pixel icons, bevel, rows, tabs, panels, top bar
+      EclipseComponents.kt    // pixel icons, bevel, rows, tabs, panels
+      EclipseMojoComponents.kt // back row, preference rows, cards, search, bottom actions
 :app
   ui/
     EclipseApp.kt             // single-screen back stack and dialogs

@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,8 +34,8 @@ import dev.shadow.eclipselauncher.core.model.InstanceSummary
 import dev.shadow.eclipselauncher.data.FileClipboard
 import dev.shadow.eclipselauncher.data.FileOps
 import dev.shadow.eclipselauncher.data.LogStore
+import dev.shadow.eclipselauncher.designsystem.component.EclipseBottomActionRow
 import dev.shadow.eclipselauncher.designsystem.component.EclipseEmptyState
-import dev.shadow.eclipselauncher.designsystem.component.EclipseTopBar
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 import dev.shadow.eclipselauncher.ui.components.ConfirmDialog
 import dev.shadow.eclipselauncher.ui.components.FileRow
@@ -90,12 +89,16 @@ fun ManageLogsScreen(
             .fillMaxSize()
             .background(EclipsePalette.Canvas),
     ) {
-        EclipseTopBar(
-            title = stringResource(R.string.logs_title),
-            backContentDescription = stringResource(R.string.action_back),
+        PathBar(
+            path = if (instance == null || logsDir == null) {
+                stringResource(R.string.files_root)
+            } else {
+                stringResource(R.string.logs_path, instance.id.value)
+            },
             onBack = {
                 if (selectionMode) finishSelection() else onBack()
             },
+            backContentDescription = stringResource(R.string.action_back),
         )
 
         if (instance == null || logsDir == null) {
@@ -109,16 +112,6 @@ fun ManageLogsScreen(
                 )
             }
         } else {
-            PathBar(
-                path = stringResource(R.string.logs_path, instance.id.value),
-            ) {
-                if (!selectionMode) {
-                    TextButton(onClick = { selectionMode = true }) {
-                        Text(stringResource(R.string.action_select))
-                    }
-                }
-            }
-
             if (selectionMode) {
                 SelectionActionBar(
                     selectedText = stringResource(R.string.logs_selected_count, selectedFiles.size),
@@ -196,6 +189,21 @@ fun ManageLogsScreen(
                         )
                     }
                 }
+            }
+
+            if (!selectionMode) {
+                EclipseBottomActionRow(
+                    startLabel = stringResource(R.string.action_select),
+                    onStart = { selectionMode = true },
+                    endLabel = stringResource(R.string.logs_share_latest),
+                    onEnd = {
+                        files.firstOrNull()?.let { latest ->
+                            FileOps.share(context, listOf(latest))
+                        }
+                    },
+                    startEnabled = files.isNotEmpty(),
+                    endEnabled = files.isNotEmpty(),
+                )
             }
         }
     }

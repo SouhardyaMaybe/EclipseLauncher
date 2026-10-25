@@ -6,19 +6,15 @@ package dev.shadow.eclipselauncher.ui.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.data.FileClipboard
 import dev.shadow.eclipselauncher.data.FileOps
+import dev.shadow.eclipselauncher.designsystem.component.EclipseBottomActionRow
 import dev.shadow.eclipselauncher.designsystem.component.EclipseEmptyState
-import dev.shadow.eclipselauncher.designsystem.component.EclipseTopBar
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 import dev.shadow.eclipselauncher.ui.components.ConfirmDialog
 import dev.shadow.eclipselauncher.ui.components.FileRow
@@ -115,38 +111,13 @@ fun FileManagerScreen(
             .fillMaxSize()
             .background(EclipsePalette.Canvas),
     ) {
-        EclipseTopBar(
-            title = stringResource(R.string.files_title),
-            backContentDescription = stringResource(R.string.action_back),
+        PathBar(
+            path = path,
             onBack = {
                 if (selectionMode) finishSelection() else if (!goUp()) onBack()
             },
+            backContentDescription = stringResource(R.string.action_back),
         )
-
-        PathBar(path = path)
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            TextButton(
-                onClick = { goUp() },
-                enabled = currentDir != root,
-            ) {
-                Text(stringResource(R.string.action_up))
-            }
-            TextButton(onClick = { newFolder = true }) {
-                Text(stringResource(R.string.action_new_folder))
-            }
-            if (!selectionMode) {
-                TextButton(onClick = { selectionMode = true }) {
-                    Text(stringResource(R.string.action_select))
-                }
-            }
-        }
 
         if (selectionMode) {
             SelectionActionBar(
@@ -212,6 +183,18 @@ fun FileManagerScreen(
             }
         } else {
             LazyColumn(modifier = Modifier.weight(1f)) {
+                if (currentDir != root) {
+                    item(key = "parent") {
+                        FileRow(
+                            name = stringResource(R.string.files_parent),
+                            detail = stringResource(R.string.action_up),
+                            directory = true,
+                            selected = false,
+                            selectionMode = false,
+                            onClick = { goUp() },
+                        )
+                    }
+                }
                 items(entries, key = { it.absolutePath }) { file ->
                     FileRow(
                         name = file.name,
@@ -236,6 +219,17 @@ fun FileManagerScreen(
                     )
                 }
             }
+        }
+
+        if (!selectionMode) {
+            EclipseBottomActionRow(
+                startLabel = stringResource(R.string.action_new_folder),
+                onStart = { newFolder = true },
+                endLabel = stringResource(R.string.action_select),
+                onEnd = { selectionMode = true },
+                startEnabled = true,
+                endEnabled = entries.isNotEmpty(),
+            )
         }
     }
 

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
@@ -41,17 +42,42 @@ import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 @Composable
 fun PathBar(
     path: String,
+    onBack: (() -> Unit)? = null,
+    backContentDescription: String = "",
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .statusBarsPadding()
+            .padding(horizontal = 4.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (onBack != null) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .eclipseFocusRing()
+                    .clickable(
+                        role = Role.Button,
+                        onClick = onBack,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                EclipsePixelIcon(
+                    kind = EclipsePixelIconKind.ARROW_LEFT,
+                    modifier = Modifier.size(20.dp),
+                    description = backContentDescription,
+                )
+            }
+        } else {
+            Spacer(Modifier.width(12.dp))
+        }
         Text(
             text = path,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 4.dp),
             style = MaterialTheme.typography.labelSmall,
             color = EclipsePalette.Muted,
         )

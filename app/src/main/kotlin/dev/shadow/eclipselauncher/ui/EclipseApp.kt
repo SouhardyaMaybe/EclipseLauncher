@@ -42,6 +42,8 @@ import dev.shadow.eclipselauncher.ui.screens.FileManagerScreen
 import dev.shadow.eclipselauncher.ui.screens.HomeScreen
 import dev.shadow.eclipselauncher.ui.screens.ManageContentScreen
 import dev.shadow.eclipselauncher.ui.screens.ManageLogsScreen
+import dev.shadow.eclipselauncher.ui.screens.SettingsDetailScreen
+import dev.shadow.eclipselauncher.ui.screens.SettingsPage
 import dev.shadow.eclipselauncher.ui.screens.SettingsScreen
 import dev.shadow.eclipselauncher.ui.screens.TextViewerScreen
 import java.io.File
@@ -58,6 +60,7 @@ private sealed interface AppScreen {
     ) : AppScreen
 
     data object Settings : AppScreen
+    data class SettingsDetail(val page: SettingsPage) : AppScreen
     data object Accounts : AppScreen
     data class Viewer(val path: String) : AppScreen
 }
@@ -75,6 +78,7 @@ private fun encodeScreen(screen: AppScreen): String = when (screen) {
     is AppScreen.Files -> screen.initialPath?.let { "files:$it" } ?: "files"
     is AppScreen.Content -> "content:${if (screen.installed) 1 else 0}:${screen.type.name}"
     AppScreen.Settings -> "settings"
+    is AppScreen.SettingsDetail -> "settings-detail:${screen.page.name}"
     AppScreen.Accounts -> "accounts"
     is AppScreen.Viewer -> "viewer:${screen.path}"
 }
@@ -99,6 +103,9 @@ private fun decodeScreen(value: String): AppScreen? {
             )
         }
         "settings" -> AppScreen.Settings
+        "settings-detail" -> SettingsPage.entries
+            .firstOrNull { it.name == rest }
+            ?.let { AppScreen.SettingsDetail(it) }
         "accounts" -> AppScreen.Accounts
         "viewer" -> rest.takeIf { it.isNotEmpty() }?.let { AppScreen.Viewer(it) }
         else -> null
@@ -309,6 +316,13 @@ fun EclipseApp() {
                 state = state,
                 onBack = { goBack() },
                 onOpenAccounts = { navigate(AppScreen.Accounts) },
+                onOpenPage = { page -> navigate(AppScreen.SettingsDetail(page)) },
+            )
+
+            is AppScreen.SettingsDetail -> SettingsDetailScreen(
+                state = state,
+                page = current.page,
+                onBack = { goBack() },
             )
 
             AppScreen.Accounts -> AccountsScreen(

@@ -1,6 +1,6 @@
 # 08 — Product design
 
-**Status:** signed off 2026-10-25. This revision replaces the five-destination shell with the single-screen Quick Actions surface that ships in v1.
+**Status:** signed off 2026-10-25. This revision replaces the five-destination shell with the single-screen Quick Actions surface that ships in v1. A same-day layout pass aligns every pushed screen with the reference launcher's structure and flow while keeping the original Ore visuals.
 **Scope:** who Eclipse Launcher is for, what the signed-off v1 surface promises, how its screens fit together, what every state looks like, how touch and controller input work, and how the product recovers when the game does not start. Visual tokens and component specifications are in [09 — Design system](09-design-system.md); the research behind them is in [10 — Design research and skills](10-design-research-and-skills.md).
 **Evidence:** the competitor teardown in [01](01-landscape.md), the Android constraints in [04](04-android-platform.md), the launch/runtime model in [05](05-runtime-and-graphics.md), and the installer contract in [07](07-install-pipeline.md).
 **Labels:** **Verified**, **Observed**, **Inference**, **Decision**.
@@ -197,10 +197,13 @@ There is no second main page and no top-level tab bar. The account bar, Quick Ac
 | **File Manager** | Quick Actions → File Manager; "Open folder" from content | Goes up one folder, then returns. |
 | **Manage Content** | Quick Actions → Manage Content; Create Instance → Modpack | Returns to the main page. |
 | **Settings** | Gear in the account bar | Returns to the main page. |
-| **Accounts** | Account area or Settings → Account | Returns to Settings or the main page. |
+| **Settings detail** | Settings → Appearance, Miscellaneous or About | Returns to the Settings category list. |
+| **Accounts** | Account area or Settings → Account | Returns to Settings or the main page; the local-login pane backs out to the auth-method card first. |
 | **Text viewer** | A log or text file | Returns to the browser that opened it. |
 
-Dialogs do not create history entries: **Tasks**, **Edit instance**, **Rename**, **Delete**, **Message** and **Name prompt** are overlays on the current screen.
+Dialogs do not create history entries: **Tasks**, **Edit instance**, **Rename**, **Delete**, **Message**, **Content filters** and **Name prompt** are overlays on the current screen.
+
+**Layout reference:** every pushed screen follows the reference launcher's structure and flow — the back-row preference list, the centred auth-method card, the full-screen control layout with a right-hand drawer, the path-bar file selector with a two-button footer, the search row plus filter dialog plus content cards, and the logger-style viewer bar. Only layout and flow are matched. Colors, type, icons, focus treatment and all assets remain the original Ore system; no reference code or assets are copied.
 
 ### 6.3 Why one surface
 
@@ -260,29 +263,34 @@ The layout follows the reference launcher literally:
 **Top-level tabs:** **Installed** | **Discover**.
 **Content-type tabs:** Mods, Resource Packs, Data Packs, Shaders, Worlds, Modpacks. The type row scrolls horizontally rather than shrinking labels.
 
+Both views start with a search row. On Installed it filters the files that are actually present; on Discover it keeps the catalogue query and shows the filter button. The filter button opens a dialog with **Game version**, **Loader**, **Source** (Modrinth / CurseForge) and **Auto-install required dependencies**, plus **Apply** and **Cancel**. The active filter summary is shown under the search row. There is no visual sort control.
+
 **Installed**
 
-- Lists the real contents of `.minecraft/instances/<instance>/<type>/` (Worlds uses `saves/`).
-- A file row opens a details dialog with **Open**, **Open folder**, **Share** and **Delete**. Destructive actions confirm first.
-- Empty state: **Nothing installed**, with a sentence that points to Discover or File Manager.
+- Lists the real contents of `.minecraft/instances/<instance>/<type>/` (Worlds uses `saves/`) as reference-style content cards: a 65 dp thumbnail cell, title, type/size line and a folder badge.
+- Tapping a card opens a details dialog with **Open**, **Open folder**, **Share** and **Delete**. Destructive actions confirm first.
+- Empty state: **Nothing installed**, with a sentence that points to Discover or File Manager. A non-empty folder with no search matches shows **No matches** instead.
 
 **Discover**
 
-- Filters: **Game version**, **Loader**, **Source** (Modrinth / CurseForge).
-- **Auto-install required dependencies** is a real setting, persisted on the device.
-- No visual sort control. Mod version lists, when the catalogue client arrives, follow Modrinth's default oldest → newest order.
+- Filters live in the dialog; the screen itself shows only the search row and the active filter summary. This keeps the reference launcher's search-first layout.
+- **Auto-install required dependencies** is a real setting, persisted on the device and also reachable from Settings → Miscellaneous.
+- Mod version lists, when the catalogue client arrives, follow Modrinth's default oldest → newest order. No sort UI is shown.
 - Compatibility choice, when versions exist: newest compatible release, then beta, then alpha. If none is compatible, install is disabled with the reason.
 - CurseForge is disabled and labelled **Coming soon** until a key is saved. A saved key enables the source; clearing it returns to Coming soon.
 - Worlds are not a Modrinth category, so Discover → Worlds explains that and offers the installed browser.
 - With no catalogue client, the screen shows **Catalogue not connected** and does not invent projects.
+- Discover → Modpacks shows the reference launcher's full-width **Import local modpack** footer. It is disabled in this build and says that local modpack import arrives with the modpack installer; it never pretends to import a pack.
 
 ### 7.5 Manage Logs
 
 - Directory: `.minecraft/logs/<instance>/`.
 - On the first launcher start for an instance, create `latestlog.txt`.
 - On the next process start, rename the previous `latestlog.txt` to `YYYY-MM-DD_HH-mm-ss.txt` and create a new `latestlog.txt`. Activity recreation is not a new start.
+- The screen follows the reference file-selector layout: a path bar at the top (`.minecraft/logs/<instance>`) with a 48 dp back button, the list, and a two-button footer.
 - List shows file name and size, newest first.
-- **Select** enters multiselect. Actions: **Copy**, **Cut**, **Paste**, **Rename** (one file), **Delete** (confirmed), **Share** (files only).
+- Footer: **Select** enters multiselect; **Share latest** shares the newest log directly. In selection mode the footer is replaced by the selection action bar.
+- Selection actions: **Copy**, **Cut**, **Paste**, **Rename** (one file), **Delete** (confirmed), **Share** (files only).
 - Tapping a file opens the in-app text viewer. Binary files show **No preview** with Share; files larger than the preview limit show the first part with a clear notice.
 - Empty state: **No logs yet**, with the rotation rule in one sentence.
 - No instance: **No instance**, with a sentence explaining that logs need an instance.
@@ -291,8 +299,10 @@ The layout follows the reference launcher literally:
 
 - Root is the app-private `.minecraft` directory. It is a browser, not a shortcuts hub.
 - Read/write: open folders, open text files in the viewer, create folders, rename, delete, copy, cut, paste, share.
-- Path bar shows `.minecraft` plus the relative path.
-- **Up** goes to the parent; system Back does the same, then leaves the screen. Selection mode is exited before navigation.
+- Path bar shows `.minecraft` plus the relative path and carries the 48 dp back button.
+- The list starts with a **..** parent row when the current folder is below the root.
+- The two-button footer is **New folder** and **Select**. In selection mode the footer is replaced by the selection action bar.
+- Back goes up one folder, then leaves the screen. Selection mode is exited before navigation.
 - New folder and rename use a name prompt that rejects empty names, slashes and existing names.
 - Destructive actions confirm and state that they cannot be undone.
 - Empty folder: **This folder is empty**, with a sentence about files added to the instance.
@@ -306,28 +316,39 @@ The layout follows the reference launcher literally:
 
 ### 7.8 Settings
 
-Sections are a flat list, not a dashboard:
+The Settings root is a reference-style category list, not a dashboard: a back row, then section labels and full-width preference rows.
 
-1. **Account** — opens the Accounts screen.
-2. **Appearance** — theme value (Ore, dark) in this build.
-3. **Miscellaneous** — **CurseForge API key** field, Save, Clear, and a status line: **CurseForge: Coming soon** or **CurseForge: enabled on this device**.
-4. **About** — version, Apache-2.0 license, source, Monocraft OFL notice, Minecraft disclaimer, Eclipse Foundation non-affiliation.
+1. **Account** — the current account name and **Local account** summary; opens the Accounts screen.
+2. **Appearance** — opens a detail screen with the fixed Ore palette and the Monocraft/Noto Sans split. This build ships one dark palette; text size follows Android's font scale.
+3. **Miscellaneous** — opens a detail screen with the **CurseForge API key** field, Save, Clear, a status line (**CurseForge: Coming soon** or **CurseForge: enabled on this device**) and the persisted **Auto-install required dependencies** switch.
+4. **About** — opens a detail screen with version, Apache-2.0 license, source, Monocraft OFL notice, Minecraft disclaimer and Eclipse Foundation non-affiliation.
 
-The key is stored on the device only. It is never bundled, logged or uploaded. A blank key keeps CurseForge disabled.
+Every detail screen starts with the same back row. The key is stored on the device only. It is never bundled, logged or uploaded. A blank key keeps CurseForge disabled.
 
 ### 7.9 Accounts
 
-- **Local account** is the active account in this build. The player can edit the display name. There is no extra warning note on the local account.
-- **Microsoft account** explains that sign-in uses the device-code flow and that this build has no client ID. The action is disabled until the project's own Entra registration supplies `ECLIPSE_MS_CLIENT_ID`.
-- No Ely.by, no alternative auth provider, no offline-auth claim.
-- A successful Microsoft flow will add an account; the local account remains available as a separate, clearly labelled option.
+The Accounts screen follows the reference launcher's add-account flow:
+
+1. **List** — a back row, the current local account as a preference row, and **Add account**.
+2. **Auth method** — a centred card with full-width **Sign in with Microsoft** and **Local account** buttons. Microsoft is visibly unavailable in this build and explains why; there is no Ely.by or other provider.
+3. **Local login** — a centred card with one username field and a full-width save button. The field accepts 1–16 letters, numbers or underscores and explains the rule only when the typed name is invalid. There is no extra warning note on the local account.
+
+The local account is the active account in this build and can be renamed at any time. A successful Microsoft flow will add an account; the local account remains available as a separate, clearly labelled option.
 
 ### 7.10 Controls
 
-- The screen exists as a Quick Action and explains that touch, keyboard, mouse and gamepad mapping arrive with the game runtime.
-- No fake sliders or toggles that do not affect a running game.
+- The screen is the reference launcher's full-screen control layout: a faint original control preview, a drawer handle at the top centre, and a right-hand drawer.
+- The drawer lists the active layout and the control groups (Movement, Action buttons, Interface, Mouse and keyboard). Every value reads **Preview only**.
+- A 48 dp back button returns to the main page.
+- The note says that touch, keyboard, mouse and gamepad mapping arrive with the game runtime. There are no fake sliders, toggles or save actions that do not affect a running game.
 
-### 7.11 Play
+### 7.11 Text viewer
+
+- Follows the reference logger layout: a 70 dp bar with the file name, **Share** and a 48 dp close button, over a black monospace text area.
+- Text is selectable and scrolls vertically. A truncated preview shows a notice above the text.
+- Loading, binary and unreadable files keep the bar and show a centred state underneath; they never show raw exceptions.
+
+### 7.12 Play
 
 - The Play button is always in the bottom bar, in the reference launcher's position.
 - With no instance, it is disabled and the bar offers creation.

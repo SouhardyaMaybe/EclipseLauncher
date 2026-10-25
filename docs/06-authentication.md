@@ -431,7 +431,7 @@ The flow should take under 60 seconds on a phone with a password manager. It mus
 
 ### 9.2 Account switching
 
-- The account chip in the top bar opens a bottom sheet with all accounts, the active one checked.
+- The account area in the top bar opens the Accounts screen. Today it lists the single local account and the add-account flow; the multi-account switcher below arrives with Microsoft auth.
 - “Add account” restarts the device-code flow; it does not replace the current account until success.
 - Switching accounts updates the profile and the launch arguments; it does not modify instances.
 - Removing an account deletes its token and metadata after a confirmation. Instances and worlds remain.

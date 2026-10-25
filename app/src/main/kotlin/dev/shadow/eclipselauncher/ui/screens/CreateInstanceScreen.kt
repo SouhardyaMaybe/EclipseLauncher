@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -20,7 +21,6 @@ import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.core.model.LoaderKind
 import dev.shadow.eclipselauncher.designsystem.component.EclipseBevelButton
 import dev.shadow.eclipselauncher.designsystem.component.EclipseCenteredHeading
-import dev.shadow.eclipselauncher.designsystem.component.EclipseTopBar
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 
 /**
@@ -36,14 +36,9 @@ fun CreateInstanceScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(EclipsePalette.Canvas),
+            .background(EclipsePalette.Canvas)
+            .statusBarsPadding(),
     ) {
-        EclipseTopBar(
-            title = stringResource(R.string.create_instance_title),
-            backContentDescription = stringResource(R.string.action_back),
-            onBack = onBack,
-        )
-
         Column(
             modifier = Modifier
                 .weight(1f)

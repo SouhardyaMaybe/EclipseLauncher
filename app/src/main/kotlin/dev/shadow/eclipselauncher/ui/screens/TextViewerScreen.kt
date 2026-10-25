@@ -5,11 +5,16 @@
 package dev.shadow.eclipselauncher.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -24,18 +29,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.data.FileOps
 import dev.shadow.eclipselauncher.designsystem.component.EclipseEmptyState
-import dev.shadow.eclipselauncher.designsystem.component.EclipseTopBar
+import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIcon
+import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIconKind
+import dev.shadow.eclipselauncher.designsystem.component.eclipseFocusRing
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -74,18 +84,45 @@ fun TextViewerScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(EclipsePalette.Canvas),
+            .background(Color.Black),
     ) {
-        EclipseTopBar(
-            title = file.name,
-            backContentDescription = stringResource(R.string.action_back),
-            onBack = onBack,
-            actions = {
-                TextButton(onClick = { FileOps.share(context, listOf(file)) }) {
-                    Text(stringResource(R.string.action_share))
-                }
-            },
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 70.dp)
+                .background(EclipsePalette.Panel)
+                .statusBarsPadding()
+                .padding(start = 20.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = file.name,
+                modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.titleMedium,
+                color = EclipsePalette.Text,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            TextButton(onClick = { FileOps.share(context, listOf(file)) }) {
+                Text(stringResource(R.string.action_share))
+            }
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .eclipseFocusRing()
+                    .clickable(
+                        role = Role.Button,
+                        onClick = onBack,
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                EclipsePixelIcon(
+                    kind = EclipsePixelIconKind.CLOSE,
+                    modifier = Modifier.size(18.dp),
+                    description = stringResource(R.string.action_close),
+                )
+            }
+        }
 
         when (val state = preview) {
             Preview.Loading -> {

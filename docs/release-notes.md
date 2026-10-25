@@ -35,23 +35,27 @@ downloaded from Mojang on demand.
 - **User content:** a reinstall or version change hard-links the existing
   `game/` tree into the new instance tree (copy fallback), so worlds, options,
   screenshots and manually added mods survive the metadata swap.
-- **Manage Content:** Installed/Discover tabs, six content types, game-version,
-  loader and source filters, and the auto-install-dependencies setting.
-  Modrinth and CurseForge catalogue clients are not connected. CurseForge is
-  **Coming soon** until a key is saved in **Settings → Miscellaneous**.
-- **Manage Logs:** `.minecraft/logs/<instance>/` with `latestlog.txt` rotation,
-  multiselect, copy/cut/paste, rename, delete, share and an in-app text viewer.
-- **File Manager:** a read/write browser rooted at `.minecraft`, with folder
-  creation, rename, delete, copy/cut/paste and share.
+- **Manage Content:** Installed/Discover tabs, six content types, a search row, a filter dialog for game version, loader, source and auto-install dependencies, and content cards for installed files. Modrinth and CurseForge catalogue clients are not connected. CurseForge is **Coming soon** until a key is saved in **Settings → Miscellaneous**. Discover → Modpacks shows the disabled **Import local modpack** footer.
+- **Manage Logs:** `.minecraft/logs/<instance>/` with `latestlog.txt` rotation, a path bar, a **Select** / **Share latest** footer, multiselect, copy/cut/paste, rename, delete, share and an in-app logger-style text viewer.
+- **File Manager:** a read/write browser rooted at `.minecraft`, with a path bar, a **..** parent row, a **New folder** / **Select** footer, folder creation, rename, delete, copy/cut/paste and share.
 - **Install a .jar:** the system document picker, followed by a direct handoff
   to the installer process. There is no extra target or run screen. The
   installer process currently shows the selected file; `.jar` execution is not
   connected yet.
-- **Settings:** local account, Ore theme value, CurseForge API key stored on the
-  device only, license and disclaimers.
-- **Accounts:** the local account is kept without a warning note. Microsoft
-  device-code sign-in is visibly unconfigured until the project's own Entra
-  client ID is supplied through `ECLIPSE_MS_CLIENT_ID`.
+- **Settings:** a category list with detail screens for Appearance,
+  Miscellaneous and About. The CurseForge API key is stored on the device only;
+  license and disclaimers live under About.
+- **Accounts:** a list → auth-method card → local-login card flow. The local
+  account is kept without a warning note. Microsoft device-code sign-in is
+  visibly unconfigured until the project's own Entra client ID is supplied
+  through `ECLIPSE_MS_CLIENT_ID`.
+- **Controls:** the reference launcher's full-screen control layout with a
+  right-hand drawer. It is a preview shell; the drawer says editing arrives
+  with the game runtime.
+
+Every pushed screen except Home follows the reference launcher's layout and
+flow with original Ore colors, type, icons and assets. No reference code or
+assets are copied.
 
 ## Requirements
 
