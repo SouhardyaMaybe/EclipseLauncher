@@ -165,9 +165,10 @@ class InstallCoordinator(
         onMain { tasks.setPhase(run.taskId, TaskPhase.PREPARING) }
 
         val planResult = run.plan?.let { AppResult.Success(it) } ?: preparePlan(run)
-        if (planResult is AppResult.Error) return terminalFor(run, planResult.failure)
-
-        val plan = (planResult as AppResult.Success).value
+        val plan = when (planResult) {
+            is AppResult.Error -> return terminalFor(run, planResult.failure)
+            is AppResult.Success -> planResult.value
+        }
         run.plan = plan
         if (run.cancelled) return {}
         if (run.paused) return { pause(run) }

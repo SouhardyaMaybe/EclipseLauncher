@@ -328,10 +328,10 @@ class InstanceTransaction(
                         Files.createLink(destination, file)
                     } catch (_: IOException) {
                         Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING)
-                        copied += destination
+                        copied.add(destination)
                     } catch (_: UnsupportedOperationException) {
                         Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING)
-                        copied += destination
+                        copied.add(destination)
                     }
                     return FileVisitResult.CONTINUE
                 }
