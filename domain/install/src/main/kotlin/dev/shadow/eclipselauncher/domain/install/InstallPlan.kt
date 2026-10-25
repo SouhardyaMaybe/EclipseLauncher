@@ -14,8 +14,11 @@ import dev.shadow.eclipselauncher.domain.mojang.ResolvedVersion
 import dev.shadow.eclipselauncher.domain.mojang.VersionResolver
 import java.net.URI
 import java.net.URISyntaxException
+import java.security.MessageDigest
+import kotlinx.serialization.Serializable
 
 /** The role of a download, used for progress copy and repair policy. */
+@Serializable
 enum class DownloadKind {
     CLIENT,
     LIBRARY,
@@ -25,6 +28,7 @@ enum class DownloadKind {
 }
 
 /** One verified byte range in the shared store. */
+@Serializable
 data class DownloadItem(
     val kind: DownloadKind,
     val url: String,
@@ -40,6 +44,7 @@ data class DownloadItem(
  * app-specific storage; a plan never contains an absolute path, so the same
  * plan can be moved between devices without editing.
  */
+@Serializable
 data class InstallPlan(
     val versionId: String,
     val downloads: List<DownloadItem>,
@@ -49,7 +54,34 @@ data class InstallPlan(
     val assets: List<DownloadItem>,
     val logging: DownloadItem?,
     val totalBytes: Long,
-)
+) {
+    /**
+     * A content address for the plan. Length-prefixing every field makes the
+     * canonical form unambiguous even if a version id or URL contains a
+     * separator. Two plans with the same files in the same order hash the same;
+     * a changed URL, hash, size or destination does not.
+     */
+    val planHash: String
+        get() {
+            val digest = MessageDigest.getInstance("SHA-256")
+            fun feed(value: String) {
+                val bytes = value.toByteArray(Charsets.UTF_8)
+                digest.update("${bytes.size}:".toByteArray(Charsets.UTF_8))
+                digest.update(bytes)
+            }
+            feed("eclipse-install-plan/1")
+            feed(versionId)
+            feed(downloads.size.toString())
+            for (item in downloads) {
+                feed(item.kind.name)
+                feed(item.url)
+                feed(item.sha1)
+                feed(item.size.toString())
+                feed(item.destination)
+            }
+            return digest.digest().toHex()
+        }
+}
 
 /**
  * The shared-store layout from doc 07 §6. Directories are relative and are
