@@ -418,7 +418,7 @@ files/accounts/index.json # ordered account list, active account id
 The signed-off v1 surface does not force a Microsoft sign-in:
 
 1. **Main page** — a local account named **Player** is active, and no instance exists yet.
-2. **Create Instance** — the player chooses Vanilla or Fabric and gets a local instance. Quilt, Forge, NeoForge and OptiFine are visible placeholders.
+2. **Create Instance** — Vanilla creates the instance and starts the official-file install; Fabric creates a local instance and says the loader is not connected. Quilt, Forge, NeoForge and OptiFine are visible placeholders.
 3. **Accounts** — the local account can be renamed. There is no extra warning note on it. Microsoft sign-in is a separate, clearly labelled path.
 4. **Microsoft device code (when configured)** — large code, Copy, Open browser. The screen explains that the browser can be on another device.
 5. **Progress** — “Waiting…”, then “Checking ownership…”, then “Loading profile…”.

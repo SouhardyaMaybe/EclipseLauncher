@@ -142,7 +142,7 @@ class InstanceTransaction(
         // directory is not launcher-managed. Hard-link it into the new tree
         // (falling back to a copy) so a repair or version change cannot delete
         // mods, worlds, options or screenshots. Symlinks are skipped.
-        preserveUserContent(
+        val copiedUserFiles = preserveUserContent(
             source = finalRoot.resolve(USER_CONTENT_DIR),
             target = staging.resolve(USER_CONTENT_DIR),
         )
@@ -176,6 +176,14 @@ class InstanceTransaction(
         writeNew(staging.resolve(INSTANCE_FILE), InstallJson.encodeToString(record))
         writeNew(staging.resolve(MANIFEST_FILE), InstallJson.encodeToString(manifest))
         writeNew(staging.resolve(PLAN_FILE), InstallJson.encodeToString(plan))
+        // Only the three documents are new bytes. User content is hard-linked
+        // from the old tree, so opening it for a write-fsync could fail on a
+        // read-only mod or save. Fsync the documents and the directory entries
+        // instead.
+        forceFile(staging.resolve(INSTANCE_FILE))
+        forceFile(staging.resolve(MANIFEST_FILE))
+        forceFile(staging.resolve(PLAN_FILE))
+        copiedUserFiles.forEach { forceFile(it) }
         forceTree(staging)
 
         val backupRelative = if (Files.exists(finalRoot)) {
@@ -294,8 +302,9 @@ class InstanceTransaction(
      * not support links gets a normal copy. Symlinked files and directories
      * are skipped so a hostile tree cannot make the launcher read elsewhere.
      */
-    private fun preserveUserContent(source: Path, target: Path) {
-        if (!Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)) return
+    private fun preserveUserContent(source: Path, target: Path): List<Path> {
+        if (!Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS)) return emptyList()
+        val copied = mutableListOf<Path>()
         Files.walkFileTree(
             source,
             object : SimpleFileVisitor<Path>() {
@@ -319,13 +328,16 @@ class InstanceTransaction(
                         Files.createLink(destination, file)
                     } catch (_: IOException) {
                         Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING)
+                        copied += destination
                     } catch (_: UnsupportedOperationException) {
                         Files.copy(file, destination, StandardCopyOption.REPLACE_EXISTING)
+                        copied += destination
                     }
                     return FileVisitResult.CONTINUE
                 }
             },
         )
+        return copied
     }
 
     private fun readJournal(): InstallJournal? {
@@ -364,9 +376,8 @@ class InstanceTransaction(
 
     private fun forceTree(path: Path) {
         Files.walk(path).use { stream ->
-            stream.filter { Files.isRegularFile(it) }.forEach { forceFile(it) }
+            stream.filter { Files.isDirectory(it) }.forEach { forceDirectory(it) }
         }
-        forceDirectory(path)
     }
 
     private fun forceFile(path: Path) {

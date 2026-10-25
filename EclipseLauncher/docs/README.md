@@ -1,6 +1,6 @@
 # EclipseLauncher — Research Dossier
 
-**Status:** dossier complete (chapters 00–14) and ready for architecture sign-off. No production code has been written.
+**Status:** dossier complete (chapters 00–14); architecture signed off, implementation in progress. The current build is a single-screen launcher shell with a real Vanilla install path and no launch runtime yet.
 **Research date:** 2026-10-24
 **Target:** Android (phone, tablet, foldable, Chromebook; controller and touch first)
 **Game target:** Minecraft: Java Edition, current release **26.3** (2026-09-15) and current snapshot **26.4-snapshot-5** (2026-10-20)

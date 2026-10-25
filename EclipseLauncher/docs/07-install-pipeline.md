@@ -316,8 +316,8 @@ The planner emits a deterministic JSON document:
 }
 ```
 
-- `planHash` is SHA-256 over the canonical JSON with secrets removed. Two identical installs produce the same hash.
-- The plan is written before download and re-read at launch; the game process never re-resolves metadata.
+- `planHash` is SHA-256 over the length-prefixed plan fields: the version and every download's kind, URL, SHA-1, size and destination. Two identical installs produce the same hash, and secrets are never in the plan.
+- The install plan is written into the committed instance tree and re-read by repair and launch; the game process never re-resolves metadata. A pending plan is held in memory while a download runs, not yet persisted across process death.
 - Access tokens are **not** in the plan file. They are injected at launch from the account vault into the argument vector in memory.
 
 ### 5.3 Preflight
@@ -331,6 +331,8 @@ The planner emits a deterministic JSON document:
 
 The last two checks are product decisions: it is cheaper to say “this device cannot run 26.3” before the download than after it.
 
+**Implementation note (2026-10-25):** the Android coordinator currently checks only that the selected version exists in the official manifest. Free-space, ABI, runtime and account preflight remain open; a missing file or a failed request becomes a task failure with a stable code instead of a silent partial install.
+
 ### 5.4 Acquire
 
 - One HTTP client with a fixed User-Agent, HTTP/2, a 6-connection global semaphore, and a 4-connection per-host semaphore.
@@ -343,7 +345,7 @@ The last two checks are product decisions: it is cheaper to say “this device c
 - Cancel stops scheduling, lets in-flight requests finish, and keeps `.part` files for resume.
 - Pause is a first-class state, not a cancelled install.
 
-**Implementation note (2026-10-25):** the first store and executor are sequential and do not resume yet. They write `<destination>.part`, hash while streaming, verify size and SHA-1, fsync, rename atomically, and delete the `.part` on failure or pause. Cancellation is polled between 64 KiB chunks, so a large client jar can pause promptly. The HTTP source is in `:core:network`: it follows redirects manually, re-checks every hop, honours `Retry-After`, retries 5xx with capped backoff, and surfaces stable `NET_*` codes. Range requests, `.part` retention, the 6-connection scheduler and digest-mismatch retry remain open.
+**Implementation note (2026-10-25):** the Android coordinator now runs the whole Vanilla path: fetch the official manifest, version JSON and asset index; resolve the Linux/arm64 (or x86_64) launch context; build the deterministic plan; execute it through the strict HTTP source; then commit through `InstanceTransaction`. The Tasks dialog shows the real phase, completed files and bytes, and drives pause, resume, retry and cancel. Pause is polled between 64 KiB chunks, so a large client jar stops promptly. Resume reuses the in-memory plan and skips every object already verified in the store; after process death the coordinator re-fetches metadata and the store still skips verified objects. The store and executor remain sequential, delete the `.part` on pause, and do not retry a digest mismatch. Range requests, `.part` retention, the 6-connection scheduler and digest-mismatch retry remain open.
 
 **Observed:** 26.3's assets are 5,147 small objects. Per-request overhead dominates; batching is impossible (one hash per object), so concurrency and connection reuse matter more than raw bandwidth.
 
@@ -355,6 +357,8 @@ The last two checks are product decisions: it is cheaper to say “this device c
 - Write `options.txt` only if absent; never overwrite a user's settings on repair.
 - Create `servers.dat` only if absent.
 - Set `eula.txt`? The client does not require it; do not fabricate consent.
+
+**Implementation note (2026-10-25):** `InstanceTransaction` writes the skeleton and the three JSON documents into `.staging/<txid>`, fsyncs them, and atomically renames the tree. Before the rename it hard-links the existing `game/` tree into staging (copy fallback; symlinks skipped), so a reinstall or version change preserves worlds, options, screenshots and manually added mods. The app creates `datapacks/` and `modpacks/` on first use. Free-space preflight and the `options.txt`/`servers.dat` creation rules remain open.
 
 ### 5.6 Commit
 
@@ -599,7 +603,7 @@ Commit `fixtures/plans/26.3-vanilla.json`, `26.3-fabric-0.20.1.json` and `26.3-n
 
 ### 11.4 Device
 
-- Install, kill the app mid-download, reopen, resume, verify.
+- Install, kill the app mid-download, reopen, restart the install, verify. (The current build re-fetches metadata and reuses verified store objects; a pending plan is not persisted yet.)
 - Install, kill the app during commit, reopen, recover.
 - Fill the disk mid-install, confirm a clean failure and no partial instance.
 - Install two instances, confirm assets are shared once.

@@ -104,6 +104,7 @@ class LauncherState(context: Context) {
         val cleanName = name.trim().ifBlank { current.name }
         val cleanVersion = minecraftVersion.trim().ifBlank { current.minecraftVersion }
         val updated = current.copy(name = cleanName, minecraftVersion = cleanVersion)
+        val versionChanged = cleanVersion != current.minecraftVersion
 
         prefs.edit()
             .putString(KEY_INSTANCE_NAME, updated.name)
@@ -111,7 +112,9 @@ class LauncherState(context: Context) {
             .apply()
 
         instance = updated
-        instanceInstalled = false
+        // Renaming an installed instance does not invalidate its files. A
+        // version change does, so Play starts a fresh plan on the next tap.
+        if (versionChanged) instanceInstalled = false
         ensureInstanceDirectories(updated)
     }
 
