@@ -6,7 +6,6 @@ package dev.shadow.eclipselauncher.domain.mojang
 
 import com.google.common.truth.Truth.assertThat
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.parseToJsonElement
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
