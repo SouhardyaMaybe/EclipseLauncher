@@ -7,7 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 roots=()
-for d in app runtime sandpaper sash foreman crowbar gradle scripts .github; do
+for d in app designsystem host core domain runtime sandpaper sash foreman crowbar gradle scripts .github; do
   [ -d "$d" ] && roots+=("$d")
 done
 
