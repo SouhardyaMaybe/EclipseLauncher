@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eclipse Launcher</string>
+
+    <!-- Common actions -->
+    <string name="action_back">Back</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_cut">Cut</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_done">Done</string>
+    <string name="action_loading">Loading…</string>
+    <string name="action_new_folder">New folder</string>
+    <string name="action_open">Open</string>
+    <string name="action_open_folder">Open folder</string>
+    <string name="action_paste">Paste</string>
+    <string name="action_rename">Rename</string>
+    <string name="action_save">Save</string>
+    <string name="action_select">Select</string>
+    <string name="action_share">Share</string>
+    <string name="action_up">Up</string>
+
+    <!-- Account -->
+    <string name="account_title">Accounts</string>
+    <string name="account_local">Local account</string>
+    <string name="account_local_chip">Local</string>
+    <string name="account_local_name">Account name</string>
+    <string name="account_local_save">Save account</string>
+    <string name="account_microsoft">Microsoft account</string>
+    <string name="account_microsoft_action">Sign in with Microsoft</string>
+    <string name="account_microsoft_body">Eclipse does not ship the client ID of another launcher. The project needs its own Entra app registration before device-code sign-in can be enabled.</string>
+    <string name="account_microsoft_configured">A Microsoft client ID is configured for this build.</string>
+    <string name="account_microsoft_not_configured">Microsoft sign-in is not configured in this build.</string>
+
+    <!-- Home -->
+    <string name="home_content">Manage Content</string>
+    <string name="home_controls">Controls</string>
+    <string name="home_create_instance">Create an instance</string>
+    <string name="home_edit_instance">Edit instance</string>
+    <string name="home_files">File Manager</string>
+    <string name="home_install_jar">Install a .jar</string>
+    <string name="home_jar_wrong_type_body">Choose a file that ends in .jar.</string>
+    <string name="home_jar_wrong_type_title">Not a .jar file</string>
+    <string name="home_logs">Manage Logs</string>
+    <string name="home_new_instance">New instance</string>
+    <string name="home_no_instance">No instance</string>
+    <string name="home_play">Play</string>
+    <string name="home_play_unavailable_body">This build downloads and installs the Vanilla game files, but it does not launch Minecraft yet.</string>
+    <string name="home_play_unavailable_title">Game runtime not connected</string>
+    <string name="home_quick_actions">Quick Actions</string>
+    <string name="home_tasks">Tasks</string>
+    <string name="home_tasks_cancel">Cancel</string>
+    <string name="home_tasks_empty_body">Installs and downloads appear here while they run.</string>
+    <string name="home_tasks_empty_title">No tasks</string>
+    <string name="home_tasks_failed">The task failed</string>
+    <string name="home_tasks_pause">Pause</string>
+    <string name="home_tasks_paused">Paused</string>
+    <string name="home_tasks_phase_committing">Committing instance</string>
+    <string name="home_tasks_phase_downloading">Downloading</string>
+    <string name="home_tasks_phase_preparing">Preparing metadata</string>
+    <string name="home_tasks_progress_bytes">%1$s of %2$s</string>
+    <string name="home_tasks_progress_files">%1$d of %2$d files</string>
+    <string name="home_tasks_resume">Resume</string>
+    <string name="home_tasks_retry">Retry</string>
+
+    <!-- Install -->
+    <string name="install_loader_local_body">This build creates the %1$s instance, but it does not install the %1$s loader yet. Choose a Vanilla instance to download the game.</string>
+    <string name="install_loader_local_title">%1$s is local-only</string>
+    <string name="install_recovery_title">Recovering an interrupted install</string>
+    <string name="install_task_title">Installing Minecraft %1$s</string>
+
+    <!-- Create instance -->
+    <string name="create_instance_coming_soon_body">The %1$s loader is a placeholder in this build. Choose Vanilla, Fabric or Modpack to create a local instance.</string>
+    <string name="create_instance_coming_soon_title">%1$s is coming soon</string>
+    <string name="create_instance_editor_title">Instance</string>
+    <string name="create_instance_fabric">Fabric</string>
+    <string name="create_instance_forge">Forge</string>
+    <string name="create_instance_loader">Loader</string>
+    <string name="create_instance_modded">Modded versions</string>
+    <string name="create_instance_modpack">Modpack</string>
+    <string name="create_instance_name">Instance name</string>
+    <string name="create_instance_neoforge">NeoForge</string>
+    <string name="create_instance_optifine">OptiFine</string>
+    <string name="create_instance_quilt">Quilt</string>
+    <string name="create_instance_title">Create Instance</string>
+    <string name="create_instance_vanilla">Vanilla</string>
+    <string name="create_instance_vanilla_like">Vanilla-like versions</string>
+    <string name="create_instance_version">Minecraft version</string>
+
+    <!-- Controls -->
+    <string name="controls_empty_body">Touch, keyboard, mouse and gamepad mapping will be configured here once the game process is connected.</string>
+    <string name="controls_empty_title">Controls arrive with the game runtime</string>
+    <string name="controls_title">Controls</string>
+
+    <!-- Logs -->
+    <string name="logs_binary_body">This file is not text. Use Share to open it in another app.</string>
+    <string name="logs_binary_title">No preview</string>
+    <string name="logs_copied">Copied</string>
+    <string name="logs_cut">Cut</string>
+    <string name="logs_delete_body">Delete %1$d selected files? This cannot be undone.</string>
+    <string name="logs_delete_title">Delete selected files?</string>
+    <string name="logs_deleted">Deleted</string>
+    <string name="logs_empty_body">A new latestlog.txt is created on each launcher start.</string>
+    <string name="logs_empty_title">No logs yet</string>
+    <string name="logs_invalid_name">Enter a name without slashes.</string>
+    <string name="logs_no_instance_body">Create an instance to give logs a home.</string>
+    <string name="logs_no_instance_title">No instance</string>
+    <string name="logs_operation_failed">Could not complete that action.</string>
+    <string name="logs_pasted">Pasted</string>
+    <string name="logs_path">.minecraft/logs/%1$s</string>
+    <string name="logs_read_error">Could not read this file.</string>
+    <string name="logs_rename_label">File name</string>
+    <string name="logs_rename_title">Rename file</string>
+    <string name="logs_renamed">Renamed</string>
+    <string name="logs_selected_count">%1$d selected</string>
+    <string name="logs_title">Manage Logs</string>
+    <string name="logs_too_large">This file is too large to preview in full. The first part is shown below.</string>
+
+    <!-- File manager -->
+    <string name="files_delete_body">Delete %1$d selected items? This cannot be undone.</string>
+    <string name="files_delete_title">Delete selected items?</string>
+    <string name="files_empty_body">Files you add to this instance appear here.</string>
+    <string name="files_empty_title">This folder is empty</string>
+    <string name="files_folder">Folder</string>
+    <string name="files_folder_created">Folder created</string>
+    <string name="files_invalid_name">Enter a name without slashes.</string>
+    <string name="files_new_folder_label">Folder name</string>
+    <string name="files_new_folder_title">New folder</string>
+    <string name="files_rename_label">Name</string>
+    <string name="files_rename_title">Rename item</string>
+    <string name="files_root">.minecraft</string>
+    <string name="files_selected">%1$d selected</string>
+    <string name="files_title">File Manager</string>
+
+    <!-- Manage content -->
+    <string name="content_any_loader">Any loader</string>
+    <string name="content_any_version">Any version</string>
+    <string name="content_auto_deps">Auto-install required dependencies</string>
+    <string name="content_auto_deps_summary">Install required dependencies with the selected project.</string>
+    <string name="content_coming_soon">Coming soon</string>
+    <string name="content_curseforge">CurseForge</string>
+    <string name="content_curseforge_empty_body">Add your own CurseForge API key in Settings, then this source will be ready for the catalogue client.</string>
+    <string name="content_curseforge_empty_title">CurseForge is not connected</string>
+    <string name="content_curseforge_ready_body">Your key is saved. The CurseForge catalogue client is not part of this build yet.</string>
+    <string name="content_curseforge_ready_title">CurseForge client not connected</string>
+    <string name="content_data_packs">Data Packs</string>
+    <string name="content_delete_body">This cannot be undone.</string>
+    <string name="content_delete_title">Delete %1$s?</string>
+    <string name="content_discover">Discover</string>
+    <string name="content_discover_empty_body">The filters are real, but the Modrinth client is not part of this build yet. No project data is shown.</string>
+    <string name="content_discover_empty_title">Catalogue not connected</string>
+    <string name="content_empty_body">Use Discover to find %1$s, or add files through File Manager.</string>
+    <string name="content_empty_title">Nothing installed</string>
+    <string name="content_filter_loader">Loader</string>
+    <string name="content_filter_source">Source</string>
+    <string name="content_filter_version">Game version</string>
+    <string name="content_filters">Filters</string>
+    <string name="content_installed">Installed</string>
+    <string name="content_modpacks">Modpacks</string>
+    <string name="content_modrinth">Modrinth</string>
+    <string name="content_mods">Mods</string>
+    <string name="content_no_instance_body">Create an instance before managing content.</string>
+    <string name="content_no_instance_title">No instance</string>
+    <string name="content_resource_packs">Resource Packs</string>
+    <string name="content_shaders">Shaders</string>
+    <string name="content_title">Manage Content</string>
+    <string name="content_worlds">Worlds</string>
+    <string name="content_worlds_discover_body">World downloads will arrive with a dedicated world source.</string>
+    <string name="content_worlds_discover_title">Worlds are not on Modrinth</string>
+    <string name="content_worlds_empty_body">Worlds you create appear here.</string>
+
+    <!-- Settings -->
+    <string name="settings_about">About</string>
+    <string name="settings_account">Account</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_curseforge_clear">Clear key</string>
+    <string name="settings_curseforge_key">CurseForge API key</string>
+    <string name="settings_curseforge_key_label">API key</string>
+    <string name="settings_curseforge_key_summary">Stored on this device only. Leave blank to keep CurseForge disabled.</string>
+    <string name="settings_curseforge_save">Save key</string>
+    <string name="settings_curseforge_status_off">CurseForge: Coming soon</string>
+    <string name="settings_curseforge_status_on">CurseForge: enabled on this device</string>
+    <string name="settings_disclaimer">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</string>
+    <string name="settings_font_license">Monocraft is licensed under the SIL Open Font License 1.1.</string>
+    <string name="settings_license">License</string>
+    <string name="settings_license_value">Apache-2.0</string>
+    <string name="settings_misc">Miscellaneous</string>
+    <string name="settings_source">Source</string>
+    <string name="settings_source_value">github.com/SouhardyaMaybe/EclipseLauncher</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_value">Ore (dark)</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_trademark">Eclipse Launcher is not affiliated with the Eclipse Foundation.</string>
+    <string name="settings_version">Version</string>
+
+    <!-- Content descriptions -->
+    <string name="cd_create_instance">Create instance</string>
+    <string name="cd_edit_instance">Edit instance</string>
+    <string name="cd_settings">Settings</string>
+    <string name="cd_tasks">Tasks</string>
+    <string name="cd_tasks_active">Tasks, %1$d active</string>
+</resources>

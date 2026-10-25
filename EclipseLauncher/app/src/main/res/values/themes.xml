@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.EclipseLauncher" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/eclipse_ink</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.EclipseLauncher.Main</item>
+    </style>
+
+    <style name="Theme.EclipseLauncher.Main" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/eclipse_ink</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+</resources>
