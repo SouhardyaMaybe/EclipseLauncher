@@ -9,10 +9,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 /**
- * Semantic state colors. These are separate from the Material roles because
- * "ready" and "broken" must keep their meaning even when a user opts into
- * dynamic color. Status is never carried by color alone; every use pairs it
- * with an icon and a label.
+ * Semantic state colors. Every use pairs color with a label or icon; color is
+ * never the only signal.
  */
 @Immutable
 data class EclipseStatusColors(
@@ -24,22 +22,13 @@ data class EclipseStatusColors(
     val gameOverlay: Color,
 )
 
-internal val LightStatusColors = EclipseStatusColors(
-    ready = Color(0xFF2E6B4F),
-    attention = Color(0xFF8A5A00),
-    broken = Color(0xFFA33A2B),
-    busy = Color(0xFF35618E),
-    scrim = Color(0x66000000),
-    gameOverlay = Color(0x47000000),
-)
-
-internal val DarkStatusColors = EclipseStatusColors(
-    ready = Color(0xFF8FD5B0),
-    attention = Color(0xFFF2C66D),
-    broken = Color(0xFFFFB4A8),
-    busy = Color(0xFFA8C8F0),
+internal val EclipseStatus = EclipseStatusColors(
+    ready = EclipsePalette.Success,
+    attention = EclipsePalette.Warning,
+    broken = EclipsePalette.Danger,
+    busy = EclipsePalette.Link,
     scrim = Color(0x99000000),
     gameOverlay = Color(0x47000000),
 )
 
-val LocalEclipseStatusColors = staticCompositionLocalOf { LightStatusColors }
+val LocalEclipseStatusColors = staticCompositionLocalOf { EclipseStatus }

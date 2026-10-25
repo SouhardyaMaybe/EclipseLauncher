@@ -4,105 +4,111 @@
  */
 package dev.shadow.eclipselauncher.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
-import dev.shadow.eclipselauncher.designsystem.component.EclipseArc
-import dev.shadow.eclipselauncher.designsystem.component.EclipseCard
-import dev.shadow.eclipselauncher.designsystem.component.EclipseSectionTitle
-import dev.shadow.eclipselauncher.designsystem.component.EclipseStatusRule
-import dev.shadow.eclipselauncher.designsystem.theme.EclipseTheme
-import dev.shadow.eclipselauncher.designsystem.theme.LocalEclipseStatusColors
+import dev.shadow.eclipselauncher.core.model.InstanceSummary
+import dev.shadow.eclipselauncher.designsystem.component.EclipseCenteredHeading
+import dev.shadow.eclipselauncher.designsystem.component.EclipseDivider
+import dev.shadow.eclipselauncher.designsystem.component.EclipseMenuRow
+import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIconKind
+import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
+import dev.shadow.eclipselauncher.ui.components.AccountBar
+import dev.shadow.eclipselauncher.ui.components.BottomInstanceBar
 
+/**
+ * The whole main page. There is exactly one section, Quick Actions, and every
+ * row lives inside it. The account bar and the instance/Play bar are chrome,
+ * not additional sections.
+ */
 @Composable
-fun HomeScreen(onSetUpInstance: () -> Unit) {
+fun HomeScreen(
+    accountName: String,
+    taskCount: Int,
+    instance: InstanceSummary?,
+    onAccountClick: () -> Unit,
+    onTasksClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onControlsClick: () -> Unit,
+    onLogsClick: () -> Unit,
+    onFilesClick: () -> Unit,
+    onContentClick: () -> Unit,
+    onInstallJarClick: () -> Unit,
+    onCreateInstance: () -> Unit,
+    onEditInstance: () -> Unit,
+    onPlayClick: () -> Unit,
+) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+            .fillMaxSize()
+            .background(EclipsePalette.Canvas),
     ) {
-        Text(
-            text = stringResource(R.string.home_eyebrow),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary,
-        )
-        Text(
-            text = stringResource(R.string.home_title),
-            style = MaterialTheme.typography.displaySmall,
-        )
-        Text(
-            text = stringResource(R.string.home_subtitle),
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        AccountBar(
+            accountName = accountName,
+            taskCount = taskCount,
+            onAccountClick = onAccountClick,
+            onTasksClick = onTasksClick,
+            onSettingsClick = onSettingsClick,
         )
 
-        Spacer(Modifier.height(4.dp))
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            EclipseCenteredHeading(
+                text = stringResource(R.string.home_quick_actions),
+                topPadding = 24.dp,
+            )
 
-        EclipseCard(modifier = Modifier.fillMaxWidth()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                EclipseArc(modifier = Modifier.size(64.dp))
-                Spacer(Modifier.size(16.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = stringResource(R.string.home_hero_title),
-                        style = MaterialTheme.typography.titleLarge,
-                    )
-                    Text(
-                        text = stringResource(R.string.home_hero_body),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
-            }
-            Spacer(Modifier.height(20.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = onSetUpInstance,
-            ) {
-                Text(stringResource(R.string.home_setup))
-            }
+            EclipseMenuRow(
+                icon = EclipsePixelIconKind.CONTROLS,
+                label = stringResource(R.string.home_controls),
+                onClick = onControlsClick,
+            )
+            EclipseDivider()
+            EclipseMenuRow(
+                icon = EclipsePixelIconKind.LOGS,
+                label = stringResource(R.string.home_logs),
+                onClick = onLogsClick,
+            )
+            EclipseDivider()
+            EclipseMenuRow(
+                icon = EclipsePixelIconKind.FOLDER,
+                label = stringResource(R.string.home_files),
+                onClick = onFilesClick,
+            )
+            EclipseDivider()
+            EclipseMenuRow(
+                icon = EclipsePixelIconKind.CONTENT,
+                label = stringResource(R.string.home_content),
+                onClick = onContentClick,
+            )
+            EclipseDivider()
+            EclipseMenuRow(
+                icon = EclipsePixelIconKind.JAR,
+                label = stringResource(R.string.home_install_jar),
+                onClick = onInstallJarClick,
+            )
+            EclipseDivider()
+
+            Spacer(Modifier.height(24.dp))
         }
 
-        EclipseSectionTitle(text = stringResource(R.string.home_truth_title))
-
-        EclipseCard(modifier = Modifier.fillMaxWidth()) {
-            EclipseStatusRule(
-                label = stringResource(R.string.home_status_shell),
-                color = LocalEclipseStatusColors.current.attention,
-            )
-            Spacer(Modifier.height(12.dp))
-            Text(
-                text = stringResource(R.string.home_truth_body),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenPreview() {
-    EclipseTheme {
-        HomeScreen(onSetUpInstance = {})
+        BottomInstanceBar(
+            instance = instance,
+            onEditInstance = onEditInstance,
+            onCreateInstance = onCreateInstance,
+            onPlayClick = onPlayClick,
+        )
     }
 }

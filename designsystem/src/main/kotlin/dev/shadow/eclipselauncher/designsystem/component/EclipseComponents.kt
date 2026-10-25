@@ -6,115 +6,646 @@ package dev.shadow.eclipselauncher.designsystem.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.RectangleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 
-/** The paper card: low elevation, one hairline outline, a generous radius. */
+/** Original 12×12 pixel glyphs. No game textures or third-party icon packs. */
+enum class EclipsePixelIconKind(val pattern: List<String>) {
+    ACCOUNT(
+        listOf(
+            "....####....",
+            "...######...",
+            "...######...",
+            "....####....",
+            "............",
+            "..########..",
+            ".##########.",
+            ".##########.",
+            ".##########.",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CONTROLS(
+        listOf(
+            "............",
+            "..##....##..",
+            ".####..####.",
+            ".##########.",
+            ".##.####.##.",
+            ".##.#..#.##.",
+            ".##.####.##.",
+            ".##########.",
+            "..##....##..",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    LOGS(
+        listOf(
+            "...######...",
+            "...#....#...",
+            "...#.##.#...",
+            "...#....#...",
+            "...#.##.#...",
+            "...#....#...",
+            "...#.##.#...",
+            "...#....#...",
+            "...######...",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    FOLDER(
+        listOf(
+            "............",
+            "..####......",
+            ".#....#.....",
+            ".#....######",
+            ".#.........#",
+            ".#.........#",
+            ".#.........#",
+            ".#.........#",
+            ".###########",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CONTENT(
+        listOf(
+            "............",
+            "..########..",
+            ".#........#.",
+            ".#........#.",
+            ".#........#.",
+            ".#........#.",
+            ".#........#.",
+            ".#........#.",
+            "..########..",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    JAR(
+        listOf(
+            "..########..",
+            "..#......#..",
+            "..#..##..#..",
+            "..#..##..#..",
+            "..#......#..",
+            "..#..##..#..",
+            "..#..##..#..",
+            "..#......#..",
+            "..########..",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    TASKS(
+        listOf(
+            "...####.....",
+            "..#....#....",
+            "..######....",
+            "..#....#....",
+            "..#.##.#....",
+            "..#....#....",
+            "..#.##.#....",
+            "..#....#....",
+            "..######....",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    SETTINGS(
+        listOf(
+            ".....##.....",
+            "..##.##.##..",
+            ".#...##...#.",
+            ".#..####..#.",
+            "###.#..#.###",
+            ".#..####..#.",
+            ".#...##...#.",
+            "..##.##.##..",
+            ".....##.....",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CHEVRON_RIGHT(
+        listOf(
+            "............",
+            "........#...",
+            "........##..",
+            ".........##.",
+            "..........##",
+            ".........##.",
+            "........##..",
+            "........#...",
+            "............",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CHEVRON_UP(
+        listOf(
+            "............",
+            "............",
+            "............",
+            ".....##.....",
+            "....####....",
+            "...######...",
+            "..########..",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CHEVRON_DOWN(
+        listOf(
+            "............",
+            "............",
+            "............",
+            "..########..",
+            "...######...",
+            "....####....",
+            ".....##.....",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    FILE(
+        listOf(
+            "...######...",
+            "...#....#...",
+            "...#.##.#...",
+            "...#....#...",
+            "...#.##.#...",
+            "...#....#...",
+            "...#.##.#...",
+            "...#....#...",
+            "...######...",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    EDIT(
+        listOf(
+            "............",
+            ".........##.",
+            "........####",
+            ".......####.",
+            "......####..",
+            ".....####...",
+            "....####....",
+            "...####.....",
+            "..####......",
+            ".###........",
+            "##..........",
+            "............",
+        ),
+    ),
+    SEARCH(
+        listOf(
+            "............",
+            "...#####....",
+            "..#.....#...",
+            ".#.......#..",
+            ".#.......#..",
+            ".#.......#..",
+            "..#.....#...",
+            "...#####....",
+            "........##..",
+            ".........##.",
+            "..........##",
+            "............",
+        ),
+    ),
+    PLUS(
+        listOf(
+            "............",
+            ".....##.....",
+            ".....##.....",
+            ".....##.....",
+            "..########..",
+            "..########..",
+            ".....##.....",
+            ".....##.....",
+            ".....##.....",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CHECK(
+        listOf(
+            "............",
+            "..........##",
+            ".........##.",
+            "........##..",
+            "..##...##...",
+            ".####.##....",
+            "..#####.....",
+            "...###......",
+            "....#.......",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    WORLD(
+        listOf(
+            "............",
+            "...#####....",
+            "..#..#..#...",
+            ".#...#...#..",
+            ".#..###..#..",
+            ".#...#...#..",
+            ".#..###..#..",
+            "..#..#..#...",
+            "...#####....",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+    CLOSE(
+        listOf(
+            "............",
+            "..##....##..",
+            ".####..####.",
+            "..########..",
+            "...######...",
+            "....####....",
+            "...######...",
+            "..########..",
+            ".####..####.",
+            "..##....##..",
+            "............",
+            "............",
+        ),
+    ),
+    MORE(
+        listOf(
+            "............",
+            "............",
+            "............",
+            "..##..##..##",
+            "..##..##..##",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+            "............",
+        ),
+    ),
+}
+
 @Composable
-fun EclipseCard(
+fun EclipsePixelIcon(
+    kind: EclipsePixelIconKind,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(20.dp),
+    tint: Color = EclipsePalette.Text,
+    description: String? = null,
+) {
+    val semantics = if (description == null) {
+        Modifier
+    } else {
+        Modifier.semantics { contentDescription = description }
+    }
+    Canvas(modifier.then(semantics)) {
+        val cell = size.minDimension / 12f
+        val left = (size.width - cell * 12f) / 2f
+        val top = (size.height - cell * 12f) / 2f
+        for (y in 0 until 12) {
+            for (x in 0 until 12) {
+                if (kind.pattern[y][x] == '#') {
+                    drawRect(
+                        color = tint,
+                        topLeft = Offset(left + x * cell, top + y * cell),
+                        size = Size(cell, cell),
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * A square button with a two-pixel top edge and a three-pixel bottom edge.
+ * The press state is the only motion; there is no shadow or gradient.
+ */
+@Composable
+fun EclipseBevelButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    primary: Boolean = true,
+    height: Dp = 56.dp,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+
+    val face = when {
+        !enabled -> EclipsePalette.Control
+        pressed && primary -> EclipsePalette.PrimaryPressed
+        pressed -> EclipsePalette.ControlPressed
+        primary -> EclipsePalette.Primary
+        else -> EclipsePalette.Control
+    }
+    val topEdge = when {
+        !enabled -> EclipsePalette.Border
+        primary -> EclipsePalette.PrimaryTop
+        else -> EclipsePalette.ControlHover
+    }
+    val bottomEdge = when {
+        !enabled -> EclipsePalette.Border
+        primary -> EclipsePalette.PrimaryBottom
+        else -> EclipsePalette.Canvas
+    }
+    val content = if (enabled) EclipsePalette.Text else EclipsePalette.Disabled
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = height)
+            .background(face)
+            .clickable(
+                interactionSource = interaction,
+                indication = LocalIndication.current,
+                enabled = enabled,
+                onClick = onClick,
+            )
+            .drawEdges(topEdge, bottomEdge)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = content,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+private fun Modifier.drawEdges(top: Color, bottom: Color): Modifier = this.then(
+    Modifier.drawBehind {
+        drawRect(color = top, size = Size(size.width, 2.dp.toPx()))
+        drawRect(
+            color = bottom,
+            topLeft = Offset(0f, size.height - 3.dp.toPx()),
+            size = Size(size.width, 3.dp.toPx()),
+        )
+    },
+)
+
+@Composable
+fun EclipseMenuRow(
+    icon: EclipsePixelIconKind,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .heightIn(min = 66.dp)
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(start = 22.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        EclipsePixelIcon(
+            kind = icon,
+            modifier = Modifier.size(30.dp),
+            tint = if (enabled) EclipsePalette.Text else EclipsePalette.Disabled,
+        )
+        Spacer(Modifier.width(22.dp))
+        Text(
+            text = label,
+            modifier = Modifier.weight(1f),
+            style = MaterialTheme.typography.labelLarge,
+            color = if (enabled) EclipsePalette.Text else EclipsePalette.Disabled,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+        EclipsePixelIcon(
+            kind = EclipsePixelIconKind.CHEVRON_RIGHT,
+            modifier = Modifier.size(16.dp),
+            tint = if (enabled) EclipsePalette.Muted else EclipsePalette.Disabled,
+        )
+    }
+}
+
+@Composable
+fun EclipseSectionLabel(text: String, modifier: Modifier = Modifier) {
+    Text(
+        text = text.uppercase(),
+        modifier = modifier.padding(start = 22.dp, top = 20.dp, bottom = 8.dp),
+        style = MaterialTheme.typography.labelSmall,
+        color = EclipsePalette.Muted,
+    )
+}
+
+@Composable
+fun EclipseCenteredHeading(
+    text: String,
+    modifier: Modifier = Modifier,
+    topPadding: Dp = 24.dp,
+    dividerThickness: Dp = 2.dp,
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = text,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = topPadding),
+            style = MaterialTheme.typography.titleLarge,
+            color = EclipsePalette.Text,
+            textAlign = TextAlign.Center,
+        )
+        EclipseDivider(
+            modifier = Modifier.padding(top = 12.dp),
+            thickness = dividerThickness,
+        )
+    }
+}
+
+@Composable
+fun EclipseTopBar(
+    title: String,
+    onBack: (() -> Unit)? = null,
+    backContentDescription: String = "Back",
+    actions: @Composable RowScope.() -> Unit = {},
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 52.dp)
+            .background(EclipsePalette.AccountBar)
+            .statusBarsPadding()
+            .padding(horizontal = 4.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (onBack != null) {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBack,
+                    contentDescription = backContentDescription,
+                    tint = EclipsePalette.Text,
+                )
+            }
+        } else {
+            Spacer(Modifier.width(12.dp))
+        }
+        Text(
+            text = title,
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 8.dp),
+            style = MaterialTheme.typography.titleMedium,
+            color = EclipsePalette.Text,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+        actions()
+    }
+}
+
+@Composable
+fun EclipseTab(
+    text: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+) {
+    Column(
+        modifier = modifier
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = when {
+                !enabled -> EclipsePalette.Disabled
+                selected -> EclipsePalette.Text
+                else -> EclipsePalette.Muted
+            },
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        Spacer(Modifier.height(6.dp))
+        Box(
+            Modifier
+                .height(2.dp)
+                .width(if (selected && enabled) 24.dp else 0.dp)
+                .background(if (selected && enabled) EclipsePalette.Primary else Color.Transparent),
+        )
+    }
+}
+
+@Composable
+fun EclipseStatusChip(
+    text: String,
+    color: Color,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text.uppercase(),
+        modifier = modifier
+            .border(1.dp, color)
+            .padding(horizontal = 6.dp, vertical = 2.dp),
+        style = MaterialTheme.typography.labelSmall,
+        color = color,
+        maxLines = 1,
+    )
+}
+
+@Composable
+fun EclipsePanel(
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(16.dp),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
         modifier = modifier,
-        shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerLow,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-        tonalElevation = 0.dp,
+        shape = RectangleShape,
+        color = EclipsePalette.Panel,
+        contentColor = EclipsePalette.Text,
+        border = BorderStroke(2.dp, EclipsePalette.Border),
     ) {
         Column(
             modifier = Modifier.padding(contentPadding),
             content = content,
-        )
-    }
-}
-
-@Composable
-fun EclipseSectionTitle(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        modifier = modifier,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-    )
-}
-
-/**
- * A status row: a 3 dp vertical rule carries the state next to an explicit
- * label. Color is never the only signal.
- */
-@Composable
-fun EclipseStatusRule(
-    label: String,
-    color: Color,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Surface(
-            modifier = Modifier
-                .width(3.dp)
-                .height(20.dp),
-            shape = RoundedCornerShape(2.dp),
-            color = color,
-        ) {}
-        Spacer(Modifier.width(12.dp))
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-    }
-}
-
-/** A crescent arc: the one signature shape, used sparingly. */
-@Composable
-fun EclipseArc(
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
-) {
-    Canvas(modifier) {
-        val stroke = 3.dp.toPx()
-        val inset = stroke / 2f
-        drawArc(
-            color = color,
-            startAngle = -55f,
-            sweepAngle = 285f,
-            useCenter = false,
-            topLeft = Offset(inset, inset),
-            size = Size(size.width - stroke, size.height - stroke),
-            style = Stroke(width = stroke, cap = StrokeCap.Round),
         )
     }
 }
@@ -126,43 +657,61 @@ fun EclipseEmptyState(
     modifier: Modifier = Modifier,
     action: (@Composable () -> Unit)? = null,
 ) {
-    EclipseCard(modifier = modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            EclipseArc(
-                modifier = Modifier.size(56.dp),
-                color = MaterialTheme.colorScheme.primary,
-            )
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                textAlign = TextAlign.Center,
-            )
-            Text(
-                text = body,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-            )
-            action?.invoke()
-        }
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        EclipsePixelIcon(
+            kind = EclipsePixelIconKind.CONTENT,
+            modifier = Modifier.size(48.dp),
+            tint = EclipsePalette.Muted,
+        )
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = EclipsePalette.Text,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            text = body,
+            style = MaterialTheme.typography.bodyMedium,
+            color = EclipsePalette.Muted,
+            textAlign = TextAlign.Center,
+        )
+        action?.invoke()
     }
 }
 
-/** Monospace text for versions, hashes and paths. */
 @Composable
-fun EclipseMonoText(
-    text: String,
+fun EclipseDivider(
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    thickness: Dp = 1.dp,
 ) {
-    Text(
-        text = text,
+    HorizontalDivider(
         modifier = modifier,
-        style = MaterialTheme.typography.labelSmall.copy(fontFamily = FontFamily.Monospace),
-        color = color,
+        thickness = thickness,
+        color = EclipsePalette.Border,
     )
 }
+
+@Composable
+fun eclipseTextFieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
+    focusedBorderColor = EclipsePalette.Focus,
+    unfocusedBorderColor = EclipsePalette.Border,
+    disabledBorderColor = EclipsePalette.Border,
+    focusedLabelColor = EclipsePalette.Focus,
+    unfocusedLabelColor = EclipsePalette.Muted,
+    disabledLabelColor = EclipsePalette.Disabled,
+    cursorColor = EclipsePalette.Primary,
+    focusedTextColor = EclipsePalette.Text,
+    unfocusedTextColor = EclipsePalette.Text,
+    disabledTextColor = EclipsePalette.Disabled,
+    focusedContainerColor = EclipsePalette.Panel,
+    unfocusedContainerColor = EclipsePalette.Panel,
+    disabledContainerColor = EclipsePalette.Panel,
+    focusedSupportingTextColor = EclipsePalette.Muted,
+    unfocusedSupportingTextColor = EclipsePalette.Muted,
+)

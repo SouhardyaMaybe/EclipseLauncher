@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.kotlin.serialization)
 }
 
 /**
@@ -15,6 +14,13 @@ plugins {
  */
 val releaseKeystoreBase64: String = System.getenv("ECLIPSE_KEYSTORE_BASE64").orEmpty()
 val hasReleaseSigning: Boolean = releaseKeystoreBase64.isNotBlank()
+
+/**
+ * Microsoft sign-in uses the project's own Entra public-client registration.
+ * No third-party launcher client ID is bundled, and an empty value keeps the
+ * sign-in path visibly unconfigured instead of shipping someone else's app.
+ */
+val msClientId: String = System.getenv("ECLIPSE_MS_CLIENT_ID").orEmpty()
 
 
 android {
@@ -30,6 +36,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        buildConfigField(
+            "String",
+            "MS_CLIENT_ID",
+            "\"${msClientId.replace("\\", "\\\\").replace("\"", "\\\"")}\"",
+        )
 
         // v1 ships arm64-v8a; x86_64 exists for the emulator and CI. The
         // 32-bit ABIs are deferred (docs/04 §1, docs/11 §14.2), and filtering
@@ -128,9 +139,6 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.icons.core)
-    implementation(libs.androidx.navigation3.runtime)
-    implementation(libs.androidx.navigation3.ui)
-    implementation(libs.kotlinx.serialization.core)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.tooling.preview)

@@ -7,21 +7,22 @@ package dev.shadow.eclipselauncher.di
 import android.content.Context
 import dev.shadow.eclipselauncher.core.common.EpochClock
 import dev.shadow.eclipselauncher.core.common.SystemEpochClock
-import dev.shadow.eclipselauncher.core.model.InstanceSummary
+import dev.shadow.eclipselauncher.data.FileClipboard
+import dev.shadow.eclipselauncher.data.LauncherState
+import dev.shadow.eclipselauncher.data.TaskCenter
 
 /**
- * Manual dependency container. The app is deliberately not using a service
- * locator or an annotation processor: every dependency is visible here, and a
- * module that needs something new has to say so in its constructor.
- *
- * This first shell has no database or network. The instance list is empty and
- * stays empty until the real repository exists; a fake instance would be worse
- * than an empty screen.
+ * Manual dependency container. Every dependency is visible here, and a module
+ * that needs something new has to say so in its constructor.
  */
 class AppContainer(context: Context) {
     val appContext: Context = context.applicationContext
 
     val clock: EpochClock = SystemEpochClock
 
-    val instances: List<InstanceSummary> = emptyList()
+    val state = LauncherState(appContext)
+
+    val tasks = TaskCenter()
+
+    val fileClipboard = FileClipboard()
 }

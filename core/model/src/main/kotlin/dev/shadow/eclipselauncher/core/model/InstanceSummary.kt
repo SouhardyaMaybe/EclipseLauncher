@@ -11,9 +11,19 @@ value class InstanceId(val value: String) {
     }
 }
 
+/**
+ * The loader families the launcher can name. Only Vanilla and Fabric are
+ * connected to a real install path in v1; the other values exist so the
+ * instance record and the placeholder buttons do not invent a second model.
+ */
 enum class LoaderKind {
     VANILLA,
     FABRIC,
+    QUILT,
+    FORGE,
+    NEOFORGE,
+    OPTIFINE,
+    MODPACK,
 }
 
 /**
