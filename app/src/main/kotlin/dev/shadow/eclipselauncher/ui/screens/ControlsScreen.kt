@@ -26,6 +26,7 @@ fun ControlsScreen(onBack: () -> Unit) {
     ) {
         EclipseTopBar(
             title = stringResource(R.string.controls_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = onBack,
         )
         Box(

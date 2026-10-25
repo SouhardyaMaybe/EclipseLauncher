@@ -143,8 +143,6 @@ private fun TaskRow(task: LauncherTask, tasks: TaskCenter) {
             text = task.title,
             style = MaterialTheme.typography.labelLarge,
             color = EclipsePalette.Text,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
         )
         Text(
             text = task.detail,

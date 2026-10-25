@@ -40,6 +40,7 @@ fun CreateInstanceScreen(
     ) {
         EclipseTopBar(
             title = stringResource(R.string.create_instance_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = onBack,
         )
 

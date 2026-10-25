@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -37,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.core.model.InstanceSummary
@@ -51,6 +53,7 @@ import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIconKind
 import dev.shadow.eclipselauncher.designsystem.component.EclipseSectionLabel
 import dev.shadow.eclipselauncher.designsystem.component.EclipseTab
 import dev.shadow.eclipselauncher.designsystem.component.EclipseTopBar
+import dev.shadow.eclipselauncher.designsystem.component.eclipseFocusRing
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 import dev.shadow.eclipselauncher.ui.components.ConfirmDialog
 import dev.shadow.eclipselauncher.ui.components.FileInfoDialog
@@ -89,6 +92,7 @@ fun ManageContentScreen(
     ) {
         EclipseTopBar(
             title = stringResource(R.string.content_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = onBack,
         )
 
@@ -370,6 +374,12 @@ private fun ColumnScope.DiscoverContent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .eclipseFocusRing()
+                .toggleable(
+                    value = state.autoInstallDependencies,
+                    role = Role.Switch,
+                    onValueChange = state::updateAutoInstallDependencies,
+                )
                 .padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -387,7 +397,7 @@ private fun ColumnScope.DiscoverContent(
             }
             Switch(
                 checked = state.autoInstallDependencies,
-                onCheckedChange = state::updateAutoInstallDependencies,
+                onCheckedChange = null,
             )
         }
         EclipseDivider()
@@ -432,7 +442,11 @@ private fun FilterRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick)
+                .eclipseFocusRing()
+                .clickable(
+                    role = Role.Button,
+                    onClick = onClick,
+                )
                 .padding(vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

@@ -26,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.core.model.InstanceSummary
@@ -89,6 +92,7 @@ fun ManageLogsScreen(
     ) {
         EclipseTopBar(
             title = stringResource(R.string.logs_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = {
                 if (selectionMode) finishSelection() else onBack()
             },
@@ -160,7 +164,8 @@ fun ManageLogsScreen(
                     text = message,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .semantics { liveRegion = LiveRegionMode.Polite },
                     style = MaterialTheme.typography.labelSmall,
                     color = EclipsePalette.Muted,
                 )

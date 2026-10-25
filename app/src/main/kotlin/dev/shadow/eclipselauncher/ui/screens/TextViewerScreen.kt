@@ -26,6 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +78,7 @@ fun TextViewerScreen(
     ) {
         EclipseTopBar(
             title = file.name,
+            backContentDescription = stringResource(R.string.action_back),
             onBack = onBack,
             actions = {
                 TextButton(onClick = { FileOps.share(context, listOf(file)) }) {
@@ -91,6 +95,9 @@ fun TextViewerScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.action_loading),
+                        modifier = Modifier.semantics {
+                            liveRegion = LiveRegionMode.Polite
+                        },
                         style = MaterialTheme.typography.bodyMedium,
                         color = EclipsePalette.Muted,
                     )

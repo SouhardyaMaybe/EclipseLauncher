@@ -27,8 +27,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,19 +40,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 
@@ -375,7 +384,9 @@ fun EclipsePixelIcon(
     } else {
         Modifier.semantics { contentDescription = description }
     }
-    Canvas(modifier.then(semantics)) {
+    val mirror = kind == EclipsePixelIconKind.CHEVRON_RIGHT &&
+        LocalLayoutDirection.current == LayoutDirection.Rtl
+    Canvas(modifier.then(semantics).then(if (mirror) Modifier.scale(-1f, 1f) else Modifier)) {
         val cell = size.minDimension / 12f
         val left = (size.width - cell * 12f) / 2f
         val top = (size.height - cell * 12f) / 2f
@@ -391,6 +402,20 @@ fun EclipsePixelIcon(
             }
         }
     }
+}
+
+/**
+ * Draws the 2 dp focus ring from the design tokens. Custom clickable controls
+ * do not get one from Material, so every one of them applies this before its
+ * `clickable`/`selectable` modifier; `onFocusChanged` has to sit outside the
+ * focus target to observe it.
+ */
+@Composable
+fun Modifier.eclipseFocusRing(enabled: Boolean = true): Modifier {
+    var focused by remember { mutableStateOf(false) }
+    return this
+        .onFocusChanged { focused = enabled && it.isFocused }
+        .border(2.dp, if (focused) EclipsePalette.Focus else Color.Transparent)
 }
 
 /**
@@ -433,10 +458,12 @@ fun EclipseBevelButton(
             .fillMaxWidth()
             .heightIn(min = height)
             .background(face)
+            .eclipseFocusRing(enabled)
             .clickable(
                 interactionSource = interaction,
                 indication = LocalIndication.current,
                 enabled = enabled,
+                role = Role.Button,
                 onClick = onClick,
             )
             .drawEdges(topEdge, bottomEdge)
@@ -477,7 +504,12 @@ fun EclipseMenuRow(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = 66.dp)
-            .clickable(enabled = enabled, onClick = onClick)
+            .eclipseFocusRing(enabled)
+            .clickable(
+                enabled = enabled,
+                role = Role.Button,
+                onClick = onClick,
+            )
             .padding(start = 22.dp, end = 16.dp, top = 12.dp, bottom = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -507,7 +539,9 @@ fun EclipseMenuRow(
 fun EclipseSectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text.uppercase(),
-        modifier = modifier.padding(start = 22.dp, top = 20.dp, bottom = 8.dp),
+        modifier = modifier
+            .padding(start = 22.dp, top = 20.dp, bottom = 8.dp)
+            .semantics { heading() },
         style = MaterialTheme.typography.labelSmall,
         color = EclipsePalette.Muted,
     )
@@ -525,7 +559,8 @@ fun EclipseCenteredHeading(
             text = text,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = topPadding),
+                .padding(top = topPadding)
+                .semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
             color = EclipsePalette.Text,
             textAlign = TextAlign.Center,
@@ -540,8 +575,8 @@ fun EclipseCenteredHeading(
 @Composable
 fun EclipseTopBar(
     title: String,
+    backContentDescription: String,
     onBack: (() -> Unit)? = null,
-    backContentDescription: String = "Back",
     actions: @Composable RowScope.() -> Unit = {},
 ) {
     Row(
@@ -556,7 +591,7 @@ fun EclipseTopBar(
         if (onBack != null) {
             IconButton(onClick = onBack) {
                 Icon(
-                    imageVector = Icons.Filled.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = backContentDescription,
                     tint = EclipsePalette.Text,
                 )
@@ -568,7 +603,8 @@ fun EclipseTopBar(
             text = title,
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 8.dp)
+                .semantics { heading() },
             style = MaterialTheme.typography.titleMedium,
             color = EclipsePalette.Text,
             maxLines = 2,
@@ -588,7 +624,14 @@ fun EclipseTab(
 ) {
     Column(
         modifier = modifier
-            .clickable(enabled = enabled, onClick = onClick)
+            .heightIn(min = 48.dp)
+            .eclipseFocusRing(enabled)
+            .selectable(
+                selected = selected,
+                enabled = enabled,
+                role = Role.Tab,
+                onClick = onClick,
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -600,7 +643,8 @@ fun EclipseTab(
                 selected -> EclipsePalette.Text
                 else -> EclipsePalette.Muted
             },
-            maxLines = 1,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.height(6.dp))

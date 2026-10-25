@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,12 +28,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.designsystem.component.EclipseDivider
 import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIcon
 import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIconKind
+import dev.shadow.eclipselauncher.designsystem.component.eclipseFocusRing
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 
 @Composable
@@ -51,8 +54,6 @@ fun PathBar(
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.labelSmall,
             color = EclipsePalette.Muted,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
         )
         actions()
     }
@@ -67,11 +68,25 @@ fun FileRow(
     selectionMode: Boolean,
     onClick: () -> Unit,
 ) {
+    val interaction = if (selectionMode) {
+        Modifier.selectable(
+            selected = selected,
+            role = Role.Checkbox,
+            onClick = onClick,
+        )
+    } else {
+        Modifier.clickable(
+            role = Role.Button,
+            onClick = onClick,
+        )
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(if (selected) EclipsePalette.Control else Color.Transparent)
-            .clickable(onClick = onClick)
+            .eclipseFocusRing()
+            .then(interaction)
             .heightIn(min = 52.dp)
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -106,14 +121,14 @@ fun FileRow(
                 text = name,
                 style = MaterialTheme.typography.labelLarge,
                 color = EclipsePalette.Text,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = detail,
                 style = MaterialTheme.typography.labelSmall,
                 color = EclipsePalette.Muted,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
         }

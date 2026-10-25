@@ -113,6 +113,8 @@
     <string name="files_invalid_name">Enter a name without slashes.</string>
     <string name="files_new_folder_label">Folder name</string>
     <string name="files_new_folder_title">New folder</string>
+    <string name="files_rename_label">Name</string>
+    <string name="files_rename_title">Rename item</string>
     <string name="files_root">.minecraft</string>
     <string name="files_selected">%1$d selected</string>
     <string name="files_title">File Manager</string>
@@ -179,6 +181,8 @@
     <string name="settings_version">Version</string>
 
     <!-- Content descriptions -->
+    <string name="cd_create_instance">Create instance</string>
+    <string name="cd_edit_instance">Edit instance</string>
     <string name="cd_settings">Settings</string>
     <string name="cd_tasks">Tasks</string>
     <string name="cd_tasks_active">Tasks, %1$d active</string>

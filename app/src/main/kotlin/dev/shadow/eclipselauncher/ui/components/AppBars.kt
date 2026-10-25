@@ -32,8 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -44,6 +44,7 @@ import dev.shadow.eclipselauncher.designsystem.component.EclipseBevelButton
 import dev.shadow.eclipselauncher.designsystem.component.EclipseDivider
 import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIcon
 import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIconKind
+import dev.shadow.eclipselauncher.designsystem.component.eclipseFocusRing
 import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
 
 @Composable
@@ -65,7 +66,11 @@ fun AccountBar(
         Row(
             modifier = Modifier
                 .weight(1f)
-                .clickable(onClick = onAccountClick)
+                .eclipseFocusRing()
+                .clickable(
+                    role = Role.Button,
+                    onClick = onAccountClick,
+                )
                 .padding(horizontal = 8.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -119,11 +124,12 @@ private fun EclipseBarIconButton(
     Box(
         modifier = Modifier
             .size(48.dp)
-            .clickable(onClick = onClick)
-            .semantics {
-                contentDescription = description
-                role = Role.Button
-            },
+            .eclipseFocusRing()
+            .clickable(
+                role = Role.Button,
+                onClick = onClick,
+            )
+            .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
         EclipsePixelIcon(
@@ -143,6 +149,7 @@ private fun EclipseBarIconButton(
             ) {
                 Text(
                     text = badge.toString(),
+                    modifier = Modifier.clearAndSetSemantics { },
                     style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
                     color = EclipsePalette.Text,
                     maxLines = 1,
@@ -160,6 +167,11 @@ fun BottomInstanceBar(
     onPlayClick: () -> Unit,
 ) {
     var menuOpen by remember { mutableStateOf(false) }
+    val editInstanceDescription = if (instance == null) {
+        stringResource(R.string.cd_create_instance)
+    } else {
+        stringResource(R.string.cd_edit_instance)
+    }
 
     Column(
         modifier = Modifier
@@ -179,7 +191,11 @@ fun BottomInstanceBar(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { menuOpen = true }
+                        .eclipseFocusRing()
+                        .clickable(
+                            role = Role.Button,
+                            onClick = { menuOpen = true },
+                        )
                         .padding(horizontal = 8.dp, vertical = 6.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -188,7 +204,7 @@ fun BottomInstanceBar(
                             text = instance?.name ?: stringResource(R.string.home_no_instance),
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             color = EclipsePalette.Text,
-                            maxLines = 1,
+                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
                         Text(
@@ -197,7 +213,7 @@ fun BottomInstanceBar(
                             } ?: stringResource(R.string.home_create_instance),
                             style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
                             color = EclipsePalette.Muted,
-                            maxLines = 1,
+                            maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
@@ -234,17 +250,11 @@ fun BottomInstanceBar(
             Box(
                 modifier = Modifier
                     .size(48.dp)
-                    .clickable {
+                    .eclipseFocusRing()
+                    .clickable(role = Role.Button) {
                         if (instance == null) onCreateInstance() else onEditInstance()
                     }
-                    .semantics {
-                        contentDescription = if (instance == null) {
-                            "Create instance"
-                        } else {
-                            "Edit instance"
-                        }
-                        role = Role.Button
-                    },
+                    .semantics { contentDescription = editInstanceDescription },
                 contentAlignment = Alignment.Center,
             ) {
                 EclipsePixelIcon(

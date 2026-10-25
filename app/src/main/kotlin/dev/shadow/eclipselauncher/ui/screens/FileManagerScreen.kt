@@ -30,6 +30,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
 import dev.shadow.eclipselauncher.data.FileClipboard
@@ -114,6 +117,7 @@ fun FileManagerScreen(
     ) {
         EclipseTopBar(
             title = stringResource(R.string.files_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = {
                 if (selectionMode) finishSelection() else if (!goUp()) onBack()
             },
@@ -189,7 +193,8 @@ fun FileManagerScreen(
                 text = message,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .semantics { liveRegion = LiveRegionMode.Polite },
                 style = MaterialTheme.typography.labelSmall,
                 color = EclipsePalette.Muted,
             )
@@ -259,8 +264,8 @@ fun FileManagerScreen(
 
     renameTarget?.let { target ->
         NamePromptDialog(
-            title = stringResource(R.string.logs_rename_title),
-            label = stringResource(R.string.logs_rename_label),
+            title = stringResource(R.string.files_rename_title),
+            label = stringResource(R.string.files_rename_label),
             initial = target.name,
             confirmLabel = stringResource(R.string.action_rename),
             invalidHint = stringResource(R.string.files_invalid_name),

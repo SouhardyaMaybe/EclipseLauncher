@@ -50,6 +50,7 @@ fun AccountsScreen(
     ) {
         EclipseTopBar(
             title = stringResource(R.string.account_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = onBack,
         )
 

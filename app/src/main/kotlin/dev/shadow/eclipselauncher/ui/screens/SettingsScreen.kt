@@ -56,6 +56,7 @@ fun SettingsScreen(
     ) {
         EclipseTopBar(
             title = stringResource(R.string.settings_title),
+            backContentDescription = stringResource(R.string.action_back),
             onBack = onBack,
         )
 

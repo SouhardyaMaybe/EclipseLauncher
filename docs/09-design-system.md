@@ -390,6 +390,8 @@ Every component:
 - accepts `modifier: Modifier = Modifier` as the first optional parameter where it makes sense;
 - exposes a content description or a visible label for iconic content;
 - uses a 48 dp minimum touch target;
+- draws the 2 dp `Focus` ring with `Modifier.eclipseFocusRing()` when it owns a custom clickable surface;
+- exposes selection with `selectable` or `toggleable` so TalkBack announces the checked or selected state;
 - has a disabled state that keeps its label;
 - uses `EclipsePalette` tokens, not raw colors;
 - avoids fake progress and decorative animation.
