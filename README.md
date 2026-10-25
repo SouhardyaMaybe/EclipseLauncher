@@ -103,7 +103,7 @@ See [`docs/README.md`](docs/README.md) for the research dossier and [`PROVENANCE
 
 - Research dossier: chapters 00–14 complete; implementation gated on sign-off.
 - Launcher code: the signed-off single-screen Quick Actions UI is implemented on top of the original `:app`, `:designsystem`, `:core:*` and `:host` modules. CI compiles the JVM core, runs its tests, builds debug and unsigned release APKs, and verifies both with a binary-manifest gate and a 16 KB ELF gate.
-- Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNatives rework is pushed; EclipseJRE and EclipseComponents still need their official-upstream rework.
+- Infrastructure repos: EclipseSDL3 cleanup is pushed; EclipseNatives rework is pushed and its CI now builds, packages and verifies both ABIs; EclipseJRE and EclipseComponents still need their official-upstream rework.
 - No production APK has been released yet, and no release signing secrets are configured.
 
 ---
