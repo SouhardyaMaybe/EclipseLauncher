@@ -17,7 +17,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import dev.shadow.eclipselauncher.EclipseApplication
@@ -58,6 +61,49 @@ private sealed interface AppScreen {
     data class Viewer(val path: String) : AppScreen
 }
 
+/**
+ * The back stack is saved as strings so rotation and process recreation return
+ * to the same screen, File Manager folder and Manage Content tab. Paths are
+ * appended after the first colon so a colon inside a path is preserved.
+ */
+private fun encodeScreen(screen: AppScreen): String = when (screen) {
+    AppScreen.Home -> "home"
+    AppScreen.CreateInstance -> "create"
+    AppScreen.Controls -> "controls"
+    AppScreen.Logs -> "logs"
+    is AppScreen.Files -> screen.initialPath?.let { "files:$it" } ?: "files"
+    is AppScreen.Content -> "content:${if (screen.installed) 1 else 0}:${screen.type.name}"
+    AppScreen.Settings -> "settings"
+    AppScreen.Accounts -> "accounts"
+    is AppScreen.Viewer -> "viewer:${screen.path}"
+}
+
+private fun decodeScreen(value: String): AppScreen? {
+    val separator = value.indexOf(':')
+    val tag = if (separator >= 0) value.substring(0, separator) else value
+    val rest = if (separator >= 0) value.substring(separator + 1) else ""
+
+    return when (tag) {
+        "home" -> AppScreen.Home
+        "create" -> AppScreen.CreateInstance
+        "controls" -> AppScreen.Controls
+        "logs" -> AppScreen.Logs
+        "files" -> AppScreen.Files(rest.takeIf { it.isNotEmpty() })
+        "content" -> {
+            val parts = rest.split(':', limit = 2)
+            AppScreen.Content(
+                installed = parts.getOrNull(0) != "0",
+                type = ContentType.entries.firstOrNull { it.name == parts.getOrNull(1) }
+                    ?: ContentType.MODS,
+            )
+        }
+        "settings" -> AppScreen.Settings
+        "accounts" -> AppScreen.Accounts
+        "viewer" -> rest.takeIf { it.isNotEmpty() }?.let { AppScreen.Viewer(it) }
+        else -> null
+    }
+}
+
 @Composable
 fun EclipseApp() {
     EclipseTheme {
@@ -67,7 +113,17 @@ fun EclipseApp() {
         val tasks = container.tasks
         val clipboard = container.fileClipboard
 
-        val backStack = remember { mutableStateListOf<AppScreen>(AppScreen.Home) }
+        val backStack = rememberSaveable(
+            saver = listSaver<SnapshotStateList<AppScreen>, String>(
+                save = { stack -> stack.map(::encodeScreen) },
+                restore = { saved ->
+                    mutableStateListOf<AppScreen>().apply {
+                        saved.mapNotNullTo(this) { decodeScreen(it) }
+                        if (isEmpty()) add(AppScreen.Home)
+                    }
+                },
+            ),
+        ) { mutableStateListOf<AppScreen>(AppScreen.Home) }
         val screen = backStack.last()
         var showTasks by remember { mutableStateOf(false) }
         var showPlayNotice by remember { mutableStateOf(false) }
@@ -187,6 +243,15 @@ fun EclipseApp() {
                 initialDir = current.initialPath?.let(::File),
                 clipboard = clipboard,
                 onBack = { goBack() },
+                onDirectoryChanged = { directory ->
+                    val target = backStack.last()
+                    if (target is AppScreen.Files &&
+                        target.initialPath != directory.absolutePath
+                    ) {
+                        backStack[backStack.lastIndex] =
+                            target.copy(initialPath = directory.absolutePath)
+                    }
+                },
                 onOpenFile = { file -> navigate(AppScreen.Viewer(file.absolutePath)) },
             )
 
@@ -196,6 +261,15 @@ fun EclipseApp() {
                 initialInstalled = current.installed,
                 initialType = current.type,
                 onBack = { goBack() },
+                onStateChanged = { installed, type ->
+                    val target = backStack.last()
+                    if (target is AppScreen.Content &&
+                        (target.installed != installed || target.type != type)
+                    ) {
+                        backStack[backStack.lastIndex] =
+                            target.copy(installed = installed, type = type)
+                    }
+                },
                 onOpenFile = { file -> navigate(AppScreen.Viewer(file.absolutePath)) },
                 onOpenDirectory = { directory ->
                     navigate(AppScreen.Files(directory.absolutePath))

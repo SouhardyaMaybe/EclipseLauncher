@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ fun FileManagerScreen(
     initialDir: File?,
     clipboard: FileClipboard,
     onBack: () -> Unit,
+    onDirectoryChanged: (File) -> Unit,
     onOpenFile: (File) -> Unit,
 ) {
     val context = LocalContext.current
@@ -75,6 +77,10 @@ fun FileManagerScreen(
         rootLabel
     } else {
         "$rootLabel/${FileOps.relativePath(root, currentDir)}"
+    }
+
+    LaunchedEffect(currentDir) {
+        onDirectoryChanged(currentDir)
     }
 
     fun finishSelection() {

@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +67,7 @@ fun ManageContentScreen(
     initialInstalled: Boolean,
     initialType: ContentType,
     onBack: () -> Unit,
+    onStateChanged: (Boolean, ContentType) -> Unit,
     onOpenFile: (File) -> Unit,
     onOpenDirectory: (File) -> Unit,
 ) {
@@ -75,6 +77,10 @@ fun ManageContentScreen(
     var refresh by remember { mutableIntStateOf(0) }
     var infoFile by remember { mutableStateOf<File?>(null) }
     var deleteFile by remember { mutableStateOf<File?>(null) }
+
+    LaunchedEffect(installed, type) {
+        onStateChanged(installed, type)
+    }
 
     Column(
         modifier = Modifier
