@@ -106,7 +106,9 @@ class MojangMetadataClientTest {
 
         assertThat(failure.code).isEqualTo("MOJANG_METADATA_INVALID")
         assertThat(failure.stage).isEqualTo(FailureStage.RESOLVE)
-        assertThat(failure.retryable).isFalse()
+        // A truncated 200 response is recoverable by a fresh request, so the
+        // parser keeps this retryable rather than treating it as permanent.
+        assertThat(failure.retryable).isTrue()
     }
 
     @Test
