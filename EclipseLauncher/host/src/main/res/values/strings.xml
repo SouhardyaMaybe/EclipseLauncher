@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="host_game_title">Game process</string>
-    <string name="host_game_body">This process will own the SDL surface, the HotSpot JVM and the game. No runtime is installed in this build.</string>
-    <string name="host_installer_title">Installer process</string>
-    <string name="host_installer_body">This process will run loader processors and write the instance transaction. The installer is not connected in this build.</string>
-    <string name="host_installer_selected">Selected file: %1$s\n\nThe installer pipeline is not connected in this build.</string>
-    <string name="host_installer_unknown">No file was received.</string>
-</resources>
