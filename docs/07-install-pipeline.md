@@ -83,7 +83,7 @@ A rule list is evaluated in order. A rule matches when:
 - its `os.arch` is absent or in our accepted set (`arm64`, `aarch64`; `x86_64` for the emulator);
 - every entry in `features` matches the launch context (`is_demo_user`, `has_custom_resolution`, quick-play flags).
 
-The last matching rule's `action` wins; no match means the default, which is **allow** for libraries and **disallow** for arguments. Implementations that treat “no match” as deny silently drop libraries; implementations that treat it as allow run Windows-only arguments on Android. Both bugs exist in the wild.
+A library with **no rules** is allowed. Once a rule list is present, the last matching rule's `action` wins, and **no match means disallow**; that is how Mojang marks the Windows, macOS and Linux variants of the same artifact. Argument objects also default to disallow when no rule matches. Implementations that treat a present-but-unmatched rule list as allow put the macOS Objective-C bridge and Windows natives on Android; implementations that treat an empty rule list as deny silently drop every ordinary library. Both bugs exist in the wild.
 
 **Verified:** the rule semantics are the launcher contract described by the version JSON and the Minecraft Wiki.
 

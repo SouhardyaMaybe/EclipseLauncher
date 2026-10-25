@@ -74,8 +74,62 @@ class VersionResolverTest {
 
         assertThat(resolved.libraries.map { it.coordinate.moduleKey })
             .containsExactly("com.example:client-code")
-        assertThat(resolved.droppedNatives).hasSize(1)
-        assertThat(resolved.droppedNatives.single().classifier).isEqualTo("natives-linux")
+        assertThat(resolved.droppedArtifacts).hasSize(1)
+        assertThat(resolved.droppedArtifacts.single().classifier).isEqualTo("natives-linux")
+        assertThat(resolved.droppedArtifacts.single().kind)
+            .isEqualTo(DroppedArtifactKind.NATIVE)
+    }
+
+    @Test
+    fun `a native classifier in the coordinate is dropped`() {
+        val resolved = VersionResolver.resolveOrThrow(
+            version(
+                libraries = listOf(
+                    library(
+                        name = "org.lwjgl:lwjgl:3.4.3:natives-linux",
+                        path = "org/lwjgl/lwjgl/3.4.3/lwjgl-3.4.3-natives-linux.jar",
+                        rules = listOf(Rule(action = "allow", os = OsRule(name = "linux"))),
+                    ),
+                ),
+            ),
+            LaunchContext(),
+        )
+
+        assertThat(resolved.libraries).isEmpty()
+        assertThat(resolved.droppedArtifacts.single().classifier).isEqualTo("natives-linux")
+    }
+
+    @Test
+    fun `the Tracy profiler is dropped as a whole`() {
+        val resolved = VersionResolver.resolveOrThrow(
+            version(
+                libraries = listOf(
+                    library(
+                        name = "com.mojang:jtracy:1.14.38",
+                        path = "com/mojang/jtracy/1.14.38/jtracy-1.14.38.jar",
+                    ),
+                ),
+            ),
+            LaunchContext(),
+        )
+
+        assertThat(resolved.libraries).isEmpty()
+        assertThat(resolved.droppedArtifacts.single().kind)
+            .isEqualTo(DroppedArtifactKind.PROFILER)
+    }
+
+    @Test
+    fun `a library without rules stays on the classpath`() {
+        val resolved = VersionResolver.resolveOrThrow(
+            version(
+                libraries = listOf(
+                    library("com.example:plain:1.0", "com/example/plain/1.0/plain-1.0.jar"),
+                ),
+            ),
+            LaunchContext(),
+        )
+
+        assertThat(resolved.libraries).hasSize(1)
     }
 
     @Test

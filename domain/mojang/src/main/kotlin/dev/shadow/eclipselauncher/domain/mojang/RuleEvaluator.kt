@@ -21,8 +21,12 @@ data class LaunchContext(
 /**
  * Evaluates the ordered rule list exactly as the version metadata specifies:
  * every matching rule replaces the previous verdict, and the last matching
- * rule wins. A list with no matching rule keeps the caller's default, which is
- * `true` for libraries and `false` for arguments.
+ * rule wins. A list with no matching rule keeps the caller's default.
+ *
+ * The caller's default is not cosmetic. An empty library rule list means
+ * "allowed"; a present rule list with no match means "not for this platform".
+ * [VersionResolver] encodes that distinction, and [ArgumentTemplate] uses
+ * `false` for argument objects.
  */
 object RuleEvaluator {
     fun allows(

@@ -16,14 +16,22 @@ data class ResolvedLibrary(
     val path: String,
 )
 
+/** Why a library that appears in the metadata is not on the Android classpath. */
+enum class DroppedArtifactKind {
+    NATIVE,
+    PROFILER,
+}
+
 /**
- * A Mojang native artifact that is intentionally not downloaded. Android
- * cannot load any of them; EclipseNatives supplies the replacement set.
+ * A Mojang artifact that is intentionally not downloaded. Android cannot load
+ * the desktop natives, and the profiler has no Android build; EclipseNatives
+ * supplies the replacement native set.
  */
-data class DroppedNative(
+data class DroppedArtifact(
     val coordinate: MavenCoordinate,
-    val classifier: String,
+    val classifier: String?,
     val download: DownloadInfo?,
+    val kind: DroppedArtifactKind,
     val reason: String,
 )
 
@@ -34,7 +42,7 @@ data class ResolvedVersion(
     val assetIndex: AssetIndexRef,
     val client: DownloadInfo,
     val libraries: List<ResolvedLibrary>,
-    val droppedNatives: List<DroppedNative>,
+    val droppedArtifacts: List<DroppedArtifact>,
     val logging: LoggingClient?,
     val javaMajorVersion: Int?,
     val arguments: Arguments?,
@@ -51,6 +59,8 @@ data class ResolvedVersion(
 object VersionResolver {
     private const val NATIVE_REASON =
         "Android loads the EclipseNatives build instead of Mojang's desktop native"
+    private const val PROFILER_REASON =
+        "Tracy profiling is not part of the Android build"
 
     fun resolve(version: VersionJson, context: LaunchContext): AppResult<ResolvedVersion> =
         try {
@@ -94,13 +104,35 @@ object VersionResolver {
         }
 
         val classpath = LinkedHashMap<String, ResolvedLibrary>()
-        val natives = mutableListOf<DroppedNative>()
+        val dropped = mutableListOf<DroppedArtifact>()
 
         for (library in version.libraries) {
-            if (!RuleEvaluator.allows(library.rules, context, default = true)) continue
+            // A library with no rules is allowed. Once a rule list exists, a
+            // non-matching rule means disallow: that is how Mojang marks the
+            // Windows, macOS and Linux variants of the same native.
+            if (!RuleEvaluator.allows(
+                    library.rules,
+                    context,
+                    default = library.rules.isEmpty(),
+                )
+            ) {
+                continue
+            }
 
             val coordinate = MavenCoordinate.parse(library.name)
+            if (coordinate.moduleKey == "com.mojang:jtracy") {
+                dropped += DroppedArtifact(
+                    coordinate = coordinate,
+                    classifier = coordinate.classifier,
+                    download = library.downloads.artifact,
+                    kind = DroppedArtifactKind.PROFILER,
+                    reason = PROFILER_REASON,
+                )
+                continue
+            }
+
             val nativeClassifier = nativeClassifier(library, context)
+                ?: coordinate.classifier?.takeIf(::isNativeClassifier)
             if (nativeClassifier != null) {
                 val classifier = nativeClassifier.replace("\${arch}", context.osArch)
                 if (classifier.contains("\${")) {
@@ -108,10 +140,12 @@ object VersionResolver {
                         "native classifier for ${library.name} has an unknown macro: $nativeClassifier",
                     )
                 }
-                natives += DroppedNative(
+                dropped += DroppedArtifact(
                     coordinate = coordinate,
                     classifier = classifier,
-                    download = library.downloads.classifiers[classifier],
+                    download = library.downloads.classifiers[classifier]
+                        ?: library.downloads.artifact,
+                    kind = DroppedArtifactKind.NATIVE,
                     reason = NATIVE_REASON,
                 )
                 continue
@@ -134,7 +168,7 @@ object VersionResolver {
             assetIndex = assetIndex,
             client = client,
             libraries = classpath.values.toList(),
-            droppedNatives = natives,
+            droppedArtifacts = dropped,
             logging = logging,
             javaMajorVersion = version.javaVersion?.majorVersion,
             arguments = version.arguments,
@@ -149,6 +183,20 @@ object VersionResolver {
             else -> context.osName.lowercase()
         }
         return library.natives[osKey]
+    }
+
+    /**
+     * Mojang's modern metadata puts the classifier in the coordinate instead
+     * of a `natives` map. A classifier is a native payload when it starts with
+     * `natives-` or names a desktop platform, including Netty's `linux-aarch_64`
+     * transport jar.
+     */
+    private fun isNativeClassifier(classifier: String): Boolean {
+        val value = classifier.lowercase()
+        return value.startsWith("natives-") ||
+            value.startsWith("linux-") ||
+            value.startsWith("osx-") ||
+            value.startsWith("windows-")
     }
 
     private fun requireDownload(download: DownloadInfo, what: String) {
