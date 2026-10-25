@@ -49,6 +49,10 @@ class StoreException(
 class ArtifactStore(root: Path) {
     private val rootPath = root.toAbsolutePath().normalize()
 
+    /** The normalised store root, used by the collector to bound its walk. */
+    val root: Path
+        get() = rootPath
+
     init {
         Files.createDirectories(rootPath)
     }

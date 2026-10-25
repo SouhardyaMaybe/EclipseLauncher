@@ -392,6 +392,8 @@ A `FULL` pass over 5,147 assets on a midrange phone takes tens of seconds; do no
 - Run GC after a successful uninstall, on idle charging, or when free space is low.
 - Report reclaimed bytes; never silently delete a world or a user file.
 
+**Implementation note (2026-10-25):** `StoreGc` reads every committed instance manifest, unions those paths with caller-pinned in-flight plan paths, and walks only `versions/`, `libraries/`, `assets/` and `logging/`. It deletes unreferenced regular files older than seven days, removes stale `.part` and `.bad` files on the same rule, prunes empty directories, skips symbolic links, and stops without deleting when the caller's install/launch lock is held. A malformed, missing or unreadable manifest aborts the pass with `STORAGE_GC_REFERENCES_INVALID`; it never deletes with an incomplete reference set. Wiring the collector to the Android lock and to uninstall is still open.
+
 ---
 
 ## 6. Storage layout
