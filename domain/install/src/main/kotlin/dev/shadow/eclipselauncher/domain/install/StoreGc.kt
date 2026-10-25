@@ -129,7 +129,7 @@ class StoreGc(
                     if (!attrs.isRegularFile) return FileVisitResult.CONTINUE
                     scannedFiles++
 
-                    if (file in protectedPaths) {
+                    if (protectedPaths.contains(file.toString())) {
                         keptReferenced++
                         return FileVisitResult.CONTINUE
                     }
