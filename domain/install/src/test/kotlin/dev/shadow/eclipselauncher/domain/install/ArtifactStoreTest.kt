@@ -6,6 +6,7 @@ package dev.shadow.eclipselauncher.domain.install
 
 import com.google.common.truth.Truth.assertThat
 import dev.shadow.eclipselauncher.core.common.FailureStage
+import dev.shadow.eclipselauncher.core.network.DownloadSource
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream

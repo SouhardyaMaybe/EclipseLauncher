@@ -52,6 +52,7 @@ The repository contains the signed-off single-screen launcher shell:
 | `:designsystem` | Ore-inspired palette, Monocraft typography, square shapes, original 12 × 12 pixel glyphs, bevel buttons, menu rows, tabs, panels and dialogs |
 | `:core:common` | `Failure` taxonomy, `AppResult`, `EpochClock` |
 | `:core:model` | `InstanceSummary`, `InstanceId`, `LoaderKind` |
+| `:core:network` | `DownloadSource`, strict HTTPS/host/port policy, manual redirects, `Retry-After` and backoff. Pure JVM and unit-tested against a local HTTP server. |
 | `:domain:mojang` | Official version manifest/version JSON models, ordered rule evaluation, Maven coordinates, argument templates and the Android library resolver. Pure JVM and unit-tested in CI. |
 | `:domain:install` | Asset-index model, deterministic content-addressed download plan, and a verified sequential artifact store with `.part` writes, SHA-1/size checks, atomic rename, cancellation and byte progress. Pure JVM and unit-tested in CI. |
 | `:host` | `GameActivity` in `:game` and `InstallerActivity` in `:installer` |
@@ -67,6 +68,7 @@ What works today:
 - **Settings:** local account, Ore theme value, CurseForge API key (stored on device only; source stays **Coming soon** until a key is saved), license and disclaimers.
 - **Accounts:** local account is kept without a warning note. Microsoft device-code sign-in is visibly unconfigured until the project's own Entra client ID is supplied through `ECLIPSE_MS_CLIENT_ID`; no third-party launcher client ID is bundled.
 - **Metadata core:** the pure-JVM `:domain:mojang` module parses official Mojang manifests and version JSON, evaluates ordered OS/arch/feature rules, resolves Maven coordinates and argument templates, and builds the Java classpath while dropping every desktop native for EclipseNatives.
+- **Network core:** `:core:network` opens downloads only through a strict HTTPS/port-443/host policy, follows redirects manually with a five-hop limit and re-checks each hop, honours `Retry-After` on 429/503, and retries 5xx with capped exponential backoff. It reports stable `NET_*` codes instead of leaking URLs.
 - **Install core:** `:domain:install` turns resolved metadata and an asset index into a deterministic download plan, then stores each object through `<destination>.part` with streaming SHA-1 and size verification, an fsync and an atomic rename. It reports real completed bytes, counts already-verified objects, and stops mid-file on pause. A staged, journaled transaction commits the instance atomically, a verifier checks `FAST` or `FULL`, and a refcounted collector removes unreferenced store objects after a seven-day grace. It is not yet wired to a download or install screen.
 
 It is still a shell, not a complete launcher: it does not install or launch Minecraft, and it does not authenticate a Microsoft account yet. The screens say that plainly. The next milestone is the Phase 0 spike set in doc 12: JRE boot, SDL window/EGL, Vulkan probe, Sandpaper triangle and installer transaction.

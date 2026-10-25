@@ -19,6 +19,7 @@ kotlin {
 
 dependencies {
     api(project(":core:common"))
+    api(project(":core:network"))
     api(project(":domain:mojang"))
     implementation(libs.kotlinx.serialization.json)
 

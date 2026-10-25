@@ -8,6 +8,8 @@ import com.google.common.truth.Truth.assertThat
 import dev.shadow.eclipselauncher.core.common.AppResult
 import dev.shadow.eclipselauncher.core.common.FailureStage
 import dev.shadow.eclipselauncher.core.common.UserAction
+import dev.shadow.eclipselauncher.core.network.DownloadSource
+import dev.shadow.eclipselauncher.core.network.NetworkException
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
@@ -204,6 +206,44 @@ class InstallExecutorTest {
         assertThat(failure.retryable).isTrue()
         assertThat(Files.exists(store.pathFor(clientDestination))).isTrue()
         assertThat(Files.exists(store.pathFor(libraryDestination))).isFalse()
+    }
+
+    @Test
+    fun `a network failure keeps its code and retry advice`() {
+        val store = newStore()
+        val body = "hello".toByteArray()
+        val item = item(body, clientDestination, "https://example.invalid/client.jar")
+        val source = DownloadSource {
+            throw NetworkException("NET_HTTP_STATUS", true, "the server said no")
+        }
+
+        val result = InstallExecutor(store, source).execute(planOf(listOf(item)))
+
+        assertThat(result).isInstanceOf(AppResult.Error::class.java)
+        val failure = (result as AppResult.Error).failure
+        assertThat(failure.code).isEqualTo("NET_HTTP_STATUS")
+        assertThat(failure.stage).isEqualTo(FailureStage.DOWNLOAD)
+        assertThat(failure.retryable).isTrue()
+        assertThat(failure.userAction).isEqualTo(UserAction.RETRY)
+        assertThat(Files.exists(store.pathFor(clientDestination))).isFalse()
+        assertThat(Files.exists(partOf(store, clientDestination))).isFalse()
+    }
+
+    @Test
+    fun `a non-retryable network failure offers no retry`() {
+        val store = newStore()
+        val body = "hello".toByteArray()
+        val item = item(body, clientDestination, "https://example.invalid/client.jar")
+        val source = DownloadSource {
+            throw NetworkException("NET_NOT_FOUND", false, "the file is gone")
+        }
+
+        val result = InstallExecutor(store, source).execute(planOf(listOf(item)))
+
+        val failure = (result as AppResult.Error).failure
+        assertThat(failure.code).isEqualTo("NET_NOT_FOUND")
+        assertThat(failure.retryable).isFalse()
+        assertThat(failure.userAction).isEqualTo(UserAction.NONE)
     }
 
     @Test

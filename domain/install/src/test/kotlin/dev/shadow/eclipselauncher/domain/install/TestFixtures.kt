@@ -6,6 +6,7 @@ package dev.shadow.eclipselauncher.domain.install
 
 import dev.shadow.eclipselauncher.core.common.AppResult
 import dev.shadow.eclipselauncher.core.common.Failure
+import dev.shadow.eclipselauncher.core.network.DownloadSource
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream

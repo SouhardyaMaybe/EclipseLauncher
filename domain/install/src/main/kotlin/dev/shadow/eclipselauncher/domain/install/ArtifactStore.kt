@@ -8,10 +8,11 @@ import dev.shadow.eclipselauncher.core.common.AppResult
 import dev.shadow.eclipselauncher.core.common.Failure
 import dev.shadow.eclipselauncher.core.common.FailureStage
 import dev.shadow.eclipselauncher.core.common.UserAction
+import dev.shadow.eclipselauncher.core.network.DownloadSource
+import dev.shadow.eclipselauncher.core.network.NetworkException
 import dev.shadow.eclipselauncher.domain.mojang.MetadataException
 import dev.shadow.eclipselauncher.domain.mojang.VersionResolver
 import java.io.IOException
-import java.io.InputStream
 import java.nio.channels.FileChannel
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
@@ -19,12 +20,6 @@ import java.nio.file.Path
 import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
-
-/** Where a downloader gets bytes. The Android implementation owns HTTP. */
-fun interface DownloadSource {
-    @Throws(IOException::class)
-    fun open(url: String): InputStream
-}
 
 /** A store failure with a stable code the UI can explain. */
 class StoreException(
@@ -182,6 +177,9 @@ class ArtifactStore(root: Path) {
         } catch (error: StoreException) {
             deleteQuietly(part)
             throw error
+        } catch (error: NetworkException) {
+            deleteQuietly(part)
+            throw error
         } catch (error: IOException) {
             deleteQuietly(part)
             throw StoreException(
@@ -334,6 +332,15 @@ class InstallExecutor(
                         UserAction.RETRY
                     },
                 )
+            } catch (error: NetworkException) {
+                return failure(
+                    code = error.code,
+                    stage = FailureStage.DOWNLOAD,
+                    retryable = error.retryable,
+                    message = networkMessage(error.code),
+                    detail = error.message,
+                    userAction = if (error.retryable) UserAction.RETRY else UserAction.NONE,
+                )
             } catch (error: IOException) {
                 return failure(
                     code = "DOWNLOAD_IO",
@@ -359,6 +366,16 @@ class InstallExecutor(
             )
         }
         return AppResult.Success(Unit)
+    }
+
+    private fun networkMessage(code: String): String = when (code) {
+        "NET_NOT_FOUND" -> "A game file is no longer available."
+        "NET_HOST_NOT_ALLOWED" -> "A game file is hosted on a server the launcher does not trust."
+        "NET_TLS" -> "A secure connection to the file server failed."
+        "NET_RETRY_EXHAUSTED" -> "The file server is busy. Try again later."
+        "NET_URL_INVALID", "NET_REDIRECT_INVALID", "NET_REDIRECT_LIMIT" ->
+            "A game file has an invalid download address."
+        else -> "The file could not be downloaded."
     }
 
     private fun failure(

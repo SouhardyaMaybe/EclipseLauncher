@@ -343,7 +343,7 @@ The last two checks are product decisions: it is cheaper to say “this device c
 - Cancel stops scheduling, lets in-flight requests finish, and keeps `.part` files for resume.
 - Pause is a first-class state, not a cancelled install.
 
-**Implementation note (2026-10-25):** the first store and executor are sequential and do not resume yet. They write `<destination>.part`, hash while streaming, verify size and SHA-1, fsync, rename atomically, and delete the `.part` on failure or pause. Cancellation is polled between 64 KiB chunks, so a large client jar can pause promptly. Range requests, `.part` retention, the 6-connection scheduler and digest-mismatch retry remain open.
+**Implementation note (2026-10-25):** the first store and executor are sequential and do not resume yet. They write `<destination>.part`, hash while streaming, verify size and SHA-1, fsync, rename atomically, and delete the `.part` on failure or pause. Cancellation is polled between 64 KiB chunks, so a large client jar can pause promptly. The HTTP source is in `:core:network`: it follows redirects manually, re-checks every hop, honours `Retry-After`, retries 5xx with capped backoff, and surfaces stable `NET_*` codes. Range requests, `.part` retention, the 6-connection scheduler and digest-mismatch retry remain open.
 
 **Observed:** 26.3's assets are 5,147 small objects. Per-request overhead dominates; batching is impossible (one hash per object), so concurrency and connection reuse matter more than raw bandwidth.
 
@@ -521,6 +521,8 @@ github.com            (release assets only, via the API-resolved URL)
 - Redirects are followed manually (max 5) and each hop is re-checked.
 - `file://`, `content://`, `http://`, `ftp://` are rejected.
 - A pack's arbitrary `downloads[]` URL is never fetched; see §4.2.
+
+**Implementation note (2026-10-25):** `HostAllowlist.Minecraft` mirrors this list exactly. `StrictUrlGuard` checks HTTPS, no credentials, port 443 and the host before every connection and after every redirect; `HttpDownloadSource` follows at most five redirects manually and never hands a disallowed URL to the connection factory. The host check is exact, with no wildcard syntax.
 
 **Open:** whether Mojang's CDN uses additional hostnames per region. The allowlist must be tested from several regions; a false rejection is better than an open fetcher, but it must be debuggable.
 
