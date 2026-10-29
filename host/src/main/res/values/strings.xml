@@ -41,11 +41,11 @@
     <string name="host_loading_warning">If you are stuck here, the game might have crashed</string>
 
     <!-- Storage / exit / fatal error -->
-    <string name="host_storage_required">MJLauncher requires external storage to be attached. Please reconnect it and restart the app.</string>
+    <string name="host_storage_required">Eclipse Launcher requires external storage to be attached. Please reconnect it and restart the app.</string>
     <string name="host_exit_code">Application/Game exited with code %1$d, check latestlog.txt for more details.</string>
     <string name="host_exit_aborted">Application/Game aborted, check latestlog.txt for more information</string>
     <string name="host_share_log">Share log file</string>
-    <string name="host_fatal_title">MJLauncher has unexpectedly crashed</string>
+    <string name="host_fatal_title">Eclipse Launcher has unexpectedly crashed</string>
     <string name="host_fatal_saved">Crash stack trace saved to %1$s.</string>
     <string name="host_fatal_no_storage">Storage permission is required to save crash stack trace!</string>
     <string name="host_restart">Restart</string>

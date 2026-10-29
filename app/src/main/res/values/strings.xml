@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MJLauncher</string>
+    <string name="app_name">Eclipse Launcher</string>
 
     <!-- Common actions -->
     <string name="action_apply">Apply</string>
@@ -602,8 +602,8 @@
     <string name="mojo_log_view_button_scroll_on">Autoscroll\nON</string>
     <string name="mojo_log_view_button_output_off">Output\nOFF</string>
     <string name="mojo_log_view_button_output_on">Output\nON</string>
-    <string name="mojo_storage_required">MJLauncher requires external storage to be attached. Please reconnect it and restart the app.</string>
-    <string name="mojo_error_fatal">MJLauncher has unexpectedly crashed</string>
+    <string name="mojo_storage_required">Eclipse Launcher requires external storage to be attached. Please reconnect it and restart the app.</string>
+    <string name="mojo_error_fatal">Eclipse Launcher has unexpectedly crashed</string>
     <string name="mojo_error_show_more">Show more</string>
     <string name="mojo_error_show_less">Show less</string>
     <string name="mojo_mc_download_failed">Failed to download the game! This could be due to bad network connection, incorrectly placed files, etc..</string>
