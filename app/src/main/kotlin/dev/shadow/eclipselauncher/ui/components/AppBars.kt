@@ -282,9 +282,11 @@ fun LoaderKind.displayName(): String = stringResource(
         LoaderKind.VANILLA -> R.string.create_instance_vanilla
         LoaderKind.FABRIC -> R.string.create_instance_fabric
         LoaderKind.QUILT -> R.string.create_instance_quilt
+        LoaderKind.LEGACY_FABRIC -> R.string.mojo_modloader_dl_install_legacy_fabric_instance
         LoaderKind.FORGE -> R.string.create_instance_forge
         LoaderKind.NEOFORGE -> R.string.create_instance_neoforge
         LoaderKind.OPTIFINE -> R.string.create_instance_optifine
         LoaderKind.MODPACK -> R.string.create_instance_modpack
+        LoaderKind.BTA -> R.string.mojo_create_bta_instance
     },
 )

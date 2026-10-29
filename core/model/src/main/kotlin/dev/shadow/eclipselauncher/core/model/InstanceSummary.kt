@@ -20,10 +20,12 @@ enum class LoaderKind {
     VANILLA,
     FABRIC,
     QUILT,
+    LEGACY_FABRIC,
     FORGE,
     NEOFORGE,
     OPTIFINE,
     MODPACK,
+    BTA,
 }
 
 /**

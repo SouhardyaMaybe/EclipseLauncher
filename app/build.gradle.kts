@@ -15,14 +15,6 @@ plugins {
 val releaseKeystoreBase64: String = System.getenv("ECLIPSE_KEYSTORE_BASE64").orEmpty()
 val hasReleaseSigning: Boolean = releaseKeystoreBase64.isNotBlank()
 
-/**
- * Microsoft sign-in uses the project's own Entra public-client registration.
- * No third-party launcher client ID is bundled, and an empty value keeps the
- * sign-in path visibly unconfigured instead of shipping someone else's app.
- */
-val msClientId: String = System.getenv("ECLIPSE_MS_CLIENT_ID").orEmpty()
-
-
 android {
     namespace = "dev.shadow.eclipselauncher"
     compileSdk = libs.versions.compileSdk.get().toInt()
@@ -36,11 +28,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        buildConfigField(
-            "String",
-            "MS_CLIENT_ID",
-            "\"${msClientId.replace("\\", "\\\\").replace("\"", "\\\"")}\"",
-        )
 
         // v1 ships arm64-v8a; x86_64 exists for the emulator and CI. The
         // 32-bit ABIs are deferred (docs/04 §1, docs/11 §14.2), and filtering

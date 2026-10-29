@@ -238,7 +238,7 @@ object InstallPlanBuilder {
         val actualUrl = url
             ?: throw MetadataException("$kind has no URL")
         if (actualUrl.isBlank()) throw MetadataException("$kind has no URL")
-        requireHttps(actualUrl, kind)
+        requireHttpsDownloadUrl(actualUrl, kind)
         val digest = sha1
             ?: throw MetadataException("$kind has no SHA-1")
         if (!SHA1.matches(digest)) {

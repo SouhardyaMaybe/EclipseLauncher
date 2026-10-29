@@ -16,10 +16,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -39,8 +35,8 @@ import dev.shadow.eclipselauncher.data.LauncherTask
 import dev.shadow.eclipselauncher.data.TaskCenter
 import dev.shadow.eclipselauncher.data.TaskPhase
 import dev.shadow.eclipselauncher.data.TaskState
-import dev.shadow.eclipselauncher.designsystem.component.eclipseTextFieldColors
-import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
+import dev.shadow.eclipselauncher.designsystem.theme.MojoPalette
+import dev.shadow.eclipselauncher.designsystem.theme.MojoType
 import java.io.File
 
 @Composable
@@ -49,19 +45,12 @@ fun MessageDialog(
     body: String,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = { Text(body) },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_close))
-            }
-        },
-        shape = RectangleShape,
-        containerColor = EclipsePalette.Panel,
-        titleContentColor = EclipsePalette.Text,
-        textContentColor = EclipsePalette.Muted,
+    MojoDialog(
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.action_close),
+        onConfirm = onDismiss,
+        title = title,
+        message = body,
     )
 }
 
@@ -73,24 +62,14 @@ fun ConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = { Text(body) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(confirmLabel, color = EclipsePalette.Danger)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        },
-        shape = RectangleShape,
-        containerColor = EclipsePalette.Panel,
-        titleContentColor = EclipsePalette.Text,
-        textContentColor = EclipsePalette.Muted,
+    MojoDialog(
+        onDismiss = onDismiss,
+        dismissLabel = stringResource(R.string.action_cancel),
+        onDismissButton = onDismiss,
+        confirmLabel = confirmLabel,
+        onConfirm = onConfirm,
+        title = title,
+        message = body,
     )
 }
 
@@ -99,24 +78,24 @@ fun TasksDialog(
     tasks: TaskCenter,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.home_tasks)) },
-        text = {
+    MojoDialog(
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.action_close),
+        onConfirm = onDismiss,
+        title = stringResource(R.string.home_tasks),
+        content = {
             if (tasks.tasks.isEmpty()) {
-                Column {
-                    Text(
-                        text = stringResource(R.string.home_tasks_empty_title),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = EclipsePalette.Text,
-                    )
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.home_tasks_empty_body),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = EclipsePalette.Muted,
-                    )
-                }
+                Text(
+                    text = stringResource(R.string.home_tasks_empty_title),
+                    style = MojoType.preferenceTitle,
+                    color = MojoPalette.PrimaryText,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = stringResource(R.string.home_tasks_empty_body),
+                    style = MojoType.body,
+                    color = MojoPalette.SecondaryText,
+                )
             } else {
                 Column(
                     modifier = Modifier
@@ -125,20 +104,11 @@ fun TasksDialog(
                 ) {
                     tasks.tasks.forEach { task ->
                         TaskRow(task = task, tasks = tasks)
-                        Spacer(Modifier.height(12.dp))
+                        MojoDivider(Modifier.padding(vertical = 10.dp))
                     }
                 }
             }
         },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_close))
-            }
-        },
-        shape = RectangleShape,
-        containerColor = EclipsePalette.Panel,
-        titleContentColor = EclipsePalette.Text,
-        textContentColor = EclipsePalette.Muted,
     )
 }
 
@@ -149,8 +119,8 @@ private fun TaskRow(task: LauncherTask, tasks: TaskCenter) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = task.title,
-            style = MaterialTheme.typography.labelLarge,
-            color = EclipsePalette.Text,
+            style = MojoType.preferenceTitle,
+            color = MojoPalette.PrimaryText,
         )
         Spacer(Modifier.height(4.dp))
 
@@ -158,8 +128,8 @@ private fun TaskRow(task: LauncherTask, tasks: TaskCenter) {
             TaskState.RUNNING -> {
                 Text(
                     text = phaseLabel(task.phase),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = EclipsePalette.Muted,
+                    style = MojoType.bodySmall,
+                    color = MojoPalette.SecondaryText,
                 )
                 TaskProgress(task, context)
                 Row {
@@ -175,8 +145,8 @@ private fun TaskRow(task: LauncherTask, tasks: TaskCenter) {
             TaskState.PAUSED -> {
                 Text(
                     text = stringResource(R.string.home_tasks_paused),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = EclipsePalette.Warning,
+                    style = MojoType.bodySmall,
+                    color = MojoPalette.Accent,
                 )
                 TaskProgress(task, context)
                 Row {
@@ -193,14 +163,14 @@ private fun TaskRow(task: LauncherTask, tasks: TaskCenter) {
                 Text(
                     text = task.failure?.userMessage
                         ?: stringResource(R.string.home_tasks_failed),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = EclipsePalette.Danger,
+                    style = MojoType.bodySmall,
+                    color = MojoPalette.Error,
                 )
                 task.failure?.let { failure ->
                     Text(
                         text = failure.code,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = EclipsePalette.Muted,
+                        style = MojoType.secondary,
+                        color = MojoPalette.SecondaryText,
                     )
                 }
                 Row {
@@ -228,8 +198,8 @@ private fun TaskProgress(task: LauncherTask, context: Context) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp),
-            color = EclipsePalette.Primary,
-            trackColor = EclipsePalette.Border,
+            color = MojoPalette.Accent,
+            trackColor = MojoPalette.SecondaryButton,
         )
         if (task.totalItems > 0) {
             Spacer(Modifier.height(4.dp))
@@ -239,8 +209,8 @@ private fun TaskProgress(task: LauncherTask, context: Context) {
                     task.completedItems,
                     task.totalItems,
                 ),
-                style = MaterialTheme.typography.bodySmall,
-                color = EclipsePalette.Muted,
+                style = MojoType.bodySmall,
+                color = MojoPalette.SecondaryText,
             )
         }
         if (task.totalBytes > 0L) {
@@ -250,8 +220,8 @@ private fun TaskProgress(task: LauncherTask, context: Context) {
                     Formatter.formatShortFileSize(context, task.completedBytes),
                     Formatter.formatShortFileSize(context, task.totalBytes),
                 ),
-                style = MaterialTheme.typography.bodySmall,
-                color = EclipsePalette.Muted,
+                style = MojoType.bodySmall,
+                color = MojoPalette.SecondaryText,
             )
         }
     }
@@ -263,7 +233,11 @@ private fun TaskAction(text: String, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier.heightIn(min = 48.dp),
     ) {
-        Text(text)
+        Text(
+            text = text,
+            style = MojoType.body,
+            color = MojoPalette.Accent,
+        )
     }
 }
 
@@ -287,57 +261,49 @@ fun InstanceEditorDialog(
     val valid = name.isNotBlank() && version.isNotBlank()
     val loaderName = instance.loader.displayName()
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.create_instance_editor_title)) },
-        text = {
+    MojoDialog(
+        onDismiss = onDismiss,
+        dismissLabel = stringResource(R.string.action_cancel),
+        onDismissButton = onDismiss,
+        confirmLabel = stringResource(R.string.action_save),
+        onConfirm = { onSave(name.trim(), version.trim()) },
+        confirmEnabled = valid,
+        title = stringResource(R.string.create_instance_editor_title),
+        content = {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState()),
             ) {
-                OutlinedTextField(
+                Text(
+                    text = stringResource(R.string.create_instance_name),
+                    style = MojoType.body,
+                    color = MojoPalette.SecondaryText,
+                )
+                Spacer(Modifier.height(6.dp))
+                MojoTextField(
                     value = name,
                     onValueChange = { name = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.create_instance_name)) },
-                    singleLine = true,
-                    colors = eclipseTextFieldColors(),
                 )
                 Spacer(Modifier.height(12.dp))
-                OutlinedTextField(
+                Text(
+                    text = stringResource(R.string.create_instance_version),
+                    style = MojoType.body,
+                    color = MojoPalette.SecondaryText,
+                )
+                Spacer(Modifier.height(6.dp))
+                MojoTextField(
                     value = version,
                     onValueChange = { version = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text(stringResource(R.string.create_instance_version)) },
-                    singleLine = true,
-                    colors = eclipseTextFieldColors(),
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = "${stringResource(R.string.create_instance_loader)}: $loaderName",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = EclipsePalette.Muted,
+                    style = MojoType.secondary,
+                    color = MojoPalette.SecondaryText,
                 )
             }
         },
-        confirmButton = {
-            TextButton(
-                onClick = { onSave(name.trim(), version.trim()) },
-                enabled = valid,
-            ) {
-                Text(stringResource(R.string.action_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        },
-        shape = RectangleShape,
-        containerColor = EclipsePalette.Panel,
-        titleContentColor = EclipsePalette.Text,
-        textContentColor = EclipsePalette.Muted,
     )
 }
 
@@ -360,45 +326,25 @@ fun NamePromptDialog(
         trimmed.contains('\\') ||
         isNameTaken(trimmed)
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(title) },
-        text = {
-            OutlinedTextField(
+    MojoDialog(
+        onDismiss = onDismiss,
+        dismissLabel = stringResource(R.string.action_cancel),
+        onDismissButton = onDismiss,
+        confirmLabel = confirmLabel,
+        onConfirm = { onConfirm(trimmed) },
+        confirmEnabled = !invalid,
+        title = title,
+        content = {
+            MojoTextField(
                 value = value,
                 onValueChange = {
                     value = it
                     touched = true
                 },
-                modifier = Modifier.fillMaxWidth(),
-                label = { Text(label) },
-                singleLine = true,
-                isError = touched && invalid,
-                supportingText = {
-                    if (touched && invalid) {
-                        Text(invalidHint)
-                    }
-                },
-                colors = eclipseTextFieldColors(),
+                placeholder = label,
+                errorText = if (touched && invalid) invalidHint else null,
             )
         },
-        confirmButton = {
-            TextButton(
-                onClick = { onConfirm(trimmed) },
-                enabled = !invalid,
-            ) {
-                Text(confirmLabel)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
-            }
-        },
-        shape = RectangleShape,
-        containerColor = EclipsePalette.Panel,
-        titleContentColor = EclipsePalette.Text,
-        textContentColor = EclipsePalette.Muted,
     )
 }
 
@@ -413,63 +359,58 @@ fun FileInfoDialog(
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
+    MojoDialog(
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.action_close),
+        onConfirm = onDismiss,
+        title = file.name,
+        content = {
             Text(
-                text = file.name,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+                text = path,
+                style = MojoType.secondary,
+                color = MojoPalette.SecondaryText,
             )
-        },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = path,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = EclipsePalette.Muted,
-                )
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    text = detail,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = EclipsePalette.Muted,
-                )
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                ) {
-                    if (file.isDirectory) {
-                        TextButton(onClick = onOpenFolder) {
-                            Text(stringResource(R.string.action_open_folder))
-                        }
-                    } else {
-                        TextButton(onClick = onOpen) {
-                            Text(stringResource(R.string.action_open))
-                        }
-                        TextButton(onClick = onShare) {
-                            Text(stringResource(R.string.action_share))
-                        }
-                    }
-                    TextButton(onClick = onDelete) {
-                        Text(
-                            text = stringResource(R.string.action_delete),
-                            color = EclipsePalette.Danger,
-                        )
-                    }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = detail,
+                style = MojoType.bodySmall,
+                color = MojoPalette.SecondaryText,
+            )
+            Spacer(Modifier.height(12.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+            ) {
+                if (file.isDirectory) {
+                    FileAction(stringResource(R.string.action_open_folder), onOpenFolder)
+                } else {
+                    FileAction(stringResource(R.string.action_open), onOpen)
+                    FileAction(stringResource(R.string.action_share), onShare)
                 }
+                FileAction(
+                    text = stringResource(R.string.action_delete),
+                    onClick = onDelete,
+                    color = MojoPalette.Error,
+                )
             }
         },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_close))
-            }
-        },
-        shape = RectangleShape,
-        containerColor = EclipsePalette.Panel,
-        titleContentColor = EclipsePalette.Text,
-        textContentColor = EclipsePalette.Muted,
     )
+}
+
+@Composable
+private fun FileAction(
+    text: String,
+    onClick: () -> Unit,
+    color: androidx.compose.ui.graphics.Color = MojoPalette.Accent,
+) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = text,
+            style = MojoType.body,
+            color = color,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
 }

@@ -5,6 +5,7 @@
 package dev.shadow.eclipselauncher.host
 
 import android.app.Activity
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,8 +17,12 @@ import android.provider.OpenableColumns
  * confirmation screen between choosing a .jar and running it.
  */
 class InstallerActivity : Activity() {
+    @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.statusBarColor = Color.parseColor("#242424")
+        window.navigationBarColor = Color.parseColor("#181818")
 
         val uri = readUri()
         val name = uri?.let(::displayName)

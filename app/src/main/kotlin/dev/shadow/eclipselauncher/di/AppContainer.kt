@@ -7,9 +7,12 @@ package dev.shadow.eclipselauncher.di
 import android.content.Context
 import dev.shadow.eclipselauncher.core.common.EpochClock
 import dev.shadow.eclipselauncher.core.common.SystemEpochClock
+import dev.shadow.eclipselauncher.core.network.HttpDownloadSource
 import dev.shadow.eclipselauncher.data.FileClipboard
 import dev.shadow.eclipselauncher.data.InstallCoordinator
 import dev.shadow.eclipselauncher.data.LauncherState
+import dev.shadow.eclipselauncher.data.MojangMetadataClient
+import dev.shadow.eclipselauncher.data.MojoSettings
 import dev.shadow.eclipselauncher.data.TaskCenter
 
 /**
@@ -22,6 +25,11 @@ class AppContainer(context: Context) {
     val clock: EpochClock = SystemEpochClock
 
     val state = LauncherState(appContext)
+
+    val mojoSettings = MojoSettings(appContext)
+
+    /** One metadata client shared by the version picker and instance editor. */
+    val metadata = MojangMetadataClient(HttpDownloadSource())
 
     val tasks = TaskCenter()
 

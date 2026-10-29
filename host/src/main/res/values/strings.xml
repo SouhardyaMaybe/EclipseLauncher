@@ -6,4 +6,50 @@
     <string name="host_installer_body">This process will run loader processors and write the instance transaction. The installer is not connected in this build.</string>
     <string name="host_installer_selected">Selected file: %1$s\n\nThe installer pipeline is not connected in this build.</string>
     <string name="host_installer_unknown">No file was received.</string>
+
+    <!-- AWT / JVM window -->
+    <string name="host_awt_keyboard">Keyboard</string>
+    <string name="host_awt_copy">Copy</string>
+    <string name="host_awt_paste">Paste</string>
+    <string name="host_awt_force_close">Force close</string>
+    <string name="host_awt_log_output">Log output</string>
+    <string name="host_awt_mouse">Mouse</string>
+    <string name="host_awt_mouse_on">Mouse: on </string>
+    <string name="host_awt_mouse_off">Mouse: off</string>
+    <string name="host_awt_primary">Pri</string>
+    <string name="host_awt_secondary">Sec</string>
+    <string name="host_awt_up">▲</string>
+    <string name="host_awt_right">▶</string>
+    <string name="host_awt_down">▼</string>
+    <string name="host_awt_left">◀</string>
+    <string name="host_force_close_confirm">Are you sure want to force close?</string>
+
+    <!-- Logger overlay -->
+    <string name="host_log_title">Log output:</string>
+    <string name="host_log_autoscroll_off">Autoscroll\nOFF</string>
+    <string name="host_log_autoscroll_on">Autoscroll\nON</string>
+    <string name="host_log_output_off">Output\nOFF</string>
+    <string name="host_log_output_on">Output\nON</string>
+
+    <!-- In-game HUD -->
+    <string name="host_hud_force_close">Force close</string>
+    <string name="host_hud_log_output">Log output</string>
+    <string name="host_hud_send_keycode">Send custom keycode</string>
+    <string name="host_hud_quick_settings">Quick settings</string>
+    <string name="host_hud_custom_controls">Custom controls</string>
+    <string name="host_loading_title">Waiting for a game window to appear…</string>
+    <string name="host_loading_warning">If you are stuck here, the game might have crashed</string>
+
+    <!-- Storage / exit / fatal error -->
+    <string name="host_storage_required">MJLauncher requires external storage to be attached. Please reconnect it and restart the app.</string>
+    <string name="host_exit_code">Application/Game exited with code %1$d, check latestlog.txt for more details.</string>
+    <string name="host_exit_aborted">Application/Game aborted, check latestlog.txt for more information</string>
+    <string name="host_share_log">Share log file</string>
+    <string name="host_fatal_title">MJLauncher has unexpectedly crashed</string>
+    <string name="host_fatal_saved">Crash stack trace saved to %1$s.</string>
+    <string name="host_fatal_no_storage">Storage permission is required to save crash stack trace!</string>
+    <string name="host_restart">Restart</string>
+    <string name="host_ok">OK</string>
+    <string name="host_cancel">Cancel</string>
+    <string name="host_copy">Copy</string>
 </resources>

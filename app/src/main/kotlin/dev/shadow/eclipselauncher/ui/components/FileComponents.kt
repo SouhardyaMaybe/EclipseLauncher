@@ -14,14 +14,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,12 +32,16 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.shadow.eclipselauncher.R
-import dev.shadow.eclipselauncher.designsystem.component.EclipseDivider
 import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIcon
 import dev.shadow.eclipselauncher.designsystem.component.EclipsePixelIconKind
 import dev.shadow.eclipselauncher.designsystem.component.eclipseFocusRing
-import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
+import dev.shadow.eclipselauncher.designsystem.theme.MojoPalette
+import dev.shadow.eclipselauncher.designsystem.theme.MojoType
 
+/**
+ * File surfaces kept from Eclipse but drawn with the launcher's Mojo chrome:
+ * a flat status-bar path row, 56dp file rows and a secondary action toolbar.
+ */
 @Composable
 fun PathBar(
     path: String,
@@ -49,14 +52,15 @@ fun PathBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .statusBarsPadding()
-            .padding(horizontal = 4.dp, vertical = 4.dp),
+            .height(52.dp)
+            .background(MojoPalette.StatusBar)
+            .padding(end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onBack != null) {
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(52.dp)
                     .eclipseFocusRing()
                     .clickable(
                         role = Role.Button,
@@ -67,22 +71,26 @@ fun PathBar(
                 EclipsePixelIcon(
                     kind = EclipsePixelIconKind.ARROW_LEFT,
                     modifier = Modifier.size(20.dp),
+                    tint = MojoPalette.PrimaryText,
                     description = backContentDescription,
                 )
             }
         } else {
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(16.dp))
         }
         Text(
             text = path,
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 4.dp),
-            style = MaterialTheme.typography.labelSmall,
-            color = EclipsePalette.Muted,
+            style = MojoType.secondary,
+            color = MojoPalette.SecondaryText,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         actions()
     }
+    MojoDivider()
 }
 
 @Composable
@@ -110,25 +118,25 @@ fun FileRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (selected) EclipsePalette.Control else Color.Transparent)
+            .background(if (selected) MojoPalette.Overlay else Color.Transparent)
             .eclipseFocusRing()
             .then(interaction)
-            .heightIn(min = 52.dp)
-            .padding(horizontal = 16.dp, vertical = 10.dp),
+            .heightIn(min = 56.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (selectionMode) {
             Box(
                 modifier = Modifier
                     .size(20.dp)
-                    .border(2.dp, if (selected) EclipsePalette.Primary else EclipsePalette.Border),
+                    .border(2.dp, if (selected) MojoPalette.Accent else MojoPalette.Line),
                 contentAlignment = Alignment.Center,
             ) {
                 if (selected) {
                     Box(
                         modifier = Modifier
                             .size(10.dp)
-                            .background(EclipsePalette.Primary),
+                            .background(MojoPalette.Accent),
                     )
                 }
             }
@@ -138,22 +146,22 @@ fun FileRow(
         EclipsePixelIcon(
             kind = if (directory) EclipsePixelIconKind.FOLDER else EclipsePixelIconKind.FILE,
             modifier = Modifier.size(24.dp),
-            tint = if (selected) EclipsePalette.Primary else EclipsePalette.Muted,
+            tint = if (selected) MojoPalette.Accent else MojoPalette.PrimaryText,
         )
         Spacer(Modifier.width(16.dp))
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = name,
-                style = MaterialTheme.typography.labelLarge,
-                color = EclipsePalette.Text,
+                style = MojoType.body,
+                color = MojoPalette.PrimaryText,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = detail,
-                style = MaterialTheme.typography.labelSmall,
-                color = EclipsePalette.Muted,
+                style = MojoType.secondary,
+                color = MojoPalette.SecondaryText,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -163,11 +171,11 @@ fun FileRow(
             EclipsePixelIcon(
                 kind = EclipsePixelIconKind.CHEVRON_RIGHT,
                 modifier = Modifier.size(14.dp),
-                tint = EclipsePalette.Muted,
+                tint = MojoPalette.SecondaryText,
             )
         }
     }
-    EclipseDivider(Modifier.padding(start = if (selectionMode) 88.dp else 56.dp))
+    MojoDivider(Modifier.padding(start = if (selectionMode) 88.dp else 56.dp))
 }
 
 @Composable
@@ -184,22 +192,25 @@ fun SelectionActionBar(
     onDelete: () -> Unit,
     onShare: () -> Unit,
 ) {
-    Column {
+    Column(modifier = Modifier.background(MojoPalette.StatusBar)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(EclipsePalette.Panel)
-                .padding(horizontal = 8.dp, vertical = 2.dp),
+                .padding(start = 16.dp, end = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = selectedText,
                 modifier = Modifier.weight(1f),
-                style = MaterialTheme.typography.labelMedium,
-                color = EclipsePalette.Text,
+                style = MojoType.preferenceTitle,
+                color = MojoPalette.PrimaryText,
             )
             TextButton(onClick = onDone) {
-                Text(stringResource(R.string.action_done))
+                Text(
+                    text = stringResource(R.string.action_done),
+                    style = MojoType.body,
+                    color = MojoPalette.Accent,
+                )
             }
         }
         Row(
@@ -217,6 +228,7 @@ fun SelectionActionBar(
             ActionButton(stringResource(R.string.action_share), enabled = canShare, onClick = onShare)
         }
     }
+    MojoDivider()
 }
 
 @Composable
@@ -226,6 +238,10 @@ private fun ActionButton(
     enabled: Boolean = true,
 ) {
     TextButton(onClick = onClick, enabled = enabled) {
-        Text(text, style = MaterialTheme.typography.labelMedium)
+        Text(
+            text = text,
+            style = MojoType.body,
+            color = if (enabled) MojoPalette.Accent else MojoPalette.SecondaryText,
+        )
     }
 }

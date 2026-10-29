@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,11 +33,13 @@ import dev.shadow.eclipselauncher.core.model.InstanceSummary
 import dev.shadow.eclipselauncher.data.FileClipboard
 import dev.shadow.eclipselauncher.data.FileOps
 import dev.shadow.eclipselauncher.data.LogStore
-import dev.shadow.eclipselauncher.designsystem.component.EclipseBottomActionRow
-import dev.shadow.eclipselauncher.designsystem.component.EclipseEmptyState
-import dev.shadow.eclipselauncher.designsystem.theme.EclipsePalette
+import dev.shadow.eclipselauncher.designsystem.theme.MojoPalette
+import dev.shadow.eclipselauncher.designsystem.theme.MojoTheme
+import dev.shadow.eclipselauncher.designsystem.theme.MojoType
 import dev.shadow.eclipselauncher.ui.components.ConfirmDialog
 import dev.shadow.eclipselauncher.ui.components.FileRow
+import dev.shadow.eclipselauncher.ui.components.MojoButtonRow
+import dev.shadow.eclipselauncher.ui.components.MojoEmptyState
 import dev.shadow.eclipselauncher.ui.components.NamePromptDialog
 import dev.shadow.eclipselauncher.ui.components.PathBar
 import dev.shadow.eclipselauncher.ui.components.SelectionActionBar
@@ -84,126 +85,128 @@ fun ManageLogsScreen(
         if (selectionMode) finishSelection() else onBack()
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(EclipsePalette.Canvas),
-    ) {
-        PathBar(
-            path = if (instance == null || logsDir == null) {
-                stringResource(R.string.files_root)
-            } else {
-                stringResource(R.string.logs_path, instance.id.value)
-            },
-            onBack = {
-                if (selectionMode) finishSelection() else onBack()
-            },
-            backContentDescription = stringResource(R.string.action_back),
-        )
+    MojoTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MojoPalette.Background),
+        ) {
+            PathBar(
+                path = if (instance == null || logsDir == null) {
+                    stringResource(R.string.files_root)
+                } else {
+                    stringResource(R.string.logs_path, instance.id.value)
+                },
+                onBack = {
+                    if (selectionMode) finishSelection() else onBack()
+                },
+                backContentDescription = stringResource(R.string.action_back),
+            )
 
-        if (instance == null || logsDir == null) {
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center,
-            ) {
-                EclipseEmptyState(
-                    title = stringResource(R.string.logs_no_instance_title),
-                    body = stringResource(R.string.logs_no_instance_body),
-                )
-            }
-        } else {
-            if (selectionMode) {
-                SelectionActionBar(
-                    selectedText = stringResource(R.string.logs_selected_count, selectedFiles.size),
-                    canRename = selectedFiles.size == 1,
-                    canPaste = !clipboard.isEmpty,
-                    canShare = selectedFiles.isNotEmpty() && selectedFiles.all { it.isFile },
-                    onDone = { finishSelection() },
-                    onCopy = {
-                        clipboard.copy(selectedFiles)
-                        finishSelection()
-                        status = context.getString(R.string.logs_copied)
-                    },
-                    onCut = {
-                        clipboard.cut(selectedFiles)
-                        finishSelection()
-                        status = context.getString(R.string.logs_cut)
-                    },
-                    onPaste = {
-                        FileOps.paste(clipboard, logsDir)
-                            .onSuccess {
-                                refresh++
-                                status = context.getString(R.string.logs_pasted)
-                            }
-                            .onFailure {
-                                status = context.getString(R.string.logs_operation_failed)
-                            }
-                    },
-                    onRename = {
-                        renameTarget = selectedFiles.singleOrNull()
-                    },
-                    onDelete = {
-                        deleteTargets = selectedFiles
-                    },
-                    onShare = {
-                        FileOps.share(context, selectedFiles)
-                        finishSelection()
-                    },
-                )
-            }
-
-            status?.let { message ->
-                Text(
-                    text = message,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
-                        .semantics { liveRegion = LiveRegionMode.Polite },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = EclipsePalette.Muted,
-                )
-            }
-
-            if (files.isEmpty()) {
+            if (instance == null || logsDir == null) {
                 Box(
                     modifier = Modifier.weight(1f),
                     contentAlignment = Alignment.Center,
                 ) {
-                    EclipseEmptyState(
-                        title = stringResource(R.string.logs_empty_title),
-                        body = stringResource(R.string.logs_empty_body),
+                    MojoEmptyState(
+                        title = stringResource(R.string.logs_no_instance_title),
+                        body = stringResource(R.string.logs_no_instance_body),
                     )
                 }
             } else {
-                LazyColumn(modifier = Modifier.weight(1f)) {
-                    items(files, key = { it.absolutePath }) { file ->
-                        FileRow(
-                            name = file.name,
-                            detail = FileOps.formatSize(context, file),
-                            directory = false,
-                            selected = file.absolutePath in selected,
-                            selectionMode = selectionMode,
-                            onClick = {
-                                if (selectionMode) toggle(file) else onOpenFile(file)
-                            },
+                if (selectionMode) {
+                    SelectionActionBar(
+                        selectedText = stringResource(R.string.logs_selected_count, selectedFiles.size),
+                        canRename = selectedFiles.size == 1,
+                        canPaste = !clipboard.isEmpty,
+                        canShare = selectedFiles.isNotEmpty() && selectedFiles.all { it.isFile },
+                        onDone = { finishSelection() },
+                        onCopy = {
+                            clipboard.copy(selectedFiles)
+                            finishSelection()
+                            status = context.getString(R.string.logs_copied)
+                        },
+                        onCut = {
+                            clipboard.cut(selectedFiles)
+                            finishSelection()
+                            status = context.getString(R.string.logs_cut)
+                        },
+                        onPaste = {
+                            FileOps.paste(clipboard, logsDir)
+                                .onSuccess {
+                                    refresh++
+                                    status = context.getString(R.string.logs_pasted)
+                                }
+                                .onFailure {
+                                    status = context.getString(R.string.logs_operation_failed)
+                                }
+                        },
+                        onRename = {
+                            renameTarget = selectedFiles.singleOrNull()
+                        },
+                        onDelete = {
+                            deleteTargets = selectedFiles
+                        },
+                        onShare = {
+                            FileOps.share(context, selectedFiles)
+                            finishSelection()
+                        },
+                    )
+                }
+
+                status?.let { message ->
+                    Text(
+                        text = message,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                            .semantics { liveRegion = LiveRegionMode.Polite },
+                        style = MojoType.secondary,
+                        color = MojoPalette.SecondaryText,
+                    )
+                }
+
+                if (files.isEmpty()) {
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        MojoEmptyState(
+                            title = stringResource(R.string.logs_empty_title),
+                            body = stringResource(R.string.logs_empty_body),
                         )
                     }
-                }
-            }
-
-            if (!selectionMode) {
-                EclipseBottomActionRow(
-                    startLabel = stringResource(R.string.action_select),
-                    onStart = { selectionMode = true },
-                    endLabel = stringResource(R.string.logs_share_latest),
-                    onEnd = {
-                        files.firstOrNull()?.let { latest ->
-                            FileOps.share(context, listOf(latest))
+                } else {
+                    LazyColumn(modifier = Modifier.weight(1f)) {
+                        items(files, key = { it.absolutePath }) { file ->
+                            FileRow(
+                                name = file.name,
+                                detail = FileOps.formatSize(context, file),
+                                directory = false,
+                                selected = file.absolutePath in selected,
+                                selectionMode = selectionMode,
+                                onClick = {
+                                    if (selectionMode) toggle(file) else onOpenFile(file)
+                                },
+                            )
                         }
-                    },
-                    startEnabled = files.isNotEmpty(),
-                    endEnabled = files.isNotEmpty(),
-                )
+                    }
+                }
+
+                if (!selectionMode) {
+                    MojoButtonRow(
+                        startLabel = stringResource(R.string.action_select),
+                        onStart = { selectionMode = true },
+                        endLabel = stringResource(R.string.logs_share_latest),
+                        onEnd = {
+                            files.firstOrNull()?.let { latest ->
+                                FileOps.share(context, listOf(latest))
+                            }
+                        },
+                        startEnabled = files.isNotEmpty(),
+                        endEnabled = files.isNotEmpty(),
+                    )
+                }
             }
         }
     }
