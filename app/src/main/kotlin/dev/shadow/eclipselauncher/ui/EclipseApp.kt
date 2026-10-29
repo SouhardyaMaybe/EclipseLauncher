@@ -4,7 +4,9 @@
  */
 package dev.shadow.eclipselauncher.ui
 
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -223,6 +225,21 @@ fun EclipseApp() {
 
         LaunchedEffect(Unit) {
             state.instance?.let { LogStore.bootstrapOnce(state.logsDir(it)) }
+        }
+
+        // The reference keeps its controls editor and game in dedicated
+        // `sensorLandscape` activities while the rest of the launcher follows
+        // the sensor. Both are plain screens here, so the hosting activity
+        // mirrors those manifest rules as the top screen changes.
+        val activity = context as? Activity
+        LaunchedEffect(screen) {
+            val forceLandscape = screen == AppScreen.CustomControls ||
+                screen == AppScreen.GamepadMapper
+            activity?.requestedOrientation = if (forceLandscape) {
+                ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+            } else {
+                ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
         }
 
         val jarPicker = rememberLauncherForActivityResult(
