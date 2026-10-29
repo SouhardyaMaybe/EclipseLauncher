@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -224,11 +225,12 @@ private fun VideoSettings(settings: MojoSettings) {
         MimeTypeMap.getSingleton().getMimeTypeFromExtension("zip") ?: "*/*"
     }
     val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
     val cutout = WindowInsets.displayCutout
     val hasNotch = cutout.getTop(density) > 0 ||
         cutout.getBottom(density) > 0 ||
-        cutout.getLeft(density) > 0 ||
-        cutout.getRight(density) > 0
+        cutout.getLeft(density, layoutDirection) > 0 ||
+        cutout.getRight(density, layoutDirection) > 0
     val driverPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
     ) { uri ->

@@ -8,6 +8,7 @@ import android.view.KeyEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.focusable
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -688,7 +688,9 @@ private fun StickGlyph(
     size: Dp,
 ) {
     androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
-        val radius = size.minDimension / 2f * 0.82f
+        // The `size: Dp` parameter shadows `DrawScope.size`; the glyph is
+        // drawn against the canvas' pixel size.
+        val radius = this.size.minDimension / 2f * 0.82f
         drawCircle(
             color = MojoPalette.SecondaryText,
             radius = radius,
@@ -734,7 +736,7 @@ private fun ThumbstickClickGlyph(
 ) {
     Box(contentAlignment = Alignment.Center) {
         androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
-            val radius = size.minDimension / 2f * 0.82f
+            val radius = this.size.minDimension / 2f * 0.82f
             drawCircle(
                 color = MojoPalette.SecondaryText,
                 radius = radius,
@@ -764,8 +766,8 @@ private fun DPadGlyph(
     size: Dp,
 ) {
     androidx.compose.foundation.Canvas(Modifier.fillMaxSize()) {
-        val armWidth = size.minDimension * 0.30f
-        val armLength = size.minDimension * 0.86f
+        val armWidth = this.size.minDimension * 0.30f
+        val armLength = this.size.minDimension * 0.86f
         val corner = CornerRadius(armWidth * 0.16f)
         drawRoundRect(
             color = MojoPalette.SecondaryText,

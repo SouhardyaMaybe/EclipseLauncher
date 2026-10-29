@@ -326,11 +326,13 @@ private fun performCrop(
     val canvas = android.graphics.Canvas(output)
     canvas.drawBitmap(
         bitmap,
-        android.graphics.RectF(
-            sourceLeft,
-            sourceTop,
-            sourceLeft + sourceWidth,
-            sourceTop + sourceHeight,
+        // Both source/destination overloads take a `Rect` source region; the
+        // float crop rect is rounded to whole source pixels.
+        android.graphics.Rect(
+            sourceLeft.roundToInt(),
+            sourceTop.roundToInt(),
+            (sourceLeft + sourceWidth).roundToInt(),
+            (sourceTop + sourceHeight).roundToInt(),
         ),
         android.graphics.Rect(0, 0, outputWidth, outputHeight),
         Paint(Paint.FILTER_BITMAP_FLAG),

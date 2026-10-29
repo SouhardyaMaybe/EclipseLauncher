@@ -616,7 +616,7 @@ private fun OrientationField(
 
 private fun formatPixelValue(value: Float): String {
     if (value.isNaN() || value.isInfinite()) return "0"
-    return formatEditorNumber(value)
+    return value.formatEditorNumber()
 }
 
 private fun parsePixelValue(text: String): Float? = text.toFloatOrNull()
