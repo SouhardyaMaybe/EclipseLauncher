@@ -14,28 +14,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 /**
- * Tokens taken from the reference launcher's own resource values. They are
- * applied only to the rebuilt (non-home) surfaces; the approved home page
- * keeps [EclipsePalette].
+ * Screen geometry and copy come from the reference launcher, but every color
+ * token carries Eclipse's own Ore-inspired palette ([EclipsePalette]) so the
+ * rebuilt (non-home) surfaces match the approved home page. Values that were
+ * already Eclipse's (account strip, bottom bar, overlay, text) are kept
+ * verbatim.
  */
 object MojoPalette {
-    val Background = Color(0xFF181818)
-    val StatusBar = Color(0xFF242424)
-    val BottomBar = Color(0xFF232323)
-    val Overlay = Color(0xFF464646)
-    val Accent = Color(0xFF91DFFB)
-    val SecondaryButton = Color(0xFF2A2A2A)
-    val PrimaryText = Color(0xFFFFFFFF)
-    val SecondaryText = Color(0xFFB2B2B2)
-    val Error = Color(0xFFFF0000)
+    val Background = Color(0xFF1C1D1D) // Eclipse Canvas
+    val StatusBar = Color(0xFF242424) // Eclipse AccountBar
+    val BottomBar = Color(0xFF232323) // Eclipse BottomBar
+    val Overlay = Color(0xFF464646) // Eclipse Overlay
+    val Accent = Color(0xFF9CD78C) // Eclipse Focus/Success accent green
+    val SecondaryButton = Color(0xFF2A2B2C) // Eclipse Panel
+    val PrimaryText = Color(0xFFFFFFFF) // Eclipse Text
+    val SecondaryText = Color(0xFFB0B0B0) // Eclipse Muted
+    val Error = Color(0xFFFF8A80) // Eclipse Danger
     val Input = Color(0x00000000)
-    val Line = Color(0xFF909090)
-    val Control = Color(0x4CC4C4C4)
-    val ControlPressed = Color(0x4D000000)
-    val LoggerHeader = Color(0xFF555555)
+    val Line = Color(0xFF39393B) // Eclipse Border
+    val Control = Color(0xFF39393B) // Eclipse Control
+    val ControlPressed = Color(0xFF2A2B2C) // Eclipse ControlPressed
+    val LoggerHeader = Color(0xFF47484A) // Eclipse ControlHover
     val Scrim = Color(0xA6000000)
-    val Drawer = Color(0xFF424242)
-    val ActionButton = Color(0xFF424242)
+    val Drawer = Color(0xFF47484A) // Eclipse ControlHover (raised surface)
+    val ActionButton = Color(0xFF39393B) // Eclipse Control
     val Divider = Overlay
 }
 
