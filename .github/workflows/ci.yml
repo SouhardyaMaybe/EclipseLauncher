@@ -32,6 +32,13 @@ jobs:
         with:
           gradle-version: ${{ env.GRADLE_VERSION }}
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          api-level: 37
+          ndk-version: r27c
+          emulator: false
+
       - name: Run Lint
         run: gradle lint
 
