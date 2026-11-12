@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.eclipselauncher"
-    compileSdk = rootProject.ext.get("compileSdk") as Int
+    compileSdk = rootProject.extra["compileSdk"].toString().toInt()
 
     defaultConfig {
         applicationId = "com.eclipselauncher"
-        minSdk = rootProject.ext.get("minSdk") as Int
-        targetSdk = rootProject.ext.get("targetSdk") as Int
-        versionCode = rootProject.ext.get("versionCode") as Int
-        versionName = rootProject.ext.get("versionName") as String
+        minSdk = rootProject.extra["minSdk"].toString().toInt()
+        targetSdk = rootProject.extra["targetSdk"].toString().toInt()
+        versionCode = rootProject.extra["versionCode"].toString().toInt()
+        versionName = rootProject.extra["versionName"].toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -59,7 +59,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.ext.get("composeBomVersion") as String
+        kotlinCompilerExtensionVersion = rootProject.extra["composeBomVersion"].toString()
     }
 
     packagingOptions {
@@ -86,12 +86,12 @@ dependencies {
     androidTestImplementation(composeBom)
 
     // Material 3
-    implementation("androidx.compose.material3:material3:${rootProject.ext.get("material3Version")}")
-    implementation("androidx.compose.material3:material3-window-size-class:${rootProject.ext.get("material3Version")}")
+    implementation("androidx.compose.material3:material3:${rootProject.extra["material3Version"]}")
+    implementation("androidx.compose.material3:material3-window-size-class:${rootProject.extra["material3Version"]}")
 
     // Material 3 Adaptive
-    implementation("androidx.compose.material3:material3-adaptive:${rootProject.ext.get("material3AdaptiveVersion")}")
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:${rootProject.ext.get("material3AdaptiveNavigationSuiteVersion")}")
+    implementation("androidx.compose.material3:material3-adaptive:${rootProject.extra["material3AdaptiveVersion"]}")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:${rootProject.extra["material3AdaptiveNavigationSuiteVersion"]}")
 
     // Compose Foundation & UI
     implementation("androidx.compose.foundation:foundation")
@@ -110,15 +110,15 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class")
 
     // Coroutines & Flow
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${rootProject.ext.get("coroutinesVersion")}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.ext.get("coroutinesVersion")}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ext.get("coroutinesVersion")}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${rootProject.extra["coroutinesVersion"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${rootProject.extra["coroutinesVersion"]}")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.extra["coroutinesVersion"]}")
 
     // Flow (included in kotlinx-coroutines-core)
 
     // Coil Image Loading
-    implementation("io.coil-kt:coil-compose:${rootProject.ext.get("coilVersion")}")
-    implementation("io.coil-kt:coil-core:${rootProject.ext.get("coilVersion")}")
+    implementation("io.coil-kt:coil-compose:${rootProject.extra["coilVersion"]}")
+    implementation("io.coil-kt:coil-core:${rootProject.extra["coilVersion"]}")
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.2")
@@ -131,7 +131,7 @@ dependencies {
 
     // Testing
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.ext.get("coroutinesVersion")}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${rootProject.extra["coroutinesVersion"]}")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.1.0")
