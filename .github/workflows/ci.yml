@@ -38,6 +38,20 @@ jobs:
           api-level: 37
           ndk-version: r27c
           emulator: false
+          licenses: |
+            android-sdk-license-.+
+            google-gdk-license-.+
+            google-gdk-sysimage-license-.+
+            intel-android-sysimage-license-.+
+            google_atv_license-.+
+            google_glass_license-.+
+            google_tv_license-.+
+            google_wear_license-.+
+            google_auto_license-.+
+            android-sdk-preview-license-.+
+            intel-android-sysimage-preview-license-.+
+            microxr-sysimage-license-.+
+            mips-android-sysimage-license-.+
 
       - name: Run Lint
         run: gradle lint
