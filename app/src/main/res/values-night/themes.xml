@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme for dark mode. -->
+    <style name="Theme.EclipseLauncher" parent="android:Theme.Material.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryVariant">@color/primaryContainer</item>
+        <item name="android:colorOnPrimary">@color/onPrimary</item>
+        <!-- Secondary brand color. -->
+        <item name="android:colorSecondary">@color/secondary</item>
+        <item name="android:colorSecondaryVariant">@color/secondaryContainer</item>
+        <item name="android:colorOnSecondary">@color/onSecondary</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <!-- Customize your theme here. -->
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+
+    <style name="Theme.EclipseLauncher.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+</resources>

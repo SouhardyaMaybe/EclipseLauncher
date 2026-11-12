@@ -1,0 +1,77 @@
+# EclipseLauncher .gitignore
+
+# Gradle
+.gradle/
+build/
+*/build/
+*/.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Local configuration
+local.properties
+*.local.properties
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Android
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+*.jar
+*.aar
+*.so
+*.o
+*.obj
+
+# Generated files
+generated/
+*/generated/
+
+# Captures
+captures/
+*.hprof
+
+# Reports
+*/build/reports/
+*/build/outputs/
+
+# Kotlin
+*.klint
+
+# Detekt
+detekt/
+
+# KSP
+*.ksp/
+
+# CMake
+.cmake/
+CMakeFiles/
+cmake-build-*/
+*.ninja
+
+# NDK
+.externalNativeBuild/
+
+# Secrets (never commit!)
+*.keystore
+*.jks
+*.properties.local
+secrets.gradle
+
+# CI/CD
+!/.github/workflows/

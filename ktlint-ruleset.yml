@@ -1,0 +1,7 @@
+# ktlint configuration for EclipseLauncher
+
+# Disable specific rules if needed
+# disabled_rules=final-newline,no-wildcard-imports
+
+# EditorConfig is preferred for IDE integration
+# See .editorconfig for formatting rules
