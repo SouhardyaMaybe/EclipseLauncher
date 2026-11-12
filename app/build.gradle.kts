@@ -117,9 +117,9 @@ dependencies {
 
     // Flow (included in kotlinx-coroutines-core)
 
-    // Coil Image Loading
-    implementation("io.coil-kt:coil-compose:${rootProject.extra["coilVersion"]}")
-    implementation("io.coil-kt:coil-core:${rootProject.extra["coilVersion"]}")
+    // Coil Image Loading - TODO: Fix version
+    // implementation("io.coil-kt:coil-compose:${rootProject.extra["coilVersion"]}")
+    // implementation("io.coil-kt:coil-core:${rootProject.extra["coilVersion"]}")
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.2")
