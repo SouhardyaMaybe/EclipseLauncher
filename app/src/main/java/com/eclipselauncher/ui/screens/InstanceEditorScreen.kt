@@ -164,7 +164,7 @@ fun InstanceEditorScreen(
                 } else {
                     Toast.makeText(
                         context,
-                        stringResource(R.string.error_media_import),
+                        context.getString(R.string.error_media_import),
                         Toast.LENGTH_SHORT,
                     ).show()
                 }
@@ -249,7 +249,7 @@ fun InstanceEditorScreen(
                                 onDuplicate(requireNotNull(existing))
                                 Toast.makeText(
                                     context,
-                                    stringResource(R.string.instance_copied_toast),
+                                    context.getString(R.string.instance_copied_toast),
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             },
@@ -286,7 +286,7 @@ fun InstanceEditorScreen(
                             if (!isEditing) {
                                 Toast.makeText(
                                     context,
-                                    stringResource(R.string.instance_created_toast),
+                                    context.getString(R.string.instance_created_toast),
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }
@@ -519,7 +519,7 @@ fun InstanceEditorScreen(
                         onDelete(existing)
                         Toast.makeText(
                             context,
-                            stringResource(R.string.instance_deleted_toast),
+                            context.getString(R.string.instance_deleted_toast),
                             Toast.LENGTH_SHORT,
                         ).show()
                     },

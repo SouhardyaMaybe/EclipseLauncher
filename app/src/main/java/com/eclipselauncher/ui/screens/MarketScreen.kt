@@ -107,7 +107,7 @@ fun MarketPage(client: ModrinthClient) {
                     onClick = {
                         Toast.makeText(
                             context,
-                            stringResource(R.string.market_coming_soon),
+                            context.getString(R.string.market_coming_soon),
                             Toast.LENGTH_SHORT,
                         ).show()
                     },
