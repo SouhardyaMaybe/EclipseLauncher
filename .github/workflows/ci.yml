@@ -31,10 +31,30 @@ jobs:
 
       - name: Setup Android SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager --install "$ANDROID_PLATFORM" "$BUILD_TOOLS" "platform-tools"
+          set -e
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then
+            for candidate in \
+              "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+              "$SDK_ROOT/cmdline-tools/bin/sdkmanager" \
+              /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager; do
+              if [ -x "$candidate" ]; then SDKMANAGER="$candidate"; break; fi
+            done
+          fi
+          if [ -z "$SDKMANAGER" ]; then
+            curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline-tools.zip
+            rm -rf "$SDK_ROOT/cmdline-tools/latest"
+            mkdir -p "$SDK_ROOT/cmdline-tools"
+            unzip -q /tmp/cmdline-tools.zip -d "$SDK_ROOT/cmdline-tools"
+            mv "$SDK_ROOT/cmdline-tools/cmdline-tools" "$SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses > /dev/null || true
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" --install "$ANDROID_PLATFORM" "$BUILD_TOOLS" "platform-tools"
           # AGP resolves the API 37 platform under its minor-level directory.
-          ln -sfn "$ANDROID_HOME/platforms/android-37.2" "$ANDROID_HOME/platforms/android-37" || true
+          ln -sfn "$SDK_ROOT/platforms/android-37.2" "$SDK_ROOT/platforms/android-37" || true
 
       - name: Run Lint
         run: ./gradlew lint
@@ -78,9 +98,30 @@ jobs:
 
       - name: Setup Android SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager --install "$ANDROID_PLATFORM" "$BUILD_TOOLS" "platform-tools"
-          ln -sfn "$ANDROID_HOME/platforms/android-37.2" "$ANDROID_HOME/platforms/android-37" || true
+          set -e
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then
+            for candidate in \
+              "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+              "$SDK_ROOT/cmdline-tools/bin/sdkmanager" \
+              /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager; do
+              if [ -x "$candidate" ]; then SDKMANAGER="$candidate"; break; fi
+            done
+          fi
+          if [ -z "$SDKMANAGER" ]; then
+            curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline-tools.zip
+            rm -rf "$SDK_ROOT/cmdline-tools/latest"
+            mkdir -p "$SDK_ROOT/cmdline-tools"
+            unzip -q /tmp/cmdline-tools.zip -d "$SDK_ROOT/cmdline-tools"
+            mv "$SDK_ROOT/cmdline-tools/cmdline-tools" "$SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses > /dev/null || true
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" --install "$ANDROID_PLATFORM" "$BUILD_TOOLS" "platform-tools"
+          # AGP resolves the API 37 platform under its minor-level directory.
+          ln -sfn "$SDK_ROOT/platforms/android-37.2" "$SDK_ROOT/platforms/android-37" || true
 
       - name: Assemble Debug
         run: ./gradlew assembleDebug
@@ -113,9 +154,30 @@ jobs:
 
       - name: Setup Android SDK
         run: |
-          yes | sdkmanager --licenses > /dev/null || true
-          sdkmanager --install "$ANDROID_PLATFORM" "$BUILD_TOOLS" "platform-tools"
-          ln -sfn "$ANDROID_HOME/platforms/android-37.2" "$ANDROID_HOME/platforms/android-37" || true
+          set -e
+          SDK_ROOT="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          SDKMANAGER="$(command -v sdkmanager || true)"
+          if [ -z "$SDKMANAGER" ]; then
+            for candidate in \
+              "$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+              "$SDK_ROOT/cmdline-tools/bin/sdkmanager" \
+              /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager; do
+              if [ -x "$candidate" ]; then SDKMANAGER="$candidate"; break; fi
+            done
+          fi
+          if [ -z "$SDKMANAGER" ]; then
+            curl -fsSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o /tmp/cmdline-tools.zip
+            rm -rf "$SDK_ROOT/cmdline-tools/latest"
+            mkdir -p "$SDK_ROOT/cmdline-tools"
+            unzip -q /tmp/cmdline-tools.zip -d "$SDK_ROOT/cmdline-tools"
+            mv "$SDK_ROOT/cmdline-tools/cmdline-tools" "$SDK_ROOT/cmdline-tools/latest"
+            SDKMANAGER="$SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          echo "$(dirname "$SDKMANAGER")" >> "$GITHUB_PATH"
+          yes | "$SDKMANAGER" --sdk_root="$SDK_ROOT" --licenses > /dev/null || true
+          "$SDKMANAGER" --sdk_root="$SDK_ROOT" --install "$ANDROID_PLATFORM" "$BUILD_TOOLS" "platform-tools"
+          # AGP resolves the API 37 platform under its minor-level directory.
+          ln -sfn "$SDK_ROOT/platforms/android-37.2" "$SDK_ROOT/platforms/android-37" || true
 
       - name: Assemble Release
         run: ./gradlew bundleRelease
