@@ -49,19 +49,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.eclipselauncher.R
 import com.eclipselauncher.data.LauncherTask
 import com.eclipselauncher.data.TaskStatus
-import com.eclipselauncher.ui.animation.AnimatedDialog
+import androidx.compose.material3.BasicAlertDialog
 
 /**
- * The ongoing-tasks dialog. [visible] drives the spring-open / corner-suck
- * animation in [AnimatedDialog]; only tasks that have not finished are
- * listed — there is no history and no clear button.
+ * The ongoing-tasks dialog. [visible] mounts the standard Material 3 basic
+ * dialog; only tasks that have not finished are listed — there is no history
+ * and no clear button.
  */
 @Composable
 fun TasksDialog(
@@ -72,17 +71,12 @@ fun TasksDialog(
     onCancel: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    if (!visible) return
     val expanded = remember { mutableStateMapOf<String, Boolean>() }
     // Ongoing only: finished work is swept by the caller and never shown.
     val ongoing = tasks.filter { !it.isFinished }
 
-    AnimatedDialog(
-        visible = visible,
-        // Sucked back toward the top-right corner on minimize, where the
-        // tasks button that opened it lives.
-        suckOrigin = TransformOrigin(1f, 0f),
-        onDismissRequest = onDismiss,
-    ) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surface,

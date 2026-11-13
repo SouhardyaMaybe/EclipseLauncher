@@ -7,7 +7,7 @@
  * actions — pick a skin, pick a cape, clear the skin, clear the cape. Picks
  * import through MediaStorage (validated on the IO dispatcher) and land on
  * the account via onUpdate; clears just null the field so the default Steve
- * shows again. Springs open with the shared AnimatedDialog motion.
+ * shows again. Presented in the standard Material 3 basic dialog.
  */
 package com.eclipselauncher.ui.components
 
@@ -43,7 +43,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -54,7 +53,7 @@ import com.eclipselauncher.data.Account
 import com.eclipselauncher.data.ImportKind
 import com.eclipselauncher.data.MediaStorage
 import com.eclipselauncher.data.newId
-import com.eclipselauncher.ui.animation.AnimatedDialog
+import androidx.compose.material3.BasicAlertDialog
 import com.eclipselauncher.ui.character.SkinModelView
 import com.eclipselauncher.ui.theme.EclipseRadius
 
@@ -103,11 +102,7 @@ fun SkinCustomizationDialog(
         }
     }
 
-    AnimatedDialog(
-        visible = true,
-        suckOrigin = TransformOrigin(0.5f, 0.5f),
-        onDismissRequest = onDismiss,
-    ) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(EclipseRadius.dialog),
             color = MaterialTheme.colorScheme.surface,

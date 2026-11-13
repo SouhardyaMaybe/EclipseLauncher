@@ -42,6 +42,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -56,6 +57,7 @@ import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
@@ -68,7 +70,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -86,8 +87,6 @@ import com.eclipselauncher.data.AccountState
 import com.eclipselauncher.data.Instance
 import com.eclipselauncher.data.MediaStorage
 import com.eclipselauncher.ui.animation.caretRotation
-import com.eclipselauncher.ui.animation.pressPushCorner
-import com.eclipselauncher.ui.animation.pressSqueeze
 import com.eclipselauncher.ui.character.SkinHeadFace
 import com.eclipselauncher.ui.components.AccountSwitcherDialog
 import com.eclipselauncher.ui.components.AddAccountGate
@@ -194,10 +193,8 @@ fun HomeScreen(
                         Box(
                             modifier = Modifier
                                 .size(132.dp)
-                                .pressPushCorner(
-                                    pushOrigin = TransformOrigin(0.5f, 1f),
-                                    onClick = onOpenAccounts,
-                                ),
+                                .clip(RoundedCornerShape(EclipseRadius.tile))
+                                .clickable(onClick = onOpenAccounts),
                             contentAlignment = Alignment.Center,
                         ) {
                             SkinHeadFace(
@@ -282,23 +279,15 @@ private fun HeaderButton(
     contentDescription: String,
     onClick: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .size(44.dp)
-            .pressPushCorner(
-                // Push the top-right corner in; the opposite corner stays
-                // pinned — the Xiaomi-style corner push.
-                pushOrigin = TransformOrigin(0f, 1f),
-                onClick = onClick,
-            )
-            .padding(10.dp),
-        contentAlignment = Alignment.Center,
+    IconButton(
+        onClick = onClick,
+        modifier = Modifier.size(44.dp),
     ) {
         Icon(
             imageVector = icon,
             contentDescription = contentDescription,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.size(24.dp),
         )
     }
 }
@@ -338,7 +327,8 @@ private fun NametagPlate(
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .pressSqueeze(onClick = onOpenSwitcher),
+                .clip(CircleShape)
+                .clickable(onClick = onOpenSwitcher),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -360,7 +350,9 @@ private fun EmptyAccountPanel(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.pressSqueeze(onClick = onClick),
+        modifier = modifier
+            .clip(RoundedCornerShape(EclipseRadius.panel))
+            .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -417,7 +409,7 @@ private fun NoInstancesButton(
                 color = MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(EclipseRadius.panel),
             )
-            .pressSqueeze(onClick = onClick)
+            .clickable(onClick = onClick)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -492,7 +484,7 @@ private fun InstancePanel(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .pressSqueeze(onClick = { expanded = true })
+                    .clickable { expanded = true }
                     .padding(horizontal = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
@@ -532,7 +524,8 @@ private fun InstancePanel(
             Box(
                 modifier = Modifier
                     .size(58.dp)
-                    .pressSqueeze(onClick = onEdit),
+                    .clip(CircleShape)
+                    .clickable(onClick = onEdit),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
@@ -714,7 +707,7 @@ private fun PlayButton(
             .height(58.dp)
             .clip(RoundedCornerShape(EclipseRadius.panel))
             .background(container)
-            .pressSqueeze(enabled = enabled, onClick = onClick),
+            .clickable(enabled = enabled, onClick = onClick),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {

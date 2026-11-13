@@ -8,8 +8,7 @@
  * scrolling and snaps to the selected account on every open; "+ add
  * account" sits below the divider as a pinned footer, so the action never
  * scrolls out of reach no matter how many accounts exist.
- * Springs open with a bounce and is sucked back toward the nametag on close
- * (via AnimatedDialog).
+ * Presented in the standard Material 3 basic dialog.
  */
 package com.eclipselauncher.ui.components
 
@@ -41,14 +40,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.eclipselauncher.R
 import com.eclipselauncher.data.AccountKind
 import com.eclipselauncher.data.AccountState
 import com.eclipselauncher.data.MediaStorage
-import com.eclipselauncher.ui.animation.AnimatedDialog
+import androidx.compose.material3.BasicAlertDialog
 import com.eclipselauncher.ui.character.SkinHeadFace
 import com.eclipselauncher.ui.theme.EclipseRadius
 
@@ -72,10 +70,9 @@ fun AccountSwitcherDialog(
     onAddAccount: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // Opening the dialog scrolls the list to the selected account. The
-    // state lives at this level (not inside the dialog) so it survives
-    // the spring-in / suck-out transitions, and keying the effect on
-    // `visible` re-snaps on every open — even close/reopen mid-exit.
+    if (!visible) return
+    // Opening the dialog scrolls the list to the selected account. Keying
+    // the effect on `visible` re-snaps on every open.
     val listState = rememberLazyListState()
     LaunchedEffect(visible) {
         if (visible) {
@@ -86,12 +83,7 @@ fun AccountSwitcherDialog(
         }
     }
 
-    AnimatedDialog(
-        visible = visible,
-        // Sucked back toward the nametag at the top on close.
-        suckOrigin = TransformOrigin(0.5f, 0f),
-        onDismissRequest = onDismiss,
-    ) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
         Surface(
             shape = RoundedCornerShape(EclipseRadius.dialog),
             color = MaterialTheme.colorScheme.surface,
