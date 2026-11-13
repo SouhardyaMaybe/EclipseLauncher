@@ -114,17 +114,6 @@ class SettingsStore(context: Context) {
         /** UI theme: DYNAMIC follows Material You wallpaper colors, DARK/LIGHT are fixed. */
         enum class ThemeMode { DYNAMIC, DARK, LIGHT }
 
-        /** Reads the persisted theme mode; defaults to dynamic (Material You). */
-        fun themeMode(mmkv: MMKV = mmkvForTheme()): ThemeMode =
-            ThemeMode.valueOf(mmkv.decodeString(THEME_MODE, ThemeMode.DYNAMIC.name))
-
-        /** Persists the chosen theme mode. */
-        fun setThemeMode(mode: ThemeMode, mmkv: MMKV = mmkvForTheme()) {
-            mmkv.encode(THEME_MODE, mode.name)
-        }
-
-        private fun mmkvForTheme(): MMKV = MMKV.mmkvWithID(MMKV_ID, MMKV.SINGLE_PROCESS_MODE)
-
         const val RENDERER = "renderer"
         const val ALTERNATE_SURFACE = "alternate_surface"
         const val SYSTEM_VULKAN = "zinkPreferSystemDriver"
@@ -171,13 +160,16 @@ class SettingsStore(context: Context) {
         const val DEFAULT_RENDERER = "opengles2"
         const val DEFAULT_DOWNLOAD_SOURCE = "default"
     }
-}
 
-/**
- * Renderer ids and display names, shared by the settings screen and the
- * instance editor. The names are product strings (renderer plus Minecraft
- * version guidance), so they stay identical to the ids: untranslated data.
- */
+    /** Reads the persisted theme mode; defaults to dynamic (Material You). */
+    fun themeMode(): ThemeMode =
+        ThemeMode.valueOf(mmkv.decodeString(THEME_MODE, ThemeMode.DYNAMIC.name) ?: ThemeMode.DYNAMIC.name)
+
+    /** Persists the chosen theme mode. */
+    fun setThemeMode(mode: ThemeMode) {
+        mmkv.encode(THEME_MODE, mode.name)
+    }
+}
 object Renderers {
     val IDS = listOf(
         "opengles2",
