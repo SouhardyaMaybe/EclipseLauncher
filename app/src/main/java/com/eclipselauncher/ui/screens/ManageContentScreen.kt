@@ -407,7 +407,12 @@ private fun BrowseContentRow(
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(text = hit.author + " · " + formatDownloads(hit.downloads), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
+                val dlText = when {
+                    hit.downloads >= 1_000_000 -> "${(hit.downloads / 1_000_000.0).toInt()}M"
+                    hit.downloads >= 1_000 -> "${(hit.downloads / 1_000.0).toInt()}K"
+                    else -> hit.downloads.toString()
+                }
+                Text(text = hit.author + " · " + dlText, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
                 if (hit.description.isNotBlank()) {
                     Text(text = hit.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
                 }
@@ -417,14 +422,6 @@ private fun BrowseContentRow(
                 Text(text = "⬇", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-    }
-}
-
-private fun formatDownloads(downloads: Long): String {
-    return when {
-        downloads >= 1_000_000 -> "${(downloads / 1_000_000.0).toInt()}M"
-        downloads >= 1_000 -> "${(downloads / 1_000.0).toInt()}K"
-        else -> downloads.toString()
     }
 }
 
