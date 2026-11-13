@@ -162,7 +162,7 @@ fun ManageContentScreen(
         contract = ActivityResultContracts.OpenDocument(),
     ) { uri: Uri? ->
         uri?.let {
-            Toast.makeText(context, context.getString(R.string.manage_content_import_started), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, stringResource(R.string.manage_content_import_started), Toast.LENGTH_SHORT).show()
         }
     }
 

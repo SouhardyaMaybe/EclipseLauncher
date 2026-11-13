@@ -293,7 +293,7 @@ fun EclipseApp() {
                                     )
                                     Toast.makeText(
                                         context,
-                                        context.getString(R.string.instance_created_toast),
+                                        stringResource(R.string.instance_created_toast),
                                         Toast.LENGTH_SHORT,
                                     ).show()
                                     pendingSelectionId = created.id
