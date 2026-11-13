@@ -1,75 +1,62 @@
+/*
+ * Copyright 2026 Shadow
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package com.eclipselauncher.data
 
-import java.io.File
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.eclipselauncher.data.room.AccountDao
+import com.eclipselauncher.data.room.AccountEntity
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-/** Persisted account list: the entries plus the selected account id. */
-@Serializable
-data class AccountsFile(
-    val accounts: List<Account> = emptyList(),
-    val selectedId: String? = null,
-)
+@Singleton
+class AccountStore @Inject constructor(
+    private val dao: AccountDao,
+) {
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-/**
- * JSON-backed account store. The reference app used Room here; this project
- * keeps its pinned stack, so the same public surface is implemented with a
- * StateFlow over a small file store.
- */
-class AccountStore(file: File) {
-    private val mutex = Mutex()
-    private val store = JsonStore(file, AccountsFile.serializer()) { AccountsFile() }
-    private val _state = MutableStateFlow(AccountState())
+    val state: StateFlow<AccountState> = dao.getAll()
+        .map { accounts ->
+            val selected = accounts.firstOrNull { it.selected } ?: accounts.firstOrNull()
+            AccountState(
+                accounts = accounts.map { it.toModel() },
+                selectedId = selected?.id,
+            )
+        }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, AccountState())
 
-    val state: StateFlow<AccountState> = _state.asStateFlow()
+    /** The Room flow is collected eagerly; retained for the application warm-up. */
+    suspend fun load() = Unit
 
-    suspend fun load() = mutex.withLock {
-        val loaded = store.read()
-        val selected = loaded.selectedId ?: loaded.accounts.firstOrNull()?.id
-        _state.value = AccountState(loaded.accounts, selected)
-    }
-
-    suspend fun add(account: Account, select: Boolean = true): Account = mutex.withLock {
+    suspend fun add(account: Account, select: Boolean = true): Account {
         val resolved = if (account.id.isBlank()) account.copy(id = newId()) else account
-        val current = _state.value
-        val accounts = current.accounts + resolved
-        val selectedId = if (select) resolved.id else current.selectedId
-        commit(accounts, selectedId)
-        resolved
+        val entity = AccountEntity.fromModel(resolved, select)
+        if (select) dao.addAndSelect(entity) else dao.insert(entity)
+        return resolved
     }
 
-    suspend fun update(account: Account) = mutex.withLock {
-        val accounts = _state.value.accounts.map { if (it.id == account.id) account else it }
-        commit(accounts, _state.value.selectedId)
-    }
-
-    suspend fun select(id: String) = mutex.withLock {
-        if (_state.value.accounts.any { it.id == id }) {
-            commit(_state.value.accounts, id)
+    suspend fun update(account: Account) {
+        dao.getById(account.id)?.let { existing ->
+            dao.update(AccountEntity.fromModel(account, existing.selected))
         }
     }
 
-    suspend fun remove(id: String) = mutex.withLock {
-        val accounts = _state.value.accounts.filterNot { it.id == id }
-        val selectedId = _state.value.selectedId
-            ?.takeIf { candidate -> accounts.any { it.id == candidate } }
-            ?: accounts.firstOrNull()?.id
-        commit(accounts, selectedId)
-    }
+    suspend fun select(id: String) = dao.select(id)
 
-    suspend fun setMedia(id: String, skin: String?, cape: String?) = mutex.withLock {
-        val accounts = _state.value.accounts.map {
-            if (it.id == id) it.copy(skinFileName = skin, capeFileName = cape) else it
+    suspend fun remove(id: String) = dao.delete(id)
+
+    suspend fun setMedia(id: String, skin: String?, cape: String?) {
+        dao.getById(id)?.let { entity ->
+            dao.update(entity.copy(skinFileName = skin, capeFileName = cape))
         }
-        commit(accounts, _state.value.selectedId)
-    }
-
-    private suspend fun commit(accounts: List<Account>, selectedId: String?) {
-        _state.value = AccountState(accounts, selectedId)
-        store.write(AccountsFile(accounts, selectedId))
     }
 }

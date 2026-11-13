@@ -1,65 +1,61 @@
+/*
+ * Copyright 2026 Shadow
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package com.eclipselauncher.data
 
-import java.io.File
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.eclipselauncher.data.room.InstanceDao
+import com.eclipselauncher.data.room.InstanceEntity
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 
-/**
- * JSON-backed instance store with the same surface as the reference app's
- * Room-backed store.
- */
-class InstanceStore(
-    file: File,
+@Singleton
+class InstanceStore @Inject constructor(
+    private val dao: InstanceDao,
     private val media: MediaStorage,
 ) {
-    private val mutex = Mutex()
-    private val store = JsonStore(file, ListSerializer(Instance.serializer())) { emptyList() }
-    private val _state = MutableStateFlow<List<Instance>>(emptyList())
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    val state: StateFlow<List<Instance>> = _state.asStateFlow()
+    val state: StateFlow<List<Instance>> = dao.getAll()
+        .map { it.map { entity -> entity.toModel() } }
+        .distinctUntilChanged()
+        .stateIn(scope, SharingStarted.Eagerly, emptyList())
 
-    suspend fun load() = mutex.withLock {
-        _state.value = store.read()
-    }
+    /** The Room flow is collected eagerly; retained for the application warm-up. */
+    suspend fun load() = Unit
 
-    suspend fun create(instance: Instance): Instance = mutex.withLock {
+    suspend fun create(instance: Instance): Instance {
         val resolved = if (instance.id.isBlank()) instance.copy(id = newId()) else instance
-        val instances = _state.value + resolved
-        _state.value = instances
-        store.write(instances)
-        resolved
+        dao.insert(InstanceEntity.fromModel(resolved))
+        return resolved
     }
 
-    suspend fun update(instance: Instance) = mutex.withLock {
-        val instances = _state.value.map { if (it.id == instance.id) instance else it }
-        _state.value = instances
-        store.write(instances)
-    }
+    suspend fun update(instance: Instance) = dao.update(InstanceEntity.fromModel(instance))
 
-    suspend fun duplicate(id: String): Instance? = mutex.withLock {
-        val source = _state.value.firstOrNull { it.id == id } ?: return@withLock null
-        val copy = source.copy(
+    suspend fun duplicate(id: String): Instance? = dao.getById(id)?.let { entity ->
+        val copy = entity.toModel().copy(
             id = newId(),
-            name = source.name + " (copy)",
-            iconFileName = source.iconFileName?.let(media::copyForNew),
-            importFileName = source.importFileName?.let(media::copyForNew),
+            name = entity.name + " (copy)",
+            iconFileName = entity.iconFileName?.let(media::copyForNew),
+            importFileName = entity.importFileName?.let(media::copyForNew),
         )
-        val instances = _state.value + copy
-        _state.value = instances
-        store.write(instances)
+        dao.insert(InstanceEntity.fromModel(copy))
         copy
     }
 
-    suspend fun remove(id: String) = mutex.withLock {
-        val target = _state.value.firstOrNull { it.id == id } ?: return@withLock
-        target.iconFileName?.let(media::delete)
-        target.importFileName?.let(media::delete)
-        val instances = _state.value.filterNot { it.id == id }
-        _state.value = instances
-        store.write(instances)
+    suspend fun remove(id: String) {
+        dao.getById(id)?.let { entity ->
+            entity.iconFileName?.let(media::delete)
+            entity.importFileName?.let(media::delete)
+            dao.delete(id)
+        }
     }
 }

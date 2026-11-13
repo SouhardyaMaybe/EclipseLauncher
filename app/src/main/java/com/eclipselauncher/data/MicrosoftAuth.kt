@@ -10,13 +10,19 @@
  */
 package com.eclipselauncher.data
 
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.URLEncoder
+import io.ktor.client.request.header
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -62,28 +68,19 @@ data class MsLoginResult(
     val expiresAtEpochSeconds: Long,
 )
 
-object MicrosoftAuth {
-    const val CLIENT_ID = "00000000402b5328"
-    const val REDIRECT_URL = "https://login.live.com/oauth20_desktop.srf"
-    const val SCOPE = "service::user.auth.xboxlive.com::MBI_SSL"
-
-    private const val AUTHORIZE_URL = "https://login.live.com/oauth20_authorize.srf"
-    private const val TOKEN_URL = "https://login.live.com/oauth20_token.srf"
-    private const val XBL_URL = "https://user.auth.xboxlive.com/user/authenticate"
-    private const val XSTS_URL = "https://xsts.auth.xboxlive.com/xsts/authorize"
-    private const val MC_LOGIN_URL = "https://api.minecraftservices.com/authentication/login_with_xbox"
-    private const val MC_PROFILE_URL = "https://api.minecraftservices.com/minecraft/profile"
-
-    private const val TIMEOUT_MS = 20_000
-    private val json = Json { ignoreUnknownKeys = true }
+@Singleton
+class MicrosoftAuth @Inject constructor(
+    private val network: NetworkClient,
+) {
+    private val json = network.json
 
     /** The authorize URL opened in the sign-in WebView. */
     fun authorizeUrl(): String = buildString {
         append(AUTHORIZE_URL)
         append("?client_id=").append(CLIENT_ID)
         append("&response_type=code")
-        append("&scope=").append(URLEncoder.encode(SCOPE, "UTF-8"))
-        append("&redirect_url=").append(URLEncoder.encode(REDIRECT_URL, "UTF-8"))
+        append("&scope=").append(java.net.URLEncoder.encode(SCOPE, "UTF-8"))
+        append("&redirect_url=").append(java.net.URLEncoder.encode(REDIRECT_URL, "UTF-8"))
     }
 
     /** Classifies a URL the WebView lands on; null when it is not our redirect. */
@@ -147,7 +144,7 @@ object MicrosoftAuth {
 
     private data class Profile(val name: String, val uuid: String)
 
-    private fun exchangeCode(code: String): LiveToken {
+    private suspend fun exchangeCode(code: String): LiveToken {
         val response = postForm(
             TOKEN_URL,
             tokenFields("authorization_code") + ("code" to code),
@@ -165,7 +162,7 @@ object MicrosoftAuth {
         "scope" to SCOPE,
     )
 
-    private fun xblAuthenticate(accessToken: String): String {
+    private suspend fun xblAuthenticate(accessToken: String): String {
         val body = buildJsonObject {
             putJsonObject("Properties") {
                 put("AuthMethod", "RPS")
@@ -178,7 +175,7 @@ object MicrosoftAuth {
         return postJson(XBL_URL, body.toString()).str("Token")
     }
 
-    private fun xstsAuthorize(xblToken: String): Pair<String, String> {
+    private suspend fun xstsAuthorize(xblToken: String): Pair<String, String> {
         val body = buildJsonObject {
             putJsonObject("Properties") {
                 put("SandboxId", "RETAIL")
@@ -206,7 +203,7 @@ object MicrosoftAuth {
         return xuid to response.str("Token")
     }
 
-    private fun minecraftLogin(xstsToken: String, xuid: String): MinecraftToken {
+    private suspend fun minecraftLogin(xstsToken: String, xuid: String): MinecraftToken {
         val body = buildJsonObject {
             put("identityToken", "XBL3.0 x=$xuid;$xstsToken")
         }
@@ -217,7 +214,7 @@ object MicrosoftAuth {
         )
     }
 
-    private fun minecraftProfile(accessToken: String): Profile {
+    private suspend fun minecraftProfile(accessToken: String): Profile {
         val (code, text) = request(MC_PROFILE_URL, null, null, accessToken)
         if (code == 404) {
             throw MsAuthException(
@@ -248,9 +245,9 @@ object MicrosoftAuth {
 
     // ------------------------------------------------------------------ http
 
-    private fun postForm(url: String, fields: Map<String, String>): JsonObject {
+    private suspend fun postForm(url: String, fields: Map<String, String>): JsonObject {
         val body = fields.entries.joinToString("&") { (k, v) ->
-            URLEncoder.encode(k, "UTF-8") + "=" + URLEncoder.encode(v, "UTF-8")
+            java.net.URLEncoder.encode(k, "UTF-8") + "=" + java.net.URLEncoder.encode(v, "UTF-8")
         }
         val (code, text) = request(url, body, "application/x-www-form-urlencoded")
         if (code !in 200..299) {
@@ -262,7 +259,7 @@ object MicrosoftAuth {
         return parseObject(text, url)
     }
 
-    private fun postJson(url: String, body: String): JsonObject {
+    private suspend fun postJson(url: String, body: String): JsonObject {
         val (code, text) = request(url, body, "application/json")
         if (code !in 200..299) {
             throw MsAuthException(MsAuthError.UNKNOWN, "Request failed (http=$code): $text")
@@ -270,32 +267,27 @@ object MicrosoftAuth {
         return parseObject(text, url)
     }
 
-    private fun request(
+    private suspend fun request(
         url: String,
         body: String?,
-        contentType: String?,
+        bodyContentType: String?,
         bearer: String? = null,
     ): Pair<Int, String> {
-        val connection = URL(url).openConnection() as HttpURLConnection
         try {
-            connection.connectTimeout = TIMEOUT_MS
-            connection.readTimeout = TIMEOUT_MS
-            connection.requestMethod = if (body != null) "POST" else "GET"
-            connection.setRequestProperty("Accept", "application/json")
-            contentType?.let { connection.setRequestProperty("Content-Type", it) }
-            bearer?.let { connection.setRequestProperty("Authorization", "Bearer $it") }
-            if (body != null) {
-                connection.doOutput = true
-                connection.outputStream.use { it.write(body.toByteArray(Charsets.UTF_8)) }
+            val response = network.http.request(url) {
+                method = if (body != null) HttpMethod.Post else HttpMethod.Get
+                header(HttpHeaders.Accept, "application/json")
+                bodyContentType?.let { contentType(ContentType.parse(it)) }
+                bearer?.let { header(HttpHeaders.Authorization, "Bearer $it") }
+                if (body != null) setBody(body)
             }
-            val code = connection.responseCode
-            val stream = if (code in 200..299) connection.inputStream else connection.errorStream
-            val text = stream?.bufferedReader()?.use { it.readText() }.orEmpty()
-            return code to text
-        } catch (io: IOException) {
-            throw MsAuthException(MsAuthError.NETWORK, io.message ?: "Network error")
-        } finally {
-            connection.disconnect()
+            return response.status.value to response.bodyAsText()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (auth: MsAuthException) {
+            throw auth
+        } catch (error: Exception) {
+            throw MsAuthException(MsAuthError.NETWORK, error.message ?: "Network error")
         }
     }
 
@@ -309,4 +301,17 @@ object MicrosoftAuth {
 
     private fun JsonObject.long(key: String): Long? =
         (get(key) as? JsonPrimitive)?.jsonPrimitive?.longOrNull
+
+    companion object {
+        const val CLIENT_ID = "00000000402b5328"
+        const val REDIRECT_URL = "https://login.live.com/oauth20_desktop.srf"
+        const val SCOPE = "service::user.auth.xboxlive.com::MBI_SSL"
+
+        private const val AUTHORIZE_URL = "https://login.live.com/oauth20_authorize.srf"
+        private const val TOKEN_URL = "https://login.live.com/oauth20_token.srf"
+        private const val XBL_URL = "https://user.auth.xboxlive.com/user/authenticate"
+        private const val XSTS_URL = "https://xsts.auth.xboxlive.com/xsts/authorize"
+        private const val MC_LOGIN_URL = "https://api.minecraftservices.com/authentication/login_with_xbox"
+        private const val MC_PROFILE_URL = "https://api.minecraftservices.com/minecraft/profile"
+    }
 }

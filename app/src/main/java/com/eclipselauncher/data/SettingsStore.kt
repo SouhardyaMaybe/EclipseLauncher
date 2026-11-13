@@ -2,70 +2,74 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * SETTINGS STORE: typed SharedPreferences access for every launcher
- * preference, plus the renderer id/name tables shared between the settings
- * screen and the instance editor. Keys mirror the reference launcher so
- * values survive a migration.
+ * SETTINGS STORE: typed MMKV access for every launcher preference, plus the
+ * renderer id/name tables shared between the settings screen and the instance
+ * editor. Keys mirror the reference launcher so values survive a migration.
  */
 package com.eclipselauncher.data
 
 import android.content.Context
-import android.content.SharedPreferences
+import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Local persistence for the settings screens. Every accessor reads straight
- * through to SharedPreferences so a switch or slider survives a restart;
- * writes use apply() and are visible to the next read immediately.
- * 
+ * through to MMKV so a switch or slider survives a restart; writes are
+ * synchronous and visible to the next read immediately.
+ *
  * Additionally, each setting exposes a StateFlow so UI can observe changes
- * reactively. When a value is written, both SharedPreferences and the
- * corresponding StateFlow are updated.
+ * reactively. When a value is written, both MMKV and the corresponding
+ * StateFlow are updated.
  */
 class SettingsStore(context: Context) {
-    private val prefs: SharedPreferences =
-        context.applicationContext.getSharedPreferences("eclipse_settings", Context.MODE_PRIVATE)
+    private val appContext = context.applicationContext
+    private val mmkv: MMKV = MMKV.mmkvWithID(MMKV_ID, MMKV.SINGLE_PROCESS_MODE)
 
     // Maps of observable flows for each setting key
     private val booleanFlows = mutableMapOf<String, MutableStateFlow<Boolean>>()
     private val intFlows = mutableMapOf<String, MutableStateFlow<Int>>()
     private val stringFlows = mutableMapOf<String, MutableStateFlow<String>>()
 
+    init {
+        migrateLegacyPreferences()
+    }
+
     private fun booleanFlow(key: String, defaultValue: Boolean): MutableStateFlow<Boolean> =
         booleanFlows.getOrPut(key) {
-            MutableStateFlow(prefs.getBoolean(key, defaultValue))
+            MutableStateFlow(boolean(key, defaultValue))
         }
 
     private fun intFlow(key: String, defaultValue: Int): MutableStateFlow<Int> =
         intFlows.getOrPut(key) {
-            MutableStateFlow(prefs.getInt(key, defaultValue))
+            MutableStateFlow(int(key, defaultValue))
         }
 
     private fun stringFlow(key: String, defaultValue: String): MutableStateFlow<String> =
         stringFlows.getOrPut(key) {
-            MutableStateFlow(prefs.getString(key, defaultValue) ?: defaultValue)
+            MutableStateFlow(string(key, defaultValue))
         }
 
-    fun boolean(key: String, defaultValue: Boolean): Boolean = prefs.getBoolean(key, defaultValue)
+    fun boolean(key: String, defaultValue: Boolean): Boolean = mmkv.decodeBool(key, defaultValue)
 
     fun setBoolean(key: String, value: Boolean) {
-        prefs.edit().putBoolean(key, value).apply()
+        mmkv.encode(key, value)
         booleanFlow(key, false).value = value
     }
 
-    fun string(key: String, defaultValue: String): String = prefs.getString(key, defaultValue) ?: defaultValue
+    fun string(key: String, defaultValue: String): String =
+        mmkv.decodeString(key, defaultValue) ?: defaultValue
 
     fun setString(key: String, value: String) {
-        prefs.edit().putString(key, value).apply()
+        mmkv.encode(key, value)
         stringFlow(key, "").value = value
     }
 
-    fun int(key: String, defaultValue: Int): Int = prefs.getInt(key, defaultValue)
+    fun int(key: String, defaultValue: Int): Int = mmkv.decodeInt(key, defaultValue)
 
     fun setInt(key: String, value: Int) {
-        prefs.edit().putInt(key, value).apply()
+        mmkv.encode(key, value)
         intFlow(key, 0).value = value
     }
 
@@ -79,7 +83,33 @@ class SettingsStore(context: Context) {
     fun getStringFlow(key: String, defaultValue: String): StateFlow<String> =
         stringFlow(key, defaultValue).asStateFlow()
 
+    /**
+     * Settings used to live in SharedPreferences. Copy them once so an
+     * in-place update keeps every choice the user already made.
+     */
+    private fun migrateLegacyPreferences() {
+        if (mmkv.decodeBool(KEY_MIGRATED, false)) return
+        val legacy = appContext.getSharedPreferences(LEGACY_PREFS, Context.MODE_PRIVATE)
+        legacy.all.forEach { (key, value) ->
+            if (!mmkv.containsKey(key)) {
+                when (value) {
+                    is Boolean -> mmkv.encode(key, value)
+                    is Int -> mmkv.encode(key, value)
+                    is Long -> mmkv.encode(key, value)
+                    is Float -> mmkv.encode(key, value)
+                    is String -> mmkv.encode(key, value)
+                }
+            }
+        }
+        mmkv.encode(KEY_MIGRATED, true)
+        legacy.edit().clear().apply()
+    }
+
     companion object {
+        private const val MMKV_ID = "eclipse_settings"
+        private const val LEGACY_PREFS = "eclipse_settings"
+        private const val KEY_MIGRATED = "_migrated_from_prefs"
+
         const val RENDERER = "renderer"
         const val ALTERNATE_SURFACE = "alternate_surface"
         const val SYSTEM_VULKAN = "zinkPreferSystemDriver"

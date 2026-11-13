@@ -70,6 +70,7 @@ private sealed interface AuthUi {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MicrosoftAuthScreen(
+    auth: MicrosoftAuth,
     onSignedIn: (Account) -> Unit,
     onCancel: () -> Unit,
 ) {
@@ -100,12 +101,13 @@ fun MicrosoftAuthScreen(
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when (val state = ui) {
                 AuthUi.Browser -> AuthWebView(
+                    auth = auth,
                     onExit = onCancel,
                     onCode = { code ->
                         ui = AuthUi.Progress(MsAuthStage.LIVE)
                         scope.launch {
                             try {
-                                val result = MicrosoftAuth.login(code) { stage ->
+                                val result = auth.login(code) { stage ->
                                     ui = AuthUi.Progress(stage)
                                 }
                                 onSignedIn(
@@ -194,6 +196,7 @@ private fun authErrorMessage(error: MsAuthError): Int = when (error) {
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 private fun AuthWebView(
+    auth: MicrosoftAuth,
     onExit: () -> Unit,
     onCode: (String) -> Unit,
 ) {
@@ -225,7 +228,7 @@ private fun AuthWebView(
                     request: WebResourceRequest,
                 ): Boolean {
                     val url = request.url.toString()
-                    when (val result = MicrosoftAuth.parseRedirect(url)) {
+                    when (val result = auth.parseRedirect(url)) {
                         is RedirectResult.Success -> {
                             if (!handled) {
                                 handled = true
@@ -252,7 +255,7 @@ private fun AuthWebView(
                 }
             }
             if (view.url == null) {
-                view.loadUrl(MicrosoftAuth.authorizeUrl())
+                view.loadUrl(auth.authorizeUrl())
             }
         },
     )

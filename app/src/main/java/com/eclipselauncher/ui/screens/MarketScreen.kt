@@ -11,10 +11,8 @@
 package com.eclipselauncher.ui.screens
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,33 +41,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.eclipselauncher.R
 import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
 import com.eclipselauncher.data.ModrinthHit
 
 @Composable
-fun MarketPage() {
+fun MarketPage(client: ModrinthClient) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val client = remember { ModrinthClient() }
 
     var query by remember { mutableStateOf("") }
     var appliedQuery by remember { mutableStateOf("") }
@@ -260,45 +253,23 @@ private fun ModRow(hit: ModrinthHit, onClick: () -> Unit) {
     }
 }
 
-/** Decodes the project icon off the main thread; falls back to a tile. */
+/** Loads the project icon through Coil; the tile shows until it arrives. */
 @Composable
 private fun ModIcon(url: String, size: Dp) {
-    var bitmap by remember(url) { mutableStateOf<ImageBitmap?>(null) }
-    LaunchedEffect(url) {
-        bitmap = if (url.isBlank()) {
-            null
-        } else {
-            withContext(Dispatchers.IO) {
-                runCatching {
-                    val connection = java.net.URL(url).openConnection() as java.net.HttpURLConnection
-                    connection.connectTimeout = 10_000
-                    connection.readTimeout = 10_000
-                    try {
-                        connection.inputStream.use { BitmapFactory.decodeStream(it) }?.asImageBitmap()
-                    } finally {
-                        connection.disconnect()
-                    }
-                }.getOrNull()
-            }
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(RoundedCornerShape(size.value * 0.24f))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+    ) {
+        if (url.isNotBlank()) {
+            AsyncImage(
+                model = url,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
         }
-    }
-    val image = bitmap
-    if (image != null) {
-        Image(
-            bitmap = image,
-            contentDescription = null,
-            modifier = Modifier
-                .size(size)
-                .clip(RoundedCornerShape(size.value * 0.24f)),
-            contentScale = ContentScale.Crop,
-        )
-    } else {
-        Box(
-            modifier = Modifier
-                .size(size)
-                .clip(RoundedCornerShape(size.value * 0.24f))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-        )
     }
 }
 

@@ -129,11 +129,11 @@ private val ContentType.modrinthProjectType: String
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageContentScreen(
+    client: ModrinthClient,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val client = remember { ModrinthClient() }
 
     var mainTab by remember { mutableStateOf(0) } // 0 = Installed, 1 = Browse
     var installedContentType by remember { mutableStateOf(ContentType.MODS) }

@@ -13,12 +13,7 @@
  */
 package com.eclipselauncher.data
 
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -28,7 +23,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
 /** Result of a metadata fetch: either a value or a user-facing error. */
 sealed interface MetaResult<out T> {
@@ -72,8 +66,11 @@ data class GameVersionEntry(
 )
 
 /** On-disk-cached metadata client for the version selector's lists. */
-class VersionRepository(private val cacheDir: File) {
-    private val json = Json { ignoreUnknownKeys = true }
+class VersionRepository(
+    private val cacheDir: File,
+    private val network: NetworkClient,
+) {
+    private val json = network.json
     private var manifestCache: VersionManifest? = null
 
     /**
@@ -411,25 +408,10 @@ class VersionRepository(private val cacheDir: File) {
         }
     }
 
-    private fun download(url: String, maxBytes: Int): MetaResult<String> {
-        return try {
-            val connection = URL(url).openConnection() as HttpURLConnection
-            connection.connectTimeout = 15_000
-            connection.readTimeout = 15_000
-            connection.setRequestProperty("User-Agent", USER_AGENT)
-            try {
-                if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                    return MetaResult.Error("Could not reach the version server.")
-                }
-                val bytes = connection.inputStream.use { readLimited(it, maxBytes) }
-                MetaResult.Success(String(bytes, Charsets.UTF_8))
-            } finally {
-                connection.disconnect()
-            }
-        } catch (_: IOException) {
-            MetaResult.Error("Network error while loading the version list.")
-        } catch (_: Exception) {
-            MetaResult.Error("The version metadata could not be read.")
+    private suspend fun download(url: String, maxBytes: Int): MetaResult<String> {
+        return when (val text = network.getText(url, maxBytes)) {
+            null -> MetaResult.Error("Could not reach the version server.")
+            else -> MetaResult.Success(text)
         }
     }
 
@@ -442,21 +424,6 @@ class VersionRepository(private val cacheDir: File) {
             cacheDir.mkdirs()
             File(cacheDir, name).writeText(text)
         }
-    }
-
-    private fun readLimited(input: InputStream, maxBytes: Int): ByteArray {
-        val output = ByteArrayOutputStream(minOf(maxBytes, 64 * 1024))
-        val buffer = ByteArray(BUFFER_SIZE)
-        var total = 0
-        while (true) {
-            val read = input.read(buffer)
-            if (read < 0) break
-            if (read == 0) continue
-            total += read
-            if (total > maxBytes) throw IOException("metadata too large")
-            output.write(buffer, 0, read)
-        }
-        return output.toByteArray()
     }
 
     companion object {
@@ -504,7 +471,5 @@ class VersionRepository(private val cacheDir: File) {
         private const val MAX_LOADER_BYTES = 4 * 1024 * 1024
         private const val MAX_OPTIFINE_BYTES = 4 * 1024 * 1024
         private const val MAX_CACHE_BYTES = 16 * 1024 * 1024
-        private const val BUFFER_SIZE = 16 * 1024
-        private const val USER_AGENT = "EclipseLauncher/0.1 (github.com/SouhardyaMaybe/Eclipse)"
     }
 }

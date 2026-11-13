@@ -64,16 +64,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.Dispatchers
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.eclipselauncher.R
 import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
@@ -82,12 +79,12 @@ import com.eclipselauncher.data.ModrinthHit
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModpackBrowserScreen(
+    client: ModrinthClient,
     onBack: () -> Unit,
     onPickModpack: (Uri) -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val client = remember { ModrinthClient() }
 
     var query by remember { mutableStateOf("") }
     var selectedProvider by remember { mutableStateOf(0) } // 0 = Modrinth
@@ -373,53 +370,28 @@ private fun ModpackRow(
     }
 }
 
-/** Decodes the project icon off the main thread; falls back to a tile. */
+/** Loads the project icon through Coil; the tile shows until it arrives. */
 @Composable
 private fun ModpackIcon(url: String, size: Dp) {
-    var bitmap by remember(url) { mutableStateOf<ImageBitmap?>(null) }
-    LaunchedEffect(url) {
-        bitmap = if (url.isBlank()) {
-            null
-        } else {
-            withContext(Dispatchers.IO) {
-                runCatching {
-                    val connection = java.net.URL(url).openConnection() as java.net.HttpURLConnection
-                    connection.connectTimeout = 10_000
-                    connection.readTimeout = 10_000
-                    try {
-                        connection.inputStream.use {
-                            android.graphics.BitmapFactory.decodeStream(it)
-                        }?.asImageBitmap()
-                    } finally {
-                        connection.disconnect()
-                    }
-                }.getOrNull()
-            }
-        }
-    }
-    val image = bitmap
-    if (image != null) {
-        androidx.compose.foundation.Image(
-            bitmap = image,
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(RoundedCornerShape(size.value * 0.2f))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.CloudDownload,
             contentDescription = null,
-            modifier = Modifier
-                .size(size)
-                .clip(RoundedCornerShape(size.value * 0.2f)),
-            contentScale = ContentScale.Crop,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            modifier = Modifier.size((size.value * 0.5f).dp),
         )
-    } else {
-        Box(
-            modifier = Modifier
-                .size(size)
-                .clip(RoundedCornerShape(size.value * 0.2f))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                imageVector = Icons.Filled.CloudDownload,
+        if (url.isNotBlank()) {
+            AsyncImage(
+                model = url,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                modifier = Modifier.size((size.value * 0.5f).dp),
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
             )
         }
     }

@@ -1,45 +1,68 @@
+/*
+ * Copyright 2026 Shadow
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package com.eclipselauncher
 
 import android.app.Application
-import android.content.Context
+import coil3.ImageLoader
+import coil3.PlatformContext
+import coil3.SingletonImageLoader
+import coil3.network.ktor3.KtorNetworkFetcherFactory
+import coil3.request.crossfade
 import com.eclipselauncher.data.AccountStore
 import com.eclipselauncher.data.InstanceStore
 import com.eclipselauncher.data.Logs
 import com.eclipselauncher.data.MediaStorage
+import com.eclipselauncher.data.MicrosoftAuth
+import com.eclipselauncher.data.ModrinthClient
+import com.eclipselauncher.data.NetworkClient
 import com.eclipselauncher.data.SettingsStore
 import com.eclipselauncher.data.TaskStore
 import com.eclipselauncher.data.VersionRepository
-import java.io.File
+import com.tencent.mmkv.MMKV
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.android.HiltAndroidApp
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.runBlocking
 
-class EclipseLauncherApplication : Application() {
-
-    lateinit var container: EclipseContainer
-        private set
+@HiltAndroidApp
+class EclipseLauncherApplication : Application(), SingletonImageLoader.Factory {
 
     override fun onCreate() {
         super.onCreate()
-        container = EclipseContainer(this)
-        // The stores are tiny JSON files; hydrate them before the first frame
-        // so the account/instance lists never flash stale data.
-        runBlocking {
-            container.accounts.load()
-            container.instances.load()
-            container.tasks.load()
-        }
+        MMKV.initialize(this)
+        val container = EntryPoints.get(this, EclipseContainer::class.java)
+        // Fail tasks interrupted by the previous process before the first frame.
+        runBlocking { container.tasks.load() }
     }
+
+    override fun newImageLoader(context: PlatformContext): ImageLoader =
+        ImageLoader.Builder(context)
+            .components {
+                add(KtorNetworkFetcherFactory())
+            }
+            .crossfade(true)
+            .build()
 }
 
-/** Process-wide dependency container; replaces the reference app's Hilt graph. */
-class EclipseContainer(context: Context) {
-    val media: MediaStorage = MediaStorage(context)
-    val accounts: AccountStore = AccountStore(File(context.filesDir, "accounts.json"))
-    val instances: InstanceStore = InstanceStore(File(context.filesDir, "instances.json"), media)
-    val settings: SettingsStore = SettingsStore(context)
-    val versions: VersionRepository = VersionRepository(File(context.cacheDir, "meta_cache"))
-    val logs: Logs = Logs(File(context.filesDir, "logs"))
-    val tasks: TaskStore = TaskStore(File(context.filesDir, "tasks.json"), logs)
+/** Hilt-provided dependency container: one instance for the whole process. */
+@EntryPoint
+@InstallIn(SingletonComponent::class)
+interface EclipseContainer {
+    val network: NetworkClient
+    val media: MediaStorage
+    val accounts: AccountStore
+    val instances: InstanceStore
+    val settings: SettingsStore
+    val versions: VersionRepository
+    val logs: Logs
+    val tasks: TaskStore
+    val auth: MicrosoftAuth
+    val modrinth: ModrinthClient
 
     /** Per-instance control maps; the editor picks files from here. */
-    val controlmapsDir: File = File(context.filesDir, "controlmaps").apply { mkdirs() }
+    val controlmapsDir: java.io.File
 }

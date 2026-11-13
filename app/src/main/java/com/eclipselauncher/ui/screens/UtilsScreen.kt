@@ -69,6 +69,7 @@ import kotlinx.coroutines.withContext
 import com.eclipselauncher.R
 import com.eclipselauncher.data.Logs
 import com.eclipselauncher.data.MediaStorage
+import com.eclipselauncher.data.ModrinthClient
 import com.eclipselauncher.ui.components.PreferenceRow
 import com.eclipselauncher.ui.components.SectionHeader
 
@@ -79,6 +80,7 @@ private enum class UtilsPage { MARKET, FILES, CONTENT, LOGS }
 fun UtilsScreen(
     logs: Logs,
     media: MediaStorage,
+    client: ModrinthClient,
     onBack: () -> Unit,
     onEditControls: () -> Unit,
 ) {
@@ -136,7 +138,7 @@ fun UtilsScreen(
                 title = stringResource(R.string.market_title),
                 onBack = { page = null },
             ) {
-                MarketPage()
+                MarketPage(client)
             }
 
             UtilsPage.FILES -> UtilsPageShell(
