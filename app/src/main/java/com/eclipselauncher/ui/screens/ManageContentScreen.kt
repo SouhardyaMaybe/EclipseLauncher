@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -75,7 +76,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.graphics.rotate
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
@@ -158,7 +158,7 @@ private fun ContentSegmentedControl(
     ) {
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(1f, fill = false)
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = { onTabSelected(0) },
@@ -183,7 +183,7 @@ private fun ContentSegmentedControl(
         }
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(1f, fill = false)
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = { onTabSelected(1) },
@@ -375,7 +375,7 @@ private fun InstalledContentRow(
             Spacer(modifier = Modifier.width(12.dp))
 
             // Content info
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
                 Text(text = content.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 Text(text = "v${content.version} · ${stringResource(content.type.labelRes)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
@@ -425,7 +425,7 @@ private fun BrowseContentRow(
             )
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            Column(modifier = Modifier.weight(1f, fill = false)) {
                 Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 Text(text = hit.author + " · " + formatDownloads(hit.downloads), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
                 if (hit.description.isNotBlank()) {
@@ -639,14 +639,14 @@ fun ManageContentScreen(
         ) {
             Row(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1f, fill = false)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedTextField(
                     value = browseQuery,
                     onValueChange = { browseQuery = it },
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.weight(1f, fill = false),
                     placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
                     singleLine = true,
                     leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.cd_search)) },
@@ -692,7 +692,7 @@ fun ManageContentScreen(
         }
 
         // Content list
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        Box(modifier = Modifier.weight(1f, fill = false).fillMaxWidth()) {
             when (mainTab) {
                 0 -> {
                     val filteredContent = installedContent.filter { it.type == installedContentType }
