@@ -608,9 +608,7 @@ fun ManageContentScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
         ) {
             Row(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 OutlinedTextField(
@@ -658,7 +656,7 @@ fun ManageContentScreen(
         }
 
         // Content list
-        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        Box(modifier = Modifier.fillMaxWidth()) {
             when (mainTab) {
                 0 -> {
                     val filteredContent = installedContent.filter { it.type == installedContentType }
