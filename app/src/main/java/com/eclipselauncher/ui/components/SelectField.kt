@@ -2,42 +2,35 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * Shared form pieces for the instance editor: the labelled select button
- * (label above, value or hint inside, opens a dialog on click), the
- * spinner-style row used for Java Runtime and Renderer, and the anchored
- * drop-down selector (bordered row + caret, menu with a check on the active
- * option) — matching the old EclipseLauncher's MojoSelectField / SpinnerField
- * behaviour where a dialog was the picker, and ZL2's dropdown where a menu
- * is.
+ * Shared form pieces for the instance editor. They are built from the
+ * standard Material 3 controls: an outlined button for a read-only picker,
+ * and ExposedDropdownMenuBox + OutlinedTextField for an anchored selector.
  */
 package com.eclipselauncher.ui.components
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
@@ -62,9 +55,8 @@ fun SelectField(
 }
 
 /**
- * The spinner row: a bordered, clickable row showing [value] (or [hint]
- * when blank), capped at two lines. Reference spinners carry no dropdown
- * arrow — the whole row is the click target.
+ * A read-only picker row: an outlined Material 3 button showing [value] (or
+ * [hint] when blank), capped at two lines.
  */
 @Composable
 fun SpinnerField(
@@ -72,17 +64,11 @@ fun SpinnerField(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-                shape = MaterialTheme.shapes.small,
-            )
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 12.dp),
     ) {
         Text(
             text = value,
@@ -93,6 +79,7 @@ fun SpinnerField(
             } else {
                 MaterialTheme.colorScheme.onSurface
             },
+            textAlign = TextAlign.Start,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
@@ -100,11 +87,9 @@ fun SpinnerField(
 }
 
 /**
- * The drop-down selector: label above a bordered row carrying the current
- * value with a trailing caret, and an anchored [DropdownMenu] under it that
- * lists every option with a trailing check on the active one. This is the
- * pick-one control the instance editor uses for control maps, runtime and
- * renderer — a real menu anchored to its field, not a centred dialog.
+ * The pick-one control the instance editor uses for control maps, runtime
+ * and renderer: a Material 3 exposed dropdown anchored to an outlined text
+ * field, with a check on the active option.
  */
 @Composable
 fun DropdownSelectField(
@@ -117,74 +102,54 @@ fun DropdownSelectField(
     modifier: Modifier = Modifier,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = it },
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        OutlinedTextField(
+            value = value.ifBlank { hint },
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth(),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            maxLines = 2,
         )
-        Spacer(modifier = Modifier.height(6.dp))
-        Box {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = 1.dp,
-                        color = MaterialTheme.colorScheme.outlineVariant,
-                        shape = MaterialTheme.shapes.small,
-                    )
-                    .clickable(role = Role.Button, onClick = { expanded = true })
-                    .padding(horizontal = 12.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = value.ifBlank { hint },
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = if (value.isBlank()) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+        ) {
+            options.forEachIndexed { index, option ->
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = option,
+                            style = MaterialTheme.typography.bodyMedium,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     },
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Icon(
-                    imageVector = Icons.Filled.ArrowDropDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                options.forEachIndexed { index, option ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = option,
-                                style = MaterialTheme.typography.bodyMedium,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
+                    trailingIcon = {
+                        if (index == selectedIndex) {
+                            Icon(
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(18.dp),
                             )
-                        },
-                        trailingIcon = {
-                            if (index == selectedIndex) {
-                                Icon(
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(18.dp),
-                                )
-                            }
-                        },
-                        onClick = {
-                            expanded = false
-                            onSelect(index)
-                        },
-                    )
-                }
+                        }
+                    },
+                    onClick = {
+                        expanded = false
+                        onSelect(index)
+                    },
+                )
             }
         }
     }
