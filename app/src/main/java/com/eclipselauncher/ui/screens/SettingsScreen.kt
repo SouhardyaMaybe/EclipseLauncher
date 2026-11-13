@@ -34,13 +34,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ColorLens
-import androidx.compose.material.icons.automirrored.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Cached
@@ -112,6 +113,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.semantics
 import androidx.core.content.ContextCompat
 import java.io.File
@@ -241,7 +243,7 @@ private fun SettingsRoot(
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
     val themeModes = listOf(SettingsStore.ThemeMode.DYNAMIC, SettingsStore.ThemeMode.DARK, SettingsStore.ThemeMode.LIGHT)
-    val selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
+    var selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(text = stringResource(R.string.settings_categories))
