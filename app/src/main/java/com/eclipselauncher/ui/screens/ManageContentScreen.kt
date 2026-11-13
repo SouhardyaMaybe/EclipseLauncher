@@ -35,24 +35,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Texture
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.Layers
-import androidx.compose.material.icons.filled.Opacity
-import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -60,7 +47,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -78,15 +64,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.launch
 import com.eclipselauncher.R
 import com.eclipselauncher.data.MetaResult
@@ -97,13 +83,13 @@ import com.eclipselauncher.data.ModrinthHit
  *  appear as small badges under each icon when selected. */
 private enum class ContentType(
     val labelRes: Int,
-    val icon: androidx.compose.ui.graphics.vector.ImageVector
+    val glyph: String
 ) {
-    MODS(R.string.content_type_mods, Icons.Filled.Layers),
-    RESOURCE_PACKS(R.string.content_type_resource_packs, Icons.Filled.Texture),
-    DATA_PACKS(R.string.content_type_data_packs, Icons.Filled.Description),
-    SHADERS(R.string.content_type_shaders, Icons.Filled.Opacity),
-    WORLDS(R.string.content_type_worlds, Icons.Filled.Public),
+    MODS(R.string.content_type_mods, "●"),
+    RESOURCE_PACKS(R.string.content_type_resource_packs, "■"),
+    DATA_PACKS(R.string.content_type_data_packs, "▲"),
+    SHADERS(R.string.content_type_shaders, "◆"),
+    WORLDS(R.string.content_type_worlds, "◆"),
 }
 
 /** Helper for ContentType project type mapping. */
@@ -144,7 +130,6 @@ private fun ContentSegmentedControl(
         stringResource(R.string.manage_content_installed),
         stringResource(R.string.manage_content_browse),
     )
-    val tabWidth = 140.dp
 
     Row(
         modifier = Modifier
@@ -153,8 +138,7 @@ private fun ContentSegmentedControl(
             .background(
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f),
-            )
-            ,
+            ),
     ) {
         Box(
             modifier = Modifier
@@ -209,7 +193,7 @@ private fun ContentSegmentedControl(
     }
 }
 
-/** Content type chip: icon only with small count badge. */
+/** Content type chip: glyph only with small count badge. */
 @Composable
 private fun ContentTypeChip(
     type: ContentType,
@@ -234,11 +218,10 @@ private fun ContentTypeChip(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Icon(
-                imageVector = type.icon,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = badgeColor,
+            Text(
+                text = type.glyph,
+                style = MaterialTheme.typography.bodyMedium,
+                color = badgeColor,
             )
             if (count > 0) {
                 Text(
@@ -273,18 +256,17 @@ private fun PageNavigationControl(
         contentAlignment = Alignment.Center,
     ) {
         if (collapsed) {
-            Icon(
-                Icons.Default.ArrowDropUp,
-                contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            Text(
+                text = "▲",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         } else {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
             ) {
-                IconButton(
+                TextButton(
                     onClick = onPreviousPage,
                     enabled = currentPage > 1,
                 ) {
@@ -301,7 +283,7 @@ private fun PageNavigationControl(
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-                IconButton(
+                TextButton(
                     onClick = onNextPage,
                     enabled = currentPage < totalPages,
                 ) {
@@ -318,9 +300,9 @@ private fun PageNavigationControl(
     }
 }
 
-/** Loads and caches a content icon via Coil. Falls back to a generic icon. */
+/** Loads and caches a content icon via Coil. Falls back to a text glyph. */
 @Composable
-private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.ui.graphics.vector.ImageVector, size: Dp = 40.dp) {
+private fun ContentIcon(url: String?, fallbackGlyph: String, size: Dp = 40.dp) {
     Box(
         modifier = Modifier
             .size(size)
@@ -328,7 +310,7 @@ private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.ui.graphics
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)),
         contentAlignment = Alignment.Center,
     ) {
-        if (url != null && url.isNotBlank()) {
+        if (url.isNotBlank()) {
             AsyncImage(
                 model = url,
                 contentDescription = null,
@@ -336,11 +318,10 @@ private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.ui.graphics
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,
             )
         } else {
-            Icon(
-                imageVector = fallbackIcon,
-                contentDescription = null,
-                modifier = Modifier.size((size.value * 0.6f).dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            Text(
+                text = fallbackGlyph,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
         }
     }
@@ -367,21 +348,21 @@ private fun InstalledContentRow(
             // Content icon via Coil
             ContentIcon(
                 url = content.iconUrl,
-                fallbackIcon = content.type.icon,
+                fallbackGlyph = content.type.glyph,
                 size = 48.dp,
             )
             Spacer(modifier = Modifier.width(12.dp))
 
             // Content info
-            Column(modifier = Modifier.weight(1f, fill = false)) {
-                Text(text = content.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = content.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(text = "v${content.version} · ${stringResource(content.type.labelRes)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             // Actions: Update/Degrade, Toggle, Delete
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                IconButton(onClick = onUpdate) {
-                    Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.manage_content_update), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
+                TextButton(onClick = onUpdate) {
+                    Text(text = "⟳", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Switch(
                     checked = content.enabled,
@@ -391,8 +372,8 @@ private fun InstalledContentRow(
                         checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
                 )
-                IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(24.dp))
+                TextButton(onClick = onDelete) {
+                    Text(text = "🗑", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
                 }
             }
         }
@@ -418,21 +399,21 @@ private fun BrowseContentRow(
             // Mod icon via Coil
             ContentIcon(
                 url = hit.icon_url,
-                fallbackIcon = Icons.Filled.Layers,
+                fallbackGlyph = "●",
                 size = 48.dp,
             )
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f, fill = false)) {
-                Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(text = hit.author + " · " + formatDownloads(hit.downloads), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
                 if (hit.description.isNotBlank()) {
                     Text(text = hit.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
                 }
             }
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = { /* open version dropdown */ }) {
-                Icon(Icons.Filled.CloudDownload, contentDescription = stringResource(R.string.manage_content_install), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
+            TextButton(onClick = { /* open version dropdown */ }) {
+                Text(text = "⬇", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -485,7 +466,6 @@ fun ManageContentScreen(
     val manageContentTitle = stringResource(R.string.manage_content_title)
     val manageContentImport = stringResource(R.string.manage_content_import)
     val manageContentImportStarted = stringResource(R.string.manage_content_import_started)
-    val cdBackStr = stringResource(R.string.cd_back)
     val providerComingSoonStr = stringResource(R.string.provider_coming_soon)
     val marketErrorStr = stringResource(R.string.market_error)
 
@@ -524,16 +504,12 @@ fun ManageContentScreen(
             title = { Text(manageContentTitle) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = cdBackStr)
+                    Text(text = "◀", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
             actions = {
                 IconButton(onClick = { importLauncher.launch(arrayOf("application/zip", "*/*")) }) {
-                    Icon(
-                        imageVector = Icons.Filled.FileDownload,
-                        contentDescription = manageContentImport,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    Text(text = "📦", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -550,7 +526,7 @@ fun ManageContentScreen(
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
 
-        // Sticky content type bar (icons + badges)
+        // Sticky content type bar (glyphs + badges)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -563,7 +539,7 @@ fun ManageContentScreen(
                 val count = if (mainTab == 0) {
                     installedContent.count { it.type == type }
                 } else {
-                    0 // Browse results are dynamic; show 0 badge until loaded
+                    0
                 }
                 ContentTypeChip(
                     type = type,
@@ -578,18 +554,16 @@ fun ManageContentScreen(
         }
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
 
-        // Collapse/Expand ^ button for options
+        // Collapse/Expand button for options
         Box(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
             contentAlignment = Alignment.CenterEnd,
         ) {
-            IconButton(
-                onClick = { optionsCollapsed = !optionsCollapsed },
-            ) {
-                Icon(
-                    if (optionsCollapsed) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            TextButton(onClick = { optionsCollapsed = !optionsCollapsed }) {
+                Text(
+                    text = if (optionsCollapsed) "▼" else "▲",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -643,13 +617,13 @@ fun ManageContentScreen(
                 OutlinedTextField(
                     value = browseQuery,
                     onValueChange = { browseQuery = it },
-                    modifier = Modifier.weight(1f, fill = false),
+                    modifier = Modifier.weight(1f),
                     placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
                     singleLine = true,
-                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.cd_search)) },
+                    leadingIcon = { Text(text = "🔍", style = MaterialTheme.typography.bodyMedium) },
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                IconButton(onClick = {
+                TextButton(onClick = {
                     scope.launch {
                         browseLoading = true
                         browseError = null
@@ -665,31 +639,27 @@ fun ManageContentScreen(
                         }
                     }
                 }) {
-                    Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.action_search), tint = MaterialTheme.colorScheme.secondary)
+                    Text(text = "🔍", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
                 }
             }
 
-            // Floating page navigation control (sticks to right side)
+            // Floating page navigation control
             PageNavigationControl(
                 currentPage = browsePage,
                 totalPages = browseTotalPages,
                 collapsed = pageNavCollapsed,
                 onCollapseToggle = { pageNavCollapsed = !pageNavCollapsed },
                 onPreviousPage = {
-                    if (browsePage > 1) {
-                        browsePage = browsePage - 1
-                    }
+                    if (browsePage > 1) browsePage = browsePage - 1
                 },
                 onNextPage = {
-                    if (browsePage < browseTotalPages) {
-                        browsePage = browsePage + 1
-                    }
+                    if (browsePage < browseTotalPages) browsePage = browsePage + 1
                 },
             )
         }
 
         // Content list
-        Box(modifier = Modifier.weight(1f, fill = false).fillMaxWidth()) {
+        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when (mainTab) {
                 0 -> {
                     val filteredContent = installedContent.filter { it.type == installedContentType }
@@ -730,7 +700,7 @@ fun ManageContentScreen(
                         browseError != null -> Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
-                        ) { Text(text = browseError.orEmpty(), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error) }
+                        ) { Text(text = browseError ?: "", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error) }
 
                         browseResults.isEmpty() -> Box(
                             modifier = Modifier.fillMaxSize(),
