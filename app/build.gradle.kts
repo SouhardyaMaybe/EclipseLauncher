@@ -147,9 +147,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
-    // Coil Image Loading - using version compatible with Compose 1.6.1
-    implementation("io.coil-kt:coil-compose:2.5.0")
-    implementation("io.coil-kt:coil-core:2.5.0")
+    // Coil Image Loading - disabled for now (version conflicts with Compose 1.6.1)
+    // implementation("io.coil-kt:coil-compose:2.6.0")
+    // implementation("io.coil-kt:coil-core:2.6.0")
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.2")
