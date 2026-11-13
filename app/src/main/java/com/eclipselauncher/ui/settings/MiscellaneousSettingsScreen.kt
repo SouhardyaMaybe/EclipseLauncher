@@ -135,12 +135,13 @@ fun MiscellaneousSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
 fun MiscellaneousSettingsScreenWithModals(viewModel: SettingsViewModel = viewModel()) {
     val showDownloadSourcePicker by viewModel.showDownloadSourcePicker.collectAsState()
     val showCurseForgeKeyEditor by viewModel.showCurseForgeKeyEditor.collectAsState()
+    val settings by viewModel.settings.collectAsState()
 
     MiscellaneousSettingsScreen(viewModel = viewModel)
 
     if (showDownloadSourcePicker) {
         DownloadSourcePickerModal(
-            currentSource = viewModel.settings.value.downloadSource,
+            currentSource = settings.downloadSource,
             onSourceSelect = { source -> viewModel.setDownloadSource(source) },
             onDismiss = { viewModel.dismissDownloadSourcePicker() }
         )
@@ -148,7 +149,7 @@ fun MiscellaneousSettingsScreenWithModals(viewModel: SettingsViewModel = viewMod
 
     if (showCurseForgeKeyEditor) {
         CurseForgeApiKeyEditorModal(
-            currentKey = viewModel.settings.value.curseforgeApiKey,
+            currentKey = settings.curseforgeApiKey,
             onSave = { key -> viewModel.setCurseforgeApiKey(key) },
             onClear = { viewModel.setCurseforgeApiKey("") },
             onDismiss = { viewModel.dismissCurseForgeKeyEditor() }

@@ -79,12 +79,13 @@ fun JavaTweaksSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
 @Composable
 fun JavaTweaksSettingsScreenWithModals(viewModel: SettingsViewModel = viewModel()) {
     val showJvmArgsEditor by viewModel.showJvmArgsEditor.collectAsState()
+    val settings by viewModel.settings.collectAsState()
 
     JavaTweaksSettingsScreen(viewModel = viewModel)
 
     if (showJvmArgsEditor) {
         JvmArgumentsEditorModal(
-            initialArgs = viewModel.settings.value.jvmArguments,
+            initialArgs = settings.jvmArguments,
             onSave = { args -> viewModel.setJvmArguments(args) },
             onDismiss = { viewModel.dismissJvmArgsEditor() }
         )

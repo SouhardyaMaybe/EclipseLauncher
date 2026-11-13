@@ -107,12 +107,13 @@ fun VideoRendererSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
 @Composable
 fun VideoRendererSettingsScreenWithModals(viewModel: SettingsViewModel = viewModel()) {
     val showRendererPicker by viewModel.showRendererPicker.collectAsState()
+    val settings by viewModel.settings.collectAsState()
 
     VideoRendererSettingsScreen(viewModel = viewModel)
 
     if (showRendererPicker) {
         RendererPickerModal(
-            currentRenderer = viewModel.settings.value.renderer,
+            currentRenderer = settings.renderer,
             onRendererSelect = { renderer -> viewModel.setRenderer(renderer) },
             onDismiss = { viewModel.dismissRendererPicker() }
         )
