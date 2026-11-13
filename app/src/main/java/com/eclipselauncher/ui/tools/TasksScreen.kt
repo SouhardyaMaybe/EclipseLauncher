@@ -212,7 +212,7 @@ fun TaskRow(
                     // Pause/Play
                     Icon(
                         imageVector = if (task.status == TaskInfo.TaskStatus.RUNNING) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (task.status == TaskInfo.TaskStatus.RUNNING) "Pause" : "Resume",
+                        contentDescription = if (task.status == TaskInfo.TaskStatus.RUNNING) "Pause" else "Resume",
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
                             .size(24.dp)
@@ -234,7 +234,7 @@ fun TaskRow(
                     // Expand
                     Icon(
                         imageVector = if (task.isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                        contentDescription = if (task.isExpanded) "Collapse" : "Expand",
+                        contentDescription = if (task.isExpanded) "Collapse" else "Expand",
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
                             .size(24.dp)

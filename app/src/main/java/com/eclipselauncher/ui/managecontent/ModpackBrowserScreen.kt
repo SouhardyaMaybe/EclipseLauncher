@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.FileDownload
@@ -76,7 +77,7 @@ fun ModpackBrowserScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
@@ -98,7 +99,7 @@ fun ModpackBrowserScreen(
                         onClick = { /* Import local .zip */ }
                     ) {
                         Icon(
-                            imageVector = Folder,
+                            imageVector = Icons.Default.Folder,
                             contentDescription = "Import modpack",
                             tint = EclipseColors.DarkOnSurface,
                             modifier = Modifier.size(24.dp).padding(12.dp)
