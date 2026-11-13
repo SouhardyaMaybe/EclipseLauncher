@@ -1,6 +1,7 @@
 package com.eclipselauncher.ui.settings.modals
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -85,8 +86,10 @@ fun CurseForgeApiKeyEditorModal(
                             singleLine = true,
                             colors = TextFieldDefaults.textFieldColors(
                                 containerColor = Color.Transparent,
-                                inputTextColor = EclipseColors.DarkOnSurface,
-                                placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                                focusedTextColor = EclipseColors.DarkOnSurface,
+                                unfocusedTextColor = EclipseColors.DarkOnSurface,
+                                focusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                                unfocusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                                 cursorColor = EclipseColors.DarkPrimary,
                                 focusedIndicatorColor = Color.Transparent,
                                 unfocusedIndicatorColor = Color.Transparent,
@@ -101,11 +104,11 @@ fun CurseForgeApiKeyEditorModal(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         color = EclipseColors.DarkPrimary,
+                        textAlign = TextAlign.Start,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        textAlign = TextAlign.Start,
-                        onClick = { onClear(); onDismiss() }
+                            .padding(vertical = 8.dp)
+                            .clickable { onClear(); onDismiss() }
                     )
                     
                     // Buttons

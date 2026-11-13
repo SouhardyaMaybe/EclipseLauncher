@@ -39,7 +39,7 @@ fun AppNavHost() {
             route = "create_instance/loader_picker/{version}",
             arguments = listOf(androidx.navigation.navArgument("version") { type = androidx.navigation.NavType.StringType })
         ) { backStackEntry ->
-            val version = backStackEntry.getString() ?: ""
+            val version = backStackEntry.arguments?.getString("version") ?: ""
             LoaderPickerScreen(onNavigate = { route ->
                 navController.navigate(route)
             })
@@ -49,7 +49,7 @@ fun AppNavHost() {
             route = "create_instance/editor/{instanceId}",
             arguments = listOf(androidx.navigation.navArgument("instanceId") { type = androidx.navigation.NavType.StringType })
         ) { backStackEntry ->
-            val instanceId = backStackEntry.getString()
+            val instanceId = backStackEntry.arguments?.getString("instanceId")
             InstanceEditorScreen(onNavigate = { route ->
                 navController.navigate(route)
             })

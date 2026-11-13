@@ -21,7 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -74,8 +74,10 @@ fun CreateLocalAccountDialog(
                     singleLine = true,
                     colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
-                        inputTextColor = EclipseColors.DarkOnSurface,
-                        placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                        focusedTextColor = EclipseColors.DarkOnSurface,
+                        unfocusedTextColor = EclipseColors.DarkOnSurface,
+                        focusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                        unfocusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                         cursorColor = EclipseColors.DarkPrimary,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,

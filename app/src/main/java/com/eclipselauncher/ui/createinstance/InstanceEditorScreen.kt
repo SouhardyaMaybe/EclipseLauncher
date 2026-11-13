@@ -2,6 +2,7 @@ package com.eclipselauncher.ui.createinstance
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,7 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -36,7 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.R
 import com.eclipselauncher.model.Instance
@@ -49,17 +51,17 @@ fun InstanceEditorScreen(
     viewModel: CreateInstanceViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val isEditingExisting by viewModel.isEditingExisting.collectAsStateWithLifecycle()
-    val hasChanges by viewModel.hasChanges.collectAsStateWithLifecycle()
-    val instanceName by viewModel.instanceName.collectAsStateWithLifecycle()
-    val controlMap by viewModel.controlMap.collectAsStateWithLifecycle()
-    val sharedData by viewModel.sharedData.collectAsStateWithLifecycle()
-    val jvmArguments by viewModel.jvmArguments.collectAsStateWithLifecycle()
-    val javaRuntime by viewModel.javaRuntime.collectAsStateWithLifecycle()
-    val renderer by viewModel.renderer.collectAsStateWithLifecycle()
-    val customIconPath by viewModel.customIconPath.collectAsStateWithLifecycle()
-    val selectedVersion by viewModel.selectedVersion.collectAsStateWithLifecycle()
-    val selectedLoader by viewModel.selectedLoader.collectAsStateWithLifecycle()
+    val isEditingExisting by viewModel.isEditingExisting.collectAsState()
+    val hasChanges by viewModel.hasChanges.collectAsState()
+    val instanceName by viewModel.instanceName.collectAsState()
+    val controlMap by viewModel.controlMap.collectAsState()
+    val sharedData by viewModel.sharedData.collectAsState()
+    val jvmArguments by viewModel.jvmArguments.collectAsState()
+    val javaRuntime by viewModel.javaRuntime.collectAsState()
+    val renderer by viewModel.renderer.collectAsState()
+    val customIconPath by viewModel.customIconPath.collectAsState()
+    val selectedVersion by viewModel.selectedVersion.collectAsState()
+    val selectedLoader by viewModel.selectedLoader.collectAsState()
 
     var nameText by remember { mutableStateOf(instanceName) }
     var jvmArgsText by remember { mutableStateOf(jvmArguments) }
@@ -95,8 +97,8 @@ fun InstanceEditorScreen(
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
                             .size(48.dp)
-                            .fillMaxWidth(),
-                        onClick = { onNavigate("create_instance/loader_picker/${selectedVersion?.id ?: ""}") }
+                            .fillMaxWidth()
+                            .clickable { onNavigate("create_instance/loader_picker/${selectedVersion?.id ?: ""}") }
                     )
                     Text(
                         text = "Edit instance",
@@ -153,12 +155,14 @@ fun InstanceEditorScreen(
                             modifier = Modifier.size(48.dp),
                             shape = RoundedCornerShape(12.dp),
                             color = if (hasChanges || nameText.isNotBlank()) EclipseColors.DarkPrimary else EclipseColors.DarkSurfaceVariant,
-                            onClick = if (hasChanges || nameText.isNotBlank()) {
-                                viewModel.updateInstanceName(nameText)
-                                viewModel.updateJvmArguments(jvmArgsText)
-                                val instance = viewModel.createInstance()
-                                onNavigate("home")
-                            } else null
+                            onClick = {
+                                if (hasChanges || nameText.isNotBlank()) {
+                                    viewModel.updateInstanceName(nameText)
+                                    viewModel.updateJvmArguments(jvmArgsText)
+                                    viewModel.createInstance()
+                                    onNavigate("home")
+                                }
+                            }
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Check,
@@ -385,9 +389,10 @@ fun EditorField(
                 singleLine = true,
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = EclipseColors.DarkSurface,
-                    focusedContainerColor = EclipseColors.DarkSurface,
-                    inputTextColor = EclipseColors.DarkOnSurface,
-                    placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                    focusedTextColor = EclipseColors.DarkOnSurface,
+                    unfocusedTextColor = EclipseColors.DarkOnSurface,
+                    focusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                    unfocusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                     cursorColor = EclipseColors.DarkPrimary,
                     focusedIndicatorColor = EclipseColors.DarkPrimary,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -528,9 +533,10 @@ fun EditorTextField(
                 maxLines = if (multiline) 5 else 1,
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = EclipseColors.DarkSurface,
-                    focusedContainerColor = EclipseColors.DarkSurface,
-                    inputTextColor = EclipseColors.DarkOnSurface,
-                    placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                    focusedTextColor = EclipseColors.DarkOnSurface,
+                    unfocusedTextColor = EclipseColors.DarkOnSurface,
+                    focusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                    unfocusedPlaceholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                     cursorColor = EclipseColors.DarkPrimary,
                     focusedIndicatorColor = EclipseColors.DarkPrimary,
                     unfocusedIndicatorColor = Color.Transparent,

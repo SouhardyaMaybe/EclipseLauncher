@@ -1,5 +1,6 @@
 package com.eclipselauncher.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -31,7 +32,6 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = EclipseColors.DarkOnSurfaceVariant,
     outline = EclipseColors.DarkOutlineVariant,
     outlineVariant = EclipseColors.DarkOutlineVariant,
-    shadow = Color.Black,
     scrim = EclipseColors.DarkScrim,
     inverseSurface = EclipseColors.LightSurface,
     inverseOnSurface = EclipseColors.LightOnSurface,
@@ -63,7 +63,6 @@ private val LightColorScheme = lightColorScheme(
     onSurfaceVariant = EclipseColors.LightOnSurfaceVariant,
     outline = EclipseColors.LightOutlineVariant,
     outlineVariant = EclipseColors.LightOutlineVariant,
-    shadow = Color.Black,
     scrim = EclipseColors.LightScrim,
     inverseSurface = EclipseColors.DarkSurface,
     inverseOnSurface = EclipseColors.DarkOnSurface,
@@ -72,7 +71,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun EclipseLauncherTheme(
-    darkTheme: Boolean = androidx.compose.material3.isSystemInDarkTheme(),
+    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
@@ -84,8 +83,5 @@ fun EclipseLauncherTheme(
 }
 
 // Extension for easy access to Eclipse-specific colors
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
-
 val MaterialTheme.eclipseColors: EclipseColors
     get() = EclipseColors

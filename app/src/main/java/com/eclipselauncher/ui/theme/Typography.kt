@@ -1,12 +1,12 @@
 package com.eclipselauncher.ui.theme
 
 import androidx.compose.material3.Typography
-import androidx.compose.material3.TextStyle
-import androidx.compose.ui.res.font
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.eclipselauncher.R
 
 // Font families
 val GeistFontFamily = FontFamily(

@@ -1,6 +1,7 @@
 package com.eclipselauncher.ui.tools
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,7 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.overflow.TextOverflow
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -38,7 +39,7 @@ fun FileManagerScreen(
     onNavigate: (String) -> Unit
 ) {
     var currentPath by remember { mutableStateOf("/") }
-    var entries by remember { mutableStateOf<List<FileEntry>>(getMockEntries("/")) }
+    var entries by remember { mutableStateOf(mockEntries("/")) }
 
     EclipseLauncherTheme {
         Surface(
@@ -59,7 +60,7 @@ fun FileManagerScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, top = 8.dp, bottom = 16.dp),
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp),
                     contentAlignment = Alignment.TopStart
                 ) {
                     Row(
@@ -72,8 +73,8 @@ fun FileManagerScreen(
                             contentDescription = "Back",
                             tint = EclipseColors.DarkPrimary,
                             modifier = Modifier
-                                .size(48.dp),
-                            onClick = { onNavigate("tools") }
+                                .size(48.dp)
+                                .clickable { onNavigate("tools") }
                         )
                         Text(
                             text = "File manager",
@@ -91,7 +92,18 @@ fun FileManagerScreen(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(12.dp),
                     color = EclipseColors.DarkSurfaceVariant,
-                    onClick = { if (currentPath != "/") navigateUp() }
+                    onClick = {
+                        if (currentPath != "/") {
+                            val parts = currentPath.split("/").filter { it.isNotBlank() }.toMutableList()
+                            if (parts.size > 1) {
+                                parts.removeAt(parts.lastIndex)
+                                currentPath = "/" + parts.joinToString("/")
+                            } else {
+                                currentPath = "/"
+                            }
+                            entries = mockEntries(currentPath)
+                        }
+                    }
                 ) {
                     Row(
                         modifier = Modifier
@@ -137,7 +149,7 @@ fun FileManagerScreen(
                                 onClick = { 
                                     if (entry.isDirectory) {
                                         currentPath = if (currentPath == "/") "/${entry.name}" else "$currentPath/${entry.name}"
-                                        entries = getMockEntries(currentPath)
+                                        entries = mockEntries(currentPath)
                                     }
                                 },
                                 onDeleteClick = { /* Delete confirmation */ }
@@ -149,35 +161,25 @@ fun FileManagerScreen(
         }
     }
 
-    private fun navigateUp() {
-        val parts = currentPath.split("/").filter { it.isNotBlank() }
-        if (parts.size > 1) {
-            parts.removeLast()
-            currentPath = "/" + parts.joinToString("/")
-        } else {
-            currentPath = "/"
-        }
-        entries = getMockEntries(currentPath)
-    }
+}
 
-    private fun getMockEntries(path: String): List<FileEntry> {
-        return when (path) {
-            "/" -> listOf(
-                FileEntry("minecraft", true, 0),
-                FileEntry("logs", true, 0),
-                FileEntry("media", true, 0),
-                FileEntry("modpacks", true, 0),
-                FileEntry("settings.json", false, 2150),
-                FileEntry("last-run.txt", false, 640)
-            )
-            "/skins" -> listOf(
-                FileEntry("capes", true, 0),
-                FileEntry("classic", true, 0),
-                FileEntry("steve.png", false, 12697),
-                FileEntry("alex.png", false, 8908)
-            )
-            else -> listOf()
-        }
+private fun mockEntries(path: String): List<FileEntry> {
+    return when (path) {
+        "/" -> listOf(
+            FileEntry("minecraft", true, 0),
+            FileEntry("logs", true, 0),
+            FileEntry("media", true, 0),
+            FileEntry("modpacks", true, 0),
+            FileEntry("settings.json", false, 2150),
+            FileEntry("last-run.txt", false, 640)
+        )
+        "/skins" -> listOf(
+            FileEntry("capes", true, 0),
+            FileEntry("classic", true, 0),
+            FileEntry("steve.png", false, 12697),
+            FileEntry("alex.png", false, 8908)
+        )
+        else -> listOf()
     }
 }
 
@@ -202,7 +204,7 @@ fun FileEntryRow(
             .padding(horizontal = 4.dp),
         shape = RoundedCornerShape(12.dp),
         color = EclipseColors.DarkSurface,
-        onClick = if (entry.isDirectory) onClick else null
+        onClick = { if (entry.isDirectory) onClick() }
     ) {
         Row(
             modifier = Modifier
@@ -245,8 +247,8 @@ fun FileEntryRow(
                 tint = EclipseColors.DarkError,
                 modifier = Modifier
                     .size(24.dp)
-                    .padding(8.dp),
-                onClick = onDeleteClick
+                    .padding(8.dp)
+                    .clickable { onDeleteClick() }
             )
         }
     }

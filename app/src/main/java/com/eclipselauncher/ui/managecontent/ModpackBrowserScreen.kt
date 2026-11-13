@@ -2,12 +2,14 @@ package com.eclipselauncher.ui.managecontent
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,9 +19,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filed.Folder
-import androidx.compose.material.icons.filed.FileDownload
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -41,11 +44,11 @@ fun ModpackBrowserScreen(
     viewModel: ManageContentViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val browseProvider by viewModel.browseProvider.collectAsStateWithLifecycle()
-    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
-    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-    val searchError by viewModel.searchError.collectAsStateWithLifecycle()
+    val browseProvider by viewModel.browseProvider.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
+    val searchResults by viewModel.searchResults.collectAsState()
+    val searchError by viewModel.searchError.collectAsState()
 
     var searchText by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
 
@@ -78,8 +81,8 @@ fun ModpackBrowserScreen(
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
                             .size(48.dp)
-                            .fillMaxWidth(),
-                        onClick = { onNavigate("home") }
+                            .fillMaxWidth()
+                            .clickable { onNavigate("home") }
                     )
                     Text(
                         text = "Modpack Browser",
@@ -131,7 +134,7 @@ fun ModpackBrowserScreen(
                         )
                     } else if (searchError != null) {
                         Text(
-                            text = searchError,
+                            text = searchError.orEmpty(),
                             fontSize = 14.sp,
                             color = EclipseColors.DarkError,
                             modifier = Modifier.padding(top = 32.dp)

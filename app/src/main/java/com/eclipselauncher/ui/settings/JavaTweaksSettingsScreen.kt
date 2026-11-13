@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.math.roundToInt
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.ui.settings.components.SettingsRow
 import com.eclipselauncher.ui.settings.components.SettingsSliderRow
@@ -19,7 +22,7 @@ import com.eclipselauncher.ui.theme.EclipseColors
 
 @Composable
 fun JavaTweaksSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsState()
 
     Column(
         modifier = Modifier
@@ -32,7 +35,7 @@ fun JavaTweaksSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = EclipseColors.DarkOnSurface,
-            modifier = Modifier.padding(horizontal = 4.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp)
         )
 
         // Runtime Manager
@@ -75,7 +78,7 @@ fun JavaTweaksSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
 
 @Composable
 fun JavaTweaksSettingsScreenWithModals(viewModel: SettingsViewModel = viewModel()) {
-    val showJvmArgsEditor by viewModel.showJvmArgsEditor.collectAsStateWithLifecycle()
+    val showJvmArgsEditor by viewModel.showJvmArgsEditor.collectAsState()
 
     JavaTweaksSettingsScreen(viewModel = viewModel)
 

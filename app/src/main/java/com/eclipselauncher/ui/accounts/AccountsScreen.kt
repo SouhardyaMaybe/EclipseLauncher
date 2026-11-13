@@ -1,6 +1,7 @@
 package com.eclipselauncher.ui.accounts
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,12 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.model.Account
 import com.eclipselauncher.ui.accounts.components.CreateLocalAccountDialog
@@ -42,11 +44,11 @@ fun AccountsScreen(
     viewModel: AccountsViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
-    val signInState by viewModel.signInState.collectAsStateWithLifecycle()
-    val showCreateLocalDialog by viewModel.showCreateLocalDialog.collectAsStateWithLifecycle()
-    val showSkinAndCape by viewModel.showSkinAndCape.collectAsStateWithLifecycle()
-    val showDeleteDialog by viewModel.showDeleteDialog.collectAsStateWithLifecycle()
+    val accounts by viewModel.accounts.collectAsState()
+    val signInState by viewModel.signInState.collectAsState()
+    val showCreateLocalDialog by viewModel.showCreateLocalDialog.collectAsState()
+    val showSkinAndCape by viewModel.showSkinAndCape.collectAsState()
+    val showDeleteDialog by viewModel.showDeleteDialog.collectAsState()
 
     EclipseLauncherTheme {
         Surface(
@@ -79,8 +81,8 @@ fun AccountsScreen(
                             tint = EclipseColors.DarkOnSurface,
                             modifier = Modifier
                                 .size(48.dp)
-                                .fillMaxWidth(),
-                            onClick = { onNavigate("home") }
+                                .fillMaxWidth()
+                                .clickable { onNavigate("home") }
                         )
                         Text(
                             text = "Accounts",
@@ -161,7 +163,7 @@ fun AccountsScreen(
                         }
 
                         // Account list
-                        if (accounts.value.isEmpty()) {
+                        if (accounts.isEmpty()) {
                             Text(
                                 text = "No account Here",
                                 fontSize = 16.sp,
@@ -178,7 +180,7 @@ fun AccountsScreen(
                                     .padding(top = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                accounts.value.forEach { account ->
+                                accounts.forEach { account ->
                                     AccountRow(
                                         account = account,
                                         onClick = { viewModel.selectAccount(account) },
@@ -208,7 +210,6 @@ fun AccountsScreen(
                 // Skin and Cape screen (overlay)
                 if (showSkinAndCape) {
                     SkinAndCapeScreen(
-                        viewModel = viewModel,
                         onNavigate = { route ->
                             if (route == "accounts") {
                                 viewModel.dismissSkinAndCape()
@@ -306,12 +307,12 @@ fun AccountRow(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = account.displayName,
+                    text = account.username,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = EclipseColors.DarkOnSurface
                 )
-                if (account.type == Account.AccountType.Microsoft) {
+                if (account.type == Account.AccountType.MICROSOFT) {
                     Text(
                         text = "Microsoft Account",
                         fontSize = 12.sp,

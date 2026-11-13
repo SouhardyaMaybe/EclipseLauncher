@@ -1,6 +1,7 @@
 package com.eclipselauncher.ui.settings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,12 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.ui.navigation.NavigationDestination
 import com.eclipselauncher.ui.theme.EclipseColors
@@ -36,8 +40,9 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
-    val currentCategory by viewModel.currentCategory.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsState()
+    val currentCategory by viewModel.currentCategory.collectAsState()
+    val category = currentCategory
 
     EclipseLauncherTheme {
         Surface(
@@ -72,8 +77,8 @@ fun SettingsScreen(
                                     tint = EclipseColors.DarkOnSurface,
                                     modifier = Modifier
                                         .size(48.dp)
-                                        .fillMaxWidth(),
-                                    onClick = { viewModel.goBack() }
+                                        .fillMaxWidth()
+                                        .clickable { viewModel.goBack() }
                                 )
                                 Text(
                                     text = currentCategory?.name ?: "",
@@ -82,7 +87,7 @@ fun SettingsScreen(
                                     color = EclipseColors.DarkOnSurface,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, bottom = 8.dp)
+                                        .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                                 )
                             }
                             
@@ -93,7 +98,7 @@ fun SettingsScreen(
                                 color = EclipseColors.DarkPrimary,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, bottom = 8.dp)
+                                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                             )
                         }
                     } else {
@@ -111,8 +116,8 @@ fun SettingsScreen(
                                 tint = EclipseColors.DarkOnSurface,
                                 modifier = Modifier
                                     .size(48.dp)
-                                    .fillMaxWidth(),
-                                onClick = { onNavigate("home") }
+                                    .fillMaxWidth()
+                                    .clickable { onNavigate("home") }
                             )
                             Text(
                                 text = "Settings",
@@ -125,10 +130,10 @@ fun SettingsScreen(
                     }
 
                     // Content
-                    if (currentCategory == null) {
+                    if (category == null) {
                         SettingsCategoriesList(viewModel = viewModel, onNavigate = onNavigate)
                     } else {
-                        when (currentCategory) {
+                        when (category) {
                             SettingsViewModel.SettingsCategory.VIDEO_RENDERER -> 
                                 VideoRendererSettingsScreenWithModals(viewModel = viewModel)
                             SettingsViewModel.SettingsCategory.CONTROL_CUSTOMIZATION -> 
@@ -152,7 +157,7 @@ fun SettingsCategoriesList(
     viewModel: SettingsViewModel,
     onNavigate: (String) -> Unit
 ) {
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsState()
     
     Column(
         modifier = Modifier
@@ -165,7 +170,7 @@ fun SettingsCategoriesList(
             text = "Categories",
             fontSize = 14.sp,
             color = EclipseColors.DarkOnSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 4.dp, bottom = 4.dp)
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 4.dp)
         )
 
         // Category cards

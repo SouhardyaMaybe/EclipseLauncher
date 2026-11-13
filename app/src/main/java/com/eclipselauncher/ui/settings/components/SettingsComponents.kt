@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Slider
@@ -141,7 +140,7 @@ fun SettingsSliderRow(
     title: String,
     subtitle: String,
     value: Float,
-    range: androidx.compose.ui.unit.FloatRange,
+    range: ClosedFloatingPointRange<Float>,
     steps: Int,
     onValueChange: (Float) -> Unit
 ) {
@@ -198,7 +197,7 @@ fun SettingsSliderRow(
                 Slider(
                     value = value,
                     onValueChange = onValueChange,
-                    range = range,
+                    valueRange = range,
                     steps = steps,
                     colors = androidx.compose.material3.SliderDefaults.colors(
                         activeTrackColor = EclipseColors.DarkPrimary,

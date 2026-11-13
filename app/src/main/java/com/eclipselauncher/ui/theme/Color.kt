@@ -47,6 +47,8 @@ object EclipseColors {
     val LightOnSecondary = Color(0xFF1C1D1D)
     val LightSecondaryContainer = Color(0xFFE8F5E9)
     val LightOnSecondaryContainer = Color(0xFF1C1D1D)
+    val LightOnTertiary = Color(0xFF1C1D1D)
+    val LightOnTertiaryContainer = Color(0xFF1C1D1D)
 
     val LightError = Color(0xFFC93636)
     val LightOnError = Color(0xFFFFFFFF)

@@ -97,6 +97,14 @@ class HomeViewModel : ViewModel() {
         _showInstanceSwitcher.value = !_showInstanceSwitcher.value
     }
 
+    fun dismissAccountSwitcher() {
+        _showAccountSwitcher.value = false
+    }
+
+    fun dismissInstanceSwitcher() {
+        _showInstanceSwitcher.value = false
+    }
+
     fun onPlayClick() {
         if (selectedAccount.value == null) {
             _showPlayBlockedDialog.value = true

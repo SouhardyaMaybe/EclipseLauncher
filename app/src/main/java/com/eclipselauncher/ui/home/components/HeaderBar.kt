@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,7 +30,7 @@ fun HeaderBar(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, top = 12.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -38,7 +40,7 @@ fun HeaderBar(
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = EclipseColors.DarkPrimary,
-            fontFamily = EclipseLauncherTheme.typography.titleLarge.fontFamily
+            fontFamily = MaterialTheme.typography.titleLarge.fontFamily
         )
 
         // Action icons - folder, document, task list, gear

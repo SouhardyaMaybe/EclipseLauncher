@@ -1,19 +1,21 @@
 package com.eclipselauncher.ui.home.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Divider
+import androidx.compose.material3.Divider
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,7 +50,7 @@ fun AccountSwitcherPopup(
             .height(340.dp),
         shape = RoundedCornerShape(24.dp),
         color = EclipseColors.DarkSurface,
-        elevation = 8.dp
+        shadowElevation = 8.dp
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -62,7 +64,7 @@ fun AccountSwitcherPopup(
                 color = EclipseColors.DarkOnSurface,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, top = 20.dp, bottom = 12.dp)
+                    .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 12.dp)
             )
 
             // Account list

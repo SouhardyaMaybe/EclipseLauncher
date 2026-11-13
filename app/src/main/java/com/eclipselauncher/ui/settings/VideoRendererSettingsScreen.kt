@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlin.math.roundToInt
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.ui.settings.components.SettingsRow
 import com.eclipselauncher.ui.settings.components.SettingsSliderRow
@@ -19,8 +22,8 @@ import com.eclipselauncher.ui.theme.EclipseColors
 
 @Composable
 fun VideoRendererSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
-    val settings by viewModel.settings.collectAsStateWithLifecycle()
-    val showRendererPicker by viewModel.showRendererPicker.collectAsStateWithLifecycle()
+    val settings by viewModel.settings.collectAsState()
+    val showRendererPicker by viewModel.showRendererPicker.collectAsState()
 
     Column(
         modifier = Modifier
@@ -33,7 +36,7 @@ fun VideoRendererSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = EclipseColors.DarkOnSurface,
-            modifier = Modifier.padding(horizontal = 4.dp, bottom = 8.dp)
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp)
         )
 
         // Renderer
@@ -103,7 +106,7 @@ fun VideoRendererSettingsScreen(viewModel: SettingsViewModel = viewModel()) {
 
 @Composable
 fun VideoRendererSettingsScreenWithModals(viewModel: SettingsViewModel = viewModel()) {
-    val showRendererPicker by viewModel.showRendererPicker.collectAsStateWithLifecycle()
+    val showRendererPicker by viewModel.showRendererPicker.collectAsState()
 
     VideoRendererSettingsScreen(viewModel = viewModel)
 

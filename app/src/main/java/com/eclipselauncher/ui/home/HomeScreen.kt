@@ -21,7 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.model.Account
 import com.eclipselauncher.model.Instance
@@ -40,17 +40,14 @@ fun HomeScreen(
     viewModel: HomeViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val accounts by viewModel.accounts.collectAsStateWithLifecycle()
-    val selectedAccount by viewModel.selectedAccount.collectAsStateWithLifecycle()
-    val instances by viewModel.instances.collectAsStateWithLifecycle()
-    val selectedInstance by viewModel.selectedInstance.collectAsStateWithLifecycle()
-    val showAccountSwitcher by viewModel.showAccountSwitcher.collectAsStateWithLifecycle()
-    val showInstanceSwitcher by viewModel.showInstanceSwitcher.collectAsStateWithLifecycle()
-    val showPlayBlockedDialog by viewModel.showPlayBlockedDialog.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-
-    var accountSwitcherAnchor, setAccountSwitcherAnchor = mutableStateOf<LayoutCoordinates?>(null)
-    var instanceSwitcherAnchor, setInstanceSwitcherAnchor = mutableStateOf<LayoutCoordinates?>(null)
+    val accounts by viewModel.accounts.collectAsState()
+    val selectedAccount by viewModel.selectedAccount.collectAsState()
+    val instances by viewModel.instances.collectAsState()
+    val selectedInstance by viewModel.selectedInstance.collectAsState()
+    val showAccountSwitcher by viewModel.showAccountSwitcher.collectAsState()
+    val showInstanceSwitcher by viewModel.showInstanceSwitcher.collectAsState()
+    val showPlayBlockedDialog by viewModel.showPlayBlockedDialog.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     EclipseLauncherTheme {
         Surface(
@@ -102,9 +99,9 @@ fun HomeScreen(
                         InstancePanel(
                             instance = selectedInstance,
                             onInstanceClick = { viewModel.toggleInstanceSwitcher() },
-                            onEditClick = { 
-                                if (selectedInstance != null) {
-                                    onNavigate("create_instance/editor/${selectedInstance.id}")
+                            onEditClick = {
+                                selectedInstance?.let { instance ->
+                                    onNavigate("create_instance/editor/${instance.id}")
                                 }
                             },
                             onSwitcherClick = { viewModel.toggleInstanceSwitcher() }
@@ -127,7 +124,7 @@ fun HomeScreen(
                             viewModel.selectAccount(account)
                         },
                         onAddAccount = { onNavigate("accounts") },
-                        onDismiss = { viewModel.showAccountSwitcher.value = false }
+                        onDismiss = { viewModel.dismissAccountSwitcher() }
                     )
                 }
 
@@ -140,7 +137,7 @@ fun HomeScreen(
                             viewModel.selectInstance(instance)
                         },
                         onCreateInstance = { onNavigate("create_instance") },
-                        onDismiss = { viewModel.showInstanceSwitcher.value = false }
+                        onDismiss = { viewModel.dismissInstanceSwitcher() }
                     )
                 }
 

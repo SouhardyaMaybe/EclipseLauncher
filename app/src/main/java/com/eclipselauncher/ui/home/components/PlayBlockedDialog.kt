@@ -30,7 +30,7 @@ fun PlayBlockedDialog(
             .padding(horizontal = 40.dp),
         shape = RoundedCornerShape(16.dp),
         color = EclipseColors.DarkSurface,
-        elevation = 16.dp
+        shadowElevation = 16.dp
     ) {
         Column(
             modifier = Modifier.padding(24.dp),

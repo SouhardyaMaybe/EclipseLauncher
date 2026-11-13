@@ -1,19 +1,22 @@
 package com.eclipselauncher.ui.managecontent
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Divider
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material3.Divider
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,7 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.model.ModInfo
 import com.eclipselauncher.ui.managecontent.components.InstalledContentList
@@ -43,14 +46,14 @@ fun ManageContentScreen(
     viewModel: ManageContentViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val currentTab by viewModel.currentTab.collectAsStateWithLifecycle()
-    val installedType by viewModel.installedType.collectAsStateWithLifecycle()
-    val browseType by viewModel.browseType.collectAsStateWithLifecycle()
-    val browseProvider by viewModel.browseProvider.collectAsStateWithLifecycle()
-    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
-    val isSearching by viewModel.isSearching.collectAsStateWithLifecycle()
-    val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
-    val searchError by viewModel.searchError.collectAsStateWithLifecycle()
+    val currentTab by viewModel.currentTab.collectAsState()
+    val installedType by viewModel.installedType.collectAsState()
+    val browseType by viewModel.browseType.collectAsState()
+    val browseProvider by viewModel.browseProvider.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
+    val searchResults by viewModel.searchResults.collectAsState()
+    val searchError by viewModel.searchError.collectAsState()
 
     var searchText by remember { mutableStateOf("") }
 
@@ -83,8 +86,8 @@ fun ManageContentScreen(
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
                             .size(48.dp)
-                            .fillMaxWidth(),
-                        onClick = { onNavigate("home") }
+                            .fillMaxWidth()
+                            .clickable { onNavigate("home") }
                     )
                     Text(
                         text = "Manage Content",
@@ -204,7 +207,7 @@ fun TabButton(
 }
 
 @Composable
-fun InstalledContentSection(
+fun ColumnScope.InstalledContentSection(
     viewModel: ManageContentViewModel,
     installedType: ManageContentViewModel.ContentType,
     onTypeSelect: (ManageContentViewModel.ContentType) -> Unit

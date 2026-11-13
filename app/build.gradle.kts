@@ -43,13 +43,11 @@ android {
     kotlinOptions {
         jvmTarget = "17"
         freeCompilerArgs += listOf(
-            "-Xopt-in=kotlin.RequiresOptIn",
-            "-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-            "-Xopt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-            "-Xopt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-            "-Xopt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-            "-Xopt-in=androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi",
-            "-Xopt-in=androidx.compose.material3.adaptive.navigation.suite.ExperimentalMaterial3AdaptiveNavigationSuiteApi"
+            "-opt-in=kotlin.RequiresOptIn",
+            "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+            "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi"
         )
     }
 
@@ -59,10 +57,6 @@ android {
         dataBinding = false
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
-    }
-
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE,LICENSE.txt,NOTICE,NOTICE.txt}"
@@ -70,66 +64,16 @@ android {
     }
 }
 
-// Force Compose 1.6.1 and prevent transitive deps from pulling newer versions
-configurations.all {
-    resolutionStrategy {
-        // Fail on version conflicts to see what's happening
-        failOnVersionConflict()
-        
-        // Strictly enforce Compose 1.6.1 versions
-        strictly("androidx.compose:compose-compiler:1.6.1")
-        strictly("androidx.compose.foundation:foundation:1.6.1")
-        strictly("androidx.compose.foundation:foundation-layout:1.6.1")
-        strictly("androidx.compose.foundation:foundation-text:1.6.1")
-        strictly("androidx.compose.ui:ui:1.6.1")
-        strictly("androidx.compose.ui:ui-graphics:1.6.1")
-        strictly("androidx.compose.ui:ui-text:1.6.1")
-        strictly("androidx.compose.ui:ui-unit:1.6.1")
-        strictly("androidx.compose.ui:ui-util:1.6.1")
-        strictly("androidx.compose.animation:animation:1.6.1")
-        strictly("androidx.compose.animation:animation-core:1.6.1")
-        strictly("androidx.compose.animation:animation-graphics:1.6.1")
-        strictly("androidx.compose.runtime:runtime:1.6.1")
-        strictly("androidx.compose.runtime:runtime-livedata:1.6.1")
-        strictly("androidx.compose.runtime:runtime-rxjava3:1.6.1")
-        strictly("androidx.compose.runtime:runtime-saveable:1.6.1")
-        strictly("androidx.compose.material:material:1.6.1")
-        strictly("androidx.compose.material:material-icons-core:1.6.1")
-        strictly("androidx.compose.material:material-icons-extended:1.6.1")
-        strictly("androidx.compose.material:material-ripple:1.6.1")
-        strictly("androidx.compose.ui:ui-geometry:1.6.1")
-        strictly("androidx.compose.ui:ui-test:1.6.1")
-        strictly("androidx.compose.ui:ui-test-junit4:1.6.1")
-        strictly("androidx.compose.ui:ui-test-manifest:1.6.1")
-        strictly("androidx.compose.ui:ui-tooling:1.6.1")
-        strictly("androidx.compose.ui:ui-tooling-data:1.6.1")
-        strictly("androidx.compose.ui:ui-tooling-preview:1.6.1")
-    }
-}
-
 dependencies {
     // Core Android
-    val activityVersion = "1.9.0"
-    val coreKtxVersion = "1.13.1"
-    val lifecycleVersion = "2.8.2"
-
-    implementation("androidx.core:core-ktx:$coreKtxVersion")
-    implementation("androidx.activity:activity-compose:$activityVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
 
     // Compose 1.6.1 (explicit versions, no BOM)
     val composeVersion = "1.6.1"
 
-    // Material 3
-    implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
-
-    // Material 3 Adaptive (alpha - not in BOM)
-    implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha01")
-    // Note: material3-adaptive-navigation-suite 1.5.0-rc01 requires AGP 9.1+, disabled for now
-
-    // Compose Foundation & UI
     implementation("androidx.compose.foundation:foundation:$composeVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
     implementation("androidx.compose.ui:ui-graphics:$composeVersion")
@@ -141,24 +85,29 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeVersion")
     implementation("androidx.compose.runtime:runtime-rxjava3:$composeVersion")
 
+    // Material 3
+    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
+
+    // Material 3 Adaptive
+    implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha01")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha01")
+
     // Window Insets & System Bars
     implementation("androidx.window:window:1.3.0")
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
 
     // Coroutines & Flow
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
     // Coil Image Loading - disabled for now (version conflicts with Compose 1.6.1)
     // implementation("io.coil-kt:coil-compose:2.6.0")
-    // implementation("io.coil-kt:coil-core:2.6.0")
 
-    // Navigation Compose
-    implementation("androidx.navigation:navigation-compose:2.8.2")
+    // Navigation Compose (2.7.7 keeps Compose 1.5.1 transitives, upgraded to 1.6.1 here)
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     // Material Icons Extended
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 
     // Serialization (for JSON/config)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")

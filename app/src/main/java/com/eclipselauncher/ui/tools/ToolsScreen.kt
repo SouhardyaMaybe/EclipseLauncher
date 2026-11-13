@@ -1,6 +1,7 @@
 package com.eclipselauncher.ui.tools
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -51,7 +53,7 @@ fun ToolsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, top = 8.dp),
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp),
                     contentAlignment = Alignment.TopStart
                 ) {
                     Icon(
@@ -59,8 +61,8 @@ fun ToolsScreen(
                         contentDescription = "Back",
                         tint = EclipseColors.DarkPrimary,
                         modifier = Modifier
-                            .size(48.dp),
-                        onClick = { onNavigate("home") }
+                            .size(48.dp)
+                            .clickable { onNavigate("home") }
                     )
                 }
 
@@ -72,7 +74,7 @@ fun ToolsScreen(
                     color = EclipseColors.DarkPrimary,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, top = 8.dp, bottom = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
                 )
 
                 // Tool cards

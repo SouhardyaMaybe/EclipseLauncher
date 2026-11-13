@@ -2,6 +2,7 @@ package com.eclipselauncher.ui.createinstance
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -25,7 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -33,7 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.R
 import com.eclipselauncher.model.Instance
@@ -46,11 +47,11 @@ fun LoaderPickerScreen(
     viewModel: CreateInstanceViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val selectedVersion by viewModel.selectedVersion.collectAsStateWithLifecycle()
-    val selectedLoader by viewModel.selectedLoader.collectAsStateWithLifecycle()
-    val selectedLoaderVersion by viewModel.selectedLoaderVersion.collectAsStateWithLifecycle()
-    val loaderVersions by viewModel.loaderVersions.collectAsStateWithLifecycle()
-    val loaderVersionsLoading by viewModel.loaderVersionsLoading.collectAsStateWithLifecycle()
+    val selectedVersion by viewModel.selectedVersion.collectAsState()
+    val selectedLoader by viewModel.selectedLoader.collectAsState()
+    val selectedLoaderVersion by viewModel.selectedLoaderVersion.collectAsState()
+    val loaderVersions by viewModel.loaderVersions.collectAsState()
+    val loaderVersionsLoading by viewModel.loaderVersionsLoading.collectAsState()
 
     val versionId = selectedVersion?.id ?: ""
 
@@ -83,8 +84,8 @@ fun LoaderPickerScreen(
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
                             .size(48.dp)
-                            .fillMaxWidth(),
-                        onClick = { onNavigate("create_instance") }
+                            .fillMaxWidth()
+                            .clickable { onNavigate("create_instance") }
                     )
                     Text(
                         text = versionId,
@@ -121,7 +122,7 @@ fun LoaderPickerScreen(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = EclipseColors.DarkOnSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 20.dp, top = 8.dp, bottom = 16.dp)
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 16.dp)
                 )
 
                 // Loader cards
@@ -242,7 +243,7 @@ fun LoaderCard(
         else 
             EclipseColors.DarkSurface,
         border = if (isSelected && isAvailable) BorderStroke(2.dp, EclipseColors.DarkPrimary) else null,
-        onClick = if (isAvailable) onClick else null
+        onClick = { if (isAvailable) onClick() }
     ) {
         Column {
             Row(

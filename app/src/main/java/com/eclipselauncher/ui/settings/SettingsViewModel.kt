@@ -29,11 +29,11 @@ class SettingsViewModel : ViewModel() {
     val showCurseForgeKeyEditor: StateFlow<Boolean> = _showCurseForgeKeyEditor
 
     enum class SettingsCategory {
-        VIDEO_RENDERER("Video and renderer", "Resolution, surface and driver options", "▣"),
-        CONTROL_CUSTOMIZATION("Control customization", "On-screen controls, mouse and gyroscope", "✛"),
-        JAVA_TWEAKS("Java Tweaks", "Runtime, arguments and memory", "⌘"),
-        MISCELLANEOUS("Miscellaneous settings", "Files, downloads and behaviour", "▦"),
-        EXPERIMENTAL("Experimental Stuff", "Risky options — expect rough edges", "⚗")
+        VIDEO_RENDERER,
+        CONTROL_CUSTOMIZATION,
+        JAVA_TWEAKS,
+        MISCELLANEOUS,
+        EXPERIMENTAL
     }
 
     fun selectCategory(category: SettingsCategory) {

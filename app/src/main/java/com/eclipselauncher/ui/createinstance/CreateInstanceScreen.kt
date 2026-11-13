@@ -2,19 +2,22 @@ package com.eclipselauncher.ui.createinstance
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,7 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -34,7 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.R
 import com.eclipselauncher.model.GameVersion
@@ -48,11 +51,11 @@ fun CreateInstanceScreen(
     viewModel: CreateInstanceViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val versions by viewModel.filteredVersions.collectAsStateWithLifecycle()
-    val selectedVersionTab by viewModel.selectedVersionTab.collectAsStateWithLifecycle()
-    val selectedVersion by viewModel.selectedVersion.collectAsStateWithLifecycle()
-    val versionsLoading by viewModel.versionsLoading.collectAsStateWithLifecycle()
-    val versionsError by viewModel.versionsError.collectAsStateWithLifecycle()
+    val versions by viewModel.filteredVersions.collectAsState()
+    val selectedVersionTab by viewModel.selectedVersionTab.collectAsState()
+    val selectedVersion by viewModel.selectedVersion.collectAsState()
+    val versionsLoading by viewModel.versionsLoading.collectAsState()
+    val versionsError by viewModel.versionsError.collectAsState()
 
     EclipseLauncherTheme {
         Surface(
@@ -83,8 +86,8 @@ fun CreateInstanceScreen(
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
                             .size(48.dp)
-                            .fillMaxWidth(),
-                        onClick = { onNavigate("home") }
+                            .fillMaxWidth()
+                            .clickable { onNavigate("home") }
                     )
                     Text(
                         text = "Create instance",
@@ -134,7 +137,7 @@ fun CreateInstanceScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = versionsError,
+                            text = versionsError.orEmpty(),
                             fontSize = 16.sp,
                             color = EclipseColors.DarkError,
                             textAlign = TextAlign.Center
@@ -207,7 +210,7 @@ fun VersionFilterChips(
 }
 
 @Composable
-fun VersionList(
+fun ColumnScope.VersionList(
     versions: List<GameVersion>,
     selectedVersion: GameVersion?,
     onVersionSelect: (GameVersion) -> Unit

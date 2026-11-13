@@ -5,9 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.eclipselauncher.model.GameVersion
 import com.eclipselauncher.model.Instance
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class CreateInstanceViewModel : ViewModel() {
@@ -231,5 +233,5 @@ class CreateInstanceViewModel : ViewModel() {
 
     val filteredVersions: StateFlow<List<GameVersion>> = combine(_versions, _selectedVersionTab) { versions, tab ->
         versions.filter { it.type == tab }
-    }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 }

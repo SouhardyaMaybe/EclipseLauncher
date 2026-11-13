@@ -1,6 +1,7 @@
 package com.eclipselauncher.ui.tools
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,10 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -26,12 +28,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.model.TaskInfo
 import com.eclipselauncher.ui.theme.EclipseColors
@@ -125,7 +128,7 @@ fun TasksScreen(
                     .size(56.dp),
                 shape = RoundedCornerShape(28.dp),
                 color = EclipseColors.DarkPrimary,
-                elevation = 8.dp,
+                shadowElevation = 8.dp,
                 onClick = { showTasks = true }
             ) {
                 Icon(
@@ -213,8 +216,8 @@ fun TaskRow(
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
                             .size(24.dp)
-                            .padding(8.dp),
-                        onClick = onTogglePause
+                            .padding(8.dp)
+                            .clickable { onTogglePause() }
                     )
                     
                     // Cancel
@@ -224,8 +227,8 @@ fun TaskRow(
                         tint = EclipseColors.DarkError,
                         modifier = Modifier
                             .size(24.dp)
-                            .padding(8.dp),
-                        onClick = onCancel
+                            .padding(8.dp)
+                            .clickable { onCancel() }
                     )
                     
                     // Expand
@@ -235,8 +238,8 @@ fun TaskRow(
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
                             .size(24.dp)
-                            .padding(8.dp),
-                        onClick = onExpand
+                            .padding(8.dp)
+                            .clickable { onExpand() }
                     )
                 }
             }

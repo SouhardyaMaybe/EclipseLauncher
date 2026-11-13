@@ -1,15 +1,18 @@
 package com.eclipselauncher.ui.accounts.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -21,13 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.BorderStroke
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.ui.accounts.AccountsViewModel
 import com.eclipselauncher.ui.theme.EclipseColors
@@ -38,7 +41,7 @@ fun MicrosoftSignInScreen(
     viewModel: AccountsViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
-    val signInState by viewModel.signInState.collectAsStateWithLifecycle()
+    val signInState by viewModel.signInState.collectAsState()
 
     EclipseLauncherTheme {
         Surface(
@@ -69,8 +72,8 @@ fun MicrosoftSignInScreen(
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
                             .size(48.dp)
-                            .fillMaxWidth(),
-                        onClick = { onNavigate("accounts") }
+                            .fillMaxWidth()
+                            .clickable { onNavigate("accounts") }
                     )
                     Text(
                         text = "Microsoft sign in",
@@ -90,8 +93,11 @@ fun MicrosoftSignInScreen(
                     AccountsViewModel.SignInState.Progress -> {
                         SignInProgress()
                     }
-                    AccountsViewModel.SignInState.Failure -> {
+                    is AccountsViewModel.SignInState.Failure -> {
                         SignInFailure(onRetry = { viewModel.retrySignIn() })
+                    }
+                    AccountsViewModel.SignInState.Idle -> {
+                        MicrosoftSignInPage()
                     }
                 }
             }
