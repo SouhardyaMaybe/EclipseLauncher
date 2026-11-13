@@ -84,7 +84,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:$activityVersion")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-compose:2.8.2")
+    // collectAsStateWithLifecycle is in lifecycle-runtime-compose (from BOM)
 
     // Material 3 (use version from BOM)
     implementation("androidx.compose.material3:material3")
