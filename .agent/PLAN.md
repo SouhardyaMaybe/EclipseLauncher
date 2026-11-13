@@ -18,6 +18,7 @@
 - [x] Smooth animated theme switching via Crossfade (250ms).
 - [x] Removed Dark/Light theme options (Dynamic + Urban only).
 - [x] Replace "<- Back to the last screen" with "<- Back" in settings sub-pages.
+- [x] Single back button in TopAppBar navigation icon (no duplicate beneath it); works as back-to-root when in sub-page, exits settings when at root.
 - [x] Remove Sandbox .jar execution toggle (JAVA_SANDBOX).
 - [x] Remove game download source selection (DOWNLOAD_SOURCE) - default official only.
 - [x] Remove import data (IMPORT_DATA/pickTree).
