@@ -244,7 +244,7 @@ private fun SettingsRoot(
     onOpenPage: (SettingsPage) -> Unit,
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
-    val themeModes = listOf(ThemeMode.DYNAMIC, ThemeMode.DARK, ThemeMode.LIGHT)
+    val themeModes = listOf(ThemeMode.DYNAMIC, ThemeMode.URBAN)
     var selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -279,13 +279,6 @@ private fun SettingsRoot(
             summary = stringResource(R.string.settings_category_experimental_summary),
             onClick = { onOpenPage(SettingsPage.EXPERIMENTAL) },
         )
-        PreferenceSwitch(
-            icon = Icons.Filled.Public,
-            title = stringResource(R.string.settings_force_english),
-            summary = stringResource(R.string.settings_force_english_summary),
-            checked = settings.boolean(SettingsStore.FORCE_ENGLISH, false),
-            onCheckedChange = { settings.setBoolean(SettingsStore.FORCE_ENGLISH, it) },
-        )
         PreferenceRow(
             icon = Icons.Filled.ColorLens,
             title = stringResource(R.string.settings_theme),
@@ -293,6 +286,7 @@ private fun SettingsRoot(
             onClick = { showThemeDialog = true },
         )
         NotificationPermissionRow()
+        MicrophonePermissionRow()
     }
 
     if (showThemeDialog) {
@@ -327,8 +321,7 @@ private fun SettingsRoot(
                             Text(
                                 text = when (mode) {
                                     ThemeMode.DYNAMIC -> stringResource(R.string.settings_theme_dynamic)
-                                    ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
-                                    ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
+                                    ThemeMode.URBAN -> stringResource(R.string.settings_theme_urban)
                                     else -> stringResource(R.string.settings_theme_dynamic)
                                 },
                                 style = MaterialTheme.typography.bodyLarge,
@@ -738,13 +731,6 @@ private fun JavaSettings(settings: SettingsStore) {
             suffix = " MB",
             onValueChange = { settings.setInt(SettingsStore.ALLOCATION, it) },
         )
-        PreferenceSwitch(
-            icon = Icons.Filled.Security,
-            title = stringResource(R.string.settings_java_sandbox),
-            summary = stringResource(R.string.settings_java_sandbox_summary),
-            checked = settings.getBooleanFlow(SettingsStore.JAVA_SANDBOX, true).collectAsState().value,
-            onCheckedChange = { settings.setBoolean(SettingsStore.JAVA_SANDBOX, it) },
-        )
     }
 
     if (showJavaArgs) {
@@ -777,31 +763,13 @@ private fun JavaSettings(settings: SettingsStore) {
 @Composable
 private fun MiscSettings(settings: SettingsStore) {
     val context = LocalContext.current
-    var showDownloadSource by remember { mutableStateOf(false) }
-    var showKeyDialog by remember { mutableStateOf(false) }
     var cacheBytes by remember { mutableStateOf(partialCacheBytes(context)) }
-
-    val source by settings.getStringFlow(SettingsStore.DOWNLOAD_SOURCE, SettingsStore.DEFAULT_DOWNLOAD_SOURCE).collectAsState()
+    var showKeyDialog by remember { mutableStateOf(false) }
     val curseKey by settings.getStringFlow(SettingsStore.CURSEFORGE_KEY, "").collectAsState()
 
-    val importUnavailable = stringResource(R.string.settings_import_unavailable)
     val cacheCleared = stringResource(R.string.settings_cache_cleared)
     val cacheClearFailed = stringResource(R.string.settings_cache_clear_failed)
     val downloadCleared = stringResource(R.string.settings_download_cache_cleared)
-    val clearSummary = String.format(
-        Locale.US,
-        stringResource(R.string.settings_clear_download_summary),
-        cacheBytes / 1024.0 / 1024.0,
-    )
-
-    val pickTree = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocumentTree(),
-    ) { uri ->
-        if (uri != null) {
-            Toast.makeText(context, importUnavailable, Toast.LENGTH_LONG).show()
-        }
-    }
-
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(text = stringResource(R.string.settings_category_misc))
         PreferenceSwitch(
@@ -818,28 +786,12 @@ private fun MiscSettings(settings: SettingsStore) {
             checked = settings.getBooleanFlow(SettingsStore.FAST_STARTUP, true).collectAsState().value,
             onCheckedChange = { settings.setBoolean(SettingsStore.FAST_STARTUP, it) },
         )
-        PreferenceRow(
-            icon = Icons.Filled.CloudDownload,
-            title = stringResource(R.string.settings_download_source),
-            summary = if (source == "bmclapi") {
-                stringResource(R.string.settings_source_bmclapi)
-            } else {
-                stringResource(R.string.settings_source_default)
-            },
-            onClick = { showDownloadSource = true },
-        )
         PreferenceSwitch(
             icon = Icons.Filled.Verified,
             title = stringResource(R.string.settings_verify_manifest),
             summary = stringResource(R.string.settings_verify_manifest_summary),
             checked = settings.getBooleanFlow(SettingsStore.VERIFY_MANIFEST, true).collectAsState().value,
             onCheckedChange = { settings.setBoolean(SettingsStore.VERIFY_MANIFEST, it) },
-        )
-        PreferenceRow(
-            icon = Icons.Filled.Folder,
-            title = stringResource(R.string.settings_import_data),
-            summary = stringResource(R.string.settings_import_data_summary),
-            onClick = { pickTree.launch(null) },
         )
         PreferenceRow(
             icon = Icons.Filled.Cached,
@@ -870,21 +822,12 @@ private fun MiscSettings(settings: SettingsStore) {
             },
         )
         PreferenceSwitch(
-            icon = Icons.Filled.Warning,
+            icon = Icons.Filled.Gavel,
             title = stringResource(R.string.settings_memory_warning),
             summary = stringResource(R.string.settings_memory_warning_summary),
             checked = settings.getBooleanFlow(SettingsStore.SHOW_MEMORY_WARNING, true).collectAsState().value,
             onCheckedChange = { settings.setBoolean(SettingsStore.SHOW_MEMORY_WARNING, it) },
         )
-        PreferenceSwitch(
-            icon = Icons.Filled.Gavel,
-            title = stringResource(R.string.settings_disable_blocklist),
-            summary = stringResource(R.string.settings_disable_blocklist_summary),
-            checked = settings.getBooleanFlow(SettingsStore.DISABLE_SERVER_BLOCKLIST, true).collectAsState().value,
-            onCheckedChange = { settings.setBoolean(SettingsStore.DISABLE_SERVER_BLOCKLIST, it) },
-        )
-
-        SectionHeader(text = stringResource(R.string.settings_eclipse_header))
         PreferenceRow(
             icon = Icons.Filled.VpnKey,
             title = stringResource(R.string.settings_curseforge_key),
@@ -895,33 +838,6 @@ private fun MiscSettings(settings: SettingsStore) {
             } else {
                 stringResource(R.string.settings_key_set)
             },
-        )
-        PreferenceSwitch(
-            icon = Icons.Filled.GetApp,
-            title = stringResource(R.string.settings_auto_dependencies),
-            summary = stringResource(R.string.settings_auto_dependencies_summary),
-            checked = settings.getBooleanFlow(SettingsStore.AUTO_INSTALL_DEPENDENCIES, true).collectAsState().value,
-            onCheckedChange = {
-                settings.setBoolean(SettingsStore.AUTO_INSTALL_DEPENDENCIES, it)
-            },
-        )
-    }
-
-    if (showDownloadSource) {
-        val values = listOf(SettingsStore.DEFAULT_DOWNLOAD_SOURCE, "bmclapi")
-        val names = listOf(
-            stringResource(R.string.settings_source_default),
-            stringResource(R.string.settings_source_bmclapi),
-        )
-        SingleChoiceDialog(
-            title = stringResource(R.string.settings_download_source),
-            options = names,
-            selectedIndex = values.indexOf(source).coerceAtLeast(0),
-            onSelect = { index ->
-                settings.setString(SettingsStore.DOWNLOAD_SOURCE, values[index])
-                showDownloadSource = false
-            },
-            onDismiss = { showDownloadSource = false },
         )
     }
 
@@ -939,7 +855,6 @@ private fun MiscSettings(settings: SettingsStore) {
             onDismiss = { showKeyDialog = false },
         )
     }
-}
 
 /** The CurseForge key editor: a text field plus an explicit clear action. */
 @Composable
@@ -1004,20 +919,6 @@ private fun ExperimentalSettings(settings: SettingsStore) {
             checked = settings.getBooleanFlow(SettingsStore.FREEDRENO_SYSMEM, false).collectAsState().value,
             onCheckedChange = { settings.setBoolean(SettingsStore.FREEDRENO_SYSMEM, it) },
         )
-        PreferenceSwitch(
-            icon = Icons.Filled.VolumeUp,
-            title = stringResource(R.string.settings_opensl_audio),
-            summary = stringResource(R.string.settings_opensl_audio_summary),
-            checked = settings.getBooleanFlow(SettingsStore.ALSOFT_OPENSL, false).collectAsState().value,
-            onCheckedChange = { settings.setBoolean(SettingsStore.ALSOFT_OPENSL, it) },
-        )
-        PreferenceSwitch(
-            icon = Icons.Filled.Warning,
-            title = stringResource(R.string.settings_ubwc),
-            summary = stringResource(R.string.settings_ubwc_summary),
-            checked = settings.getBooleanFlow(SettingsStore.UBWC, false).collectAsState().value,
-            onCheckedChange = { settings.setBoolean(SettingsStore.UBWC, it) },
-        )
     }
 }
 
@@ -1028,6 +929,29 @@ private fun hasNotificationPermission(context: Context): Boolean {
         context,
         Manifest.permission.POST_NOTIFICATIONS,
     ) == PackageManager.PERMISSION_GRANTED
+}
+
+/** RECORD_AUDIO microphone permission row: shows granted/denied state, re-asks on tap. */
+@Composable
+private fun MicrophonePermissionRow() {
+    val context = LocalContext.current
+    var granted by remember { mutableStateOf(hasMicrophonePermission(context)) }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted = it }
+
+    PreferenceRow(
+        icon = Icons.Filled.Mic,
+        title = stringResource(R.string.settings_microphone),
+        summary = if (granted) stringResource(R.string.settings_mic_granted) else stringResource(R.string.settings_mic_denied),
+        onClick = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                launcher.launch(Manifest.permission.RECORD_AUDIO)
+            } else {
+                granted = true
+            }
+        },
+    )
 }
 
 /** Total device RAM capped the way the reference launcher caps allocation. */

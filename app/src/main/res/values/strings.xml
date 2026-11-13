@@ -230,7 +230,7 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
-    <string name="settings_back">Back to the last screen</string>
+    <string name="settings_back">Back</string>
     <string name="settings_ok">OK</string>
     <string name="settings_categories">Categories</string>
 
@@ -245,12 +245,12 @@
     <string name="settings_category_misc_summary">Files, downloads and behaviour</string>
     <string name="settings_category_experimental">Experimental Stuff</string>
     <string name="settings_category_experimental_summary">Risky options — expect rough edges</string>
-    <string name="settings_force_english">Force language to English</string>
-    <string name="settings_force_english_summary">Ignore the system language and use English</string>
     <string name="settings_theme">Theme</string>
     <string name="settings_theme_dynamic">Dynamic (Material You)</string>
-    <string name="settings_theme_dark">Dark</string>
-    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_urban">Urban</string>
+    <string name="settings_microphone">Microphone</string>
+    <string name="settings_mic_granted">Microphone permission granted</string>
+    <string name="settings_mic_denied">Microphone permission denied</string>
     <string name="settings_allow_notifications">Allow notifications</string>
     <string name="settings_allow_notifications_summary">Let Eclipse notify you about background work</string>
 

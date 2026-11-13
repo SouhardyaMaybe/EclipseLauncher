@@ -15,4 +15,4 @@
 - [x] Final scope check against GOAL.md.
 - [x] Hide slider step dots/notches (`steps = 0` in SliderPreference).
 - [x] Add theme option: dynamic (Material You default), dark, light; black + deep blue palette (no violet/purple).
-- [x] Report GitHub repos for the account.
+- [x] Report GitHub repos for the account (6 repos listed below).

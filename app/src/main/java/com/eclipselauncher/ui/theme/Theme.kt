@@ -9,6 +9,8 @@ package com.eclipselauncher.ui.theme
 import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
@@ -16,8 +18,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -26,7 +28,6 @@ import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import com.eclipselauncher.R
 import com.eclipselauncher.data.SettingsStore
-import com.eclipselauncher.data.ThemeMode
 
 /**
  * Geist — Vercel's minimal grotesque (OFL 1.1) — is the whole UI's face. It
@@ -45,9 +46,8 @@ private val EclipseFontFamily: FontFamily by lazy {
 }
 
 /**
- * The Eclipse dark palette: pure black canvas, panel surfaces, and a deep blue
- * primary (replacing the old green). Blue reads cleanly against black and is
- * neither violet nor purple.
+ * Eclipse dark palette — pure black canvas with deep blue primary. Neither
+ * violet nor purple.
  */
 private val EclipseDarkColorScheme = darkColorScheme(
     primary = Color(0xFF1565C0),
@@ -79,8 +79,7 @@ private val EclipseDarkColorScheme = darkColorScheme(
 )
 
 /**
- * The Eclipse light palette: white canvas with the same deep blue primary.
- * Mirrors the dark scheme so switching modes stays consistent.
+ * Eclipse light palette — white canvas with deep blue primary.
  */
 private val EclipseLightColorScheme = lightColorScheme(
     primary = Color(0xFF1565C0),
@@ -111,6 +110,68 @@ private val EclipseLightColorScheme = lightColorScheme(
     scrim = Color.Black,
 )
 
+/**
+ * Urban theme — copied from Zalith Launcher 2's urbanAsh palette.
+ * Dark variant uses dark gray surfaces; light variant uses light gray surfaces.
+ */
+private val UrbanDarkColorScheme = darkColorScheme(
+    primary = Color(0xFFC7C6C6),
+    onPrimary = Color(0xFF2F3131),
+    primaryContainer = Color(0xFF9B9B9B),
+    onPrimaryContainer = Color(0xFF0B0C0D),
+    secondary = Color(0xFFC8C6C6),
+    onSecondary = Color(0xFF303030),
+    secondaryContainer = Color(0xFF3D3D3D),
+    onSecondaryContainer = Color(0xFFD3D0D0),
+    tertiary = Color(0xFFCBC5C7),
+    onTertiary = Color(0xFF323031),
+    tertiaryContainer = Color(0xFFA09B9D),
+    onTertiaryContainer = Color(0xFF0F0D0F),
+    background = Color(0xFF141313),
+    onBackground = Color(0xFFE5E2E1),
+    surface = Color(0xFF141313),
+    onSurface = Color(0xFFE5E2E1),
+    surfaceVariant = Color(0xFF444748),
+    onSurfaceVariant = Color(0xFFC4C7C7),
+    surfaceTint = Color(0xFFC7C6C6),
+    outline = Color(0xFF8E9192),
+    outlineVariant = Color(0xFF444748),
+    error = Color(0xFFFFB4AB),
+    onError = Color(0xFF690005),
+    errorContainer = Color(0xFF93000A),
+    onErrorContainer = Color(0xFFFFDAD6),
+    scrim = Color.Black,
+)
+
+private val UrbanLightColorScheme = lightColorScheme(
+    primary = Color(0xFF5E5E5F),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFFAEAEAE),
+    onPrimaryContainer = Color(0xFF222324),
+    secondary = Color(0xFF5F5E5E),
+    onSecondary = Color(0xFFFFFFFF),
+    secondaryContainer = Color(0xFFE8E6E5),
+    onSecondaryContainer = Color(0xFF4A4A4A),
+    tertiary = Color(0xFF615D5F),
+    onTertiary = Color(0xFFFFFFFF),
+    tertiaryContainer = Color(0xFFB2ADAF),
+    onTertiaryContainer = Color(0xFF252324),
+    background = Color(0xFFFCF8F8),
+    onBackground = Color(0xFF1C1B1B),
+    surface = Color(0xFFFCF8F8),
+    onSurface = Color(0xFF1C1B1B),
+    surfaceVariant = Color(0xFFE0E3E3),
+    onSurfaceVariant = Color(0xFF444748),
+    surfaceTint = Color(0xFF5E5E5F),
+    outline = Color(0xFF747878),
+    outlineVariant = Color(0xFFC4C7C7),
+    error = Color(0xFFBA1A1A),
+    onError = Color(0xFFFFFFFF),
+    errorContainer = Color(0xFFFFDAD6),
+    onErrorContainer = Color(0xFF410002),
+    scrim = Color.Black,
+)
+
 /** Returns true when the system is currently in dark mode. */
 private fun isSystemDarkMode(context: Context): Boolean {
     val uiMode = context.resources.configuration.uiMode
@@ -122,19 +183,21 @@ private fun isSystemDarkMode(context: Context): Boolean {
  *
  * - DYNAMIC: Material You wallpaper-derived colors on Android 12+, falling back
  *   to the matching static scheme on older versions.
- * - DARK / LIGHT: the fixed Eclipse scheme for that mode.
+ * - URBAN: the fixed dark/gray palette copied from Zalith Launcher 2.
  */
-private fun eclipseColorScheme(context: Context, themeMode: ThemeMode): androidx.compose.material3.ColorScheme =
+private fun eclipseColorScheme(context: Context, themeMode: SettingsStore.ThemeMode): androidx.compose.material3.ColorScheme =
     when (themeMode) {
-        ThemeMode.DYNAMIC -> {
+        SettingsStore.ThemeMode.DYNAMIC -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (isSystemDarkMode(context)) dynamicDarkColorScheme(context)
                 else dynamicLightColorScheme(context)
             } else if (isSystemDarkMode(context)) EclipseDarkColorScheme
             else EclipseLightColorScheme
         }
-        ThemeMode.DARK -> EclipseDarkColorScheme
-        ThemeMode.LIGHT -> EclipseLightColorScheme
+        SettingsStore.ThemeMode.URBAN -> {
+            if (isSystemDarkMode(context)) UrbanDarkColorScheme
+            else UrbanLightColorScheme
+        }
     }
 
 /**
@@ -167,15 +230,21 @@ private val EclipseTypography: Typography by lazy {
 
 @Composable
 fun EclipseTheme(
-    themeMode: ThemeMode = ThemeMode.DYNAMIC,
+    themeMode: SettingsStore.ThemeMode = SettingsStore.ThemeMode.DYNAMIC,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
-    val colorScheme = eclipseColorScheme(context, themeMode)
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = EclipseTypography,
-        shapes = EclipseShapes,
-        content = content,
-    )
+
+    // Crossfade smoothly between color schemes when the user switches themes.
+    Crossfade(
+        targetState = themeMode,
+        animationSpec = tween(250),
+    ) { mode ->
+        MaterialTheme(
+            colorScheme = eclipseColorScheme(context, mode),
+            typography = EclipseTypography,
+            shapes = EclipseShapes,
+            content = content,
+        )
+    }
 }

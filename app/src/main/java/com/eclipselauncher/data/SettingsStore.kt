@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * SETTINGS STORE: typed MMKV access for every launcher preference, plus the
- * renderer id/name tables shared between the settings screen and the instance
+ * renderer id/name tables shared between the settings screens and the instance
  * editor. Keys mirror the reference launcher so values survive a migration.
  */
 package com.eclipselauncher.data
@@ -24,8 +24,9 @@ import kotlinx.coroutines.flow.asStateFlow
  * StateFlow are updated.
  */
 
-/** UI theme: DYNAMIC follows Material You wallpaper colors, DARK/LIGHT are fixed. */
-enum class ThemeMode { DYNAMIC, DARK, LIGHT }
+/** UI theme: DYNAMIC follows Material You wallpaper colors, URBAN is the fixed
+ *  dark/gray palette copied from Zalith Launcher 2. */
+enum class ThemeMode { DYNAMIC, URBAN }
 
 class SettingsStore(context: Context) {
     private val appContext = context.applicationContext
@@ -142,24 +143,16 @@ class SettingsStore(context: Context) {
         const val KEYBOARD_AUTOPAN = "keyboardAutoPanning"
         const val JAVA_ARGS = "javaArgs"
         const val ALLOCATION = "allocation"
-        const val JAVA_SANDBOX = "java_sandbox"
         const val CHECK_GAME_FILES = "checkGameFiles"
         const val FAST_STARTUP = "fastStartupCheck"
-        const val DOWNLOAD_SOURCE = "downloadSource"
         const val VERIFY_MANIFEST = "verifyManifest"
         const val SHOW_MEMORY_WARNING = "showMemoryWarning"
-        const val DISABLE_SERVER_BLOCKLIST = "disableServerBlocklist"
-        const val FORCE_ENGLISH = "force_english"
         const val SHADER_DUMP = "dump_shaders"
         const val BIG_CORE = "bigCoreAffinity"
         const val FREEDRENO_SYSMEM = "freedrenoSysmem"
-        const val ALSOFT_OPENSL = "alsoftForceOpenSL"
-        const val UBWC = "ubwcWorkaround"
         const val CURSEFORGE_KEY = "curseforge.key"
-        const val AUTO_INSTALL_DEPENDENCIES = "content.auto_dependencies"
 
         const val DEFAULT_RENDERER = "opengles2"
-        const val DEFAULT_DOWNLOAD_SOURCE = "default"
     }
 
     /** Reads the persisted theme mode; defaults to dynamic (Material You). */
@@ -171,6 +164,7 @@ class SettingsStore(context: Context) {
         mmkv.encode(THEME_MODE, mode.name)
     }
 }
+
 object Renderers {
     val IDS = listOf(
         "opengles2",
