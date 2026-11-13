@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
+
 #
 # Copyright 2015 the original author or authors.
 #
@@ -13,6 +14,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
 ##############################################################################
 ##
@@ -80,6 +82,7 @@ esac
 
 CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
 
+
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
     if [ -x "$JAVA_HOME/jre/sh/java" ] ; then
@@ -124,59 +127,59 @@ if $darwin; then
 fi
 
 # For Cygwin or MSYS, switch paths to Windows format before running java
-if $cygwin || $msys ; then
+if [ "$cygwin" = "true" -o "$msys" = "true" ] ; then
     APP_HOME=`cygpath --path --mixed "$APP_HOME"`
     CLASSPATH=`cygpath --path --mixed "$CLASSPATH"`
+
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
     # We build the pattern for arguments to be converted via cygpath
-    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sed -e 's@^/@/@'`
-    ROOTDIRS=""
-    for ROOTDIR in $ROOTDIRSRAW ; do
-        ROOTDIRS="$ROOTDIRS `cygpath --path --mixed \"$ROOTDIR\"`"
+    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+    SEP=""
+    for dir in $ROOTDIRSRAW ; do
+        ROOTDIRS="$ROOTDIRS$SEP$dir"
+        SEP="|"
     done
+    OURCYGPATTERN="(^($ROOTDIRS))"
+    # Add a user-defined pattern to the cygpath arguments
+    if [ "$GRADLE_CYGPATTERN" != "" ] ; then
+        OURCYGPATTERN="$OURCYGPATTERN|($GRADLE_CYGPATTERN)"
+    fi
+    # Now convert the arguments - kludge to limit ourselves to /bin/sh
+    i=0
+    for arg in "$@" ; do
+        CHECK=`echo "$arg"|egrep -c "$OURCYGPATTERN" -`
+        CHECK2=`echo "$arg"|egrep -c "^-"`                                 ### Determine if an option
+
+        if [ $CHECK -ne 0 ] && [ $CHECK2 -eq 0 ] ; then                    ### Added a condition
+            eval `echo args$i`=`cygpath --path --ignore --mixed "$arg"`
+        else
+            eval `echo args$i`="\"$arg\""
+        fi
+        i=`expr $i + 1`
+    done
+    case $i in
+        0) set -- ;;
+        1) set -- "$args0" ;;
+        2) set -- "$args0" "$args1" ;;
+        3) set -- "$args0" "$args1" "$args2" ;;
+        4) set -- "$args0" "$args1" "$args2" "$args3" ;;
+        5) set -- "$args0" "$args1" "$args2" "$args3" "$args4" ;;
+        6) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" ;;
+        7) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" ;;
+        8) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" ;;
+        9) set -- "$args0" "$args1" "$args2" "$args3" "$args4" "$args5" "$args6" "$args7" "$args8" ;;
+    esac
 fi
 
-# Split up the JVM_OPTS And GRADLE_OPTS values into an array, following the shell quoting and substitution rules
-function splitJvmOpts() {
-    JVM_OPTS=()
-    for opt in "$@"; do
-        JVM_OPTS+=("$opt")
-    done
+# Escape application args
+save () {
+    for i do printf %s\\n "$i" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/' \\\\/" ; done
+    echo " "
 }
+APP_ARGS=`save "$@"`
 
-# Collect all arguments for the java command, stacking in reverse order:
-# * args from the command line
-# * the main class
-# * -classpath
-# * -D... (system properties)
-# * JVM_OPTS
-# * DEFAULT_JVM_OPTS
-# * JAVA_OPTS
-# * GRADLE_OPTS
-# * -Dorg.gradle.appname=$APP_BASE_NAME
-# * -classpath $CLASSPATH
-# * org.gradle.wrapper.GradleWrapperMain
-# * $@
-set -- \
-        "-Dorg.gradle.appname=$APP_BASE_NAME" \
-        -classpath "$CLASSPATH" \
-        org.gradle.wrapper.GradleWrapperMain \
-        "$@"
-
-# Use "xargs" to parse quoted args.
-#
-# With -n1 it outputs one arg per line, with the quotes and backslashes removed.
-#
-# In bash we can simply iterate over the array. In zsh we need to use
-# eval and ${(z)array} to get the same effect.
-#
-# The following is a workaround for a bug in zsh (see https://github.com/gradle/gradle/issues/10367).
-# We can't use ${(z)array} because zsh doesn't parse the array elements in the same way.
-# So we use xargs instead.
-
-# We use the `exec` command to replace the shell process with the java process,
-# so that the process tree is cleaner and the PID is the same.
-eval set -- $(printf '%s\n' "$DEFAULT_JVM_OPTS" "$JAVA_OPTS" "$GRADLE_OPTS" | xargs -n1)
+# Collect all arguments for the java command, following the shell quoting and substitution rules
+eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$APP_ARGS"
 
 exec "$JAVACMD" "$@"
