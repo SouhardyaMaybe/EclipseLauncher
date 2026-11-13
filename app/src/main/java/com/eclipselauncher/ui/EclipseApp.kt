@@ -127,6 +127,9 @@ fun EclipseApp() {
     val importError = stringResource(R.string.error_import_file)
     val instanceCreatedToast = stringResource(R.string.instance_created_toast)
 
+    // Theme: dynamic (Material You) by default; readable from SettingsStore.
+    val themeMode = container.settings.themeMode()
+
     fun play(instance: Instance) {
         Toast.makeText(context, playToast, Toast.LENGTH_SHORT).show()
         scope.launch {
@@ -196,7 +199,7 @@ fun EclipseApp() {
         }
     }
 
-    EclipseTheme {
+    EclipseTheme(themeMode = themeMode) {
         Box(modifier = Modifier.fillMaxSize()) {
             NavDisplay(
                 backStack = backStack,

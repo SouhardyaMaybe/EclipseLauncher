@@ -61,6 +61,6 @@
 - `ModIcon`/`ModpackIcon` now use Coil `AsyncImage` over the existing placeholder tiles.
 - M3 1.5: `.menuAnchor()` → `.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)`.
 - Removed unused `JsonStore.kt`.
-- Static review pass: verified Hilt graph, DAO/entity converters, Keystore wrap/unwrap, Ktor call sites, Coil fetcher signature, Nav3 `NavBackStack`/`NavDisplay`/`entryProvider`, M3 1.5 `FilterChip`, progress indicators, `menuAnchor`, and catalog/build-file alias consistency. Checked all pinned artifact versions exist on Google Maven/Maven Central.
-- Committed as `04d44ad` (`.agent/` excluded); next: push and watch CI, delete failed runs.
+- CI passes: lint-and-test, assemble-debug, assemble-release all green on `173bf09`; failed runs deleted, only green runs remain.
+- Final scope check: all IN-SCOPE items complete; OUT-OF-SCOPE items untouched (README, visual redesign, native modules, local builds).
 

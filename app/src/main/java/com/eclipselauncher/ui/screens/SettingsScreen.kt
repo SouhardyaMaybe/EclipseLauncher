@@ -39,6 +39,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Cached
@@ -276,7 +277,67 @@ private fun SettingsRoot(
             checked = settings.boolean(SettingsStore.FORCE_ENGLISH, false),
             onCheckedChange = { settings.setBoolean(SettingsStore.FORCE_ENGLISH, it) },
         )
+        PreferenceRow(
+            icon = Icons.AutoMirrored.Filled.BrightnessAuto,
+            title = stringResource(R.string.settings_theme),
+            summary = settings.themeMode().name.lowercase().capitalize(),
+            onClick = { showThemeDialog = true },
+        )
         NotificationPermissionRow()
+    }
+
+    var showThemeDialog by remember { mutableStateOf(false) }
+    val themeModes = listOf(SettingsStore.ThemeMode.DYNAMIC, SettingsStore.ThemeMode.DARK, SettingsStore.ThemeMode.LIGHT)
+    val selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
+
+    if (showThemeDialog) {
+        AlertDialog(
+            onDismissRequest = { showThemeDialog = false },
+            title = { Text(stringResource(R.string.settings_theme)) },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .heightIn(max = 400.dp),
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                ) {
+                    themeModes.forEachIndexed { index, mode ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = index == selectedThemeIndex,
+                                    onClick = {
+                                        selectedThemeIndex = index
+                                        settings.setThemeMode(mode)
+                                        showThemeDialog = false
+                                    },
+                                    role = Role.RadioButton,
+                                )
+                                .padding(vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            RadioButton(selected = index == selectedThemeIndex, onClick = null)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = when (mode) {
+                                    SettingsStore.ThemeMode.DYNAMIC -> stringResource(R.string.settings_theme_dynamic)
+                                    SettingsStore.ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
+                                    SettingsStore.ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
+                                },
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurface,
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showThemeDialog = false }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
+            },
+        )
     }
 }
 

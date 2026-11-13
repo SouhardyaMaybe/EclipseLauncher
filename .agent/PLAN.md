@@ -10,6 +10,9 @@
 - [x] Rewrite EclipseApp on Navigation3; thread `auth`/`client` through screens.
 - [x] Replace manual bitmap download with Coil `AsyncImage` (ModIcon/ModpackIcon).
 - [x] Remove unused `JsonStore.kt`; update M3 1.5 `menuAnchor` call.
-- [ ] Commit/push and get all three CI jobs green.
-- [ ] Delete failed workflow runs; keep green ones.
-- [ ] Final scope check against GOAL.md.
+- [x] Commit/push and get all three CI jobs green.
+- [x] Delete failed workflow runs; keep green ones.
+- [x] Final scope check against GOAL.md.
+- [x] Hide slider step dots/notches (`steps = 0` in SliderPreference).
+- [x] Add theme option: dynamic (Material You default), dark, light; black + deep blue palette (no violet/purple).
+- [x] Report GitHub repos for the account.

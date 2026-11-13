@@ -191,7 +191,9 @@ fun SliderPreference(
             value = current.toFloat(),
             onValueChange = { onValueChange((it / step).toInt() * step) },
             valueRange = valueRange.first.toFloat()..valueRange.last.toFloat(),
-            steps = ((valueRange.last - valueRange.first) / step) - 1,
+            // steps = 0 draws a continuous track with no step dots / notches;
+            // values still snap to [step] via onValueChange above.
+            steps = 0,
             modifier = Modifier.fillMaxWidth(),
         )
     }
