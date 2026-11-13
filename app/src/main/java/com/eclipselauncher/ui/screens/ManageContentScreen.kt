@@ -274,7 +274,7 @@ private fun PageNavigationControl(
     ) {
         if (collapsed) {
             Icon(
-                Icons.Filled.ArrowDropUp,
+                Icons.Default.ArrowDropUp,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -289,7 +289,7 @@ private fun PageNavigationControl(
                     enabled = currentPage > 1,
                 ) {
                     Icon(
-                        Icons.Filled.ArrowLeft,
+                        Icons.Default.ArrowLeft,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
@@ -307,7 +307,7 @@ private fun PageNavigationControl(
                     enabled = currentPage < totalPages,
                 ) {
                     Icon(
-                        Icons.Filled.ArrowRight,
+                        Icons.Default.ArrowRight,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
@@ -589,7 +589,7 @@ fun ManageContentScreen(
                 onClick = { optionsCollapsed = !optionsCollapsed },
             ) {
                 Icon(
-                    if (optionsCollapsed) Icons.Filled.ArrowDropDown else Icons.Filled.ArrowDropUp,
+                    if (optionsCollapsed) Icons.Default.ArrowDropDown else Icons.Default.ArrowDropUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
