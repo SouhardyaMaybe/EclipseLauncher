@@ -144,7 +144,7 @@ private fun ContentSegmentedControl(
     ) {
         Box(
             modifier = Modifier
-                .weight(1f, fill = false)
+                .weight(1f)
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = { onTabSelected(0) },
@@ -169,7 +169,7 @@ private fun ContentSegmentedControl(
         }
         Box(
             modifier = Modifier
-                .weight(1f, fill = false)
+                .weight(1f)
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = { onTabSelected(1) },
@@ -609,7 +609,7 @@ fun ManageContentScreen(
         ) {
             Row(
                 modifier = Modifier
-                    .weight(1f, fill = false)
+                    .weight(1f)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
