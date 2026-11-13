@@ -124,7 +124,7 @@ private fun isSystemDarkMode(context: Context): Boolean {
  *   to the matching static scheme on older versions.
  * - DARK / LIGHT: the fixed Eclipse scheme for that mode.
  */
-private fun eclipseColorScheme(context: Context, themeMode: SettingsStore.ThemeMode): androidx.compose.material3.ColorScheme =
+private fun eclipseColorScheme(context: Context, themeMode: ThemeMode): androidx.compose.material3.ColorScheme =
     when (themeMode) {
         ThemeMode.DYNAMIC -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -167,7 +167,7 @@ private val EclipseTypography: Typography by lazy {
 
 @Composable
 fun EclipseTheme(
-    themeMode: SettingsStore.ThemeMode = ThemeMode.DYNAMIC,
+    themeMode: ThemeMode = ThemeMode.DYNAMIC,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
