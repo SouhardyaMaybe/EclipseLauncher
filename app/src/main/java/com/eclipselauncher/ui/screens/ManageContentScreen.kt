@@ -20,7 +20,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
@@ -45,14 +44,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Texture
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -80,7 +77,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -154,16 +150,7 @@ private fun ContentSegmentedControl(
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.15f),
             )
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = { _: Offset -> },
-                    onDragEnd = { _, dragAmount: Offset ->
-                        val change = if (dragAmount.x > 20) 1 else if (dragAmount.x < -20) -1 else 0
-                        val newIndex = (selectedIndex + change).coerceIn(0, 1)
-                        if (newIndex != selectedIndex) onTabSelected(newIndex)
-                    },
-                )
-            },
+            ,
     ) {
         Box(
             modifier = Modifier
@@ -283,7 +270,7 @@ private fun PageNavigationControl(
     ) {
         if (collapsed) {
             Icon(
-                Icons.Filled.ChevronUp,
+                Icons.Default.ChevronUp,
                 contentDescription = null,
                 modifier = Modifier.size(20.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -298,7 +285,7 @@ private fun PageNavigationControl(
                     enabled = currentPage > 1,
                 ) {
                     Icon(
-                        Icons.Filled.ChevronLeft,
+                        Icons.Default.ChevronLeft,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
@@ -316,7 +303,7 @@ private fun PageNavigationControl(
                     enabled = currentPage < totalPages,
                 ) {
                     Icon(
-                        Icons.Filled.ChevronRight,
+                        Icons.Default.ChevronRight,
                         contentDescription = null,
                         modifier = Modifier.size(20.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
@@ -339,7 +326,7 @@ private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.ui.graphics
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)),
         contentAlignment = Alignment.Center,
     ) {
-        if (url.isNotBlank()) {
+        if (url != null && url.isNotBlank()) {
             AsyncImage(
                 model = url,
                 contentDescription = null,
@@ -350,7 +337,7 @@ private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.ui.graphics
             Icon(
                 imageVector = fallbackIcon,
                 contentDescription = null,
-                modifier = Modifier.size(size.value * 0.6f),
+                modifier = Modifier.size((size.value * 0.6f).dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
         }
@@ -451,8 +438,8 @@ private fun BrowseContentRow(
 
 private fun formatDownloads(downloads: Long): String {
     return when {
-        downloads >= 1_000_000 -> "${(downloads / 1_000_000.0).roundToInt()}M"
-        downloads >= 1_000 -> "${(downloads / 1_000.0).roundToInt()}K"
+        downloads >= 1_000_000 -> "${(downloads / 1_000_000.0).toInt()}M"
+        downloads >= 1_000 -> "${(downloads / 1_000.0).toInt()}K"
         else -> downloads.toString()
     }
 }
@@ -598,7 +585,7 @@ fun ManageContentScreen(
                 onClick = { optionsCollapsed = !optionsCollapsed },
             ) {
                 Icon(
-                    Icons.Filled.ChevronUp,
+                    Icons.Default.ChevronUp,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.rotate(if (optionsCollapsed) 180f else 0f),
