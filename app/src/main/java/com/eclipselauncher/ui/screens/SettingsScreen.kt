@@ -39,7 +39,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.BrightnessAuto
+import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.automirrored.filled.BrightnessAuto
 import androidx.compose.material.icons.filled.Android
 import androidx.compose.material.icons.filled.Block
@@ -151,11 +151,6 @@ fun SettingsScreen(
     // Handle system back: when in a sub-page, go back to root; otherwise delegate to onBack
     BackHandler(enabled = page != null) { page = null }
 
-    // Theme mode state (declared before Column so the theme row can reference it)
-    var showThemeDialog by remember { mutableStateOf(false) }
-    val themeModes = listOf(SettingsStore.ThemeMode.DYNAMIC, SettingsStore.ThemeMode.DARK, SettingsStore.ThemeMode.LIGHT)
-    val selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
-
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -244,6 +239,10 @@ private fun SettingsRoot(
     settings: SettingsStore,
     onOpenPage: (SettingsPage) -> Unit,
 ) {
+    var showThemeDialog by remember { mutableStateOf(false) }
+    val themeModes = listOf(SettingsStore.ThemeMode.DYNAMIC, SettingsStore.ThemeMode.DARK, SettingsStore.ThemeMode.LIGHT)
+    val selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
+
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(text = stringResource(R.string.settings_categories))
         PreferenceRow(
@@ -284,7 +283,7 @@ private fun SettingsRoot(
             onCheckedChange = { settings.setBoolean(SettingsStore.FORCE_ENGLISH, it) },
         )
         PreferenceRow(
-            icon = Icons.Filled.BrightnessAuto,
+            icon = Icons.Filled.ColorLens,
             title = stringResource(R.string.settings_theme),
             summary = settings.themeMode().name.lowercase().capitalize(),
             onClick = { showThemeDialog = true },
