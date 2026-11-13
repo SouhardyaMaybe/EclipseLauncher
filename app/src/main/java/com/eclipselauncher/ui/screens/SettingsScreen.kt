@@ -61,6 +61,7 @@ import androidx.compose.material.icons.filled.GetApp
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Mouse
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Opacity
@@ -770,6 +771,11 @@ private fun MiscSettings(settings: SettingsStore) {
     val cacheCleared = stringResource(R.string.settings_cache_cleared)
     val cacheClearFailed = stringResource(R.string.settings_cache_clear_failed)
     val downloadCleared = stringResource(R.string.settings_download_cache_cleared)
+    val clearSummary = String.format(
+        Locale.US,
+        stringResource(R.string.settings_clear_download_summary),
+        cacheBytes / 1024.0 / 1024.0,
+    )
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         SectionHeader(text = stringResource(R.string.settings_category_misc))
         PreferenceSwitch(
@@ -839,7 +845,6 @@ private fun MiscSettings(settings: SettingsStore) {
                 stringResource(R.string.settings_key_set)
             },
         )
-        )
     }
     if (showKeyDialog) {
         CurseKeyDialog(
@@ -854,6 +859,7 @@ private fun MiscSettings(settings: SettingsStore) {
             },
             onDismiss = { showKeyDialog = false },
         )
+    }
     }
     }
 
@@ -929,6 +935,15 @@ private fun hasNotificationPermission(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(
         context,
         Manifest.permission.POST_NOTIFICATIONS,
+    ) == PackageManager.PERMISSION_GRANTED
+}
+
+/** RECORD_AUDIO microphone permission: granted on older versions, checked on 13+. */
+private fun hasMicrophonePermission(context: Context): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return true
+    return ContextCompat.checkSelfPermission(
+        context,
+        Manifest.permission.RECORD_AUDIO,
     ) == PackageManager.PERMISSION_GRANTED
 }
 
