@@ -31,7 +31,8 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -85,8 +86,9 @@ fun SkinModelView(
     var zoom by remember { mutableFloatStateOf(1f) }
 
     val context = LocalContext.current
-    val skin: Bitmap? by produceState<Bitmap?>(initialValue = null, key1 = skinFileName) {
-        value = withContext(Dispatchers.IO) {
+    var skin by remember(skinFileName) { mutableStateOf<Bitmap?>(null) }
+    LaunchedEffect(skinFileName) {
+        skin = withContext(Dispatchers.IO) {
             if (skinFileName == null) {
                 defaultSkin(context)
             } else {

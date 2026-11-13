@@ -43,7 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -263,8 +263,9 @@ private fun ModRow(hit: ModrinthHit, onClick: () -> Unit) {
 /** Decodes the project icon off the main thread; falls back to a tile. */
 @Composable
 private fun ModIcon(url: String, size: Dp) {
-    val bitmap: ImageBitmap? by produceState<ImageBitmap?>(initialValue = null, key1 = url) {
-        value = if (url.isBlank()) {
+    var bitmap by remember(url) { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(url) {
+        bitmap = if (url.isBlank()) {
             null
         } else {
             withContext(Dispatchers.IO) {

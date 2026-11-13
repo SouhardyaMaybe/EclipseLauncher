@@ -11,7 +11,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -104,11 +107,9 @@ fun InstanceIcon(
     size: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val icon: ImageBitmap? by produceState<ImageBitmap?>(
-        initialValue = null,
-        key1 = instance.iconFileName,
-    ) {
-        value = instance.iconFileName
+    var icon by remember(instance.iconFileName) { mutableStateOf<ImageBitmap?>(null) }
+    LaunchedEffect(instance.iconFileName) {
+        icon = instance.iconFileName
             ?.let { media.resolve(it) }
             ?.let { file ->
                 withContext(Dispatchers.IO) {

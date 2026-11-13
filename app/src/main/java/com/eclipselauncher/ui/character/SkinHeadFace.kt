@@ -21,7 +21,9 @@ import android.graphics.Bitmap
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.FilterQuality
@@ -47,8 +49,9 @@ fun SkinHeadFace(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val bitmap: Bitmap? by produceState<Bitmap?>(initialValue = null, key1 = skinFileName) {
-        value = withContext(Dispatchers.IO) {
+    var bitmap by remember(skinFileName) { mutableStateOf<Bitmap?>(null) }
+    LaunchedEffect(skinFileName) {
+        bitmap = withContext(Dispatchers.IO) {
             if (skinFileName == null) {
                 defaultSkin(context)
             } else {
