@@ -71,6 +71,7 @@ fun MarketPage(client: ModrinthClient) {
     var error by remember { mutableStateOf<String?>(null) }
 
     val networkError = stringResource(R.string.market_error)
+    val marketComingSoon = stringResource(R.string.market_coming_soon)
 
     fun runSearch(term: String) {
         appliedQuery = term
@@ -107,7 +108,7 @@ fun MarketPage(client: ModrinthClient) {
                     onClick = {
                         Toast.makeText(
                             context,
-                            context.getString(R.string.market_coming_soon),
+                            marketComingSoon,
                             Toast.LENGTH_SHORT,
                         ).show()
                     },

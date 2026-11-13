@@ -125,6 +125,7 @@ fun EclipseApp() {
     val playTaskTitle = stringResource(R.string.play_task_title)
     val importTaskTitle = stringResource(R.string.import_task_title)
     val importError = stringResource(R.string.error_import_file)
+    val instanceCreatedToast = stringResource(R.string.instance_created_toast)
 
     fun play(instance: Instance) {
         Toast.makeText(context, playToast, Toast.LENGTH_SHORT).show()
@@ -293,7 +294,7 @@ fun EclipseApp() {
                                     )
                                     Toast.makeText(
                                         context,
-                                        context.getString(R.string.instance_created_toast),
+                                        instanceCreatedToast,
                                         Toast.LENGTH_SHORT,
                                     ).show()
                                     pendingSelectionId = created.id

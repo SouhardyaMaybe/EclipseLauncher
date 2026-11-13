@@ -157,23 +157,24 @@ fun ManageContentScreen(
         )
     }
 
-    // Import .zip launcher
-    val importLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-    ) { uri: Uri? ->
-        uri?.let {
-            Toast.makeText(context, context.getString(R.string.manage_content_import_started), Toast.LENGTH_SHORT).show()
-        }
-    }
-
     // Pre-load strings for use in non-composable callbacks
     val manageContentTitle = stringResource(R.string.manage_content_title)
     val manageContentImport = stringResource(R.string.manage_content_import)
+    val manageContentImportStarted = stringResource(R.string.manage_content_import_started)
     val cdBackStr = stringResource(R.string.cd_back)
     val actionSearchStr = stringResource(R.string.action_search)
     val cdSearchStr = stringResource(R.string.cd_search)
     val providerComingSoonStr = stringResource(R.string.provider_coming_soon)
     val marketErrorStr = stringResource(R.string.market_error)
+
+    // Import .zip launcher
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+    ) { uri: Uri? ->
+        uri?.let {
+            Toast.makeText(context, manageContentImportStarted, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(

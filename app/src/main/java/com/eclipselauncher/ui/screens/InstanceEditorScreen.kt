@@ -164,7 +164,7 @@ fun InstanceEditorScreen(
                 } else {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.error_media_import),
+                        errorMediaImport,
                         Toast.LENGTH_SHORT,
                     ).show()
                 }
@@ -219,6 +219,12 @@ fun InstanceEditorScreen(
         Renderers.IDS.indexOf(renderer).takeIf { it >= 0 } ?: rendererOptions.lastIndex
     }
 
+    // Toast messages pre-loaded for callbacks
+    val errorMediaImport = stringResource(R.string.error_media_import)
+    val instanceCopiedToast = stringResource(R.string.instance_copied_toast)
+    val instanceCreatedToast = stringResource(R.string.instance_created_toast)
+    val instanceDeletedToast = stringResource(R.string.instance_deleted_toast)
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -249,7 +255,7 @@ fun InstanceEditorScreen(
                                 onDuplicate(requireNotNull(existing))
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.instance_copied_toast),
+                                    instanceCopiedToast,
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             },
@@ -286,7 +292,7 @@ fun InstanceEditorScreen(
                             if (!isEditing) {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.instance_created_toast),
+                                    instanceCreatedToast,
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             }
@@ -519,7 +525,7 @@ fun InstanceEditorScreen(
                         onDelete(existing)
                         Toast.makeText(
                             context,
-                            context.getString(R.string.instance_deleted_toast),
+                            instanceDeletedToast,
                             Toast.LENGTH_SHORT,
                         ).show()
                     },
