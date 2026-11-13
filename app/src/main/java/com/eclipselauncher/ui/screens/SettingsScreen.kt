@@ -839,8 +839,8 @@ private fun MiscSettings(settings: SettingsStore) {
                 stringResource(R.string.settings_key_set)
             },
         )
+        )
     }
-
     if (showKeyDialog) {
         CurseKeyDialog(
             initial = curseKey,
@@ -854,6 +854,7 @@ private fun MiscSettings(settings: SettingsStore) {
             },
             onDismiss = { showKeyDialog = false },
         )
+    }
     }
 
 /** The CurseForge key editor: a text field plus an explicit clear action. */
