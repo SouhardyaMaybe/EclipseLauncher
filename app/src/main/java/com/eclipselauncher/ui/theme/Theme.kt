@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
 import com.eclipselauncher.R
 import com.eclipselauncher.data.SettingsStore
+import com.eclipselauncher.data.ThemeMode
 
 /**
  * Geist — Vercel's minimal grotesque (OFL 1.1) — is the whole UI's face. It
@@ -125,15 +126,15 @@ private fun isSystemDarkMode(context: Context): Boolean {
  */
 private fun eclipseColorScheme(context: Context, themeMode: SettingsStore.ThemeMode): androidx.compose.material3.ColorScheme =
     when (themeMode) {
-        SettingsStore.ThemeMode.DYNAMIC -> {
+        ThemeMode.DYNAMIC -> {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 if (isSystemDarkMode(context)) dynamicDarkColorScheme(context)
                 else dynamicLightColorScheme(context)
             } else if (isSystemDarkMode(context)) EclipseDarkColorScheme
             else EclipseLightColorScheme
         }
-        SettingsStore.ThemeMode.DARK -> EclipseDarkColorScheme
-        SettingsStore.ThemeMode.LIGHT -> EclipseLightColorScheme
+        ThemeMode.DARK -> EclipseDarkColorScheme
+        ThemeMode.LIGHT -> EclipseLightColorScheme
     }
 
 /**
@@ -166,7 +167,7 @@ private val EclipseTypography: Typography by lazy {
 
 @Composable
 fun EclipseTheme(
-    themeMode: SettingsStore.ThemeMode = SettingsStore.ThemeMode.DYNAMIC,
+    themeMode: SettingsStore.ThemeMode = ThemeMode.DYNAMIC,
     content: @Composable () -> Unit,
 ) {
     val context = LocalContext.current
