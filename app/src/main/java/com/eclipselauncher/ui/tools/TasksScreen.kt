@@ -7,19 +7,18 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,8 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -107,7 +108,7 @@ fun TasksScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -128,7 +129,7 @@ fun TasksScreen(
                 onClick = { showTasks = true }
             ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.filled.ListAlt,
+                    imageVector = Icons.Default.ListAlt,
                     contentDescription = "Show tasks",
                     tint = EclipseColors.DarkOnPrimary,
                     modifier = Modifier.size(24.dp).padding(16.dp)
@@ -150,7 +151,7 @@ fun TaskRow(
             .fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         color = EclipseColors.DarkSurfaceVariant,
-        border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+        border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
     ) {
         Column(
             modifier = Modifier
@@ -167,7 +168,7 @@ fun TaskRow(
                     modifier = Modifier.size(10.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.foundation.Canvas(modifier = Modifier.size(10.dp)) {
+                    Canvas(modifier = Modifier.size(10.dp)) {
                         drawCircle(
                             color = when (task.status) {
                                 TaskInfo.TaskStatus.RUNNING -> EclipseColors.DarkPrimary
@@ -207,7 +208,7 @@ fun TaskRow(
                 ) {
                     // Pause/Play
                     Icon(
-                        imageVector = if (task.status == TaskInfo.TaskStatus.RUNNING) Pause else PlayArrow,
+                        imageVector = if (task.status == TaskInfo.TaskStatus.RUNNING) Icons.Default.Pause else Icons.Default.PlayArrow,
                         contentDescription = if (task.status == TaskInfo.TaskStatus.RUNNING) "Pause" : "Resume",
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
@@ -218,7 +219,7 @@ fun TaskRow(
                     
                     // Cancel
                     Icon(
-                        imageVector = Close,
+                        imageVector = Icons.Default.Close,
                         contentDescription = "Cancel",
                         tint = EclipseColors.DarkError,
                         modifier = Modifier
@@ -229,7 +230,7 @@ fun TaskRow(
                     
                     // Expand
                     Icon(
-                        imageVector = if (task.isExpanded) ExpandLess else ExpandMore,
+                        imageVector = if (task.isExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
                         contentDescription = if (task.isExpanded) "Collapse" : "Expand",
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
@@ -242,7 +243,7 @@ fun TaskRow(
             
             // Progress bar
             if (task.progress >= 0) {
-                androidx.compose.material3.LinearProgressIndicator(
+                LinearProgressIndicator(
                     progress = task.progress,
                     modifier = Modifier
                         .fillMaxWidth()

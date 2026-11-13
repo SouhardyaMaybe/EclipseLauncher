@@ -4,12 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Divider
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,7 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -79,7 +83,7 @@ fun AccountSwitcherPopup(
             }
 
             // Divider
-            androidx.compose.foundation.Divider(
+            Divider(
                 color = EclipseColors.DarkOutlineVariant,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -88,8 +92,7 @@ fun AccountSwitcherPopup(
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 12.dp)
-                    .fillMaxWidth(),
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
                 shape = RoundedCornerShape(12.dp),
                 color = EclipseColors.DarkSurfaceVariant,
                 onClick = { onAddAccount(); onDismiss() }
@@ -103,7 +106,7 @@ fun AccountSwitcherPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.default.Add,
+                        imageVector = Icons.Default.Add,
                         contentDescription = "Add account",
                         tint = EclipseColors.DarkPrimary,
                         modifier = Modifier.size(20.dp).padding(end = 8.dp)
@@ -155,7 +158,7 @@ private fun AccountSwitcherRow(
                         modifier = Modifier.size(10.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        androidx.compose.foundation.Canvas(modifier = Modifier.size(10.dp)) {
+                        Canvas(modifier = Modifier.size(10.dp)) {
                             drawCircle(
                                 color = EclipseColors.DarkPrimary,
                                 radius = 5.dp.toPx()
@@ -163,11 +166,11 @@ private fun AccountSwitcherRow(
                         }
                     }
                 } else {
-                    androidx.compose.foundation.Canvas(modifier = Modifier.size(20.dp)) {
+                    Canvas(modifier = Modifier.size(20.dp)) {
                         drawCircle(
                             color = EclipseColors.DarkOutlineVariant,
                             radius = 10.dp.toPx(),
-                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx())
+                            style = Stroke(width = 2.dp.toPx())
                         )
                     }
                 }

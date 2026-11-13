@@ -8,28 +8,32 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.R
 import com.eclipselauncher.model.Instance
@@ -60,7 +64,7 @@ fun LoaderPickerScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -74,7 +78,7 @@ fun LoaderPickerScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
@@ -237,7 +241,7 @@ fun LoaderCard(
             EclipseColors.DarkSurfaceVariant.copy(alpha = 0.5f) 
         else 
             EclipseColors.DarkSurface,
-        border = if (isSelected && isAvailable) androidx.compose.ui.graphics.BorderStroke(2.dp, EclipseColors.DarkPrimary) else null,
+        border = if (isSelected && isAvailable) BorderStroke(2.dp, EclipseColors.DarkPrimary) else null,
         onClick = if (isAvailable) onClick else null
     ) {
         Column {
@@ -300,7 +304,7 @@ fun LoaderCard(
                                 onClick = { onVersionSelect("") }
                             ) {
                                 Icon(
-                                    imageVector = Close,
+                                    imageVector = Icons.Default.Close,
                                     contentDescription = "Clear version",
                                     tint = if (isSelected) EclipseColors.DarkOnPrimary else EclipseColors.DarkOnSurfaceVariant,
                                     modifier = Modifier.size(20.dp).padding(8.dp)
@@ -308,7 +312,7 @@ fun LoaderCard(
                             }
                         }
                         Icon(
-                            imageVector = androidx.compose.material.icons.default.ExpandLess,
+                            imageVector = Icons.Default.ExpandLess,
                             contentDescription = "Close",
                             tint = if (isSelected) EclipseColors.DarkOnPrimary else EclipseColors.DarkOnSurfaceVariant,
                             modifier = Modifier.size(24.dp)
@@ -316,7 +320,7 @@ fun LoaderCard(
                     }
                 } else if (showDropdown) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.default.ExpandMore,
+                        imageVector = Icons.Default.ExpandMore,
                         contentDescription = "Expand",
                         tint = if (!isAvailable) EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f)
                             else if (isSelected) EclipseColors.DarkOnPrimary
@@ -328,7 +332,7 @@ fun LoaderCard(
 
             // Dropdown version list
             if (showDropdown && dropdownExpanded && versions.isNotEmpty()) {
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
@@ -363,7 +367,7 @@ fun LoaderCard(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     // Radio
-                                    androidx.compose.foundation.Canvas(
+                                    Canvas(
                                         modifier = Modifier.size(24.dp)
                                     ) {
                                         val center = androidx.compose.ui.geometry.Offset(12.dp.toPx(), 12.dp.toPx())
@@ -373,7 +377,7 @@ fun LoaderCard(
                                                 else EclipseColors.DarkOutlineVariant,
                                             center = center,
                                             radius = radius,
-                                            style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx())
+                                            style = Stroke(width = 2.dp.toPx())
                                         )
                                         if (isSelectedVersion) {
                                             drawCircle(

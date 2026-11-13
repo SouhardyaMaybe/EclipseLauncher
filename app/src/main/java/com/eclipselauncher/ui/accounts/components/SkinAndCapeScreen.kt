@@ -7,31 +7,34 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eclipselauncher.R
 import com.eclipselauncher.ui.theme.EclipseColors
 import com.eclipselauncher.ui.theme.EclipseLauncherTheme
 
 @Composable
 fun SkinAndCapeScreen(
-    viewModel: AccountsViewModel = viewModel(),
     onNavigate: (String) -> Unit
 ) {
     EclipseLauncherTheme {
@@ -40,7 +43,7 @@ fun SkinAndCapeScreen(
             color = EclipseColors.DarkBackground
         ) {
             // Modal dialog - 340dp wide, nearly full phone width
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f)),
@@ -70,7 +73,7 @@ fun SkinAndCapeScreen(
                                 color = EclipseColors.DarkOnSurface
                             )
                             Icon(
-                                imageVector = Close,
+                                imageVector = Icons.Default.Close,
                                 contentDescription = "Close",
                                 tint = EclipseColors.DarkOnSurface,
                                 modifier = Modifier
@@ -86,9 +89,9 @@ fun SkinAndCapeScreen(
                                 .height(240.dp),
                             shape = RoundedCornerShape(16.dp),
                             color = EclipseColors.DarkSurfaceVariant,
-                            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+                            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
                         ) {
-                            androidx.compose.foundation.layout.Box(
+                            Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.Center
                             ) {
@@ -102,16 +105,16 @@ fun SkinAndCapeScreen(
                                         modifier = Modifier.size(120.dp),
                                         shape = RoundedCornerShape(8.dp),
                                         color = EclipseColors.DarkSurface,
-                                        border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+                                        border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
                                     ) {
-                                        androidx.compose.foundation.layout.Box(
+                                        Box(
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             androidx.compose.foundation.Image(
-                                                painter = androidx.compose.ui.res.painterResource(id = com.eclipselauncher.R.drawable.steve),
+                                                painter = painterResource(id = R.drawable.steve),
                                                 contentDescription = "Skin preview",
-                                                contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                                                contentScale = ContentScale.Fit,
                                                 modifier = Modifier.size(100.dp)
                                             )
                                         }
@@ -152,7 +155,7 @@ fun SkinAndCapeScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = androidx.compose.material.icons.default.Image,
+                                            imageVector = Icons.Default.Image,
                                             contentDescription = "Pick skin",
                                             tint = EclipseColors.DarkOnPrimary,
                                             modifier = Modifier.size(20.dp).padding(end = 8.dp)
@@ -173,7 +176,7 @@ fun SkinAndCapeScreen(
                                         .height(56.dp),
                                     shape = RoundedCornerShape(16.dp),
                                     color = EclipseColors.DarkError.copy(alpha = 0.15f),
-                                    border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkError),
+                                    border = BorderStroke(1.dp, EclipseColors.DarkError),
                                     onClick = { /* Clear skin */ }
                                 ) {
                                     Row(
@@ -184,7 +187,7 @@ fun SkinAndCapeScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = androidx.compose.material.icons.default.Delete,
+                                            imageVector = Icons.Default.Delete,
                                             contentDescription = "Clear skin",
                                             tint = EclipseColors.DarkError,
                                             modifier = Modifier.size(20.dp).padding(end = 8.dp)
@@ -220,7 +223,7 @@ fun SkinAndCapeScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = androidx.compose.material.icons.default.Favorite,
+                                            imageVector = Icons.Default.Favorite,
                                             contentDescription = "Pick cape",
                                             tint = EclipseColors.DarkOnPrimary,
                                             modifier = Modifier.size(20.dp).padding(end = 8.dp)
@@ -241,7 +244,7 @@ fun SkinAndCapeScreen(
                                         .height(56.dp),
                                     shape = RoundedCornerShape(16.dp),
                                     color = EclipseColors.DarkError.copy(alpha = 0.15f),
-                                    border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkError),
+                                    border = BorderStroke(1.dp, EclipseColors.DarkError),
                                     onClick = { /* Clear cape */ }
                                 ) {
                                     Row(
@@ -252,7 +255,7 @@ fun SkinAndCapeScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = androidx.compose.material.icons.default.Delete,
+                                            imageVector = Icons.Default.Delete,
                                             contentDescription = "Clear cape",
                                             tint = EclipseColors.DarkError,
                                             modifier = Modifier.size(20.dp).padding(end = 8.dp)

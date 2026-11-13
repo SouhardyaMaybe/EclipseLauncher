@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -40,7 +41,7 @@ fun DownloadSourcePickerModal(
                 modifier = Modifier
                     .width(340.dp)
                     .padding(vertical = 24.dp),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(24.dp),
                 color = EclipseColors.DarkSurface
             ) {
                 Column(
@@ -56,7 +57,7 @@ fun DownloadSourcePickerModal(
                     )
                     
                     // Source options
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 8.dp, bottom = 16.dp)
@@ -74,7 +75,7 @@ fun DownloadSourcePickerModal(
                                         .fillMaxWidth()
                                         .height(48.dp)
                                         .padding(horizontal = 8.dp, vertical = 4.dp),
-                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     color = if (isSelected) 
                                         EclipseColors.DarkPrimary.copy(alpha = 0.15f) 
                                     else 
@@ -95,7 +96,7 @@ fun DownloadSourcePickerModal(
                                             color = if (isSelected) EclipseColors.DarkPrimary else EclipseColors.DarkOnSurface
                                         )
                                         if (isSelected) {
-                                            androidx.compose.foundation.Canvas(modifier = Modifier.size(24.dp)) {
+                                            Canvas(modifier = Modifier.size(24.dp)) {
                                                 val center = androidx.compose.ui.geometry.Offset(12.dp.toPx(), 12.dp.toPx())
                                                 drawCircle(
                                                     color = EclipseColors.DarkPrimary,

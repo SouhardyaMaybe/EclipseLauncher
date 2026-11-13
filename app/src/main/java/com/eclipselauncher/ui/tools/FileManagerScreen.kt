@@ -7,14 +7,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.overflow.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -47,7 +50,7 @@ fun FileManagerScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -65,7 +68,7 @@ fun FileManagerScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = androidx.compose.material.icons.filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
                             tint = EclipseColors.DarkPrimary,
                             modifier = Modifier
@@ -100,14 +103,14 @@ fun FileManagerScreen(
                             text = currentPath,
                             fontSize = 14.sp,
                             color = EclipseColors.DarkOnSurface,
-                            overflow = androidx.compose.ui.text.overflow.TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
                 // File list
                 if (entries.isEmpty()) {
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
@@ -190,19 +193,19 @@ fun FileEntryRow(
     onClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
-    val icon = if (entry.isDirectory) androidx.compose.material.icons.filled.Folder else androidx.compose.material.icons.filled.Description
-    val iconColor = if (entry.isDirectory) com.eclipselauncher.ui.theme.EclipseColors.DarkPrimary else com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurfaceVariant
+    val icon = if (entry.isDirectory) Icons.Default.Folder else Icons.Default.Description
+    val iconColor = if (entry.isDirectory) EclipseColors.DarkPrimary else EclipseColors.DarkOnSurfaceVariant
 
     Surface(
-        modifier = androidx.compose.ui.Modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-        color = com.eclipselauncher.ui.theme.EclipseColors.DarkSurface,
+        shape = RoundedCornerShape(12.dp),
+        color = EclipseColors.DarkSurface,
         onClick = if (entry.isDirectory) onClick else null
     ) {
         Row(
-            modifier = androidx.compose.ui.Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -216,20 +219,20 @@ fun FileEntryRow(
                     imageVector = icon,
                     contentDescription = if (entry.isDirectory) "Folder" else "File",
                     tint = iconColor,
-                    modifier = androidx.compose.ui.Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp)
                 )
                 Column {
                     Text(
                         text = entry.name,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        color = com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurface
+                        color = EclipseColors.DarkOnSurface
                     )
                     if (!entry.isDirectory) {
                         Text(
                             text = formatSize(entry.sizeBytes),
                             fontSize = 11.sp,
-                            color = com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurfaceVariant
+                            color = EclipseColors.DarkOnSurfaceVariant
                         )
                     }
                 }
@@ -237,10 +240,10 @@ fun FileEntryRow(
             
             // Delete button
             Icon(
-                imageVector = androidx.compose.material.icons.default.Delete,
+                imageVector = Icons.Default.Delete,
                 contentDescription = "Delete",
-                tint = com.eclipselauncher.ui.theme.EclipseColors.DarkError,
-                modifier = androidx.compose.ui.Modifier
+                tint = EclipseColors.DarkError,
+                modifier = Modifier
                     .size(24.dp)
                     .padding(8.dp),
                 onClick = onDeleteClick

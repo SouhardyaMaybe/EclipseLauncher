@@ -8,30 +8,33 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.R
 import com.eclipselauncher.model.GameVersion
@@ -61,7 +64,7 @@ fun CreateInstanceScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -75,7 +78,7 @@ fun CreateInstanceScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
@@ -97,7 +100,7 @@ fun CreateInstanceScreen(
                         onClick = { onNavigate("tools/mod_market") }
                     ) {
                         Icon(
-                            imageVector = Archive,
+                            imageVector = Icons.Default.Archive,
                             contentDescription = "Modpack browser",
                             tint = EclipseColors.DarkOnSurface,
                             modifier = Modifier
@@ -115,16 +118,16 @@ fun CreateInstanceScreen(
 
                 // Version list
                 if (versionsLoading) {
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        androidx.compose.material3.CircularProgressIndicator(color = EclipseColors.DarkPrimary)
+                        CircularProgressIndicator(color = EclipseColors.DarkPrimary)
                     }
                 } else if (versionsError != null) {
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
@@ -134,7 +137,7 @@ fun CreateInstanceScreen(
                             text = versionsError,
                             fontSize = 16.sp,
                             color = EclipseColors.DarkError,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            textAlign = TextAlign.Center
                         )
                     }
                 } else {
@@ -185,7 +188,7 @@ fun VersionFilterChips(
                 ) {
                     if (isSelected) {
                         Icon(
-                            imageVector = Check,
+                            imageVector = Icons.Default.Check,
                             contentDescription = "",
                             tint = EclipseColors.DarkOnPrimary,
                             modifier = Modifier.size(16.dp).padding(end = 6.dp)
@@ -251,7 +254,7 @@ fun VersionCard(
             .padding(horizontal = 4.dp),
         shape = RoundedCornerShape(16.dp),
         color = if (isSelected) EclipseColors.DarkPrimary.copy(alpha = 0.15f) else EclipseColors.DarkSurface,
-        border = if (isSelected) androidx.compose.ui.graphics.BorderStroke(2.dp, EclipseColors.DarkPrimary) else null,
+        border = if (isSelected) BorderStroke(2.dp, EclipseColors.DarkPrimary) else null,
         onClick = onClick
     ) {
         Row(
@@ -292,7 +295,7 @@ fun VersionCard(
                     )
                 }
                 Icon(
-                    imageVector = ChevronRight,
+                    imageVector = Icons.Default.ChevronRight,
                     contentDescription = "Select",
                     tint = EclipseColors.DarkOnSurfaceVariant,
                     modifier = Modifier.size(24.dp)

@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,11 +21,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.overflow.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eclipselauncher.R
@@ -44,7 +49,7 @@ fun InstancePanel(
                 .padding(horizontal = 20.dp),
             shape = RoundedCornerShape(18.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
             onClick = onInstanceClick
         ) {
             Row(
@@ -81,7 +86,7 @@ fun InstancePanel(
                         fontWeight = FontWeight.Medium,
                         color = EclipseColors.DarkOnSurface,
                         maxLines = 1,
-                        overflow = androidx.compose.ui.text.overflow.TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = "${instance.version} · ${instance.loader.name}",
@@ -96,7 +101,7 @@ fun InstancePanel(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.default.ExpandMore,
+                        imageVector = Icons.Default.ExpandMore,
                         contentDescription = "Switch instance",
                         tint = EclipseColors.DarkOnSurfaceVariant,
                         modifier = Modifier
@@ -111,7 +116,7 @@ fun InstancePanel(
                         onClick = onEditClick
                     ) {
                         Icon(
-                            imageVector = androidx.compose.material.icons.default.Edit,
+                            imageVector = Icons.Default.Edit,
                             contentDescription = "Edit instance",
                             tint = EclipseColors.DarkOnSurface,
                             modifier = Modifier
@@ -130,7 +135,7 @@ fun InstancePanel(
                 .padding(horizontal = 20.dp),
             shape = RoundedCornerShape(18.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
             onClick = onInstanceClick
         ) {
             Row(
@@ -143,7 +148,7 @@ fun InstancePanel(
             ) {
                 // Plus icon
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Add,
+                    imageVector = Icons.Default.Add,
                     contentDescription = "Create instance",
                     tint = EclipseColors.DarkPrimary,
                     modifier = Modifier.size(24.dp)
@@ -193,7 +198,7 @@ fun PlayBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = androidx.compose.material.icons.default.PlayArrow,
+                imageVector = Icons.Default.PlayArrow,
                 contentDescription = "Play",
                 tint = if (isEnabled) EclipseColors.DarkOnPrimary else EclipseColors.DarkOnSurfaceVariant,
                 modifier = Modifier.size(24.dp).padding(end = 8.dp)

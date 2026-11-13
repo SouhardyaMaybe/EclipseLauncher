@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -48,7 +51,7 @@ fun RendererPickerModal(
                 modifier = Modifier
                     .width(340.dp)
                     .height(400.dp),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+                shape = RoundedCornerShape(24.dp),
                 color = EclipseColors.DarkSurface
             ) {
                 Column(
@@ -65,7 +68,7 @@ fun RendererPickerModal(
                     )
                     
                     // Renderer list
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
@@ -84,7 +87,7 @@ fun RendererPickerModal(
                                         .fillMaxWidth()
                                         .height(48.dp)
                                         .padding(horizontal = 8.dp, vertical = 4.dp),
-                                    shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     color = if (isSelected) 
                                         EclipseColors.DarkPrimary.copy(alpha = 0.15f) 
                                     else 
@@ -106,7 +109,7 @@ fun RendererPickerModal(
                                             modifier = Modifier.padding(end = 16.dp)
                                         )
                                         if (isSelected) {
-                                            androidx.compose.foundation.Canvas(modifier = Modifier.size(24.dp)) {
+                                            Canvas(modifier = Modifier.size(24.dp)) {
                                                 val center = androidx.compose.ui.geometry.Offset(12.dp.toPx(), 12.dp.toPx())
                                                 drawCircle(
                                                     color = EclipseColors.DarkPrimary,

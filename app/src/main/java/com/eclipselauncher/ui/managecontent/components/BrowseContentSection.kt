@@ -5,22 +5,29 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Divider
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.overflow.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eclipselauncher.model.ModInfo
@@ -73,7 +80,7 @@ fun BrowseContentSection(
         )
 
         // Results area
-        androidx.compose.foundation.layout.Box(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
@@ -81,7 +88,7 @@ fun BrowseContentSection(
             contentAlignment = Alignment.TopCenter
         ) {
             if (isSearching) {
-                androidx.compose.material3.CircularProgressIndicator(
+                CircularProgressIndicator(
                     color = EclipseColors.DarkPrimary,
                     modifier = Modifier.padding(top = 32.dp)
                 )
@@ -140,7 +147,7 @@ fun ProviderPills(
                 modifier = Modifier
                     .height(36.dp)
                     .padding(horizontal = 12.dp),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(18.dp),
+                shape = RoundedCornerShape(18.dp),
                 color = if (isSelected) 
                     if (isDisabled) EclipseColors.DarkPrimary.copy(alpha = 0.5f) 
                     else EclipseColors.DarkPrimary 
@@ -158,7 +165,7 @@ fun ProviderPills(
                 ) {
                     if (isSelected) {
                         Icon(
-                            imageVector = Check,
+                            imageVector = Icons.Default.Check,
                             contentDescription = "",
                             tint = if (isDisabled) EclipseColors.DarkOnPrimary.copy(alpha = 0.5f) else EclipseColors.DarkOnPrimary,
                             modifier = Modifier.size(16.dp).padding(end = 6.dp)
@@ -199,9 +206,9 @@ fun SearchField(
             modifier = Modifier
                 .weight(1f)
                 .height(48.dp),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(12.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
         ) {
             Row(
                 modifier = Modifier
@@ -210,12 +217,12 @@ fun SearchField(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Search,
+                    imageVector = Icons.Default.Search,
                     contentDescription = "Search",
                     tint = EclipseColors.DarkOnSurfaceVariant,
                     modifier = Modifier.size(20.dp).padding(end = 8.dp)
                 )
-                androidx.compose.material3.TextField(
+                TextField(
                     value = query,
                     onValueChange = onQueryChange,
                     placeholder = { Text(text = "Search content", color = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f)) },
@@ -223,10 +230,10 @@ fun SearchField(
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                     singleLine = true,
-                    colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+                    colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
-                        textColor = EclipseColors.DarkOnSurface,
-                        placeholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                        inputTextColor = EclipseColors.DarkOnSurface,
+                        placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                         cursorColor = EclipseColors.DarkPrimary,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
@@ -241,12 +248,12 @@ fun SearchField(
             modifier = Modifier
                 .width(48.dp)
                 .height(48.dp),
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+            shape = RoundedCornerShape(12.dp),
             color = EclipseColors.DarkPrimary,
             onClick = onSearchClick
         ) {
             Icon(
-                imageVector = androidx.compose.material.icons.default.Search,
+                imageVector = Icons.Default.Search,
                 contentDescription = "Search",
                 tint = EclipseColors.DarkOnPrimary,
                 modifier = Modifier.size(24.dp).padding(12.dp)
@@ -284,7 +291,7 @@ fun BrowseResultCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(12.dp),
         color = EclipseColors.DarkSurface,
         onClick = onClick
     ) {
@@ -305,11 +312,11 @@ fun BrowseResultCard(
                 ) {
                     Surface(
                         modifier = Modifier.size(56.dp),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = EclipseColors.DarkSurfaceVariant,
-                        border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+                        border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
                     ) {
-                        androidx.compose.foundation.layout.Box(
+                        Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
@@ -344,7 +351,7 @@ fun BrowseResultCard(
                         fontSize = 13.sp,
                         color = EclipseColors.DarkOnSurfaceVariant,
                         maxLines = 2,
-                        overflow = androidx.compose.ui.text.overflow.TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis
                     )
                     if (item.categories.isNotEmpty() || item.gameVersions.isNotEmpty()) {
                         Text(
@@ -357,7 +364,7 @@ fun BrowseResultCard(
 
                 // Download button (placeholder)
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.FileDownload,
+                    imageVector = Icons.Default.FileDownload,
                     contentDescription = "Download",
                     tint = EclipseColors.DarkOnSurfaceVariant,
                     modifier = Modifier.size(24.dp).padding(8.dp)

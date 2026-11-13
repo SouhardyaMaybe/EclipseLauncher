@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -70,7 +72,7 @@ fun AccountPanel(
                 .padding(horizontal = 20.dp),
             shape = RoundedCornerShape(14.dp),
             color = EclipseColors.DarkSurfaceVariant.copy(alpha = 0.8f),
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
             onClick = onAccountClick
         ) {
             Row(
@@ -102,7 +104,7 @@ fun AccountPanel(
                 
                 // Caret icon
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.ExpandMore,
+                    imageVector = Icons.Default.ExpandMore,
                     contentDescription = "Switch account",
                     tint = EclipseColors.DarkPrimary,
                     modifier = Modifier.size(40.dp)

@@ -1,16 +1,19 @@
 package com.eclipselauncher.ui.accounts.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,7 +60,7 @@ fun CreateLocalAccountDialog(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 color = EclipseColors.DarkSurfaceVariant,
-                border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+                border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
             ) {
                 TextField(
                     value = username,
@@ -68,10 +72,10 @@ fun CreateLocalAccountDialog(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                     singleLine = true,
-                    colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+                    colors = TextFieldDefaults.textFieldColors(
                         containerColor = Color.Transparent,
-                        textColor = EclipseColors.DarkOnSurface,
-                        placeholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                        inputTextColor = EclipseColors.DarkOnSurface,
+                        placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                         cursorColor = EclipseColors.DarkPrimary,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
@@ -104,7 +108,7 @@ fun CreateLocalAccountDialog(
                 ) {
                     Text(text = "Cancel", fontWeight = FontWeight.Medium)
                 }
-                androidx.compose.foundation.layout.Box(modifier = Modifier.width(12.dp))
+                Box(modifier = Modifier.width(12.dp))
                 Button(
                     onClick = { if (isValid) onCreate(username) },
                     enabled = isValid,

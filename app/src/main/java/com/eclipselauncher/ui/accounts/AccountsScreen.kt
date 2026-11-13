@@ -7,24 +7,27 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.model.Account
 import com.eclipselauncher.ui.accounts.components.CreateLocalAccountDialog
@@ -71,7 +74,7 @@ fun AccountsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
                             tint = EclipseColors.DarkOnSurface,
                             modifier = Modifier
@@ -102,7 +105,7 @@ fun AccountsScreen(
                                 .height(48.dp),
                             shape = RoundedCornerShape(12.dp),
                             color = EclipseColors.DarkSurface,
-                            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
+                            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
                             onClick = { viewModel.startMicrosoftSignIn() }
                         ) {
                             Row(
@@ -112,7 +115,7 @@ fun AccountsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = androidx.compose.material.icons.default.AccountCircle,
+                                    imageVector = Icons.Default.AccountCircle,
                                     contentDescription = "Microsoft",
                                     tint = EclipseColors.DarkPrimary,
                                     modifier = Modifier.size(24.dp).padding(end = 12.dp)
@@ -143,7 +146,7 @@ fun AccountsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Add,
+                                    imageVector = Icons.Default.Add,
                                     contentDescription = "Add",
                                     tint = EclipseColors.DarkOnPrimary,
                                     modifier = Modifier.size(20.dp).padding(end = 8.dp)
@@ -158,7 +161,7 @@ fun AccountsScreen(
                         }
 
                         // Account list
-                        if (accounts.isEmpty()) {
+                        if (accounts.value.isEmpty()) {
                             Text(
                                 text = "No account Here",
                                 fontSize = 16.sp,
@@ -175,7 +178,7 @@ fun AccountsScreen(
                                     .padding(top = 8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                accounts.forEach { account ->
+                                accounts.value.forEach { account ->
                                     AccountRow(
                                         account = account,
                                         onClick = { viewModel.selectAccount(account) },
@@ -275,74 +278,75 @@ fun AccountRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Skin head (44dp)
+            // Account avatar
             Box(
-                modifier = Modifier.size(44.dp),
-                contentAlignment = Alignment.Center
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(EclipseColors.DarkPrimary.copy(alpha = 0.2f))
             ) {
-                androidx.compose.foundation.Image(
-                    painter = androidx.compose.ui.res.painterResource(id = com.eclipselauncher.R.drawable.steve),
-                    contentDescription = "Skin",
-                    contentScale = androidx.compose.ui.layout.ContentScale.Fit,
-                    modifier = Modifier.size(44.dp)
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = null,
+                    tint = EclipseColors.DarkPrimary,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.Center)
                 )
             }
 
-            // Username and type
+            // Account info
             Column(
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = account.username,
+                    text = account.displayName,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     color = EclipseColors.DarkOnSurface
                 )
-                Text(
-                    text = when (account.type) {
-                        Account.AccountType.LOCAL -> "Local"
-                        Account.AccountType.MICROSOFT -> "Microsoft"
-                    },
-                    fontSize = 12.sp,
-                    color = EclipseColors.DarkOnSurfaceVariant
-                )
-            }
-
-            // Trailing icons
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (isSelected) {
-                    Icon(
-                        imageVector = androidx.compose.material.icons.default.Check,
-                        contentDescription = "Selected",
-                        tint = EclipseColors.DarkPrimary,
-                        modifier = Modifier.size(20.dp)
+                if (account.type == Account.AccountType.Microsoft) {
+                    Text(
+                        text = "Microsoft Account",
+                        fontSize = 12.sp,
+                        color = EclipseColors.DarkOnSurfaceVariant
+                    )
+                } else {
+                    Text(
+                        text = "Local Account",
+                        fontSize = 12.sp,
+                        color = EclipseColors.DarkOnSurfaceVariant
                     )
                 }
+            }
+
+            // Action buttons
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Edit,
-                    contentDescription = "Edit skin",
-                    tint = EclipseColors.DarkPrimary,
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit skin/cape",
+                    tint = EclipseColors.DarkOnSurfaceVariant,
                     modifier = Modifier
-                        .size(20.dp)
-                        .padding(8.dp),
-                    onClick = onEditSkin
+                        .size(24.dp)
+                        .fillMaxWidth()
+                        .clickable { onEditSkin() }
                 )
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Delete,
-                    contentDescription = "Delete",
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete account",
                     tint = EclipseColors.DarkError,
                     modifier = Modifier
-                        .size(20.dp)
-                        .padding(8.dp),
-                    onClick = onDelete
+                        .size(24.dp)
+                        .fillMaxWidth()
+                        .clickable { onDelete() }
                 )
             }
         }

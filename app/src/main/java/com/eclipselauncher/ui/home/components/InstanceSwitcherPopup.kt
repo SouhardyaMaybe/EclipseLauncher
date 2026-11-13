@@ -4,12 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Divider
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -20,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.overflow.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eclipselauncher.R
@@ -65,7 +69,7 @@ fun InstanceSwitcherPopup(
             }
 
             // Divider
-            androidx.compose.foundation.Divider(
+            Divider(
                 color = EclipseColors.DarkOutlineVariant,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -88,7 +92,7 @@ fun InstanceSwitcherPopup(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.default.Add,
+                        imageVector = Icons.Default.Add,
                         contentDescription = "Create instance",
                         tint = EclipseColors.DarkPrimary,
                         modifier = Modifier.size(20.dp).padding(end = 8.dp)
@@ -154,7 +158,7 @@ private fun InstanceSwitcherRow(
                     fontWeight = FontWeight.Medium,
                     color = EclipseColors.DarkOnSurface,
                     maxLines = 1,
-                    overflow = androidx.compose.ui.text.overflow.TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis
                 )
                 Text(
                     text = "${instance.version} · ${instance.loader.name}",
@@ -166,7 +170,7 @@ private fun InstanceSwitcherRow(
             // Check mark on selected
             if (isSelected) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Check,
+                    imageVector = Icons.Default.Check,
                     contentDescription = "Selected",
                     tint = EclipseColors.DarkPrimary,
                     modifier = Modifier.size(20.dp)

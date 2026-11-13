@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.Canvas
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -17,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -85,9 +89,9 @@ fun InstalledContentCard(
                     modifier = Modifier.size(48.dp),
                     shape = RoundedCornerShape(8.dp),
                     color = EclipseColors.DarkSurfaceVariant,
-                    border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+                    border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
                 ) {
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
@@ -126,7 +130,7 @@ fun InstalledContentCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Refresh,
+                    imageVector = Icons.Default.Refresh,
                     contentDescription = "Refresh",
                     tint = EclipseColors.DarkOnSurfaceVariant,
                     modifier = Modifier
@@ -144,13 +148,13 @@ fun InstalledContentCard(
                     color = EclipseColors.DarkPrimary,
                     onClick = onToggleClick
                 ) {
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .size(20.dp)
                             .padding(start = 4.dp),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        androidx.compose.foundation.Canvas(modifier = Modifier.size(20.dp)) {
+                        Canvas(modifier = Modifier.size(20.dp)) {
                             drawCircle(
                                 color = EclipseColors.DarkOnPrimary,
                                 radius = 8.dp.toPx(),
@@ -161,7 +165,7 @@ fun InstalledContentCard(
                 }
                 
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Delete,
+                    imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
                     tint = EclipseColors.DarkError,
                     modifier = Modifier

@@ -7,14 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -24,11 +25,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.ui.navigation.NavigationDestination
 import com.eclipselauncher.ui.theme.EclipseColors
 import com.eclipselauncher.ui.theme.EclipseLauncherTheme
-import com.eclipselauncher.ui.theme.MaterialTheme
 
 @Composable
 fun SettingsScreen(
@@ -49,7 +50,7 @@ fun SettingsScreen(
                     verticalArrangement = Arrangement.Top
                 ) {
                     // Status bar spacer
-                    androidx.compose.foundation.layout.Box(modifier = Modifier
+                    Box(modifier = Modifier
                         .fillMaxWidth()
                         .height(24.dp)
                     )
@@ -66,7 +67,7 @@ fun SettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = ArrowBack,
+                                    imageVector = Icons.Default.ArrowBack,
                                     contentDescription = "Back to categories",
                                     tint = EclipseColors.DarkOnSurface,
                                     modifier = Modifier
@@ -105,7 +106,7 @@ fun SettingsScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = ArrowBack,
+                                imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Leave Settings",
                                 tint = EclipseColors.DarkOnSurface,
                                 modifier = Modifier
@@ -308,12 +309,12 @@ fun SettingsSwitchCard(
                     color = EclipseColors.DarkOnSurfaceVariant
                 )
             }
-            androidx.compose.material3.Switch(
+            Switch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
-                colors = androidx.compose.material3.SwitchDefaults.colors(
-                    thumbColor = if (checked) EclipseColors.DarkPrimary else EclipseColors.DarkOutlineVariant,
-                    trackColor = if (checked) EclipseColors.DarkPrimary.copy(alpha = 0.3f) else EclipseColors.DarkSurfaceVariant
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = if (checked) EclipseColors.DarkPrimary else EclipseColors.DarkOutlineVariant,
+                    checkedTrackColor = if (checked) EclipseColors.DarkPrimary.copy(alpha = 0.3f) else EclipseColors.DarkSurfaceVariant
                 )
             )
         }

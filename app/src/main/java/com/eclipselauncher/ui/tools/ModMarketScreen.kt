@@ -8,17 +8,21 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +52,7 @@ fun ModMarketScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -66,7 +70,7 @@ fun ModMarketScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
                             tint = EclipseColors.DarkPrimary,
                             modifier = Modifier
@@ -89,7 +93,7 @@ fun ModMarketScreen(
                 )
 
                 // Search field
-                var searchText by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+                var searchText by remember { mutableStateOf("") }
                 SearchField(
                     query = searchText,
                     onQueryChange = { searchText = it },
@@ -97,7 +101,7 @@ fun ModMarketScreen(
                 )
 
                 // Results placeholder
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)

@@ -8,19 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.R
 import com.eclipselauncher.model.Instance
@@ -74,7 +76,7 @@ fun InstanceEditorScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -88,7 +90,7 @@ fun InstanceEditorScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
@@ -114,7 +116,7 @@ fun InstanceEditorScreen(
                                 onClick = { /* Copy instance */ }
                             ) {
                                 Icon(
-                                    imageVector = ContentCopy,
+                                    imageVector = Icons.Default.ContentCopy,
                                     contentDescription = "Copy",
                                     tint = EclipseColors.DarkOnSurface,
                                     modifier = Modifier.size(24.dp).padding(12.dp)
@@ -127,7 +129,7 @@ fun InstanceEditorScreen(
                                 onClick = { /* Delete confirmation */ }
                             ) {
                                 Icon(
-                                    imageVector = Delete,
+                                    imageVector = Icons.Default.Delete,
                                     contentDescription = "Delete",
                                     tint = EclipseColors.DarkError,
                                     modifier = Modifier.size(24.dp).padding(12.dp)
@@ -141,7 +143,7 @@ fun InstanceEditorScreen(
                             onClick = { onNavigate("create_instance/loader_picker/${selectedVersion?.id ?: ""}") }
                         ) {
                             Icon(
-                                imageVector = Close,
+                                imageVector = Icons.Default.Close,
                                 contentDescription = "Cancel",
                                 tint = EclipseColors.DarkOnSurface,
                                 modifier = Modifier.size(24.dp).padding(12.dp)
@@ -159,7 +161,7 @@ fun InstanceEditorScreen(
                             } else null
                         ) {
                             Icon(
-                                imageVector = Check,
+                                imageVector = Icons.Default.Check,
                                 contentDescription = "Save",
                                 tint = if (hasChanges || nameText.isNotBlank()) EclipseColors.DarkOnPrimary else EclipseColors.DarkOnSurfaceVariant,
                                 modifier = Modifier.size(24.dp).padding(12.dp)
@@ -169,7 +171,7 @@ fun InstanceEditorScreen(
                 }
 
                 // Scrollable form
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp),
@@ -275,7 +277,7 @@ fun IconEditor(
             modifier = Modifier.size(120.dp),
             shape = RoundedCornerShape(16.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
         ) {
             Box(
                 modifier = Modifier
@@ -319,7 +321,7 @@ fun IconEditor(
                 onClick = onIconPick
             ) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Edit,
+                    imageVector = Icons.Default.Edit,
                     contentDescription = "Change icon",
                     tint = EclipseColors.DarkOnPrimary,
                     modifier = Modifier.size(20.dp).padding(8.dp)
@@ -334,7 +336,7 @@ fun IconEditor(
                         .padding(8.dp),
                     shape = RoundedCornerShape(12.dp),
                     color = EclipseColors.DarkError.copy(alpha = 0.2f),
-                    border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkError),
+                    border = BorderStroke(1.dp, EclipseColors.DarkError),
                     onClick = onIconReset
                 ) {
                     Text(
@@ -371,7 +373,7 @@ fun EditorField(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
         ) {
             TextField(
                 value = value,
@@ -381,11 +383,11 @@ fun EditorField(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 singleLine = true,
-                colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+                colors = TextFieldDefaults.textFieldColors(
                     containerColor = EclipseColors.DarkSurface,
                     focusedContainerColor = EclipseColors.DarkSurface,
-                    textColor = EclipseColors.DarkOnSurface,
-                    placeholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                    inputTextColor = EclipseColors.DarkOnSurface,
+                    placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                     cursorColor = EclipseColors.DarkPrimary,
                     focusedIndicatorColor = EclipseColors.DarkPrimary,
                     unfocusedIndicatorColor = Color.Transparent,
@@ -419,7 +421,7 @@ fun EditorDropdownField(
                 .height(52.dp),
             shape = RoundedCornerShape(12.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant),
             onClick = onClick
         ) {
             Row(
@@ -435,7 +437,7 @@ fun EditorDropdownField(
                     color = if (value.isBlank()) EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f) else EclipseColors.DarkOnSurface
                 )
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.ExpandMore,
+                    imageVector = Icons.Default.ExpandMore,
                     contentDescription = "Dropdown",
                     tint = EclipseColors.DarkOnSurfaceVariant,
                     modifier = Modifier.size(24.dp)
@@ -477,12 +479,12 @@ fun EditorSwitchRow(
                     color = EclipseColors.DarkOnSurfaceVariant
                 )
             }
-            androidx.compose.material3.Switch(
+            Switch(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 colors = androidx.compose.material3.SwitchDefaults.colors(
-                    thumbColor = if (checked) EclipseColors.DarkPrimary else EclipseColors.DarkOutlineVariant,
-                    trackColor = if (checked) EclipseColors.DarkPrimary.copy(alpha = 0.3f) else EclipseColors.DarkSurfaceVariant
+                    checkedThumbColor = if (checked) EclipseColors.DarkPrimary else EclipseColors.DarkOutlineVariant,
+                    checkedTrackColor = if (checked) EclipseColors.DarkPrimary.copy(alpha = 0.3f) else EclipseColors.DarkSurfaceVariant
                 )
             )
         }
@@ -513,7 +515,7 @@ fun EditorTextField(
                 .height(if (multiline) 100.dp else 52.dp),
             shape = RoundedCornerShape(12.dp),
             color = EclipseColors.DarkSurface,
-            border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
         ) {
             TextField(
                 value = value,
@@ -524,11 +526,11 @@ fun EditorTextField(
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 singleLine = !multiline,
                 maxLines = if (multiline) 5 else 1,
-                colors = androidx.compose.material3.TextFieldDefaults.textFieldColors(
+                colors = TextFieldDefaults.textFieldColors(
                     containerColor = EclipseColors.DarkSurface,
                     focusedContainerColor = EclipseColors.DarkSurface,
-                    textColor = EclipseColors.DarkOnSurface,
-                    placeholderColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
+                    inputTextColor = EclipseColors.DarkOnSurface,
+                    placeholderTextColor = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.5f),
                     cursorColor = EclipseColors.DarkPrimary,
                     focusedIndicatorColor = EclipseColors.DarkPrimary,
                     unfocusedIndicatorColor = Color.Transparent,

@@ -4,22 +4,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Divider
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filed.Folder
-import androidx.compose.material.icons.filed.FileDownload
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eclipselauncher.model.ModInfo
 import com.eclipselauncher.ui.managecontent.components.InstalledContentList
@@ -48,7 +52,7 @@ fun ManageContentScreen(
     val searchResults by viewModel.searchResults.collectAsStateWithLifecycle()
     val searchError by viewModel.searchError.collectAsStateWithLifecycle()
 
-    var searchText by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf("") }
+    var searchText by remember { mutableStateOf("") }
 
     EclipseLauncherTheme {
         Surface(
@@ -60,7 +64,7 @@ fun ManageContentScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -74,7 +78,7 @@ fun ManageContentScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
@@ -96,7 +100,7 @@ fun ManageContentScreen(
                         onClick = { /* Import archive */ }
                     ) {
                         Icon(
-                            imageVector = Folder,
+                            imageVector = Icons.Default.Folder,
                             contentDescription = "Import",
                             tint = EclipseColors.DarkOnSurface,
                             modifier = Modifier.size(24.dp).padding(12.dp)
@@ -183,7 +187,7 @@ fun TabButton(
         ) {
             if (isSelected) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.default.Check,
+                    imageVector = Icons.Default.Check,
                     contentDescription = "",
                     tint = EclipseColors.DarkOnPrimary,
                     modifier = Modifier.size(16.dp).padding(end = 6.dp)
@@ -220,14 +224,14 @@ fun InstalledContentSection(
         )
 
         // Divider
-        androidx.compose.foundation.Divider(
+        Divider(
             color = EclipseColors.DarkOutlineVariant,
             modifier = Modifier.padding(horizontal = 16.dp)
         )
 
         // Content list
         if (installedContent.isEmpty()) {
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp),
@@ -289,7 +293,7 @@ fun ContentTypePills(
                 ) {
                     if (isSelected) {
                         Icon(
-                            imageVector = androidx.compose.material.icons.default.Check,
+                            imageVector = Icons.Default.Check,
                             contentDescription = "",
                             tint = EclipseColors.DarkOnPrimary,
                             modifier = Modifier.size(14.dp).padding(end = 4.dp)

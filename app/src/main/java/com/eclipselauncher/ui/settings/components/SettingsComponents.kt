@@ -1,10 +1,13 @@
 package com.eclipselauncher.ui.settings.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
@@ -47,7 +50,7 @@ fun SettingsRow(
                     color = EclipseColors.DarkPrimary
                 )
             } else {
-                androidx.compose.foundation.layout.Box(modifier = Modifier.width(24.dp))
+                Box(modifier = Modifier.width(24.dp))
             }
             Column(
                 modifier = Modifier.weight(1f),
@@ -100,7 +103,7 @@ fun SettingsSwitchRow(
                     color = EclipseColors.DarkPrimary
                 )
             } else {
-                androidx.compose.foundation.layout.Box(modifier = Modifier.width(24.dp))
+                Box(modifier = Modifier.width(24.dp))
             }
             Column(
                 modifier = Modifier.weight(1f),
@@ -124,8 +127,8 @@ fun SettingsSwitchRow(
                 checked = checked,
                 onCheckedChange = onCheckedChange,
                 colors = androidx.compose.material3.SwitchDefaults.colors(
-                    thumbColor = if (checked) EclipseColors.DarkPrimary else EclipseColors.DarkOutlineVariant,
-                    trackColor = if (checked) EclipseColors.DarkPrimary.copy(alpha = 0.3f) else EclipseColors.DarkSurfaceVariant
+                    checkedThumbColor = if (checked) EclipseColors.DarkPrimary else EclipseColors.DarkOutlineVariant,
+                    checkedTrackColor = if (checked) EclipseColors.DarkPrimary.copy(alpha = 0.3f) else EclipseColors.DarkSurfaceVariant
                 )
             )
         }
@@ -166,7 +169,7 @@ fun SettingsSliderRow(
                         color = EclipseColors.DarkPrimary
                     )
                 } else {
-                    androidx.compose.foundation.layout.Box(modifier = Modifier.width(24.dp))
+                    Box(modifier = Modifier.width(24.dp))
                 }
                 Column(
                     modifier = Modifier.weight(1f),
@@ -187,7 +190,7 @@ fun SettingsSliderRow(
             }
             
             // Slider
-            androidx.compose.foundation.layout.Box(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp)

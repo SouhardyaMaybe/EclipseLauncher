@@ -7,22 +7,28 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,7 +55,7 @@ fun ManageLogsScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -67,7 +73,7 @@ fun ManageLogsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            imageVector = androidx.compose.material.icons.filled.ArrowBack,
+                            imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back",
                             tint = EclipseColors.DarkPrimary,
                             modifier = Modifier
@@ -104,13 +110,13 @@ fun ManageLogsScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(16.dp),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.End
+                        textAlign = TextAlign.End
                     )
                 }
 
                 // Log list
                 if (logs.value.isEmpty()) {
-                    androidx.compose.foundation.layout.Box(
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(horizontal = 16.dp),
@@ -154,8 +160,8 @@ fun LogRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 4.dp),
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp),
-        color = com.eclipselauncher.ui.theme.EclipseColors.DarkSurface,
+        shape = RoundedCornerShape(12.dp),
+        color = EclipseColors.DarkSurface,
         onClick = onClick
     ) {
         Row(
@@ -166,16 +172,16 @@ fun LogRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = androidx.compose.material.icons.filed.Description,
+                imageVector = Icons.Default.Description,
                 contentDescription = "Log file",
-                tint = com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurfaceVariant,
-                modifier = androidx.compose.ui.Modifier.size(24.dp).padding(end = 12.dp)
+                tint = EclipseColors.DarkOnSurfaceVariant,
+                modifier = Modifier.size(24.dp).padding(end = 12.dp)
             )
             Text(
                 text = logName,
                 fontSize = 14.sp,
                 fontFamily = FontFamily.Monospace,
-                color = com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurface
+                color = EclipseColors.DarkOnSurface
             )
         }
     }
@@ -203,7 +209,7 @@ fun LogViewerScreen(
     EclipseLauncherTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = com.eclipselauncher.ui.theme.EclipseColors.DarkBackground
+            color = EclipseColors.DarkBackground
         ) {
             // Modal overlay
             Box(
@@ -222,7 +228,7 @@ fun LogViewerScreen(
                         .width(340.dp)
                         .height(360.dp),
                     shape = RoundedCornerShape(20.dp),
-                    color = com.eclipselauncher.ui.theme.EclipseColors.DarkSurface
+                    color = EclipseColors.DarkSurface
                 ) {
                     Column(
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -233,7 +239,7 @@ fun LogViewerScreen(
                             text = logName,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurface,
+                            color = EclipseColors.DarkOnSurface,
                             modifier = Modifier.padding(top = 8.dp)
                         )
                         
@@ -244,10 +250,10 @@ fun LogViewerScreen(
                                 .weight(1f)
                                 .padding(vertical = 8.dp),
                             shape = RoundedCornerShape(12.dp),
-                            color = com.eclipselauncher.ui.theme.EclipseColors.DarkSurfaceVariant,
-                            border = androidx.compose.ui.graphics.BorderStroke(1.dp, com.eclipselauncher.ui.theme.EclipseColors.DarkOutlineVariant)
+                            color = EclipseColors.DarkSurfaceVariant,
+                            border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
                         ) {
-                            androidx.compose.foundation.layout.Box(
+                            Box(
                                 modifier = Modifier.fillMaxSize(),
                                 contentAlignment = Alignment.TopStart
                             ) {
@@ -255,7 +261,7 @@ fun LogViewerScreen(
                                     text = logContent.value,
                                     fontSize = 12.sp,
                                     fontFamily = FontFamily.Monospace,
-                                    color = com.eclipselauncher.ui.theme.EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.9f),
+                                    color = EclipseColors.DarkOnSurfaceVariant.copy(alpha = 0.9f),
                                     modifier = Modifier.padding(12.dp)
                                 )
                             }
@@ -266,11 +272,11 @@ fun LogViewerScreen(
                             text = "Close",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
-                            color = com.eclipselauncher.ui.theme.EclipseColors.DarkPrimary,
+                            color = EclipseColors.DarkPrimary,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = 8.dp),
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            textAlign = TextAlign.Center
                         )
                     }
                 }

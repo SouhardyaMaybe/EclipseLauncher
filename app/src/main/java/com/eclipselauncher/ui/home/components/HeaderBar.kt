@@ -4,13 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.ListAlt
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eclipselauncher.ui.theme.EclipseColors
-import com.eclipselauncher.ui.theme.MaterialTheme
+import com.eclipselauncher.ui.theme.EclipseLauncherTheme
 
 @Composable
 fun HeaderBar(
@@ -40,7 +38,7 @@ fun HeaderBar(
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
             color = EclipseColors.DarkPrimary,
-            fontFamily = MaterialTheme.typography.titleLarge.fontFamily
+            fontFamily = EclipseLauncherTheme.typography.titleLarge.fontFamily
         )
 
         // Action icons - folder, document, task list, gear
@@ -49,22 +47,22 @@ fun HeaderBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             HeaderIconButton(
-                imageVector = Folder,
+                imageVector = Icons.Default.Folder,
                 contentDescription = "Manage Content",
                 onClick = onFolderClick
             )
             HeaderIconButton(
-                imageVector = Description,
+                imageVector = Icons.Default.Description,
                 contentDescription = "Document",
                 onClick = onDocumentClick
             )
             HeaderIconButton(
-                imageVector = ListAlt,
+                imageVector = Icons.Default.ListAlt,
                 contentDescription = "Tasks",
                 onClick = onTaskClick
             )
             HeaderIconButton(
-                imageVector = Settings,
+                imageVector = Icons.Default.Settings,
                 contentDescription = "Settings",
                 onClick = onSettingsClick
             )

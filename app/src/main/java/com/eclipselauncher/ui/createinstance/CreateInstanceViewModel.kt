@@ -6,6 +6,8 @@ import com.eclipselauncher.model.GameVersion
 import com.eclipselauncher.model.Instance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class CreateInstanceViewModel : ViewModel() {
@@ -227,7 +229,7 @@ class CreateInstanceViewModel : ViewModel() {
         _hasChanges.value = false
     }
 
-    val filteredVersions: StateFlow<List<GameVersion>> = _versions.map { versions ->
-        versions.filter { it.type == _selectedVersionTab.value }
+    val filteredVersions: StateFlow<List<GameVersion>> = combine(_versions, _selectedVersionTab) { versions, tab ->
+        versions.filter { it.type == tab }
     }
 }

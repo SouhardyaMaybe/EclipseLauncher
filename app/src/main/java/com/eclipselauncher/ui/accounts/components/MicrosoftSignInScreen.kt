@@ -6,23 +6,30 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.BorderStroke
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eclipselauncher.ui.accounts.AccountsViewModel
 import com.eclipselauncher.ui.theme.EclipseColors
 import com.eclipselauncher.ui.theme.EclipseLauncherTheme
 
@@ -43,7 +50,7 @@ fun MicrosoftSignInScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 // Status bar spacer
-                androidx.compose.foundation.layout.Box(modifier = Modifier
+                Box(modifier = Modifier
                     .fillMaxWidth()
                     .height(24.dp)
                 )
@@ -57,7 +64,7 @@ fun MicrosoftSignInScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = ArrowBack,
+                        imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
                         tint = EclipseColors.DarkOnSurface,
                         modifier = Modifier
@@ -71,7 +78,7 @@ fun MicrosoftSignInScreen(
                         fontWeight = FontWeight.Bold,
                         color = EclipseColors.DarkOnSurface
                     )
-                    androidx.compose.foundation.layout.Box(modifier = Modifier.size(48.dp))
+                    Box(modifier = Modifier.size(48.dp))
                 }
 
                 // Content area - WebView placeholder for Microsoft sign-in page
@@ -96,7 +103,7 @@ fun MicrosoftSignInScreen(
 fun MicrosoftSignInPage() {
     // This would embed a WebView in a real implementation
     // For now, show the page frame with Microsoft branding
-    androidx.compose.foundation.layout.Box(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = 8.dp),
@@ -111,9 +118,9 @@ fun MicrosoftSignInPage() {
                 modifier = Modifier.size(80.dp),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp),
                 color = EclipseColors.DarkSurfaceVariant,
-                border = androidx.compose.ui.graphics.BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
+                border = BorderStroke(1.dp, EclipseColors.DarkOutlineVariant)
             ) {
-                androidx.compose.foundation.layout.Box(
+                Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
@@ -143,7 +150,7 @@ fun MicrosoftSignInPage() {
 
 @Composable
 fun SignInProgress() {
-    androidx.compose.foundation.layout.Box(
+    Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
@@ -151,7 +158,7 @@ fun SignInProgress() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            androidx.compose.material3.CircularProgressIndicator(
+            CircularProgressIndicator(
                 color = EclipseColors.DarkPrimary,
                 modifier = Modifier.size(48.dp)
             )
@@ -169,7 +176,7 @@ fun SignInProgress() {
 fun SignInFailure(
     onRetry: () -> Unit
 ) {
-    androidx.compose.foundation.layout.Box(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 40.dp),
@@ -196,10 +203,10 @@ fun SignInFailure(
                     text = "Network error during sign-in",
                     fontSize = 14.sp,
                     color = EclipseColors.DarkOnSurfaceVariant,
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = TextAlign.Center
                 )
                 
-                androidx.compose.material3.Button(
+                Button(
                     onClick = onRetry,
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                         containerColor = EclipseColors.DarkPrimary,
