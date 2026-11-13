@@ -1,10 +1,383 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">EclipseLauncher</string>
-    <string name="welcome_message">Welcome to EclipseLauncher</string>
-    <string name="loading">Loading...</string>
-    <string name="ready">Ready</string>
-    <string name="error">Error</string>
-    <string name="retry">Retry</string>
-    <string name="settings">Settings</string>
-    <string name="about">About</string>
+    <string name="app_name">Eclipse Launcher</string>
+
+    <!-- Home header buttons -->
+    <string name="cd_nav_file_manager">File Manager</string>
+    <string name="cd_nav_manage_logs">Manage Logs</string>
+    <string name="cd_nav_settings">Settings</string>
+    <string name="cd_tasks">Tasks</string>
+    <string name="cd_select_instance">Select instance</string>
+
+    <!-- Home -->
+    <string name="cd_character">Account character</string>
+    <string name="no_account_title">No account Here</string>
+    <string name="no_account_hint">Tap here to add an account</string>
+    <string name="home_no_instances">No instances</string>
+    <string name="home_no_instances_hint">Tap here to create a new instance</string>
+    <string name="instance_create">Create instance</string>
+    <string name="action_play">Play</string>
+    <string name="play_not_wired">Play is not wired up to a game runtime yet</string>
+    <string name="play_task_title">Launch</string>
+    <string name="import_task_title">Import modpack</string>
+
+    <!-- Account gate -->
+    <string name="account_gate_message">An account is compulsory to perform that action. Press the following button to continue.</string>
+    <string name="action_connect_account">Connect an account</string>
+    <string name="action_sign_in_microsoft">Sign in with Microsoft</string>
+    <string name="action_create_local">Create local account</string>
+    <string name="local_account_title">Local account</string>
+    <string name="local_account_hint">Username</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_create">Create</string>
+
+    <!-- Accounts -->
+    <string name="accounts_title">Accounts</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_clear">Clear</string>
+    <string name="cd_expand">Expand</string>
+    <string name="cd_collapse">Collapse</string>
+    <string name="account_kind_microsoft">Microsoft</string>
+    <string name="account_kind_local">Local</string>
+    <string name="action_add_account">Add account</string>
+    <string name="cd_switch_account">Switch account</string>
+    <string name="action_manage">Manage</string>
+    <string name="action_done">Done</string>
+    <string name="action_delete_account">Delete account</string>
+    <string name="delete_account_title">Delete this account?</string>
+    <string name="delete_account_message">\"%1$s\" will be removed from the launcher with its skin settings.</string>
+    <string name="skin_section">Skin and cape</string>
+    <string name="action_pick_skin">Pick skin</string>
+    <string name="action_clear_skin">Clear skin</string>
+    <string name="action_pick_cape">Pick cape</string>
+    <string name="action_clear_cape">Clear cape</string>
+    <string name="cd_skin_preview">Skin preview</string>
+    <string name="cd_instance_icon">Instance icon</string>
+    <string name="cd_selected_account">Selected</string>
+    <string name="cd_customize_skin">Customize skin</string>
+    <string name="cd_expand_account">Expand</string>
+    <string name="cd_collapse_account">Collapse</string>
+
+    <!-- Microsoft sign-in -->
+    <string name="ms_auth_title">Microsoft sign in</string>
+    <string name="ms_stage_live">Signing in with Microsoft</string>
+    <string name="ms_stage_xbl">Connecting to Xbox Live</string>
+    <string name="ms_stage_xsts">Checking Xbox authorization</string>
+    <string name="ms_stage_profile">Fetching Minecraft profile</string>
+    <string name="ms_error_title">Sign-in failed</string>
+    <string name="ms_error_denied">Sign-in was cancelled</string>
+    <string name="ms_error_unknown">Unknown authentication error</string>
+    <string name="ms_error_network">Network error during sign-in</string>
+    <string name="ms_error_no_xbox">This Microsoft account has no Xbox profile. Create one on xbox.com first.</string>
+    <string name="ms_error_region">Xbox Live is not available in your account\'s region.</string>
+    <string name="ms_error_adult">Verify your account\'s adult status on the Microsoft account site.</string>
+    <string name="ms_error_child">A child account needs parental approval before it can use Xbox Live.</string>
+    <string name="ms_error_no_mc">This account has no Minecraft profile. Buy the game on minecraft.net first.</string>
+    <string name="action_try_again">Try again</string>
+
+    <!-- Media errors -->
+    <string name="error_skin_size">That image is not a 64x64 Minecraft skin.</string>
+    <string name="error_media_import">Could not read that image.</string>
+    <string name="error_import_file">Could not import that file.</string>
+
+    <!-- Instances -->
+    <string name="action_search">Search</string>
+    <string name="action_create_instance">Create</string>
+    <string name="cd_search">Search instances</string>
+    <string name="cd_edit_instance">Edit instance</string>
+    <string name="action_duplicate">Duplicate</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_close">Close</string>
+    <string name="delete_instance_title">Delete this instance?</string>
+    <string name="delete_instance_message">\"%1$s\" and its local files will be removed.</string>
+
+    <!-- Instance editor -->
+    <string name="editor_new_title">New instance</string>
+    <string name="editor_edit_title">Edit instance</string>
+    <string name="field_name">Name</string>
+    <string name="hint_instance_name">Instance name</string>
+    <string name="field_version">Minecraft version</string>
+    <string name="hint_select_version">Select a version</string>
+    <string name="field_loader">Loader</string>
+    <string name="field_loader_version">Loader version</string>
+    <string name="field_controlmap">Default controlmap</string>
+    <string name="hint_controlmap_default">(Use global default)</string>
+    <string name="field_shared_data">Shared data (click to switch)</string>
+    <string name="shared_data_shared">Store game data in a shared directory</string>
+    <string name="shared_data_instance">Store game data in the instance directory</string>
+    <string name="field_jvm_args">JVM arguments</string>
+    <string name="hint_jvm_args_default">(Use global default)</string>
+    <string name="field_runtime">Java Runtime</string>
+    <string name="hint_runtime_default">&lt;Default&gt;</string>
+    <string name="field_renderer">Renderer</string>
+    <string name="hint_renderer_default">Default</string>
+    <string name="hint_renderer_global">Global</string>
+    <string name="hint_runtime_auto">Auto</string>
+    <string name="renderer_default">Default</string>
+    <string name="action_save">Save</string>
+    <string name="action_ok">OK</string>
+    <string name="action_pick_icon">Pick icon</string>
+    <string name="action_clear_icon">Clear icon</string>
+    <string name="loader_vanilla">Vanilla</string>
+    <string name="loader_fabric">Fabric</string>
+    <string name="loader_forge">Forge</string>
+    <string name="loader_neoforge">NeoForge</string>
+    <string name="loader_quilt">Quilt</string>
+    <string name="loader_optifine">OptiFine</string>
+    <string name="loader_available">Available</string>
+    <string name="loader_unavailable">Unavailable</string>
+    <string name="loader_checking">Checking which loaders support this version…</string>
+    <string name="loader_subtext_optifine">Vanilla-like version</string>
+    <string name="loader_subtext_modded">Modded Version</string>
+
+    <!-- Version selector -->
+    <string name="version_loading">Loading versions…</string>
+    <string name="version_empty">No versions available</string>
+    <string name="version_error_title">Could not load versions</string>
+
+    <!-- Create instance -->
+    <string name="create_import_modpack">Import modpack (.zip)</string>
+
+    <!-- Create flow -->
+    <string name="action_install">Install</string>
+    <string name="create_title">Create instance</string>
+    <string name="version_tab_all">All</string>
+    <string name="version_tab_releases">Releases</string>
+    <string name="version_tab_snapshots">Snapshots</string>
+    <string name="version_tab_old_betas">Old Betas</string>
+    <string name="version_tab_old_alphas">Old Alphas</string>
+    <string name="instance_created_toast">Instance created successfully!</string>
+    <string name="instance_copied_toast">Instance copied</string>
+    <string name="instance_deleted_toast">Instance deleted</string>
+    <string name="action_reset_icon">Reset icon</string>
+    <string name="action_copy">Copy</string>
+    <string name="cd_pick_icon">Pick custom icon</string>
+    <string name="field_minecraft_version">Minecraft Version</string>
+    <string name="modpack_browser_title">Modpack Browser</string>
+    <string name="modpack_filter_modrinth">Modrinth</string>
+    <string name="modpack_filter_curseforge">CurseForge</string>
+    <string name="modpack_search_hint">Search modpacks</string>
+    <string name="modpack_no_results">No modpacks found</string>
+    <string name="modpack_use_button">Use</string>
+    <string name="modpack_tab_import">Import local</string>
+
+    <!-- Manage Content screen -->
+    <string name="manage_content_title">Manage Content</string>
+    <string name="manage_content_installed">Installed</string>
+    <string name="manage_content_browse">Browse</string>
+    <string name="manage_content_import">Import local</string>
+    <string name="manage_content_import_started">Import started</string>
+    <string name="manage_content_empty">No content yet</string>
+    <string name="manage_content_search_hint">Search content</string>
+    <string name="manage_content_update">Update/Degrade</string>
+    <string name="manage_content_install">Install</string>
+    <string name="provider_modrinth">Modrinth</string>
+    <string name="provider_curseforge">CurseForge</string>
+    <string name="provider_coming_soon">Coming soon</string>
+    <string name="content_type_mods">Mods</string>
+    <string name="content_type_resource_packs">Resource Packs</string>
+    <string name="content_type_data_packs">Data Packs</string>
+    <string name="content_type_shaders">Shaders</string>
+    <string name="content_type_worlds">Worlds</string>
+
+    <!-- Mod market (UTILS) - kept for compatibility -->
+    <string name="market_title">Mod market</string>
+    <string name="market_modrinth">Modrinth</string>
+    <string name="market_curseforge">CurseForge</string>
+    <string name="market_coming_soon">CurseForge is coming soon</string>
+    <string name="market_search_hint">Search mods</string>
+    <string name="market_empty">Search for mods to get started</string>
+    <string name="market_error">Could not reach the mod market</string>
+
+    <!-- Tasks dialog (ongoing only — a live manager, not a history) -->
+    <string name="tasks_title">Tasks</string>
+    <string name="tasks_empty">No ongoing tasks</string>
+    <string name="tasks_minimize">Minimize</string>
+    <string name="tasks_pause">Pause task</string>
+    <string name="tasks_resume">Resume task</string>
+    <string name="tasks_cancel">Cancel task</string>
+    <string name="tasks_inspect">Task details</string>
+    <string name="tasks_detail_status">Status</string>
+    <string name="tasks_detail_progress">Progress</string>
+    <string name="tasks_detail_started">Started</string>
+    <string name="tasks_detail_error">Error</string>
+    <string name="tasks_status_running">Running</string>
+    <string name="tasks_status_paused">Paused</string>
+    <string name="tasks_status_done">Done</string>
+    <string name="tasks_status_failed">Failed</string>
+    <string name="tasks_status_cancelled">Cancelled</string>
+
+    <!-- UTILS hub -->
+    <string name="utils_content_header">Tools</string>
+    <string name="utils_market_summary">Browse and search mods on Modrinth</string>
+    <string name="utils_file_manager">File manager</string>
+    <string name="utils_file_manager_summary">Browse the launcher\'s private files</string>
+    <string name="utils_manage_content">Manage content</string>
+    <string name="utils_manage_content_summary">Skins, capes, icons and modpack archives</string>
+    <string name="utils_manage_logs">Manage logs</string>
+    <string name="utils_manage_logs_summary">Read and clear the launcher\'s log files</string>
+    <string name="utils_execute_jar">Execute a .jar</string>
+    <string name="utils_execute_jar_summary">Pick a jar file to run</string>
+    <string name="utils_jar_not_wired">Executing jars needs the game runtime, which is not wired up yet</string>
+    <string name="utils_edit_controls">Edit controls</string>
+    <string name="utils_edit_controls_summary">Control mappings and sensitivity settings</string>
+    <string name="utils_files_empty">This folder is empty</string>
+    <string name="utils_delete_title">Delete %1$s?</string>
+    <string name="utils_delete_message">This removes the file from the launcher\'s storage.</string>
+    <string name="utils_logs_count">%1$d log files</string>
+    <string name="utils_logs_clear">Clear all logs</string>
+    <string name="utils_logs_empty">No logs yet</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_back">Back to the last screen</string>
+    <string name="settings_ok">OK</string>
+    <string name="settings_categories">Categories</string>
+
+    <!-- Settings: root -->
+    <string name="settings_category_video">Video and renderer</string>
+    <string name="settings_category_video_summary">Resolution, surface and driver options</string>
+    <string name="settings_category_control">Control customization</string>
+    <string name="settings_category_control_summary">On-screen controls, mouse and gyroscope</string>
+    <string name="settings_category_java">Java Tweaks</string>
+    <string name="settings_category_java_summary">Runtime, arguments and memory</string>
+    <string name="settings_category_misc">Miscellaneous settings</string>
+    <string name="settings_category_misc_summary">Files, downloads and behaviour</string>
+    <string name="settings_category_experimental">Experimental Stuff</string>
+    <string name="settings_category_experimental_summary">Risky options — expect rough edges</string>
+    <string name="settings_force_english">Force language to English</string>
+    <string name="settings_force_english_summary">Ignore the system language and use English</string>
+    <string name="settings_allow_notifications">Allow notifications</string>
+    <string name="settings_allow_notifications_summary">Let Eclipse notify you about background work</string>
+
+    <!-- Settings: video -->
+    <string name="settings_video_header">Video and renderer</string>
+    <string name="settings_renderer">Renderer</string>
+    <string name="settings_ignore_notch">Ignore notch</string>
+    <string name="settings_ignore_notch_summary">Draw across the whole screen, ignoring the notch area</string>
+    <string name="settings_resolution_scaler">Resolution Scaler</string>
+    <string name="settings_resolution_scaler_summary">Render the game at a lower resolution</string>
+    <string name="settings_sustained_performance">Sustained performance mode</string>
+    <string name="settings_sustained_performance_summary">Prefer consistent speed over short bursts</string>
+    <string name="settings_alternate_surface">Alternate surface</string>
+    <string name="settings_alternate_surface_summary">Use a different surface type for the game view</string>
+    <string name="settings_force_vsync">Force enable VSync</string>
+    <string name="settings_force_vsync_summary">Synchronise frames with the display</string>
+    <string name="settings_use_angle">Use ANGLE</string>
+    <string name="settings_use_angle_summary">Translate OpenGL through the system ANGLE driver</string>
+    <string name="settings_vulkan_driver">Vulkan Driver</string>
+    <string name="settings_vulkan_driver_summary">Install a custom Adreno driver</string>
+    <string name="settings_system_vulkan">Use system Vulkan driver</string>
+    <string name="settings_system_vulkan_summary">Skip the bundled Vulkan driver</string>
+    <string name="settings_vulkan_driver_unavailable">AdrenoTools driver management is not available yet</string>
+
+    <!-- Settings: control -->
+    <string name="settings_edit_controls">Edit custom controls</string>
+    <string name="settings_edit_controls_summary">Move and resize the on-screen buttons</string>
+    <string name="settings_controls_unavailable">Custom control editing is not available yet</string>
+    <string name="settings_gestures_header">Gestures</string>
+    <string name="settings_disable_gestures">Disable gestures</string>
+    <string name="settings_disable_gestures_summary">Turn off pinch and edge-swipe gestures in game</string>
+    <string name="settings_disable_double_tap">Disable double tap to swap hands</string>
+    <string name="settings_disable_double_tap_summary">Double tapping no longer swaps the off-hand item</string>
+    <string name="settings_long_press">Trigger long press delay</string>
+    <string name="settings_long_press_summary">How long a press must be held to count as a long press</string>
+    <string name="settings_buttons_header">Buttons</string>
+    <string name="settings_button_scale">Control buttons scaling</string>
+    <string name="settings_button_scale_summary">Size of the on-screen buttons</string>
+    <string name="settings_button_transparency">Buttons transparency</string>
+    <string name="settings_button_transparency_summary">How see-through the on-screen buttons are</string>
+    <string name="settings_button_all_caps">Only use capital letters</string>
+    <string name="settings_button_all_caps_summary">Show on-screen button labels in capitals</string>
+    <string name="settings_virtual_mouse_header">Virtual mouse</string>
+    <string name="settings_mouse_scale">Mouse scaling</string>
+    <string name="settings_mouse_scale_summary">Size of the virtual mouse cursor</string>
+    <string name="settings_mouse_speed">Mouse Speed</string>
+    <string name="settings_mouse_speed_summary">How fast the virtual mouse moves</string>
+    <string name="settings_mouse_start">Start with virtual mouse on</string>
+    <string name="settings_mouse_start_summary">Begin each session with the virtual mouse enabled</string>
+    <string name="settings_gyro_header">Gyroscope</string>
+    <string name="settings_enable_gyro">Enable gyroscope</string>
+    <string name="settings_enable_gyro_summary">Look around by tilting the device</string>
+    <string name="settings_gyro_sensitivity">Gyroscope sensitivity</string>
+    <string name="settings_gyro_sensitivity_summary">How much tilt becomes camera movement</string>
+    <string name="settings_gyro_sample_rate">Gyroscope sampling rate</string>
+    <string name="settings_gyro_sample_rate_summary">How often the sensor is read</string>
+    <string name="settings_gyro_smoothing">Gyroscope smoothing</string>
+    <string name="settings_gyro_smoothing_summary">Smooth out shaky tilt input</string>
+    <string name="settings_invert_x">Invert gyroscope X axis</string>
+    <string name="settings_invert_x_summary">Flip left/right tilt</string>
+    <string name="settings_invert_y">Invert gyroscope Y axis</string>
+    <string name="settings_invert_y_summary">Flip up/down tilt</string>
+    <string name="settings_controller_header">Controller</string>
+    <string name="settings_controller_bindings">Change controller key bindings</string>
+    <string name="settings_controller_bindings_summary">Remap gamepad buttons</string>
+    <string name="settings_controller_bindings_unavailable">Controller binding editing is not available yet</string>
+    <string name="settings_controller_reset">Reset controller mapping</string>
+    <string name="settings_controller_reset_summary">Restore the default gamepad layout</string>
+    <string name="settings_controller_reset_unavailable">Controller mapping reset is not available yet</string>
+    <string name="settings_deadzone">Joystick deadzone scale</string>
+    <string name="settings_deadzone_summary">How far a stick moves before it registers</string>
+    <string name="settings_keyboard_header">Keyboard</string>
+    <string name="settings_keyboard_autopan">Enable keyboard panning</string>
+    <string name="settings_keyboard_autopan_summary">Pan the camera while typing with the on-screen keyboard</string>
+
+    <!-- Settings: java -->
+    <string name="settings_runtimes_title">Java Runtimes</string>
+    <string name="settings_runtimes_message">No Java runtimes are installed yet. Runtime installation arrives with the game runtime.</string>
+    <string name="settings_runtime_manager">Runtime Manager</string>
+    <string name="settings_runtime_manager_summary">Install and pick Java runtimes</string>
+    <string name="settings_jvm_args">JVM Launch arguments</string>
+    <string name="settings_jvm_args_summary">Extra arguments passed to the Java virtual machine</string>
+    <string name="settings_memory_allocation">Memory allocation</string>
+    <string name="settings_memory_allocation_summary">How much RAM the game may use</string>
+    <string name="settings_java_sandbox">Sandbox .jar execution</string>
+    <string name="settings_java_sandbox_summary">Run jars in an isolated process</string>
+
+    <!-- Settings: misc -->
+    <string name="settings_verify_files">Verify game files</string>
+    <string name="settings_verify_files_summary">Check game files before launch</string>
+    <string name="settings_fast_startup">Fast game startup</string>
+    <string name="settings_fast_startup_summary">Skip optional work at launch</string>
+    <string name="settings_download_source">Game download source</string>
+    <string name="settings_source_default">Default</string>
+    <string name="settings_source_bmclapi">BMCLAPI</string>
+    <string name="settings_verify_manifest">Verify game version manifest</string>
+    <string name="settings_verify_manifest_summary">Check the version manifest before launch</string>
+    <string name="settings_import_data">Import data</string>
+    <string name="settings_import_data_summary">Bring settings and instances from another install</string>
+    <string name="settings_import_unavailable">Data migration is not available yet</string>
+    <string name="settings_clear_metadata">Clear metadata cache</string>
+    <string name="settings_clear_metadata_summary">Delete cached version lists so they reload</string>
+    <string name="settings_cache_cleared">Metadata cache cleared</string>
+    <string name="settings_cache_clear_failed">Could not clear the metadata cache</string>
+    <string name="settings_clear_download">Clear download cache</string>
+    <string name="settings_clear_download_summary">Frees up %1$.1f MB of cached downloads</string>
+    <string name="settings_download_cache_cleared">Download cache cleared</string>
+    <string name="settings_memory_warning">Show memory warning dialog</string>
+    <string name="settings_memory_warning_summary">Warn when the device is low on memory</string>
+    <string name="settings_disable_blocklist">Disable server blocklist</string>
+    <string name="settings_disable_blocklist_summary">Allow joining any multiplayer server</string>
+    <string name="settings_eclipse_header">Eclipse settings</string>
+    <string name="settings_curseforge_key">CurseForge API key</string>
+    <string name="settings_curseforge_key_summary">Required for CurseForge downloads</string>
+    <string name="settings_key_set">Set</string>
+    <string name="settings_key_not_set">Not set</string>
+    <string name="settings_clear_key">Clear key</string>
+    <string name="settings_save_key">Save key</string>
+    <string name="settings_auto_dependencies">Auto-install required dependencies</string>
+    <string name="settings_auto_dependencies_summary">Install mods a pack depends on automatically</string>
+
+    <!-- Settings: experimental -->
+    <string name="settings_experimental_header">Experimental</string>
+    <string name="settings_shader_dump">Enable shader dumping</string>
+    <string name="settings_shader_dump_summary">Save compiled shaders for inspection</string>
+    <string name="settings_big_core">Force the renderer to run on the big core</string>
+    <string name="settings_big_core_summary">Pin rendering to the performance cores</string>
+    <string name="settings_freedreno_sysmem">Force rendering into the system memory</string>
+    <string name="settings_freedreno_sysmem_summary">Allocate GPU buffers in system memory</string>
+    <string name="settings_opensl_audio">Forcefully use OpenSL for audio</string>
+    <string name="settings_opensl_audio_summary">Use the OpenSL ES audio path</string>
+    <string name="settings_ubwc">Enable UBWC compression workaround</string>
+    <string name="settings_ubwc_summary">Work around broken UBWC compression on some GPUs</string>
 </resources>

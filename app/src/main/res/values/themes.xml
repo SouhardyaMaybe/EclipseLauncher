@@ -1,13 +1,6 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme for Material 3 with Compose - minimal theme -->
-    <style name="Theme.EclipseLauncher" parent="android:Theme">
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <!-- Window flags -->
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Eclipse" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/eclipse_background</item>
     </style>
 </resources>

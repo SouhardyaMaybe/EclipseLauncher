@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.eclipselauncher.ui.navigation.AppNavHost
-import com.eclipselauncher.ui.theme.EclipseLauncherTheme
+import com.eclipselauncher.ui.EclipseApp
 
 class MainActivity : ComponentActivity() {
 
@@ -13,9 +12,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            EclipseLauncherTheme {
-                AppNavHost()
-            }
+            EclipseApp()
         }
     }
 }

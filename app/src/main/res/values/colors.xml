@@ -1,28 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Fallback colors for XML layouts if needed -->
-    <color name="primary">#0064CE</color>
-    <color name="onPrimary">#FFFFFF</color>
-    <color name="primaryContainer">#D0E3FF</color>
-    <color name="onPrimaryContainer">#001D3D</color>
-    <color name="secondary">#495B9A</color>
-    <color name="onSecondary">#FFFFFF</color>
-    <color name="secondaryContainer">#D0DFFF</color>
-    <color name="onSecondaryContainer">#04154D</color>
-    <color name="tertiary">#7D525F</color>
-    <color name="onTertiary">#FFFFFF</color>
-    <color name="tertiaryContainer">#FCD8DF</color>
-    <color name="onTertiaryContainer">#32161F</color>
-    <color name="error">#BA1A1A</color>
-    <color name="onError">#FFFFFF</color>
-    <color name="errorContainer">#FFDAD6</color>
-    <color name="onErrorContainer">#410002</color>
-    <color name="background">#FCFCFF</color>
-    <color name="onBackground">#1A1C1E</color>
-    <color name="surface">#FCFCFF</color>
-    <color name="onSurface">#1A1C1E</color>
-    <color name="surfaceVariant">#DEE0E9</color>
-    <color name="onSurfaceVariant">#44484F</color>
-    <color name="outline">#73777F</color>
-    <color name="outlineVariant">#C4C6D0</color>
+    <color name="eclipse_background">#1C1D1D</color>
+    <color name="ic_launcher_background">#1C1D1D</color>
 </resources>

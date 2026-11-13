@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher icon: a crescent eclipse on the dark canvas color. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="@color/onPrimary"
-        android:pathData="M54,20 A34,34 0 1,1 54,80 A34,34 0 1,1 54,20 Z M54,30 A24,24 0 1,1 54,74 A24,24 0 1,1 54,30 Z M54,40 A14,14 0 1,1 54,64 A14,14 0 1,1 54,40 Z"/>
+        android:fillColor="#9CD78C"
+        android:fillType="evenOdd"
+        android:pathData="M24,54 A30,30 0 1 0 84,54 A30,30 0 1 0 24,54 Z M40,42 A26,26 0 1 0 92,42 A26,26 0 1 0 40,42 Z" />
 </vector>
