@@ -152,6 +152,12 @@ fun InstanceEditorScreen(
         controlmap != existing.controlmap ||
         sharedData != existing.sharedData
 
+    // Toast messages pre-loaded for callbacks (must be before launchers that use them)
+    val errorMediaImport = stringResource(R.string.error_media_import)
+    val instanceCopiedToast = stringResource(R.string.instance_copied_toast)
+    val instanceCreatedToast = stringResource(R.string.instance_created_toast)
+    val instanceDeletedToast = stringResource(R.string.instance_deleted_toast)
+
     val pickIcon = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
     ) { uri: Uri? ->
@@ -218,12 +224,6 @@ fun InstanceEditorScreen(
     } else {
         Renderers.IDS.indexOf(renderer).takeIf { it >= 0 } ?: rendererOptions.lastIndex
     }
-
-    // Toast messages pre-loaded for callbacks
-    val errorMediaImport = stringResource(R.string.error_media_import)
-    val instanceCopiedToast = stringResource(R.string.instance_copied_toast)
-    val instanceCreatedToast = stringResource(R.string.instance_created_toast)
-    val instanceDeletedToast = stringResource(R.string.instance_deleted_toast)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
