@@ -70,21 +70,8 @@ android {
     }
 }
 
-dependencies {
-    // Core Android
-    val activityVersion = "1.9.0"
-    val coreKtxVersion = "1.13.1"
-    val lifecycleVersion = "2.8.2"
-
-    implementation("androidx.core:core-ktx:$coreKtxVersion")
-    implementation("androidx.activity:activity-compose:$activityVersion")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
-
-    // Compose 1.6.1 (compatible with AGP 8.9, compileSdk 34, Kotlin 2.0)
-    val composeVersion = "1.6.1"
-
-    // Resolution strategy to force Compose 1.6.1 and prevent transitive deps from pulling newer versions
+// Resolution strategy to force Compose 1.6.1 and prevent transitive deps from pulling newer versions
+configurations.all {
     resolutionStrategy {
         // Force all Compose libraries to 1.6.1
         force("androidx.compose:compose-compiler:1.6.1")
@@ -115,6 +102,21 @@ dependencies {
         force("androidx.compose.ui:ui-tooling-data:1.6.1")
         force("androidx.compose.ui:ui-tooling-preview:1.6.1")
     }
+}
+
+dependencies {
+    // Core Android
+    val activityVersion = "1.9.0"
+    val coreKtxVersion = "1.13.1"
+    val lifecycleVersion = "2.8.2"
+
+    implementation("androidx.core:core-ktx:$coreKtxVersion")
+    implementation("androidx.activity:activity-compose:$activityVersion")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycleVersion")
+
+    // Compose 1.6.1 (compatible with AGP 8.9, compileSdk 34, Kotlin 2.0)
+    val composeVersion = "1.6.1"
 
     // Material 3
     implementation("androidx.compose.material3:material3:1.2.1")
