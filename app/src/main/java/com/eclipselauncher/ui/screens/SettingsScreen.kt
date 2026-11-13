@@ -861,7 +861,6 @@ private fun MiscSettings(settings: SettingsStore) {
         )
     }
     }
-    }
 
 /** The CurseForge key editor: a text field plus an explicit clear action. */
 @Composable
