@@ -95,6 +95,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -121,6 +122,7 @@ import java.util.Locale
 import com.eclipselauncher.R
 import com.eclipselauncher.data.Renderers
 import com.eclipselauncher.data.SettingsStore
+import com.eclipselauncher.data.ThemeMode
 import com.eclipselauncher.ui.components.ConfirmDialog
 import com.eclipselauncher.ui.components.PreferenceRow
 import com.eclipselauncher.ui.components.PreferenceSwitch
@@ -242,7 +244,7 @@ private fun SettingsRoot(
     onOpenPage: (SettingsPage) -> Unit,
 ) {
     var showThemeDialog by remember { mutableStateOf(false) }
-    val themeModes = listOf(SettingsStore.ThemeMode.DYNAMIC, SettingsStore.ThemeMode.DARK, SettingsStore.ThemeMode.LIGHT)
+    val themeModes = listOf(ThemeMode.DYNAMIC, ThemeMode.DARK, ThemeMode.LIGHT)
     var selectedThemeIndex by remember { mutableStateOf(themeModes.indexOf(settings.themeMode())) }
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -324,9 +326,10 @@ private fun SettingsRoot(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = when (mode) {
-                                    SettingsStore.ThemeMode.DYNAMIC -> stringResource(R.string.settings_theme_dynamic)
-                                    SettingsStore.ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
-                                    SettingsStore.ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
+                                    ThemeMode.DYNAMIC -> stringResource(R.string.settings_theme_dynamic)
+                                    ThemeMode.DARK -> stringResource(R.string.settings_theme_dark)
+                                    ThemeMode.LIGHT -> stringResource(R.string.settings_theme_light)
+                                    else -> stringResource(R.string.settings_theme_dynamic)
                                 },
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface,

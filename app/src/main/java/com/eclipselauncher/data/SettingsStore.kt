@@ -23,6 +23,10 @@ import kotlinx.coroutines.flow.asStateFlow
  * reactively. When a value is written, both MMKV and the corresponding
  * StateFlow are updated.
  */
+
+/** UI theme: DYNAMIC follows Material You wallpaper colors, DARK/LIGHT are fixed. */
+enum class ThemeMode { DYNAMIC, DARK, LIGHT }
+
 class SettingsStore(context: Context) {
     private val appContext = context.applicationContext
     private val mmkv: MMKV = MMKV.mmkvWithID(MMKV_ID, MMKV.SINGLE_PROCESS_MODE)
@@ -110,9 +114,6 @@ class SettingsStore(context: Context) {
         private const val LEGACY_PREFS = "eclipse_settings"
         private const val KEY_MIGRATED = "_migrated_from_prefs"
         private const val THEME_MODE = "theme_mode"
-
-        /** UI theme: DYNAMIC follows Material You wallpaper colors, DARK/LIGHT are fixed. */
-        enum class ThemeMode { DYNAMIC, DARK, LIGHT }
 
         const val RENDERER = "renderer"
         const val ALTERNATE_SURFACE = "alternate_surface"
