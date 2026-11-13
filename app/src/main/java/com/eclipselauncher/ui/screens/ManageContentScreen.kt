@@ -44,7 +44,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CloudDownload
-import androidx.compose.material.icons.filled.ChevronUp
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.FileDownload
@@ -81,8 +80,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
@@ -154,8 +156,8 @@ private fun ContentSegmentedControl(
             )
             .pointerInput(Unit) {
                 detectDragGestures(
-                    onDragStart = { },
-                    onDragEnd = { _, dragAmount ->
+                    onDragStart = { _: Offset -> },
+                    onDragEnd = { _, dragAmount: Offset ->
                         val change = if (dragAmount.x > 20) 1 else if (dragAmount.x < -20) -1 else 0
                         val newIndex = (selectedIndex + change).coerceIn(0, 1)
                         if (newIndex != selectedIndex) onTabSelected(newIndex)
