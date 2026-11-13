@@ -288,11 +288,10 @@ private fun PageNavigationControl(
                     onClick = onPreviousPage,
                     enabled = currentPage > 1,
                 ) {
-                    Icon(
-                        Icons.Default.ArrowLeft,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    Text(
+                        text = "‹",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             if (currentPage > 1) 1f else 0.3f,
                         ),
                     )
@@ -306,11 +305,10 @@ private fun PageNavigationControl(
                     onClick = onNextPage,
                     enabled = currentPage < totalPages,
                 ) {
-                    Icon(
-                        Icons.Default.ArrowRight,
-                        contentDescription = null,
-                        modifier = Modifier.size(20.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                    Text(
+                        text = "›",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(
                             if (currentPage < totalPages) 1f else 0.3f,
                         ),
                     )
