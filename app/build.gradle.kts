@@ -107,35 +107,14 @@ dependencies {
         force("androidx.compose.material:material-icons-core:1.6.1")
         force("androidx.compose.material:material-icons-extended:1.6.1")
         force("androidx.compose.material:material-ripple:1.6.1")
-        force("androidx.compose.material3:material3:1.6.1")
-        force("androidx.compose.material3:material3-window-size-class:1.6.1")
-        force("androidx.compose.material3:material3-adaptive:1.6.1")
-        force("androidx.compose.material3:material3-adaptive-navigation-suite:1.6.1")
-        force("androidx.compose.runtime:runtime-livedata:1.6.1")
-        force("androidx.compose.runtime:runtime-rxjava3:1.6.1")
-        force("androidx.compose.runtime:runtime-saveable:1.6.1")
-        force("androidx.compose.ui:ui:1.6.1")
         force("androidx.compose.ui:ui-geometry:1.6.1")
-        force("androidx.compose.ui:ui-graphics:1.6.1")
         force("androidx.compose.ui:ui-test:1.6.1")
         force("androidx.compose.ui:ui-test-junit4:1.6.1")
         force("androidx.compose.ui:ui-test-manifest:1.6.1")
-        force("androidx.compose.ui:ui-text:1.6.1")
         force("androidx.compose.ui:ui-tooling:1.6.1")
         force("androidx.compose.ui:ui-tooling-data:1.6.1")
         force("androidx.compose.ui:ui-tooling-preview:1.6.1")
-        force("androidx.compose.ui:ui-unit:1.6.1")
-        force("androidx.compose.ui:ui-util:1.6.1")
-        force("androidx.compose.foundation:foundation:1.6.1")
-        force("androidx.compose.foundation:foundation-layout:1.6.1")
-        force("androidx.compose.foundation:foundation-text:1.6.1")
-        force("androidx.compose.material:material:1.6.1")
-        force("androidx.compose.material3:material3:1.6.1")
-        force("androidx.compose.material3:material3-window-size-class:1.6.1")
     }
-
-    // Compose 1.6.1 (compatible with AGP 8.9, compileSdk 34, Kotlin 2.0)
-    val composeVersion = "1.6.1"
 
     // Material 3
     implementation("androidx.compose.material3:material3:1.2.1")
@@ -143,7 +122,7 @@ dependencies {
 
     // Material 3 Adaptive (use older alpha compatible with 1.6.x)
     implementation("androidx.compose.material3:material3-adaptive:1.0.0-alpha01")
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.0.0-alpha01")
+    // Note: material3-adaptive-navigation-suite 1.5.0-rc01 requires AGP 9.1+, disabled for now
 
     // Compose Foundation & UI
     implementation("androidx.compose.foundation:foundation:$composeVersion")
@@ -166,11 +145,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 
-    // Flow (included in kotlinx-coroutines-core)
-
-    // Coil Image Loading - disabled for now
-    // implementation("io.coil-kt:coil-compose:2.6.0")
-    // implementation("io.coil-kt:coil-core:2.6.0")
+    // Coil Image Loading - using version compatible with Compose 1.6.1
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-core:2.5.0")
 
     // Navigation Compose
     implementation("androidx.navigation:navigation-compose:2.8.2")
