@@ -102,6 +102,7 @@ data class AccountState(
 }
 
 /** Lifecycle of a tracked background task. */
+@Serializable
 enum class TaskStatus { RUNNING, PAUSED, DONE, FAILED, CANCELLED }
 
 /**
@@ -109,6 +110,7 @@ enum class TaskStatus { RUNNING, PAUSED, DONE, FAILED, CANCELLED }
  * Finished tasks stay in the store until cleared so the tasks dialog can show
  * what happened.
  */
+@Serializable
 data class LauncherTask(
     val id: String,
     val title: String,

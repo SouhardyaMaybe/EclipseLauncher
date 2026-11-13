@@ -18,6 +18,7 @@
  */
 package com.eclipselauncher.ui.animation
 
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.Spring
@@ -142,6 +143,7 @@ fun Modifier.caretRotation(open: Boolean): Modifier = composed {
  * underlying Dialog window stays mounted until the exit finishes, then
  * unmounts (fixed exit budget), so dismissing animates instead of popping.
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AnimatedDialog(
     visible: Boolean,

@@ -607,9 +607,6 @@ private fun InstanceSwitcherDropdown(
     DropdownMenu(
         expanded = visible,
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(EclipseRadius.panel),
-        containerColor = MaterialTheme.colorScheme.surface,
-        tonalElevation = 6.dp,
     ) {
         // Fixed frame: the menu adds its own vertical padding; the list
         // takes the remaining height, the create row never scrolls. The

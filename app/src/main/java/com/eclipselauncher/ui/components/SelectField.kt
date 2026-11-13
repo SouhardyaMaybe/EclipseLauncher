@@ -158,9 +158,6 @@ fun DropdownSelectField(
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                shape = MaterialTheme.shapes.large,
-                containerColor = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp,
             ) {
                 options.forEachIndexed { index, option ->
                     DropdownMenuItem(
