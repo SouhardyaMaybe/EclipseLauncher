@@ -311,7 +311,7 @@ private fun ContentIcon(url: String?, fallbackGlyph: String, size: Dp = 40.dp) {
             .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)),
         contentAlignment = Alignment.Center,
     ) {
-        if (url.isNotBlank()) {
+        if (url != null && url.isNotBlank()) {
             AsyncImage(
                 model = url,
                 contentDescription = null,
