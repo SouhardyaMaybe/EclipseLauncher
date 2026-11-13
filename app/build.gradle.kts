@@ -62,6 +62,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE,LICENSE.txt,NOTICE,NOTICE.txt}"
         }
     }
+
+    lint {
+        // Print the full lint report to stdout so CI logs show every issue.
+        textReport = true
+    }
 }
 
 dependencies {
