@@ -61,6 +61,9 @@
 - `ModIcon`/`ModpackIcon` now use Coil `AsyncImage` over the existing placeholder tiles.
 - M3 1.5: `.menuAnchor()` → `.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)`.
 - Removed unused `JsonStore.kt`.
-- CI passes: lint-and-test, assemble-debug, assemble-release all green on `173bf09`; failed runs deleted, only green runs remain.
-- Final scope check: all IN-SCOPE items complete; OUT-OF-SCOPE items untouched (README, visual redesign, native modules, local builds).
+- CI passes: lint-and-test, assemble-debug, assemble-release all green on `f4cb15f`; failed runs deleted, only green runs remain.
+- Theme 2: Dynamic (Material You) + Urban (from ZL2 urbanAsh) with Crossfade animation; removed Dark/Light.
+- Settings cleanup: removed JAVA_SANDBOX, DOWNLOAD_SOURCE, AUTO_INSTALL_DEPENDENCIES, DISABLE_SERVER_BLOCKLIST, ALSOFT_OPENSL, UBWC, FORCE_ENGLISH.
+- Settings UX: Back button text changed to "Back"; added Microphone permission asker.
+- CurseForge key option preserved.
 

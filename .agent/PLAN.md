@@ -14,5 +14,20 @@
 - [x] Delete failed workflow runs; keep green ones.
 - [x] Final scope check against GOAL.md.
 - [x] Hide slider step dots/notches (`steps = 0` in SliderPreference).
-- [x] Add theme option: dynamic (Material You default), dark, light; black + deep blue palette (no violet/purple).
+- [x] Add theme option: dynamic (Material You default), Urban (copied from Zalith Lancer 2 urbanAsh); black + deep blue palette (no violet/purple).
+- [x] Smooth animated theme switching via Crossfade (250ms).
+- [x] Removed Dark/Light theme options (Dynamic + Urban only).
+- [x] Replace "<- Back to the last screen" with "<- Back" in settings sub-pages.
+- [x] Remove Sandbox .jar execution toggle (JAVA_SANDBOX).
+- [x] Remove game download source selection (DOWNLOAD_SOURCE) - default official only.
+- [x] Remove import data (IMPORT_DATA/pickTree).
+- [x] Remove auto-install dependencies (AUTO_INSTALL_DEPENDENCIES).
+- [x] Remove disable server blocklist (DISABLE_SERVER_BLOCKLIST).
+- [x] Remove OpenSL audio (ALSOFT_OPENSL).
+- [x] Remove UBWC compression (UBWC).
+- [x] Remove force language to English toggle (FORCE_ENGLISH).
+- [x] Add microphone permission asker button with granted/denied state.
+- [x] CurseForge key option preserved.
+- [x] All CI jobs green: lint, unit tests, assembleDebug, assembleRelease.
+- [x] Failed workflow runs deleted; only green runs remain.
 - [x] Report GitHub repos for the account (6 repos listed below).

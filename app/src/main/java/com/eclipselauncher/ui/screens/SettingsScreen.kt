@@ -162,14 +162,18 @@ fun SettingsScreen(
             TopAppBar(
                 title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
-                    if (onBack != null) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = stringResource(R.string.cd_back),
-                                tint = MaterialTheme.colorScheme.secondary,
-                            )
+                    IconButton(onClick = {
+                        if (page != null) {
+                            page = null
+                        } else {
+                            onBack?.invoke()
                         }
+                    }) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.settings_back),
+                            tint = MaterialTheme.colorScheme.secondary,
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -180,9 +184,6 @@ fun SettingsScreen(
         },
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            if (page != null) {
-                BackRow(onClick = { page = null })
-            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -212,30 +213,6 @@ fun SettingsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-    }
-}
-
-/** The in-screen back affordance shown above a sub-page. */
-@Composable
-private fun BackRow(onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            Icons.AutoMirrored.Filled.ArrowBack,
-            contentDescription = stringResource(R.string.cd_back),
-            tint = MaterialTheme.colorScheme.secondary,
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = stringResource(R.string.settings_back),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.secondary,
-        )
     }
 }
 
