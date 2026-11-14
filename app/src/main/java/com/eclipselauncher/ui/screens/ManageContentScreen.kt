@@ -704,7 +704,7 @@ private fun PaginationPill(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-public fun ManageContentScreen(
+fun ManageContentScreen(
     client: ModrinthClient,
     onBack: () -> Unit,
 ) {
@@ -955,6 +955,7 @@ public fun ManageContentScreen(
                     }
                 }
             }
+            Unit // Explicit Unit to satisfy Box content lambda
         }
 
         // Floating pagination pill (Browse only, when multiple pages)
