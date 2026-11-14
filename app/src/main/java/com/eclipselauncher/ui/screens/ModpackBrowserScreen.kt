@@ -55,7 +55,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudDownload
@@ -502,7 +501,7 @@ private fun VersionGroupCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = 300.dp)
-                        .padding(horizontal = 4.dp, bottom = 8.dp),
+                        .padding(start = 4.dp, top = 0.dp, end = 4.dp, bottom = 8.dp),
                 ) {
                     items(versions, key = { it.id }) { version ->
                         VersionRow(
@@ -736,7 +735,7 @@ fun ModpackBrowserScreen(
             navigationIcon = {
                 androidx.compose.material3.IconButton(onClick = onBack) {
                     Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
+                        Icons.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                     )
                 }
