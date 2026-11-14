@@ -20,7 +20,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -60,7 +59,6 @@ import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Public
-import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ChevronLeft
@@ -89,16 +87,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -108,7 +103,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import com.eclipselauncher.R
 import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
@@ -443,23 +438,14 @@ private fun BrowseContentRow(
     }
 }
 
-/** Collapsible filter panel with drag handle. Shows content-type chips. */
+/** Filter panel: always expanded, content-type chips scroll horizontally. */
 @Composable
-private fun CollapsibleFilterPanel(
+private fun ContentTypeFilterPanel(
     contentType: ContentType,
     onContentTypeClick: (ContentType) -> Unit,
     installedContent: List<InstalledContent>,
     isInstalledTab: Boolean,
-    collapsed: Boolean,
-    onCollapseToggle: () -> Unit,
-    onDrag: (Offset) -> Unit,
 ) {
-    val allTypes: List<ContentType> = ContentType.entries
-    val selectedType = contentType
-
-    // When collapsed, show only selected type; when expanded, show all
-    val visibleTypes: List<ContentType> = if (collapsed) listOf(selectedType) else allTypes
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -470,51 +456,23 @@ private fun CollapsibleFilterPanel(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            // Content type chips row (horizontally scrollable)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                visibleTypes.forEach { type ->
-                    val count = if (isInstalledTab) {
-                        installedContent.count { it.type == type }
-                    } else 0
-                    ContentTypeChip(
-                        type = type,
-                        selected = selectedType == type,
-                        count = count,
-                        showBadge = isInstalledTab,
-                        onClick = { onContentTypeClick(type) },
-                    )
-                }
-            }
-
-            // Drag handle at bottom center
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
-                    .height(32.dp)
-                    .background(Color.Transparent)
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = { },
-                            onDrag = { change, dragAmount ->
-                                change.consume()
-                                onDrag(dragAmount)
-                            },
-                            onDragEnd = { onCollapseToggle() },
-                        )
-                    },
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.DragIndicator,
-                    contentDescription = stringResource(if (collapsed) R.string.cd_expand else R.string.cd_collapse),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(horizontal = 10.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            ContentType.entries.forEach { type ->
+                val count = if (isInstalledTab) {
+                    installedContent.count { it.type == type }
+                } else 0
+                ContentTypeChip(
+                    type = type,
+                    selected = contentType == type,
+                    count = count,
+                    showBadge = isInstalledTab,
+                    onClick = { onContentTypeClick(type) },
                 )
             }
         }
@@ -604,79 +562,60 @@ private fun SearchField(
     )
 }
 
-/** Floating pagination pill at bottom: [collapse] [prev] [N/total] [next]. */
+/** Floating page pill, bottom-center: [prev] [page/total] [next]. */
 @Composable
 private fun PaginationPill(
     currentPage: Int,
     totalPages: Int,
     loading: Boolean,
-    collapsed: Boolean,
-    onCollapseToggle: () -> Unit,
     onPrev: () -> Unit,
     onNext: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = if (collapsed) Alignment.CenterEnd else Alignment.BottomCenter,
+        contentAlignment = Alignment.BottomCenter,
     ) {
-        if (collapsed) {
-            Surface(
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(end = 8.dp)
-                    .size(56.dp),
-                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                tonalElevation = 3.dp,
+        Surface(
+            modifier = Modifier
+                .navigationBarsPadding()
+                .padding(bottom = 12.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = 3.dp,
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = onCollapseToggle, modifier = Modifier.fillMaxSize()) {
+                IconButton(onClick = onPrev, enabled = currentPage > 1 && !loading) {
                     Icon(
                         imageVector = Icons.Filled.ChevronLeft,
-                        contentDescription = stringResource(R.string.cd_expand),
+                        contentDescription = stringResource(R.string.cd_nav_previous),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-            }
-        } else {
-            Surface(
-                modifier = Modifier
-                    .navigationBarsPadding()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                shape = RoundedCornerShape(28.dp),
-                color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                tonalElevation = 3.dp,
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    IconButton(onClick = onCollapseToggle) {
-                        Icon(
-                            imageVector = Icons.Filled.ChevronRight,
-                            contentDescription = stringResource(R.string.cd_collapse),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                // Fixed width stops the buttons from shifting between 1- and 2-digit pages.
+                Box(modifier = Modifier.width(84.dp), contentAlignment = Alignment.Center) {
+                    if (loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(18.dp),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    } else {
+                        Text(
+                            text = "$currentPage / $totalPages",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    IconButton(onClick = onPrev, enabled = currentPage > 1 && !loading) {
-                        Icon(
-                            imageVector = Icons.Filled.ChevronLeft,
-                            contentDescription = stringResource(R.string.cd_nav_previous),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    Text(
-                        text = "$currentPage / $totalPages",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 4.dp),
+                }
+                IconButton(onClick = onNext, enabled = currentPage < totalPages && !loading) {
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = stringResource(R.string.cd_nav_next),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
-                    IconButton(onClick = onNext, enabled = currentPage < totalPages && !loading) {
-                        Icon(
-                            imageVector = Icons.Filled.ChevronRight,
-                            contentDescription = stringResource(R.string.cd_nav_next),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
                 }
             }
         }
@@ -704,11 +643,6 @@ fun ManageContentScreen(
     var browsePage by remember { mutableStateOf(1) }
     var browseTotalPages by remember { mutableStateOf(1) }
     var reloadToken by remember { mutableStateOf(0) }
-
-    // Collapse state remembered per tab.
-    var installedTypeCollapsed by remember { mutableStateOf(false) }
-    var browseTypeCollapsed by remember { mutableStateOf(false) }
-    var pageNavCollapsed by remember { mutableStateOf(false) }
 
     // Mock installed content
     val installedContent = remember {
@@ -741,14 +675,22 @@ fun ManageContentScreen(
     // page change, or explicit retry. Empty query is the default listing.
     LaunchedEffect(mainTab, browseContentType, browseProvider, browseQuery, browsePage, reloadToken) {
         if (mainTab != 1) return@LaunchedEffect
+
+        // Coalesce rapid page taps: only the page the user stopped on is fetched.
+        delay(220)
+        val requestedPage = browsePage
         browseLoading = true
         browseError = null
         val result = client.searchMods(
             query = browseQuery.trim(),
             limit = BROWSE_PAGE_SIZE,
-            offset = (browsePage - 1) * BROWSE_PAGE_SIZE,
+            offset = (requestedPage - 1) * BROWSE_PAGE_SIZE,
             projectType = browseContentType.modrinthProjectType,
         )
+
+        // A newer tap already replaced this request; never apply stale results.
+        if (browsePage != requestedPage) return@LaunchedEffect
+
         if (result.failed) {
             browseResults = emptyList()
             browseTotalPages = 1
@@ -760,8 +702,9 @@ fun ManageContentScreen(
         browseLoading = false
     }
 
-    // Every page change starts at the top of the list.
+    // Every settled page change starts at the top of the list.
     LaunchedEffect(browsePage) {
+        delay(220)
         if (mainTab == 1) lazyListState.animateScrollToItem(0)
     }
 
@@ -792,10 +735,8 @@ fun ManageContentScreen(
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
 
-        // Collapsible filter panel with content-type chips + drag handle
+        // Always-expanded content-type filter panel.
         val activeContentType = if (mainTab == 0) installedContentType else browseContentType
-        val activeCollapsed = if (mainTab == 0) installedTypeCollapsed else browseTypeCollapsed
-        val onCollapseToggle: () -> Unit = if (mainTab == 0) { { installedTypeCollapsed = !installedTypeCollapsed } } else { { browseTypeCollapsed = !browseTypeCollapsed } }
         val onTypeClick: (ContentType) -> Unit = if (mainTab == 0) {
             { installedContentType = it }
         } else {
@@ -804,22 +745,12 @@ fun ManageContentScreen(
                 browsePage = 1
             }
         }
-        val onDrag = { dragAmount: Offset ->
-            if (dragAmount.y > 20 && !activeCollapsed) {
-                onCollapseToggle()
-            } else if (dragAmount.y < -20 && activeCollapsed) {
-                onCollapseToggle()
-            }
-        }
 
-        CollapsibleFilterPanel(
+        ContentTypeFilterPanel(
             contentType = activeContentType,
             onContentTypeClick = onTypeClick,
             installedContent = installedContent,
             isInstalledTab = mainTab == 0,
-            collapsed = activeCollapsed,
-            onCollapseToggle = onCollapseToggle,
-            onDrag = onDrag,
         )
 
         if (mainTab == 1) {
@@ -960,10 +891,8 @@ fun ManageContentScreen(
                     currentPage = browsePage,
                     totalPages = browseTotalPages,
                     loading = browseLoading,
-                    collapsed = pageNavCollapsed,
-                    onCollapseToggle = { pageNavCollapsed = !pageNavCollapsed },
-                    onPrev = { if (browsePage > 1 && !browseLoading) browsePage-- },
-                    onNext = { if (browsePage < browseTotalPages && !browseLoading) browsePage++ },
+                    onPrev = { if (browsePage > 1) browsePage-- },
+                    onNext = { if (browsePage < browseTotalPages) browsePage++ },
                 )
             }
         }

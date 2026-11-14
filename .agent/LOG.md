@@ -121,3 +121,8 @@
 - Reproduced from user log at ManageContentScreen.kt:481.
 - `ContentType.values()` -> `Array`; cast to `List` crashed whenever the filter panel expanded.
 - Replaced with `ContentType.entries`; removed the cast. Pushed for CI verification.
+
+## 2026-11-14 — Filter handle + paginator cleanup; rapid-paging fix
+- Removed the six-dot drag handle and all collapse/drag state; filter panel is now always expanded and compact (single chip row).
+- Removed the paginator collapse chevron and edge-handle mode; pill is fixed bottom-center `‹ page/total ›`, fixed-width indicator (no button shift between 1- and 2-digit pages), spinner while loading.
+- Rapid-tap bounce: debounce page changes by 220ms, capture `requestedPage`, fetch only the settled page, and discard stale responses; scroll-to-top is debounced the same way.
