@@ -85,13 +85,22 @@ class MicrosoftAuth @Inject constructor(
 
     /** Classifies a URL the WebView lands on; null when it is not our redirect. */
     fun parseRedirect(url: String): RedirectResult? {
-        if (!url.startsWith(REDIRECT_URL)) return null
-        val query = url.substringAfter('?', "").substringBefore('#')
+        val isDesktopRedirect = url.startsWith(REDIRECT_URL)
+        val isCustomSchemeRedirect = url.startsWith(CUSTOM_SCHEME_REDIRECT)
+        if (!isDesktopRedirect && !isCustomSchemeRedirect) return null
+
+        // Both redirect types have the code/error in the query string after '?'
+        val queryStart = url.indexOf('?')
+        val fragmentStart = url.indexOf('#')
+        val queryEnd = if (fragmentStart >= 0) fragmentStart else url.length
+        val query = if (queryStart >= 0) url.substring(queryStart + 1, queryEnd) else ""
+
         val params = query.split('&').mapNotNull { part ->
             val idx = part.indexOf('=')
             if (idx <= 0) null
             else part.take(idx) to java.net.URLDecoder.decode(part.substring(idx + 1), "UTF-8")
         }.toMap()
+
         val error = params["error"]
         return when {
             params["code"] != null -> RedirectResult.Success(params.getValue("code"))
@@ -306,6 +315,9 @@ class MicrosoftAuth @Inject constructor(
         const val CLIENT_ID = "00000000402b5328"
         const val REDIRECT_URL = "https://login.live.com/oauth20_desktop.srf"
         const val SCOPE = "service::user.auth.xboxlive.com::MBI_SSL"
+
+        /** Custom scheme used by Microsoft for this client ID: ms-xal-{CLIENT_ID}://auth/ */
+        const val CUSTOM_SCHEME_REDIRECT = "ms-xal-$CLIENT_ID://auth/"
 
         private const val AUTHORIZE_URL = "https://login.live.com/oauth20_authorize.srf"
         private const val TOKEN_URL = "https://login.live.com/oauth20_token.srf"
