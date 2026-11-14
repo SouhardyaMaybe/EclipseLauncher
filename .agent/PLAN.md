@@ -39,3 +39,6 @@
 - [x] ManageContentScreen: Collapse/expand options panel (▲/▼ toggle)
 - [x] ManageContentScreen: Floating page navigation control (‹ page/total ›)
 - [x] ManageContentScreen: Single back button in top bar
+- [x] ManageContentScreen: Matches reference UI (installed tab with glyph chips, toggle rows, Coil icons)
+- [x] All CI jobs green: lint, unit tests, assembleDebug, assembleRelease
+- [x] Failed workflow runs deleted; only green runs remain

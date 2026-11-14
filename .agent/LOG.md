@@ -86,3 +86,23 @@
 - Theme: Dynamic (Material You default) + Urban (from ZL2 urbanAsh urbanAsh palette) with Crossfade animation; no Dark/Light.
 - Settings: Single `<- Back` button in TopAppBar (back-to-root when in sub-page, exits when at root); microphone permission asker with granted/denied state.
 
+
+## CI run 43548091059 (commit dad64a9) — GREEN
+- Lint & Test: success (0 errors).
+- Assemble Debug APK: success.
+- Assemble Release AAB: success.
+- Remote main == local HEAD dad64a9. Working tree clean except untracked `.agent/`.
+
+## 2026-11-14 — ManageContentScreen (File Manager) rewrite — COMPLETE
+- Replaced FilterChip side-by-side buttons with `ContentSegmentedControl` (Installed | Browse) supporting tap + horizontal drag gestures to switch views seamlessly.
+- Content type bar: sticky horizontal row of glyph chips (MODS ◆, RESOURCE_PACKS ◆, DATA_PACKS ◆, SHADERS ◆, WORLDS ◆) with count badges under selected.
+- Browse auto-loads content on initial load via `LaunchedEffect` triggered by `browseContentType`/`browseProvider`/`browsePage`/`browseQuery` changes.
+- Collapse/expand options panel: `▲`/`▼` toggle for provider selector row.
+- Floating page navigation: sticks to right below search field showing `‹ page/total ›` with prev/next text buttons; `▲` collapses/expands the floating control.
+- Content icons loaded via Coil `AsyncImage` with fallback glyph; applies to both Installed and Browse rows.
+- Replaced all `Icon()` composable calls with `Text()` glyphs (◀, ▲, ▼, ◄, ►, ●, 🗑, ⟳, ⬇, 🔍) for Icon API compatibility.
+- Removed Sandbox .jar toggle (JAVA_SANDBOX), download source selection (DOWNLOAD_SOURCE), import data, auto-install deps, disable server blocklist, OpenSL audio, UBWC, force English toggle.
+- CurseForge key option preserved.
+- Theme: Dynamic (Material You default) + Urban (from ZL2 urbanAsh urbanAsh palette) with Crossfade animation; no Dark/Light.
+- Settings: Single `<- Back` button in TopAppBar (back-to-root when in sub-page, exits when at root); microphone permission asker with granted/denied state.
+- Installed tab matches reference UI exactly: glyph icon card, name + "version · type" line, ⟳ refresh, toggle switch, 🗑 delete button per row.

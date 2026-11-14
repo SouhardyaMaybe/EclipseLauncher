@@ -40,6 +40,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.defaults.ExpandLess
+import androidx.compose.material.icons.defaults.ExpandMore
+import androidx.compose.material.icons.defaults.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -296,7 +299,7 @@ private fun InstalledContentRow(
             // Actions: Update/Degrade, Toggle, Delete
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 TextButton(onClick = onUpdate) {
-                    Text(text = "⟳", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.manage_content_update), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
                 }
                 Switch(
                     checked = content.enabled,
@@ -307,7 +310,7 @@ private fun InstalledContentRow(
                     ),
                 )
                 TextButton(onClick = onDelete) {
-                    Text(text = "🗑", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(24.dp))
                 }
             }
         }
@@ -347,7 +350,7 @@ private fun BrowseContentRow(
             }
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = { /* open version dropdown */ }) {
-                Text(text = "⬇", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Icon(Icons.Filled.Download, contentDescription = stringResource(R.string.manage_content_install), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
             }
         }
     }
@@ -359,11 +362,11 @@ private fun ToggleButton(
     collapsed: Boolean,
     onToggle: () -> Unit,
 ) {
-    TextButton(onClick = onToggle) {
-        Text(
-            text = if (collapsed) "▼" else "▲",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+    IconButton(onClick = onToggle) {
+        Icon(
+            imageVector = if (collapsed) Icons.Default.ExpandMore else Icons.Default.ExpandLess,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }
@@ -444,12 +447,12 @@ fun ManageContentScreen(
             title = { Text(manageContentTitle) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Text(text = "◀", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
                 }
             },
             actions = {
                 IconButton(onClick = { importLauncher.launch(arrayOf("application/zip", "*/*")) }) {
-                    Text(text = "📦", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Icon(Icons.Filled.FileDownload, contentDescription = stringResource(R.string.manage_content_import), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(
@@ -550,7 +553,7 @@ fun ManageContentScreen(
                 modifier = Modifier.weight(1f),
                 placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
                 singleLine = true,
-                leadingIcon = { Text(text = "🔍", style = MaterialTheme.typography.bodyMedium) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.cd_search), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp)) },
             )
             Spacer(modifier = Modifier.width(8.dp))
             TextButton(onClick = {
@@ -569,7 +572,7 @@ fun ManageContentScreen(
                     }
                 }
             }) {
-                Text(text = "🔍", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.secondary)
+                Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.action_search), tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(24.dp))
             }
         }
 
