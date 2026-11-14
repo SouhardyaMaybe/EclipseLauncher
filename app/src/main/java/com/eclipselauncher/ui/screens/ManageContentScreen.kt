@@ -1298,7 +1298,7 @@ private fun VersionRow(
         addAll(version.loaders.take(2))
     }.joinToString(" · ")
     val date = version.date_published.take(10).takeIf { it.isNotBlank() }
-    val size = formatFileSize(primaryFile?.size ?: 0)
+    val size = formatContentSize(primaryFile?.size ?: 0)
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -1475,7 +1475,7 @@ private fun uniqueFile(dir: File, filename: String): File {
     return candidate
 }
 
-private fun formatFileSize(bytes: Long): String {
+private fun formatContentSize(bytes: Long): String {
     if (bytes <= 0) return ""
     if (bytes < 1024) return "$bytes B"
     val units = listOf("KB", "MB", "GB")
