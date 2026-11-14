@@ -82,7 +82,7 @@ private sealed interface Route : NavKey {
     data object ModpackBrowser : Route
 
     @Serializable
-    data object ManageContent : Route
+    data class ManageContent(val instanceId: String? = null) : Route
 
     @Serializable
     data class Editor(val instanceId: String?, val presetLoader: LoaderKind?) : Route
@@ -215,7 +215,7 @@ fun EclipseApp() {
                             onCreateInstance = { push(Route.Create) },
                             onEditInstance = { push(Route.Editor(it.id, null)) },
                             onPlay = ::play,
-                            onOpenFileManager = { push(Route.ManageContent) },
+                            onOpenFileManager = { instanceId -> push(Route.ManageContent(instanceId)) },
                             onOpenManageLogs = { /* TODO: open manage logs */ },
                             onOpenSettings = { push(Route.Settings(initialPage = null)) },
                             onOpenTasks = { showTasks = true },
@@ -346,10 +346,13 @@ fun EclipseApp() {
                         )
                     }
 
-                    entry<Route.ManageContent> {
+                    entry<Route.ManageContent> { route ->
                         ManageContentScreen(
                             client = container.modrinth,
-                            instances = instances,
+                            instance = instances.firstOrNull { it.id == route.instanceId }
+                                ?: instances.firstOrNull(),
+                            media = container.media,
+                            versionRepository = container.versions,
                             onBack = ::pop,
                         )
                     }

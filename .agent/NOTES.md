@@ -33,6 +33,7 @@
 ## 2026-11-14 — Install limitations (NOT hidden)
 - Successful installs are appended to the in-memory Installed list only; after relaunch the files are on disk but the Installed tab is seeded with mock rows again. Real directory/jar scanning is not wired.
 - Worlds are saved as archives in `saves/`; they are not extracted. Datapacks land at the instance root, not inside a specific world.
-- Compatibility filtering uses the instance's `minecraftVersion` and (mods only) loader name; a Vanilla instance shows all mods because no loader filter applies.
+- The stable MC filter depends on the piston-meta manifest (cached or fetched). If that request fails, all groups remain visible; the badge type falls back to Releases for MC ids missing from the manifest.
+- Mod loader compatibility is no longer filtered in the install sheet, by request. A Fabric mod can be listed under a Forge instance if both target the same MC version.
 - Back/close cancels a running download; the `.part` file is deleted. There is no resume.
 - `Installed` rows' update/toggle/delete actions are still visual placeholders.

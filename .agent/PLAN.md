@@ -81,3 +81,12 @@
 - [x] Full-screen dialog with instance chips, compatibility filter, version cards, progress and retry.
 - [ ] Persist installed content across relaunch (Installed tab still mock-seeded).
 - [ ] Wire Installed actions (update/toggle/delete) to the selected instance.
+
+## 2026-11-14 — Install sheet: single instance + stable MC groups
+- [x] Route passes the HOME-selected instance id; Manage Content targets that instance only.
+- [x] Replace instance chips / "Install to" with "Selected Instance: <icon> <name>".
+- [x] Replace "Only compatible" with "Show for Stable Mc Versions Only" (manifest release filter).
+- [x] Group content versions by Minecraft version in manifest order; expandable cards with release/snapshot badges.
+- [x] Expanded rows: name, version, relative updated time + icon, downloads + icon, trailing install icon.
+- [x] Highlight the group matching the instance's Minecraft version with a green border/tint.
+- [ ] CI green for this batch.

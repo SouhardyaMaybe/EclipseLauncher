@@ -36,3 +36,7 @@
 - Endpoint `GET https://api.modrinth.com/v2/project/{id|slug}/version?include_changelog=false`; response is an array with `id`, `project_id`, `name`, `version_number`, `game_versions[]`, `loaders[]`, `date_published`, `version_type`, `files[]` (`url`, `filename`, `primary`, `size`, `file_type`). Verified against `https://api.modrinth.com/v2/project/sodium/version` and https://docs.modrinth.com/api/operations/getprojectversions/.
 - Compose Material3 1.5.0-beta02 contains `LoadingIndicator` (expressive, opt-in `ExperimentalMaterial3ExpressiveApi`), `LinearWavyProgressIndicator`, `CircularWavyProgressIndicator`; verified by inspecting `material3-android-1.5.0-beta02.aar` from Google Maven.
 - Ktor 3.6.1 `HttpResponse.bodyAsChannel()` + `ByteReadChannel.readAvailable(ByteArray, offset, length)` used for streamed downloads; verified against the resolved `ktor-io-jvm-3.6.1` / `ktor-client-core-jvm-3.6.1` jars in the Gradle cache.
+
+## 2026-11-14 — Modrinth version downloads + relative time
+- `GET /v2/project/sodium/version?include_changelog=false` includes a numeric `downloads` field per version (verified: first Sodium version returned `downloads: 41127`). Added to `ModrinthVersion` with a 0 default.
+- Android `DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS)` produces the required "4 days ago / 1 month ago / 2 years ago" labels without an extra dependency. Modrinth timestamps (`2026-11-12T01:12:30.162066Z`) parse with `java.time.Instant.parse` on minSdk 26.

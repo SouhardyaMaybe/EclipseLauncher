@@ -140,3 +140,12 @@
 - Install streams to `<filesDir>/minecraft/instances/<instanceId>/<mods|resourcepacks|datapacks|shaderpacks|saves>/` via a `.part` file, then renames; existing files are never overwritten (numeric suffix). Back/close cancels the coroutine and deletes the partial file.
 - Success appends a row to the Installed tab for this session and switches to it.
 - CI: run 43586674218 green (ad06caa) for the first compile; cancellation cleanup added after.
+
+## 2026-11-14 — Install sheet: one instance, stable MC groups
+- HOME now passes the selected instance id to `Route.ManageContent(instanceId)`; EclipseApp resolves the instance once and the sheet has no instance chips. The row reads `Selected Instance:` + instance icon + name.
+- Replaced the loader/game-version "Only compatible" filter with `Show for Stable Mc Versions Only`. Default on; groups are filtered to MC versions whose piston-meta type is `release` when that manifest is available. If it cannot be fetched, all groups stay visible.
+- `projectVersions()` results are grouped under every `game_versions` entry, ordered by the manifest (newest first). Each group is a card with the MC version as title and a type badge matching CreateInstanceScreen's palette (Releases green, Snapshots yellow, Old Betas orange, Old Alphas red).
+- Group cards expand in place. Rows show content name, `version_number`, a schedule icon + `DateUtils` relative time, a download icon + `formatDownloads(version.downloads)`, and a trailing `FilledTonalIconButton` install icon. Per-row progress appears under the active version.
+- The group whose MC version equals `instance.minecraftVersion` gets a green border and 12% green tint; every other group keeps the dynamic/Urban `surfaceVariant` card color.
+- Dropped the now-unused loader compatibility helpers and the old `size`-based version card. Added `downloads` to `ModrinthVersion`.
+- Not yet CI-verified at the time of writing.

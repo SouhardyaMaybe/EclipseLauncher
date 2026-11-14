@@ -68,6 +68,7 @@ data class ModrinthVersion(
     val version_number: String = "",
     val game_versions: List<String> = emptyList(),
     val loaders: List<String> = emptyList(),
+    val downloads: Long = 0,
     val date_published: String = "",
     val version_type: String = "release",
     val files: List<ModrinthVersionFile> = emptyList(),

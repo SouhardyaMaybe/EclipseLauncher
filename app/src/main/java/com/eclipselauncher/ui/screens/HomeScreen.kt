@@ -104,7 +104,7 @@ fun HomeScreen(
     onCreateInstance: () -> Unit,
     onEditInstance: (Instance) -> Unit,
     onPlay: (Instance) -> Unit,
-    onOpenFileManager: () -> Unit,
+    onOpenFileManager: (String?) -> Unit,
     onOpenManageLogs: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenTasks: () -> Unit,
@@ -156,7 +156,7 @@ fun HomeScreen(
                 HeaderButton(
                     icon = Icons.Filled.Folder,
                     contentDescription = stringResource(R.string.utils_file_manager),
-                    onClick = onOpenFileManager,
+                    onClick = { onOpenFileManager(selected?.id) },
                 )
                 HeaderButton(
                     icon = Icons.Filled.Article,
