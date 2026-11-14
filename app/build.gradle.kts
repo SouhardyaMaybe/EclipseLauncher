@@ -63,9 +63,6 @@ android {
     lint {
         // Print the full lint report to stdout so CI logs show every issue.
         textReport = true
-    }
-
-    lintOptions {
         // Suppress false positive UNRESOLVED_REFERENCE for ManageContentScreen
         // (function exists and compiles, but lint can't resolve it in EclipseApp.kt)
         disable("UnresolvedReference")
