@@ -8,10 +8,6 @@
  */
 package me.shadow.eclipselauncher.data
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -20,12 +16,9 @@ import org.junit.Test
 
 class MicrosoftAuthTest {
 
-    private val client = HttpClient(MockEngine) {
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
-        }
-    }
-    private val auth = MicrosoftAuth(NetworkClient(client))
+    // parseRedirect is a pure function that doesn't depend on any external state
+    // NetworkClient has a no-arg constructor
+    private val auth = MicrosoftAuth(NetworkClient())
 
     @Test
     fun testParseRedirectDesktopRedirectWithCode() {
