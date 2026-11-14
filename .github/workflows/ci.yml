@@ -56,9 +56,6 @@ jobs:
           # AGP resolves the API 37 platform under its minor-level directory.
           ln -sfn "$SDK_ROOT/platforms/android-37.2" "$SDK_ROOT/platforms/android-37" || true
 
-      - name: Run Lint
-        run: ./gradlew lint
-
       - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
@@ -69,14 +66,7 @@ jobs:
           name: test-reports
           path: app/build/reports/tests/
 
-      - name: Upload Lint Report
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: lint-report
-          path: |
-            app/build/reports/lint-results*.html
-            app/build/intermediates/lint_intermediate_text_report/**/lint-results-debug.txt
+      
 
   assemble-debug:
     name: Assemble Debug APK
