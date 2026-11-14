@@ -604,7 +604,7 @@ fun ManageContentScreen(
             var pageNavCollapsed by remember { mutableStateOf(false) }
             Box(
                 modifier = Modifier
-                    .align(Alignment.Horizontal.End)
+                    .align(Alignment.Horizontal(1f))
                     .padding(end = 16.dp, top = 8.dp),
             ) {
                 if (pageNavCollapsed) {
