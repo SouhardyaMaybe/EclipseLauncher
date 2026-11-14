@@ -105,15 +105,13 @@ fun ModpackBrowserScreen(
         loading = true
         error = null
         scope.launch {
-            when (val result = client.searchMods(term, projectType = "modpack")) {
-                is MetaResult.Success<*> -> {
-                    results = result.value
-                    loading = false
-                }
-                is MetaResult.Error -> {
-                    error = result.message.ifBlank { networkError }
-                    loading = false
-                }
+            val result = client.searchMods(term, projectType = "modpack")
+            if (result is MetaResult.Success<*>) {
+                results = result.value as List<ModrinthHit>
+                loading = false
+            } else if (result is MetaResult.Error) {
+                error = result.message.ifBlank { networkError }
+                loading = false
             }
         }
     }

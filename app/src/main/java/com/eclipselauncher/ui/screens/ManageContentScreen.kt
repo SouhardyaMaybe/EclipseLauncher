@@ -603,7 +603,7 @@ fun ManageContentScreen(
             var pageNavCollapsed by remember { mutableStateOf(false) }
             Box(
                 modifier = Modifier
-                    .align(Alignment.End)
+                    .align(Alignment.Horizontal.End)
                     .padding(end = 16.dp, top = 8.dp),
             ) {
                 if (pageNavCollapsed) {
@@ -670,7 +670,7 @@ fun ManageContentScreen(
                     }
                 }
             }
-        )
+        }
 
         // Content list
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
