@@ -124,7 +124,7 @@ fun CreateInstanceScreen(
         launch(Dispatchers.IO) {
             when (val result = versions.minecraftVersions()) {
                 is MetaResult.Success<*> -> {
-                    allVersions = result.value
+                    allVersions = result.value as List<McVersion>
                     loading = false
                 }
                 is MetaResult.Error -> {
