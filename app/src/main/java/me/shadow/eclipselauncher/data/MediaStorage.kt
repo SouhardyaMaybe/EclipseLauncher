@@ -11,6 +11,8 @@ import android.net.Uri
 import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
 
 /** What kind of image is being imported, which decides validation. */
 enum class ImportKind {
@@ -99,6 +101,50 @@ class MediaStorage(context: Context) {
                     targetName
                 }
             }.getOrNull()
+        }
+
+    /**
+     * Downloads an image from a URL, validates it, and stores it in the media directory.
+     * Returns the stored file name, or null if download/validation fails.
+     */
+    suspend fun importImageFromUrl(targetName: String, url: String, kind: ImportKind): String? =
+        withContext(Dispatchers.IO) {
+            val client = okhttp3.OkHttpClient()
+            val request = okhttp3.Request.Builder()
+                .url(url)
+                .header("User-Agent", "EclipseLauncher/1.0")
+                .build()
+            val response = client.newCall(request).execute()
+            if (!response.isSuccessful) return@withContext null
+            val body = response.body ?: return@withContext null
+            val bytes = body.bytes()
+            val decoded = runCatching {
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            }.getOrNull() ?: return@withContext null
+
+            val valid = when (kind) {
+                ImportKind.SKIN ->
+                    decoded.width == 64 && (decoded.height == 64 || decoded.height == 32)
+                ImportKind.CAPE -> decoded.width in 1..512 && decoded.height in 1..512
+                ImportKind.INSTANCE_ICON -> decoded.width in 1..2048 && decoded.height in 1..2048
+            }
+            if (!valid) {
+                decoded.recycle()
+                return@withContext null
+            }
+
+            val toWrite = if (kind == ImportKind.INSTANCE_ICON) {
+                scaleDown(decoded, 256f)
+            } else {
+                decoded
+            }
+
+            runCatching {
+                file(targetName).outputStream().use { out ->
+                    toWrite.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                targetName
+            }.onFailure { toWrite.recycle() }.getOrNull()
         }
 
     private fun scaleDown(bitmap: Bitmap, maxDimension: Float): Bitmap {

@@ -66,6 +66,9 @@ data class MsLoginResult(
     val username: String,
     val uuid: String,
     val expiresAtEpochSeconds: Long,
+    val skinUrl: String? = null,
+    val skinVariant: String? = null,
+    val capeUrl: String? = null,
 )
 
 @Singleton
@@ -133,6 +136,9 @@ class MicrosoftAuth @Inject constructor(
             username = profile.name,
             uuid = profile.uuid,
             expiresAtEpochSeconds = nowEpochSeconds() + minecraft.expiresIn,
+            skinUrl = profile.activeSkin?.url,
+            skinVariant = profile.activeSkin?.variant,
+            capeUrl = profile.activeCape?.url,
         )
     }
 
@@ -151,7 +157,32 @@ class MicrosoftAuth @Inject constructor(
 
     private data class MinecraftToken(val accessToken: String, val expiresIn: Long)
 
-    private data class Profile(val name: String, val uuid: String)
+    private data class SkinInfo(
+    val id: String,
+    val state: String,
+    val url: String,
+    val variant: String?,
+)
+
+private data class CapeInfo(
+    val id: String,
+    val state: String,
+    val url: String,
+    val alias: String?,
+)
+
+private data class Profile(
+    val name: String,
+    val uuid: String,
+    val skins: List<SkinInfo> = emptyList(),
+    val capes: List<CapeInfo> = emptyList(),
+) {
+    val activeSkin: SkinInfo?
+        get() = skins.firstOrNull { it.state == "ACTIVE" }
+
+    val activeCape: CapeInfo?
+        get() = capes.firstOrNull { it.state == "ACTIVE" }
+}
 
     private suspend fun exchangeCode(code: String): LiveToken {
         val response = postForm(
@@ -236,10 +267,50 @@ class MicrosoftAuth @Inject constructor(
         }
         val response = runCatching { json.parseToJsonElement(text) as? JsonObject }.getOrNull()
             ?: throw MsAuthException(MsAuthError.UNKNOWN, "Malformed profile response")
+
+        // Parse skins array
+        val skinsArray = response.optJsonArray("skins") ?: JsonArray()
+        val skins = mutableListOf<SkinInfo>()
+        for (i in 0 until skinsArray.length()) {
+            val skinObj = skinsArray.optJsonObject(i)
+            if (skinObj != null) {
+                skins.add(SkinInfo(
+                    id = skinObj.optString("id", ""),
+                    state = skinObj.optString("state", ""),
+                    url = normalizeTextureUrl(skinObj.optString("url", "")),
+                    variant = skinObj.optString("variant").takeIf { it.isNotBlank() },
+                ))
+            }
+        }
+
+        // Parse capes array
+        val capesArray = response.optJsonArray("capes") ?: JsonArray()
+        val capes = mutableListOf<CapeInfo>()
+        for (i in 0 until capesArray.length()) {
+            val capeObj = capesArray.optJsonObject(i)
+            if (capeObj != null) {
+                capes.add(CapeInfo(
+                    id = capeObj.optString("id", ""),
+                    state = capeObj.optString("state", ""),
+                    url = normalizeTextureUrl(capeObj.optString("url", "")),
+                    alias = capeObj.optString("alias").takeIf { it.isNotBlank() },
+                ))
+            }
+        }
+
         return Profile(
             name = response.str("name"),
             uuid = response.str("id"),
+            skins = skins,
+            capes = capes,
         )
+    }
+
+    /** Normalizes texture URLs to use HTTPS. */
+    private fun normalizeTextureUrl(url: String): String {
+        return if (url.startsWith("http://")) {
+            "https://" + url.substring(7)
+        } else url
     }
 
     private fun Long?.toAuthError(): MsAuthError = when (this) {

@@ -205,3 +205,71 @@
 - ModpackBrowserScreen: version picker shows stable-only toggle, expandable groups, download progress, install buttons.
 - InstanceSwitcherDropdown in HomeScreen: now shows LoaderIcon alongside instance name/version.
 - All build issues resolved: ArrowBack import, Arrangement.End, safe calls for nullable strings, LoadingIndicator opt-in.
+
+## 2026-11-14 — Microsoft Auth Custom Scheme Fix
+
+**Problem**: Microsoft sign-in WebView showed "Web page not available ... net::ERR_UNKNOWN_URL_SCHEME" when redirected to `ms-xal-00000000402b5328://auth/?code=<code>`.
+
+**Root Cause** (confirmed):
+- The authorize URL uses `redirect_url=https://login.live.com/oauth20_desktop.srf` 
+- But Microsoft's actual OAuth flow for client ID `00000000402b5328` redirects to custom scheme: `ms-xal-00000000402b5328://auth/?code=<code>`
+- `parseRedirect()` only checked for `https://login.live.com/oauth20_desktop.srf` prefix
+- WebViewClient's `shouldOverrideUrlLoading` never intercepted the custom scheme
+- WebView tried to load `ms-xal-...://auth/...` and failed with `net::ERR_UNKNOWN_URL_SCHEME`
+
+**Fix** (MicrosoftAuth.kt:87-110):
+- Added `CUSTOM_SCHEME_REDIRECT = "ms-xal-$CLIENT_ID://auth/"` constant
+- Updated `parseRedirect()` to handle both desktop redirect AND custom scheme
+- Both redirect types now parse query parameters identically (code/error/error_description)
+- WebViewClient already returns `true` for any non-null `parseRedirect` result, so custom scheme is now intercepted
+
+**Tests Added** (MicrosoftAuthTest.kt - 11 tests):
+- Desktop redirect with code
+- Custom scheme redirect with code (THE FIX)
+- Custom scheme with fragment
+- Desktop redirect with error
+- Custom scheme with error
+- Custom scheme with error + description
+- Unrelated URL returns null
+- Empty URL returns null
+- Custom scheme without query returns Failure
+- Custom scheme with error but no description
+- Desktop redirect with code + state
+
+**CI Verification**: Run 43628269693 (commit `8d94c3a`) - all 11 tests pass, all 3 jobs GREEN
+
+**Artifacts**: Debug APK 14127340323, Release AAB 14126579887, Test Reports 14126724051
+
+## 2026-11-14 — Microsoft Auth Custom Scheme Fix
+
+**Problem**: Microsoft sign-in WebView showed "Web page not available ... net::ERR_UNKNOWN_URL_SCHEME" when redirected to `ms-xal-00000000402b5328://auth/?code=<code>`.
+
+**Root Cause** (confirmed):
+- The authorize URL uses `redirect_url=https://login.live.com/oauth20_desktop.srf` 
+- But Microsoft's actual OAuth flow for client ID `00000000402b5328` redirects to custom scheme: `ms-xal-00000000402b5328://auth/?code=<code>`
+- `parseRedirect()` only checked for `https://login.live.com/oauth20_desktop.srf` prefix
+- WebViewClient's `shouldOverrideUrlLoading` never intercepted the custom scheme
+- WebView tried to load `ms-xal-...://auth/...` and failed with `net::ERR_UNKNOWN_URL_SCHEME`
+
+**Fix** (MicrosoftAuth.kt:87-110):
+- Added `CUSTOM_SCHEME_REDIRECT = "ms-xal-$CLIENT_ID://auth/"` constant
+- Updated `parseRedirect()` to handle both desktop redirect AND custom scheme
+- Both redirect types now parse query parameters identically (code/error/error_description)
+- WebViewClient already returns `true` for any non-null `parseRedirect` result, so custom scheme is now intercepted
+
+**Tests Added** (MicrosoftAuthTest.kt - 11 tests):
+- Desktop redirect with code
+- Custom scheme redirect with code (THE FIX)
+- Custom scheme with fragment
+- Desktop redirect with error
+- Custom scheme with error
+- Custom scheme with error + description
+- Unrelated URL returns null
+- Empty URL returns null
+- Custom scheme without query returns Failure
+- Custom scheme with error but no description
+- Desktop redirect with code + state
+
+**CI Verification**: Run 43628269693 (commit `8d94c3a`) - all 11 tests pass, all 3 jobs GREEN
+
+**Artifacts**: Debug APK 14127340323, Release AAB 14126579887, Test Reports 14126724051

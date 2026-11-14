@@ -1,25 +1,29 @@
 # USER PROMPT (verbatim)
 
-# FIX: Microsoft sign-in ends with "Web page not available ... net::ERR_UNKNOWN_URL_SCHEME"
+# FIX: Microsoft account shows no skin or cape, and skin customization must not be offered for Microsoft accounts
 
-Read root AGENTS.md first and obey it (ACCURACY RULES, pre-flight, 2-strike rule, CI-only builds, push ONLY to `EclipseLauncher`, token never printed/written/committed). If I say STOP, make no more tool calls and reply with a status report. No screenshot or emulator work. Do this BEFORE Steps 2 and 3 of my previous message; those wait. Max 4 CI runs for this whole fix.
+Read root AGENTS.md first and obey it (ACCURACY RULES, pre-flight, 2-strike rule, CI-only builds, push ONLY to `EclipseLauncher`, token never printed/written/committed). If I say STOP, make no more tool calls and reply with a status report. No screenshot or emulator work. Do this BEFORE Steps 2 and 3 of my earlier message; those wait. Max 4 CI runs. If anything here is unclear, ask me one short question instead of guessing.
 
-SYMPTOM (it existed before the package rename, from the start): in Microsoft sign-in I enter my email, then my password, tap Continue, and the sign-in WebView shows "Web page not available ... could not be loaded because net::ERR_UNKNOWN_URL_SCHEME". The address is `ms-xal-00000000402b5328://auth/?code=<one-time code>`. So Microsoft finished the sign-in and redirected to a custom scheme, and our app never intercepted it, so the WebView tried to load a URL it cannot open.
+SYMPTOM: Microsoft sign-in now completes and the account is added, but its real skin and cape don't show anywhere in the app. Separately, skin/cape CUSTOMIZATION (choosing a local skin or cape) is meant for offline/local accounts only and must not be offered for Microsoft accounts.
 
-Your rename report said Microsoft auth is "Safe" because it "uses https://login.live.com/oauth20_desktop.srf". That contradicts the redirect I actually received. Quote file:line for the redirect_uri our authorize URL really sends, and for every URL our WebViewClient intercepts.
+## A. DISPLAY: load the real skin and cape of the Microsoft account
+1. Trace the real path with file:line: Minecraft token -> profile request -> response parsing -> account model/store -> EVERY place that displays an account's skin, avatar or cape (Accounts screen, Home account card or switcher, any preview/rig/model view) -> image loading. Find all those places yourself.
+2. Verify the REAL profile API response format from official or reliable documentation (cite URLs, don't answer from memory): the endpoint, the auth header, and the fields for skins (id, state, url, variant) and capes (id, state, url, alias). Handle: which skin/cape is ACTIVE, no cape, classic vs slim model, legacy 64x32 skins, malformed or oversized PNGs.
+3. Hypotheses to TEST, not conclusions:
+   a. the profile is requested but the skins/capes fields are dropped or never stored
+   b. the profile request fails and the error is swallowed
+   c. texture URLs come as http:// and Android blocks cleartext traffic by default, so the image load fails silently. Check the real URL scheme. As far as I know the texture host also serves https, so normalize to https instead of enabling cleartext traffic globally.
+   d. the display code only handles offline accounts or a UUID-based avatar service
+   e. the skin is loaded once at sign-in and never refreshed or cached
+4. Behavior: fetch the profile after sign-in and on token refresh / app start (skins change outside the launcher). Cache the skin and cape PNGs by texture hash (content-addressed) in the app cache so they work offline. Show a proper placeholder while loading and a clear fallback on failure. Update the displays when the profile changes.
+5. Never log or print tokens, codes or full redirect URLs, and keep them out of `.agent/` files and error messages.
 
-TRACE the real path with file:line: sign-in screen -> authorize URL (client_id, redirect_uri, scope, response_type) -> WebViewClient (shouldOverrideUrlLoading / onPageStarted / onPageFinished / shouldInterceptRequest / onReceivedError) -> code extraction -> token exchange -> next steps. Hypotheses to TEST, not conclusions:
-a. The authorize URL uses the ms-xal redirect while the interception code only matches the desktop.srf URL (or the other way round).
-b. Interception sits in a callback that doesn't fire for custom schemes (shouldInterceptRequest doesn't see them; onPageFinished is too late).
-c. Interception exists but matches a different scheme string or prefix.
-d. The client_id and redirect_uri pair is inconsistent (a client id only accepts its registered redirects).
+## B. CUSTOMIZATION: NOT for Microsoft accounts
+Find every entry point to skin/cape customization (dialogs, menu items, buttons). For Microsoft accounts, hide or disable them, following the app's existing pattern for unavailable actions (with a short reason if the app shows one). They stay available for offline/local accounts. Don't remove the feature, and don't add skin uploading to the Microsoft API.
 
-STUDY how ZL1, ZL2 and PojavLauncher do the Microsoft login: which client id, which redirect, how they intercept it (cite files and URLs). Mirror the working approach and re-implement it cleanly (license rules apply).
-
-FIX: intercept the redirect before the WebView tries to load it (return true from shouldOverrideUrlLoading for that scheme), extract `code`, `error` and `error_description`, close the WebView and continue the flow. Handle: user cancelled, error redirect, WebView closed or back pressed, double delivery (a code is single-use). Then verify the whole chain end to end: auth code -> Microsoft token -> Xbox Live -> XSTS -> Minecraft token -> profile and ownership check. Every step needs a clear user-facing error (account doesn't own Minecraft, no Xbox profile, child-account restrictions, network failure, rate limit) and must not crash.
-
-SECURITY: never log or print the code, tokens or the full redirect URL, and never put them in `.agent/` files, test output, the debug crash overlay or error messages (redact them). Report how tokens are stored today; don't change storage in this task unless I approve.
-
-TESTS (JVM): use the REAL WebViewClient class from the sign-in screen. Feed it the exact redirect form with a fake code and assert it returns true, the callback receives the code, and the WebView does not load it. Also test an error redirect, a cancel, an unrelated URL (must load normally) and double delivery. Test the token chain with fake HTTP responses for success and for each failure. Show the red run before the fix. If sign-in still fails on my phone after your fix, my phone is right and the test is wrong.
-
+## TESTS (JVM)
+- A realistic profile fixture (a skin, a slim variant, an active cape, plus a profile without any cape) -> parsed model.
+- Fake HTTP for success, 401 and network error.
+- A test through the REAL UI wiring: for a Microsoft account the skin appears (non-placeholder state) and the customization entry is absent; for an offline account the customization entry is present.
+- Show the red run before the fix. If my phone still shows nothing after your fix, my phone is right and the test is wrong.
 Report with the CI link, the APK link, exact phone-test steps and the claims table, then STOP for my test.

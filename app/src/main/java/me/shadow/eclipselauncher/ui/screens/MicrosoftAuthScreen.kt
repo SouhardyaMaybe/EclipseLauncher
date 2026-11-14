@@ -54,6 +54,8 @@ import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.AccountKind
+import me.shadow.eclipselauncher.data.ImportKind
+import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.data.MicrosoftAuth
 import me.shadow.eclipselauncher.data.MsAuthError
 import me.shadow.eclipselauncher.data.MsAuthException
@@ -71,7 +73,8 @@ private sealed interface AuthUi {
 @Composable
 fun MicrosoftAuthScreen(
     auth: MicrosoftAuth,
-    onSignedIn: (Account) -> Unit,
+    media: MediaStorage,
+    onSignedIn: (Account, String?, String?) -> Unit,
     onCancel: () -> Unit,
 ) {
     var ui by remember { mutableStateOf<AuthUi>(AuthUi.Browser) }
@@ -110,6 +113,23 @@ fun MicrosoftAuthScreen(
                                 val result = auth.login(code) { stage ->
                                     ui = AuthUi.Progress(stage)
                                 }
+                                // Download skin and cape images
+                                var skinFileName: String? = null
+                                var capeFileName: String? = null
+                                if (result.skinUrl != null) {
+                                    skinFileName = media.importImageFromUrl(
+                                        newId() + "_skin.png",
+                                        result.skinUrl!!,
+                                        ImportKind.SKIN
+                                    )
+                                }
+                                if (result.capeUrl != null) {
+                                    capeFileName = media.importImageFromUrl(
+                                        newId() + "_cape.png",
+                                        result.capeUrl!!,
+                                        ImportKind.CAPE
+                                    )
+                                }
                                 onSignedIn(
                                     Account(
                                         id = newId(),
@@ -119,7 +139,11 @@ fun MicrosoftAuthScreen(
                                         xuid = result.xuid,
                                         refreshToken = result.refreshToken,
                                         expiresAtEpochSeconds = result.expiresAtEpochSeconds,
+                                        skinFileName = skinFileName,
+                                        capeFileName = capeFileName,
                                     ),
+                                    skinFileName,
+                                    capeFileName,
                                 )
                             } catch (e: MsAuthException) {
                                 ui = AuthUi.Failed(e.error, e.message)

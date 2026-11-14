@@ -259,8 +259,11 @@ fun EclipseApp() {
                     entry<Route.MsAuth> {
                         MicrosoftAuthScreen(
                             auth = container.auth,
-                            onSignedIn = { account ->
+                            media = container.media,
+                            onSignedIn = { account, skinUrl, capeUrl ->
                                 scope.launch {
+                                    // If skin/cape URLs were provided, they're already downloaded
+                                    // and stored as local file names in the account.
                                     container.accounts.add(account)
                                     // Success returns to the screen beneath: HOME
                                     // or ACCOUNTS, depending on the entry point.

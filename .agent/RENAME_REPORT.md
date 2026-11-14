@@ -2,7 +2,7 @@
 
 ## Commit
 - **Commit**: `a42a741` (main branch)
-- **CI Run**: 43624909844 (GREEN - all 3 jobs passed)
+- **CI Run**: `43624909844` (GREEN - all 3 jobs passed)
 - **Artifacts**:
   - Debug APK: `14125408998`
   - Release AAB: `14125379217`
@@ -25,7 +25,7 @@
 - ✅ No remaining `com.eclipselauncher` references in source/config (verified with grep)
 - ✅ CI GREEN: Lint & Test, Assemble Debug APK, Assemble Release AAB
 - ✅ All 3 CI jobs passed (Run 43624909844)
-- ✅ Artifacts produced: Debug APK (14125408998), Release AAB (14125379217)
+- ✅ Artifacts produced: Debug APK (14125408998), Release AAB (14125379617)
 
 ## ApplicationId Consequences Analysis
 
@@ -52,7 +52,7 @@
 ## Phone Test Steps
 1. Uninstall any existing `com.eclipselauncher` build
 2. Install debug APK (artifact 14125408998)
-3. Verify: App launches, Home screen loads, navigation works, all screens open
+3. Verify: App launches, Home screen loads, all navigation works
 4. Test: Create instance, add account, browse modpacks, manage content
 5. Verify: Settings persist after app restart (new MMKV store)
 
