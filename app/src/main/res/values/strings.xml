@@ -34,6 +34,8 @@
     <!-- Accounts -->
     <string name="accounts_title">Accounts</string>
     <string name="cd_back">Back</string>
+    <string name="cd_nav_previous">Previous</string>
+    <string name="cd_nav_next">Next</string>
     <string name="cd_clear">Clear</string>
     <string name="cd_expand">Expand</string>
     <string name="cd_collapse">Collapse</string>
