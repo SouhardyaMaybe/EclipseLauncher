@@ -23,6 +23,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.graphicsLayer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -40,7 +42,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shadow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -95,7 +96,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.IntrinsicSize
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -250,7 +250,7 @@ private fun ContentTypeChip(
     Box(
         modifier = Modifier
             .padding(vertical = 4.dp)
-            .fillMaxHeight(36.dp),
+            .height(36.dp),
     ) {
         FilterChip(
             selected = selected,
@@ -549,7 +549,7 @@ private fun ProviderSegmentedControl(
                 colors = colors,
                 modifier = Modifier
                     .weight(1f, fill = true)
-                    .alpha(if (enabled) 1f else 0.5f),
+                    .graphicsLayer { alpha = if (enabled) 1f else 0.5f },
                 enabled = enabled,
             )
         }
@@ -588,13 +588,13 @@ private fun SearchField(
                 }
             }
         },
-        keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
-            imeAction = androidx.compose.ui.text.input.ImeAction.Search
+        keyboardOptions = KeyboardOptions(
+            imeAction = ImeAction.Search
         ),
-        keyboardActions = androidx.compose.ui.text.input.KeyboardActions(
+        keyboardActions = KeyboardActions(
             onSearch = onSearch
         ),
-        colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+        colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
         ),
@@ -631,8 +631,7 @@ private fun PaginationPill(
                     )
                     .height(pillHeight)
                     .width(pillHeight)
-                    .clip(RoundedCornerShape(16.dp))
-                    .shadow(2.dp, RoundedCornerShape(16.dp)),
+                    .clip(RoundedCornerShape(16.dp)),
                 contentAlignment = Alignment.Center,
             ) {
                 IconButton(onClick = onCollapseToggle) {
@@ -652,8 +651,7 @@ private fun PaginationPill(
                         color = MaterialTheme.colorScheme.surfaceContainerHigh,
                         shape = RoundedCornerShape(28.dp)
                     )
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-                    .shadow(2.dp, RoundedCornerShape(28.dp)),
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Row(
@@ -691,7 +689,7 @@ private fun PaginationPill(
                         text = "$currentPage / $totalPages",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 4.dp).width(IntrinsicSize.Min),
+                        modifier = Modifier.padding(horizontal = 4.dp).wrapContentWidth(),
                     )
 
                     // Next
