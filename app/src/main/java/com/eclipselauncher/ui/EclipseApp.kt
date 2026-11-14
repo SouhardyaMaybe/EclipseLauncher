@@ -8,6 +8,7 @@
  * HOME's top-right buttons open the latter two). The tasks dialog floats
  * above everything, and play holds an honest stop: no runtime is wired yet.
  */
+@file:Suppress("UNRESOLVED_REFERENCE")
 package com.eclipselauncher.ui
 
 import android.net.Uri
