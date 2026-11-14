@@ -188,6 +188,17 @@
     <string name="manage_content_installed_toast">Installed to %1$s</string>
     <string name="manage_content_installing">Installing… %1$d%%</string>
     <string name="manage_content_install_failed">Install failed</string>
+    <string name="manage_content_toggle_failed">Could not change the enabled state</string>
+    <string name="manage_content_delete_failed">Could not delete this content</string>
+    <string name="manage_content_update_unavailable">Update unavailable: this file was not installed from Modrinth</string>
+    <string name="manage_content_delete_title">Delete %1$s?</string>
+    <string name="manage_content_delete_body">This removes the content from the selected instance and cannot be undone.</string>
+    <string name="manage_content_dependencies_title">Required dependencies</string>
+    <string name="manage_content_dependencies_body">%1$s needs these dependencies to work:</string>
+    <string name="manage_content_checking_dependencies">Checking dependencies…</string>
+    <string name="manage_content_dependency_unavailable">No compatible version found</string>
+    <string name="manage_content_dependencies_ignore">Ignore</string>
+    <string name="manage_content_dependencies_install">Install</string>
     <string name="provider_modrinth">Modrinth</string>
     <string name="provider_curseforge">CurseForge</string>
     <string name="provider_coming_soon">Coming soon</string>

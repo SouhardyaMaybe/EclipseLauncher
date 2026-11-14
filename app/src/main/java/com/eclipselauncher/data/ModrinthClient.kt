@@ -59,6 +59,15 @@ data class ModrinthVersionFile(
     val file_type: String? = null,
 )
 
+/** A version's declared dependency (required, optional, incompatible or embedded). */
+@Serializable
+data class ModrinthDependency(
+    val version_id: String? = null,
+    val project_id: String? = null,
+    val file_name: String? = null,
+    val dependency_type: String = "required",
+)
+
 /** One published project version (mod, resource pack, shader, world...). */
 @Serializable
 data class ModrinthVersion(
@@ -72,6 +81,18 @@ data class ModrinthVersion(
     val date_published: String = "",
     val version_type: String = "release",
     val files: List<ModrinthVersionFile> = emptyList(),
+    val dependencies: List<ModrinthDependency> = emptyList(),
+)
+
+/** The subset of a Modrinth project the install sheet needs. */
+@Serializable
+data class ModrinthProject(
+    val id: String = "",
+    val slug: String = "",
+    val title: String = "",
+    val description: String = "",
+    val icon_url: String = "",
+    val project_type: String = "",
 )
 
 /** Version list result; [failed] distinguishes transport errors from an empty list. */
@@ -164,6 +185,31 @@ class ModrinthClient @Inject constructor(
         }
 
     /**
+     * Fetches one version by id; returns null for a transport error so the
+     * dependency prompt can still show the project.
+     */
+    suspend fun versionById(versionId: String): ModrinthVersion? = withContext(Dispatchers.IO) {
+        try {
+            network.http.get("$VERSION_URL/$versionId").body()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /** Fetches one project's display metadata; null on any failure. */
+    suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
+        try {
+            network.http.get("$PROJECT_URL/$projectId").body()
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    /**
      * Streams [url] into [target]. [onProgress] receives 0f..1f when the
      * server provides a Content-Length, and 1f on completion. Returns false
      * for a non-2xx response or any transport/file error; the caller owns
@@ -209,6 +255,7 @@ class ModrinthClient @Inject constructor(
     private companion object {
         const val SEARCH_URL = "https://api.modrinth.com/v2/search"
         const val PROJECT_URL = "https://api.modrinth.com/v2/project"
+        const val VERSION_URL = "https://api.modrinth.com/v2/version"
         const val DOWNLOAD_BUFFER = 64 * 1024
     }
 }

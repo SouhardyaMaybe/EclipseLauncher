@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -47,6 +48,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ExpandLess
@@ -69,8 +71,10 @@ import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
@@ -117,10 +121,12 @@ import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.eclipselauncher.R
 import com.eclipselauncher.data.Instance
+import com.eclipselauncher.data.LoaderKind
 import com.eclipselauncher.data.McVersion
 import com.eclipselauncher.data.MediaStorage
 import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
+import com.eclipselauncher.data.ModrinthDependency
 import com.eclipselauncher.data.ModrinthHit
 import com.eclipselauncher.data.ModrinthVersion
 import com.eclipselauncher.data.ModrinthVersionFile
@@ -130,8 +136,12 @@ import java.io.File
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 /** Content types for installed/browse tabs. Icon + label for the sticky bar chip. */
 private enum class ContentType(
@@ -161,14 +171,55 @@ private enum class Provider(val labelRes: Int) {
     CURSEFORGE(R.string.provider_curseforge),
 }
 
-/** Represents installed content item. */
+/** Suffix used to disable a content file without deleting it. */
+private const val DISABLED_SUFFIX = ".disabled"
+
+/** Sidecar written next to content installed through this screen. */
+private const val CONTENT_META_SUFFIX = ".eclipse.json"
+
+/** One file or folder inside the selected instance's content directories. */
 private data class InstalledContent(
-    val id: String,
+    val file: File,
     val name: String,
     val version: String,
     val type: ContentType,
     val iconUrl: String?,
-    val enabled: Boolean = true,
+    val enabled: Boolean,
+    val projectId: String? = null,
+    val author: String? = null,
+) {
+    /** Stable across the `.disabled` rename so LazyColumn keys survive toggles. */
+    val id: String get() = "${type.name}:${file.name.removeSuffix(DISABLED_SUFFIX)}"
+}
+
+/** Metadata stored in a sidecar, so installed rows survive relaunch. */
+private data class ContentMetadata(
+    val projectId: String = "",
+    val title: String = "",
+    val author: String = "",
+    val iconUrl: String = "",
+    val version: String = "",
+)
+
+/** What the install sheet targets, including a file to replace on update. */
+private data class ContentInstallTarget(
+    val projectId: String,
+    val slug: String = "",
+    val title: String,
+    val author: String = "",
+    val iconUrl: String = "",
+    val replace: InstalledContent? = null,
+)
+
+/** A required dependency with its resolved download and checkbox state. */
+private data class ResolvedDependency(
+    val projectId: String,
+    val title: String,
+    val iconUrl: String,
+    val versionNumber: String,
+    val version: ModrinthVersion?,
+    val contentType: ContentType,
+    val checked: Boolean,
 )
 
 /** Custom segmented control: Installed | Browse with tap + drag gesture. */
@@ -370,7 +421,9 @@ private fun InstalledContentRow(
             // Content info
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = content.name, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(text = "v${content.version} · ${stringResource(content.type.labelRes)}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                val typeLabel = stringResource(content.type.labelRes)
+                val details = if (content.version.isBlank()) typeLabel else "v${content.version} · $typeLabel"
+                Text(text = details, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
 
             // Actions: Update/Degrade, Toggle, Delete
@@ -394,13 +447,37 @@ private fun InstalledContentRow(
     }
 }
 
-/** Browse content row with Coil-loaded icon: project icon, title, 2-line description, size/support range, filled-tonal download button. */
+/** Categories the Modrinth search result also uses for mod loaders. */
+private val LoaderCategories = setOf(
+    "fabric",
+    "forge",
+    "neoforge",
+    "quilt",
+    "liteloader",
+    "modloader",
+    "rift",
+)
+
+private fun ModrinthHit.loaderNames(): List<String> =
+    categories.filter { it.lowercase() in LoaderCategories }.distinct()
+
+private fun ModrinthHit.displayCategories(): List<String> =
+    categories.filterNot { it.lowercase() in LoaderCategories }.distinct()
+
+/** Browse content row: name + author, description, loaders | categories, install icon. */
 @Composable
 private fun BrowseContentRow(
     hit: ModrinthHit,
     onClick: () -> Unit,
     onDownload: () -> Unit,
 ) {
+    val loaders = remember(hit.categories) { hit.loaderNames().take(4) }
+    val categories = remember(hit.categories) { hit.displayCategories().take(3) }
+    val meta = buildList {
+        if (loaders.isNotEmpty()) add(loaders.joinToString(" • "))
+        if (categories.isNotEmpty()) add(categories.joinToString(" • "))
+    }.joinToString(" | ")
+
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
@@ -411,7 +488,6 @@ private fun BrowseContentRow(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.Top,
         ) {
-            // Project icon via Coil (56dp)
             ContentIcon(
                 url = hit.icon_url,
                 fallbackIcon = Icons.Filled.Layers,
@@ -419,34 +495,47 @@ private fun BrowseContentRow(
             )
             Spacer(modifier = Modifier.width(12.dp))
 
-            // Content info
-            Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                // Description (2 lines)
-                if (hit.description.isNotBlank()) {
-                    Text(text = hit.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
-                }
-                // Support range: loaders + game versions supplied by the search API.
-                val support = buildString {
-                    val loaders = hit.categories.take(3).joinToString(", ")
-                    val gameVersions = hit.versions.take(3).joinToString(", ")
-                    if (loaders.isNotBlank()) append(loaders)
-                    if (gameVersions.isNotBlank()) {
-                        if (isNotEmpty()) append(" · ")
-                        append(gameVersions)
-                    }
-                }
-                if (support.isNotBlank()) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = hit.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                if (hit.author.isNotBlank()) {
                     Text(
-                        text = support,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                        text = "by ${hit.author}",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                if (hit.description.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = hit.description,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                if (meta.isNotBlank()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = meta,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
             Spacer(modifier = Modifier.width(8.dp))
 
-            // Filled-tonal download button (opens version dialog)
+            // Filled-tonal install button (opens version dialog)
             IconButton(
                 onClick = onDownload,
                 colors = IconButtonDefaults.iconButtonColors(
@@ -681,6 +770,7 @@ fun ManageContentScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
     var mainTab by remember { mutableStateOf(0) } // 0 = Installed, 1 = Browse
@@ -694,20 +784,20 @@ fun ManageContentScreen(
     var browsePage by remember { mutableStateOf(1) }
     var browseTotalPages by remember { mutableStateOf(1) }
     var reloadToken by remember { mutableStateOf(0) }
-    var versionTarget by remember { mutableStateOf<ModrinthHit?>(null) }
+    var versionTarget by remember { mutableStateOf<ContentInstallTarget?>(null) }
+    var installedContent by remember(instance?.id) {
+        mutableStateOf<List<InstalledContent>>(emptyList())
+    }
+    var installedReloadToken by remember(instance?.id) { mutableStateOf(0) }
+    var pendingDelete by remember { mutableStateOf<InstalledContent?>(null) }
 
-    // Mock installed content; successful installs are appended in this session.
-    var installedContent by remember {
-        mutableStateOf(
-            listOf(
-                InstalledContent("1", "Sodium", "0.5.8", ContentType.MODS, null, true),
-                InstalledContent("2", "Iris Shaders", "1.7.4", ContentType.MODS, null, true),
-                InstalledContent("3", "Fabric API", "0.96.0", ContentType.MODS, null, true),
-                InstalledContent("4", "Vanilla Resource Pack", "1.21", ContentType.RESOURCE_PACKS, null, true),
-                InstalledContent("5", "BSL Shaders", "8.2.01", ContentType.SHADERS, null, true),
-                InstalledContent("6", "My World", "1.0", ContentType.WORLDS, null, true),
-            ),
-        )
+    // The Installed tab is a real scan of the selected instance's folders.
+    LaunchedEffect(instance?.id, installedReloadToken, mainTab) {
+        if (mainTab == 0) {
+            installedContent = withContext(Dispatchers.IO) {
+                scanInstalledContent(context.filesDir, instance)
+            }
+        }
     }
 
     // Pre-load strings for use in non-composable callbacks.
@@ -715,6 +805,46 @@ fun ManageContentScreen(
     val manageContentImportStarted = stringResource(R.string.manage_content_import_started)
     val providerComingSoonStr = stringResource(R.string.provider_coming_soon)
     val marketErrorStr = stringResource(R.string.market_error)
+    val toggleFailedStr = stringResource(R.string.manage_content_toggle_failed)
+    val deleteFailedStr = stringResource(R.string.manage_content_delete_failed)
+    val updateUnavailableStr = stringResource(R.string.manage_content_update_unavailable)
+
+    fun toggleContent(content: InstalledContent) {
+        scope.launch {
+            val renamed = withContext(Dispatchers.IO) { toggleInstalledContent(content) }
+            if (renamed) {
+                installedReloadToken++
+            } else {
+                Toast.makeText(context, toggleFailedStr, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun deleteContent(content: InstalledContent) {
+        scope.launch {
+            val deleted = withContext(Dispatchers.IO) { deleteInstalledContentFiles(content) }
+            if (deleted) {
+                installedReloadToken++
+            } else {
+                Toast.makeText(context, deleteFailedStr, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun updateContent(content: InstalledContent) {
+        val projectId = content.projectId
+        if (projectId.isNullOrBlank()) {
+            Toast.makeText(context, updateUnavailableStr, Toast.LENGTH_SHORT).show()
+        } else {
+            versionTarget = ContentInstallTarget(
+                projectId = projectId,
+                title = content.name,
+                author = content.author.orEmpty(),
+                iconUrl = content.iconUrl.orEmpty(),
+                replace = content,
+            )
+        }
+    }
 
     // Import .zip launcher
     val importLauncher = rememberLauncherForActivityResult(
@@ -861,9 +991,9 @@ fun ManageContentScreen(
                             items(filteredContent, key = { it.id }) { content ->
                                 InstalledContentRow(
                                     content = content,
-                                    onUpdate = { /* open version dialog */ },
-                                    onToggle = { /* toggle enabled */ },
-                                    onDelete = { /* delete with confirmation */ },
+                                    onUpdate = { updateContent(content) },
+                                    onToggle = { toggleContent(content) },
+                                    onDelete = { pendingDelete = content },
                                 )
                             }
                         }
@@ -927,8 +1057,8 @@ fun ManageContentScreen(
                             items(browseResults, key = { it.project_id.ifBlank { it.slug } }) { hit ->
                                 BrowseContentRow(
                                     hit = hit,
-                                    onClick = { versionTarget = hit },
-                                    onDownload = { versionTarget = hit },
+                                    onClick = { versionTarget = hit.toInstallTarget() },
+                                    onDownload = { versionTarget = hit.toInstallTarget() },
                                 )
                             }
                         }
@@ -965,27 +1095,45 @@ fun ManageContentScreen(
         }
     }
 
-    versionTarget?.let { hit ->
+    versionTarget?.let { target ->
+        val dialogContentType = target.replace?.type ?: browseContentType
         VersionInstallDialog(
-            hit = hit,
-            contentType = browseContentType,
+            target = target,
+            contentType = dialogContentType,
             instance = instance,
             media = media,
             versionRepository = versionRepository,
             client = client,
             onDismiss = { versionTarget = null },
-            onInstalled = { version, targetInstance ->
-                val id = "installed:${targetInstance.id}:${version.id}"
-                installedContent = installedContent.filterNot { it.id == id } + InstalledContent(
-                    id = id,
-                    name = hit.title,
-                    version = version.version_number,
-                    type = browseContentType,
-                    iconUrl = hit.icon_url.ifBlank { null },
-                    enabled = true,
-                )
-                installedContentType = browseContentType
-                mainTab = 0
+            onInstalled = { _, _ ->
+                installedReloadToken++
+                if (target.replace == null) {
+                    installedContentType = dialogContentType
+                    mainTab = 0
+                }
+            },
+        )
+    }
+
+    pendingDelete?.let { content ->
+        AlertDialog(
+            onDismissRequest = { pendingDelete = null },
+            title = {
+                Text(stringResource(R.string.manage_content_delete_title, content.name))
+            },
+            text = { Text(stringResource(R.string.manage_content_delete_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    pendingDelete = null
+                    deleteContent(content)
+                }) {
+                    Text(stringResource(R.string.action_delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDelete = null }) {
+                    Text(stringResource(R.string.action_cancel))
+                }
             },
         )
     }
@@ -995,7 +1143,7 @@ fun ManageContentScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun VersionInstallDialog(
-    hit: ModrinthHit,
+    target: ContentInstallTarget,
     contentType: ContentType,
     instance: Instance?,
     media: MediaStorage,
@@ -1016,14 +1164,17 @@ private fun VersionInstallDialog(
     var expandedGroups by remember { mutableStateOf<Set<String>>(emptySet()) }
     var downloadingId by remember { mutableStateOf<String?>(null) }
     var downloadProgress by remember { mutableStateOf(0f) }
+    var checkingDependencies by remember { mutableStateOf(false) }
+    var pendingVersion by remember { mutableStateOf<ModrinthVersion?>(null) }
+    var pendingDependencies by remember { mutableStateOf<List<ResolvedDependency>?>(null) }
     var installError by remember { mutableStateOf<String?>(null) }
-    val busy = downloadingId != null
+    val busy = downloadingId != null || checkingDependencies
 
-    LaunchedEffect(hit.project_id, hit.slug, reloadToken) {
+    LaunchedEffect(target.projectId, target.slug, reloadToken) {
         loading = true
         failed = false
         expandedGroups = emptySet()
-        val result = client.projectVersions(hit.project_id.ifBlank { hit.slug })
+        val result = client.projectVersions(target.projectId.ifBlank { target.slug })
         versions = result.versions
         failed = result.failed
         loading = false
@@ -1046,7 +1197,8 @@ private fun VersionInstallDialog(
     }
     val visibleVersionCount = visibleGroups.sumOf { it.versions.size }
 
-    fun install(version: ModrinthVersion) {
+    /** Downloads the main file (and checked dependencies), then writes metadata. */
+    fun startInstall(version: ModrinthVersion, dependencies: List<ResolvedDependency>) {
         val targetInstance = instance ?: return
         val file = version.files.firstOrNull { it.primary } ?: version.files.firstOrNull()
         if (file == null) {
@@ -1054,10 +1206,21 @@ private fun VersionInstallDialog(
             return
         }
         installError = null
+        pendingVersion = null
+        pendingDependencies = null
         downloadingId = version.id
         downloadProgress = 0f
         scope.launch {
-            val result = installContentFile(context, client, targetInstance, contentType, file) { progress ->
+            val result = installVersionWithDependencies(
+                context = context,
+                client = client,
+                instance = targetInstance,
+                contentType = contentType,
+                version = version,
+                file = file,
+                target = target,
+                dependencies = dependencies,
+            ) { progress ->
                 downloadProgress = progress
             }
             downloadingId = null
@@ -1075,6 +1238,27 @@ private fun VersionInstallDialog(
                     installError = context.getString(R.string.manage_content_install_failed)
                 },
             )
+        }
+    }
+
+    /** Resolves required dependencies before showing the prompt. */
+    fun requestInstall(version: ModrinthVersion) {
+        val targetInstance = instance ?: return
+        installError = null
+        val required = version.dependencies.filter { it.dependency_type == "required" }
+        if (required.isEmpty()) {
+            startInstall(version, emptyList())
+            return
+        }
+        pendingVersion = version
+        pendingDependencies = null
+        checkingDependencies = true
+        scope.launch {
+            val resolved = resolveDependencies(client, targetInstance, version)
+            checkingDependencies = false
+            if (pendingVersion?.id == version.id) {
+                pendingDependencies = resolved
+            }
         }
     }
 
@@ -1100,7 +1284,7 @@ private fun VersionInstallDialog(
                     title = {
                         Column {
                             Text(
-                                text = hit.title.ifBlank { hit.slug },
+                                text = target.title.ifBlank { target.slug },
                                 style = MaterialTheme.typography.titleMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -1226,6 +1410,26 @@ private fun VersionInstallDialog(
                     )
                 }
 
+                if (checkingDependencies) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        LinearProgressIndicator(
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Text(
+                            text = stringResource(R.string.manage_content_checking_dependencies),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                     when {
                         loading -> LoadingIndicator(
@@ -1299,8 +1503,8 @@ private fun VersionInstallDialog(
                                     },
                                     installingId = downloadingId,
                                     progress = downloadProgress,
-                                    installEnabled = instance != null && downloadingId == null,
-                                    onInstall = ::install,
+                                    installEnabled = instance != null && !busy,
+                                    onInstall = ::requestInstall,
                                 )
                             }
                         }
@@ -1309,6 +1513,118 @@ private fun VersionInstallDialog(
             }
         }
     }
+
+    val dependencyList = pendingDependencies
+    val versionToInstall = pendingVersion
+    if (dependencyList != null && versionToInstall != null) {
+        DependencyDialog(
+            contentTitle = target.title.ifBlank { target.slug },
+            dependencies = dependencyList,
+            onToggle = { index ->
+                pendingDependencies = dependencyList.mapIndexed { i, dependency ->
+                    if (i == index && dependency.version != null) {
+                        dependency.copy(checked = !dependency.checked)
+                    } else {
+                        dependency
+                    }
+                }
+            },
+            onIgnore = { startInstall(versionToInstall, emptyList()) },
+            onInstall = {
+                startInstall(
+                    versionToInstall,
+                    dependencyList.filter { it.checked && it.version != null },
+                )
+            },
+        )
+    }
+}
+
+/** Required-dependency prompt: tap a row to include or exclude it. */
+@Composable
+private fun DependencyDialog(
+    contentTitle: String,
+    dependencies: List<ResolvedDependency>,
+    onToggle: (Int) -> Unit,
+    onIgnore: () -> Unit,
+    onInstall: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onIgnore,
+        title = { Text(stringResource(R.string.manage_content_dependencies_title)) },
+        text = {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 360.dp)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                Text(
+                    text = stringResource(
+                        R.string.manage_content_dependencies_body,
+                        contentTitle,
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                dependencies.forEachIndexed { index, dependency ->
+                    val available = dependency.version != null
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(enabled = available) { onToggle(index) }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(
+                            checked = dependency.checked,
+                            onCheckedChange = { onToggle(index) },
+                            enabled = available,
+                        )
+                        ContentIcon(
+                            url = dependency.iconUrl.ifBlank { null },
+                            fallbackIcon = dependency.contentType.icon,
+                            size = 36.dp,
+                        )
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = dependency.title,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                text = if (available) {
+                                    dependency.versionNumber
+                                } else {
+                                    stringResource(R.string.manage_content_dependency_unavailable)
+                                },
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onInstall,
+                enabled = dependencies.any { it.checked && it.version != null },
+            ) {
+                Text(stringResource(R.string.manage_content_dependencies_install))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onIgnore) {
+                Text(stringResource(R.string.manage_content_dependencies_ignore))
+            }
+        },
+    )
 }
 
 /** One stable-MC group: heading + badge, expanding into the versions inside it. */
@@ -1588,6 +1904,258 @@ private val ContentType.installDirectory: String
         ContentType.WORLDS -> "saves"
     }
 
+/** Browse hit -> install sheet target. */
+private fun ModrinthHit.toInstallTarget(): ContentInstallTarget = ContentInstallTarget(
+    projectId = project_id,
+    slug = slug,
+    title = title,
+    author = author,
+    iconUrl = icon_url,
+)
+
+private fun instanceContentDir(filesDir: File, instance: Instance, type: ContentType): File =
+    File(filesDir, "minecraft/instances/${instance.id}/${type.installDirectory}")
+
+/** Real installed files, with metadata from their sidecar when present. */
+private fun scanInstalledContent(filesDir: File, instance: Instance?): List<InstalledContent> {
+    if (instance == null) return emptyList()
+    return ContentType.entries.flatMap { type ->
+        val dir = instanceContentDir(filesDir, instance, type)
+        dir.listFiles().orEmpty().mapNotNull { file ->
+            if (file.name.endsWith(CONTENT_META_SUFFIX) || file.name.endsWith(".part")) {
+                return@mapNotNull null
+            }
+            if (type != ContentType.WORLDS && !file.isFile) return@mapNotNull null
+            val enabled = !file.name.endsWith(DISABLED_SUFFIX)
+            val baseName = file.name.removeSuffix(DISABLED_SUFFIX)
+            val metadata = readContentMetadata(file)
+            val fallbackName = if (file.isDirectory) {
+                baseName
+            } else {
+                baseName.substringBeforeLast('.', baseName)
+            }
+            InstalledContent(
+                file = file,
+                name = metadata.title.ifBlank { fallbackName },
+                version = metadata.version,
+                type = type,
+                iconUrl = metadata.iconUrl.ifBlank { null },
+                enabled = enabled,
+                projectId = metadata.projectId.ifBlank { null },
+                author = metadata.author.ifBlank { null },
+            )
+        }
+    }.sortedBy { it.name.lowercase() }
+}
+
+private fun metadataFile(file: File): File =
+    File(file.parentFile, file.name + CONTENT_META_SUFFIX)
+
+private fun readContentMetadata(file: File): ContentMetadata {
+    val current = metadataFile(file)
+    val base = File(
+        file.parentFile,
+        file.name.removeSuffix(DISABLED_SUFFIX) + CONTENT_META_SUFFIX,
+    )
+    val source = when {
+        current.exists() -> current
+        base.exists() -> base
+        else -> return ContentMetadata()
+    }
+    return runCatching {
+        val json = JSONObject(source.readText())
+        ContentMetadata(
+            projectId = json.optString("project_id"),
+            title = json.optString("title"),
+            author = json.optString("author"),
+            iconUrl = json.optString("icon_url"),
+            version = json.optString("version"),
+        )
+    }.getOrDefault(ContentMetadata())
+}
+
+private fun writeContentMetadata(file: File, metadata: ContentMetadata): Boolean = runCatching {
+    val json = JSONObject()
+        .put("project_id", metadata.projectId)
+        .put("title", metadata.title)
+        .put("author", metadata.author)
+        .put("icon_url", metadata.iconUrl)
+        .put("version", metadata.version)
+    metadataFile(file).writeText(json.toString())
+}.isSuccess
+
+/** Renames between `name` and `name.disabled`, carrying the sidecar along. */
+private fun toggleInstalledContent(content: InstalledContent): Boolean {
+    val file = content.file
+    val target = if (content.enabled) {
+        File(file.parentFile, file.name + DISABLED_SUFFIX)
+    } else {
+        File(file.parentFile, file.name.removeSuffix(DISABLED_SUFFIX))
+    }
+    if (target.exists()) return false
+    if (!file.renameTo(target)) return false
+    val oldMetadata = metadataFile(file)
+    if (oldMetadata.exists()) {
+        oldMetadata.renameTo(metadataFile(target))
+    }
+    return true
+}
+
+private fun deleteInstalledContentFiles(content: InstalledContent): Boolean {
+    val file = content.file
+    val deleted = !file.exists() || file.deleteRecursively()
+    metadataFile(file).delete()
+    File(
+        file.parentFile,
+        file.name.removeSuffix(DISABLED_SUFFIX) + CONTENT_META_SUFFIX,
+    ).delete()
+    return deleted
+}
+
+/** Required dependencies only, resolved against the instance's MC version. */
+private suspend fun resolveDependencies(
+    client: ModrinthClient,
+    instance: Instance,
+    version: ModrinthVersion,
+): List<ResolvedDependency> = coroutineScope {
+    version.dependencies
+        .filter { it.dependency_type == "required" }
+        .map { dependency -> async { resolveDependency(client, instance, dependency) } }
+        .awaitAll()
+        .distinctBy { it.projectId.ifBlank { it.title.lowercase() } }
+}
+
+private suspend fun resolveDependency(
+    client: ModrinthClient,
+    instance: Instance,
+    dependency: ModrinthDependency,
+): ResolvedDependency {
+    val projectId = dependency.project_id.orEmpty()
+    val project = projectId.takeIf { it.isNotBlank() }?.let { client.projectById(it) }
+    val contentType = dependencyContentType(project?.project_type)
+    val versionId = dependency.version_id
+    val resolvedVersion = when {
+        !versionId.isNullOrBlank() -> client.versionById(versionId)
+        projectId.isNotBlank() -> client.projectVersions(projectId).versions
+            .firstOrNull { isCompatibleVersion(it, instance, contentType) }
+        else -> null
+    }
+    val title = project?.title?.takeIf { it.isNotBlank() }
+        ?: dependency.file_name?.substringBeforeLast('.')?.takeIf { it.isNotBlank() }
+        ?: projectId.ifBlank { instance.name }
+    return ResolvedDependency(
+        projectId = projectId,
+        title = title,
+        iconUrl = project?.icon_url.orEmpty(),
+        versionNumber = resolvedVersion?.version_number.orEmpty(),
+        version = resolvedVersion,
+        contentType = contentType,
+        checked = resolvedVersion != null,
+    )
+}
+
+private fun dependencyContentType(projectType: String?): ContentType =
+    when (projectType) {
+        "resourcepack" -> ContentType.RESOURCE_PACKS
+        "datapack" -> ContentType.DATA_PACKS
+        "shader" -> ContentType.SHADERS
+        "world" -> ContentType.WORLDS
+        else -> ContentType.MODS
+    }
+
+private fun loaderName(loader: LoaderKind): String? = when (loader) {
+    LoaderKind.FABRIC -> "fabric"
+    LoaderKind.FORGE -> "forge"
+    LoaderKind.NEOFORGE -> "neoforge"
+    LoaderKind.QUILT -> "quilt"
+    else -> null
+}
+
+private fun isCompatibleVersion(
+    version: ModrinthVersion,
+    instance: Instance,
+    contentType: ContentType,
+): Boolean {
+    if (version.game_versions.isNotEmpty() &&
+        instance.minecraftVersion !in version.game_versions
+    ) {
+        return false
+    }
+    if (contentType != ContentType.MODS) return true
+    val loader = loaderName(instance.loader) ?: return true
+    return version.loaders.isEmpty() ||
+        version.loaders.any { it.equals(loader, ignoreCase = true) }
+}
+
+/** Installs selected dependencies first, then the main file and its metadata. */
+private suspend fun installVersionWithDependencies(
+    context: Context,
+    client: ModrinthClient,
+    instance: Instance,
+    contentType: ContentType,
+    version: ModrinthVersion,
+    file: ModrinthVersionFile,
+    target: ContentInstallTarget,
+    dependencies: List<ResolvedDependency>,
+    onProgress: (Float) -> Unit,
+): Result<Unit> = withContext(Dispatchers.IO) {
+    try {
+        dependencies.forEach { dependency ->
+            val dependencyVersion = dependency.version ?: return@forEach
+            val dependencyFile = dependencyVersion.files.firstOrNull { it.primary }
+                ?: dependencyVersion.files.firstOrNull()
+                ?: return@forEach
+            val installed = installContentFile(
+                context = context,
+                client = client,
+                instance = instance,
+                type = dependency.contentType,
+                file = dependencyFile,
+                skipExisting = true,
+            ).getOrThrow()
+            writeContentMetadata(
+                installed,
+                ContentMetadata(
+                    projectId = dependency.projectId,
+                    title = dependency.title,
+                    iconUrl = dependency.iconUrl,
+                    version = dependencyVersion.version_number,
+                ),
+            )
+        }
+
+        // Never overwrite an existing main file; updates use a new filename.
+        val installed = installContentFile(
+            context = context,
+            client = client,
+            instance = instance,
+            type = contentType,
+            file = file,
+            onProgress = onProgress,
+        ).getOrThrow()
+        if (!writeContentMetadata(
+                installed,
+                ContentMetadata(
+                    projectId = target.projectId,
+                    title = target.title,
+                    author = target.author,
+                    iconUrl = target.iconUrl,
+                    version = version.version_number,
+                ),
+            )
+        ) {
+            error("cannot write metadata")
+        }
+
+        target.replace?.let { deleteInstalledContentFiles(it) }
+        Result.success(Unit)
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (error: Exception) {
+        Result.failure(error)
+    }
+}
+
 /** Streams a Modrinth file into the selected instance's content folder. */
 private suspend fun installContentFile(
     context: Context,
@@ -1595,20 +2163,24 @@ private suspend fun installContentFile(
     instance: Instance,
     type: ContentType,
     file: ModrinthVersionFile,
-    onProgress: (Float) -> Unit,
+    skipExisting: Boolean = false,
+    onProgress: (Float) -> Unit = {},
 ): Result<File> = withContext(Dispatchers.IO) {
     var partFile: File? = null
     try {
         if (file.url.isBlank()) error("missing file url")
-        val dir = File(
-            context.filesDir,
-            "minecraft/instances/${instance.id}/${type.installDirectory}",
-        )
+        val dir = instanceContentDir(context.filesDir, instance, type)
         if (!dir.exists() && !dir.mkdirs()) error("cannot create ${dir.path}")
         val safeName = file.filename
             .substringAfterLast('/')
             .substringAfterLast('\\')
             .ifBlank { "download" }
+        if (skipExisting) {
+            val existing = File(dir, safeName)
+            if (existing.exists()) return@withContext Result.success(existing)
+            val disabled = File(dir, safeName + DISABLED_SUFFIX)
+            if (disabled.exists()) return@withContext Result.success(disabled)
+        }
         val target = uniqueFile(dir, safeName)
         val part = File(dir, "${target.name}.part")
         partFile = part
