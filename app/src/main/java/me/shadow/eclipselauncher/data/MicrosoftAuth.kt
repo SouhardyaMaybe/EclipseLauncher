@@ -272,7 +272,7 @@ private data class Profile(
         val skinsArray = (response["skins"] as? JsonArray) ?: JsonArray()
         val skins = mutableListOf<SkinInfo>()
         for (i in 0 until skinsArray.size) {
-            val skinObj = skinsArray.getJsonObject(i)
+            val skinObj = skinsArray[i] as JsonObject
             skins.add(SkinInfo(
                 id = skinObj.getString("id") ?: "",
                 state = skinObj.getString("state") ?: "",
@@ -285,7 +285,7 @@ private data class Profile(
         val capesArray = (response["capes"] as? JsonArray) ?: JsonArray()
         val capes = mutableListOf<CapeInfo>()
         for (i in 0 until capesArray.size) {
-            val capeObj = capesArray.getJsonObject(i)
+            val capeObj = capesArray[i] as JsonObject
             capes.add(CapeInfo(
                 id = capeObj.getString("id") ?: "",
                 state = capeObj.getString("state") ?: "",
