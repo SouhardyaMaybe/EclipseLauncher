@@ -21,7 +21,6 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +29,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +39,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shadow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ExpandLess
@@ -60,10 +63,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.graphics.shadow
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -73,6 +72,7 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -81,11 +81,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.BadgeDefaults
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -98,8 +94,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.IntrinsicSize
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardActions
+import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -114,7 +116,7 @@ import com.eclipselauncher.data.ModrinthHit
 /** Content types for installed/browse tabs. Icon + label for the sticky bar chip. */
 private enum class ContentType(
     val labelRes: Int,
-    val icon: androidx.compose.material.icons.filled.ImageVector,
+    val icon: ImageVector,
 ) {
     MODS(R.string.content_type_mods, Icons.Filled.Layers),
     RESOURCE_PACKS(R.string.content_type_resource_packs, Icons.Filled.Image),
@@ -242,34 +244,48 @@ private fun ContentTypeChip(
         else MaterialTheme.colorScheme.onSurfaceVariant,
         selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
         selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
     )
 
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        colors = chipColors,
-        leadingIcon = {
-            Icon(
-                imageVector = type.icon,
-                contentDescription = null,
-                tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
-                else MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        },
-        label = { Text(text = labelText, style = MaterialTheme.typography.labelLarge) },
+    // Custom chip with badge using Box overlay
+    Box(
         modifier = Modifier
-            .minimumInteropComponentSize()
-            .padding(vertical = 4.dp),
+            .padding(vertical = 4.dp)
+            .fillMaxHeight(36.dp),
     ) {
-        // Badge for count on Installed tab
+        FilterChip(
+            selected = selected,
+            onClick = onClick,
+            colors = chipColors,
+            leadingIcon = {
+                Icon(
+                    imageVector = type.icon,
+                    contentDescription = null,
+                    tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            },
+            label = { Text(text = labelText, style = MaterialTheme.typography.labelLarge) },
+        )
+
+        // Badge for count on Installed tab (top-right corner)
         if (showBadge && count > 0) {
-            BadgedBox(
-                badge = { Text(text = count.toString(), style = MaterialTheme.typography.labelSmall) },
-                badgeAnchor = Alignment.TopEnd,
-                badgeOffset = BadgeDefaults.BadgeOffset(x = 4.dp, y = -4.dp),
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .offset(x = 4.dp, y = -4.dp)
+                    .background(
+                        color = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+                        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 4.dp, vertical = 1.dp),
             ) {
-                // Empty content - badge is positioned relative to the chip
+                Text(
+                    text = count.toString(),
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                    color = if (selected) MaterialTheme.colorScheme.secondaryContainer
+                    else MaterialTheme.colorScheme.surface,
+                )
             }
         }
     }
@@ -277,7 +293,7 @@ private fun ContentTypeChip(
 
 /** Loads and caches a content icon via Coil. Falls back to a Material icon. */
 @Composable
-private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.material.icons.filled.ImageVector, size: Dp = 40.dp) {
+private fun ContentIcon(url: String?, fallbackIcon: ImageVector, size: Dp = 40.dp) {
     Box(
         modifier = Modifier
             .size(size)
@@ -400,9 +416,9 @@ private fun BrowseContentRow(
             Spacer(modifier = Modifier.width(8.dp))
 
             // Filled-tonal download button (opens version dialog)
-            FilledTonalIconButton(
+            IconButton(
                 onClick = onDownload,
-                colors = FilledTonalIconButton.defaultIconButtonColors(
+                colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                 ),
@@ -478,7 +494,7 @@ private fun CollapsibleFilterPanel(
                         detectDragGestures(
                             onDragStart = { },
                             onDrag = { change, dragAmount ->
-                                change.consumeAllChanges()
+                                change.consume()
                                 onDrag(dragAmount)
                             },
                             onDragEnd = { onCollapseToggle() },
@@ -505,23 +521,32 @@ private fun ProviderSegmentedControl(
     providerComingSoonStr: String,
 ) {
     val options = listOf(Provider.MODRINTH, Provider.CURSEFORGE)
-    SegmentedButton(
-        selectedIndex = options.indexOf(selectedProvider),
-        onClick = { index ->
-            val provider = options[index]
-            if (provider == Provider.CURSEFORGE) {
-                Toast.makeText(context, providerComingSoonStr, Toast.LENGTH_SHORT).show()
-            } else {
-                onProviderChange(provider)
-            }
-        },
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        singleChoice = true,
+        horizontalArrangement = Arrangement.spacedBy(0.dp),
     ) {
         options.forEach { provider ->
+            val isSelected = selectedProvider == provider
             val enabled = provider != Provider.CURSEFORGE
-            SegmentedButtonDefaults.Segment(
+            val colors = FilterChipDefaults.filterChipColors(
+                containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer
+                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                labelColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
+                selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+            FilterChip(
+                selected = isSelected,
+                onClick = {
+                    if (provider == Provider.CURSEFORGE) {
+                        Toast.makeText(context, providerComingSoonStr, Toast.LENGTH_SHORT).show()
+                    } else {
+                        onProviderChange(provider)
+                    }
+                },
                 label = { Text(text = stringResource(provider.labelRes), style = MaterialTheme.typography.labelLarge) },
+                colors = colors,
                 modifier = Modifier
                     .weight(1f, fill = true)
                     .alpha(if (enabled) 1f else 0.5f),
@@ -591,91 +616,94 @@ private fun PaginationPill(
 ) {
     val pillHeight = 56.dp
 
-    if (collapsed) {
-        // Collapsed: compact handle at screen edge (chevron right to expand)
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 16.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .fillMaxHeight(pillHeight)
-                .width(pillHeight)
-                .clip(RoundedCornerShape(16.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            IconButton(onClick = onCollapseToggle) {
-                Icon(
-                    imageVector = Icons.Filled.ChevronRight,
-                    contentDescription = stringResource(R.string.cd_expand),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-        }
-    } else {
-        // Expanded: full pill with controls
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 16.dp, bottom = 16.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    shape = RoundedCornerShape(28.dp)
-                )
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-                .shadow(2.dp, shape = RoundedCornerShape(28.dp)),
-            contentAlignment = Alignment.Center,
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomEnd,
+    ) {
+        if (collapsed) {
+            // Collapsed: compact handle at screen edge (chevron right to expand)
+            Box(
+                modifier = Modifier
+                    .padding(end = 16.dp, bottom = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .height(pillHeight)
+                    .width(pillHeight)
+                    .clip(RoundedCornerShape(16.dp))
+                    .shadow(2.dp, RoundedCornerShape(16.dp)),
+                contentAlignment = Alignment.Center,
             ) {
-                // Collapse toggle (chevron left to shrink)
                 IconButton(onClick = onCollapseToggle) {
                     Icon(
-                        imageVector = Icons.Filled.ChevronLeft,
-                        contentDescription = stringResource(R.string.cd_collapse),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(24.dp).padding(4.dp),
-                    )
-                }
-
-                // Previous
-                IconButton(
-                    onClick = {
-                        onPrev()
-                        onPageChange()
-                    },
-                    enabled = currentPage > 1 && !loading,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.ChevronLeft,
-                        contentDescription = stringResource(R.string.cd_nav_previous),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage > 1 && !loading) 1f else 0.3f),
-                        modifier = Modifier.size(24.dp).padding(4.dp),
-                    )
-                }
-
-                // Page indicator
-                Text(
-                    text = "$currentPage / $totalPages",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = 4.dp).minimumInteropComponentSize(),
-                )
-
-                // Next
-                IconButton(
-                    onClick = {
-                        onNext()
-                        onPageChange()
-                    },
-                    enabled = currentPage < totalPages && !loading,
-                ) {
-                    Icon(
                         imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = stringResource(R.string.cd_expand),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        } else {
+            // Expanded: full pill with controls
+            Box(
+                modifier = Modifier
+                    .padding(end = 16.dp, bottom = 16.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        shape = RoundedCornerShape(28.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .shadow(2.dp, RoundedCornerShape(28.dp)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // Collapse toggle (chevron left to shrink)
+                    IconButton(onClick = onCollapseToggle) {
+                        Icon(
+                            imageVector = Icons.Filled.ChevronLeft,
+                            contentDescription = stringResource(R.string.cd_collapse),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(24.dp).padding(4.dp),
+                        )
+                    }
+
+                    // Previous
+                    IconButton(
+                        onClick = {
+                            onPrev()
+                            onPageChange()
+                        },
+                        enabled = currentPage > 1 && !loading,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ChevronLeft,
+                            contentDescription = stringResource(R.string.cd_nav_previous),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage > 1 && !loading) 1f else 0.3f),
+                            modifier = Modifier.size(24.dp).padding(4.dp),
+                        )
+                    }
+
+                    // Page indicator
+                    Text(
+                        text = "$currentPage / $totalPages",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 4.dp).width(IntrinsicSize.Min),
+                    )
+
+                    // Next
+                    IconButton(
+                        onClick = {
+                            onNext()
+                            onPageChange()
+                        },
+                        enabled = currentPage < totalPages && !loading,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.ChevronRight,
                         contentDescription = stringResource(R.string.cd_nav_next),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage < totalPages && !loading) 1f else 0.3f),
                         modifier = Modifier.size(24.dp).padding(4.dp),
@@ -804,8 +832,8 @@ fun ManageContentScreen(
         // Collapsible filter panel with content-type chips + drag handle
         val activeContentType = if (mainTab == 0) installedContentType else browseContentType
         val activeCollapsed = if (mainTab == 0) installedTypeCollapsed else browseTypeCollapsed
-        val onCollapseToggle = if (mainTab == 0) { installedTypeCollapsed = !installedTypeCollapsed } else { browseTypeCollapsed = !browseTypeCollapsed }
-        val onTypeClick = if (mainTab == 0) { installedContentType = it } else { browseContentType = it }
+        val onCollapseToggle: () -> Unit = if (mainTab == 0) { { installedTypeCollapsed = !installedTypeCollapsed } } else { { browseTypeCollapsed = !browseTypeCollapsed } }
+        val onTypeClick: (ContentType) -> Unit = if (mainTab == 0) { { installedContentType = it } } else { { browseContentType = it } }
         val onDrag = { dragAmount: Offset ->
             // Drag vertically to collapse/expand (threshold-based)
             if (dragAmount.y > 20 && !activeCollapsed) {
