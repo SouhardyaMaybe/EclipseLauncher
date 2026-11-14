@@ -131,20 +131,32 @@ class ModrinthClient @Inject constructor(
     /**
      * Searches Modrinth projects; empty query returns the most relevant list.
      * [projectType] restricts the facet — "mod" for the market, "modpack" for
-     * the pack browser. Modrinth is the only provider available without a key.
+     * the pack browser. [loader] filters the `categories` facet (mods only)
+     * and [gameVersion] filters the `versions` facet. Modrinth is the only
+     * provider available without a key.
      */
     suspend fun searchMods(
         query: String,
         limit: Int = 25,
         offset: Int = 0,
         projectType: String = "mod",
+        loader: String? = null,
+        gameVersion: String? = null,
     ): ModrinthSearchResult = withContext(Dispatchers.IO) {
         try {
+            val facetGroups = buildList {
+                add("project_type:$projectType")
+                if (!loader.isNullOrBlank()) add("categories:$loader")
+                if (!gameVersion.isNullOrBlank()) add("versions:$gameVersion")
+            }
+            val facets = facetGroups.joinToString(prefix = "[", postfix = "]") {
+                "[\"$it\"]"
+            }
             val parsed: ModrinthSearchResponse = network.http.get(SEARCH_URL) {
                 parameter("query", query.trim())
                 parameter("limit", limit)
                 parameter("offset", offset)
-                parameter("facets", "[[\"project_type:$projectType\"]]")
+                parameter("facets", facets)
             }.body()
             parsed.toResult(limit, offset)
         } catch (cancelled: CancellationException) {

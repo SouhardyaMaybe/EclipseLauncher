@@ -37,6 +37,7 @@ import com.eclipselauncher.data.Instance
 import com.eclipselauncher.data.LoaderKind
 import com.eclipselauncher.data.newId
 import com.eclipselauncher.data.offlineUuid
+import com.eclipselauncher.ui.components.AddAccountGate
 import com.eclipselauncher.ui.components.TasksDialog
 import com.eclipselauncher.ui.components.loaderNameString
 import com.eclipselauncher.ui.screens.AccountsScreen
@@ -108,6 +109,8 @@ fun EclipseApp() {
 
     // Task dialog visibility.
     var showTasks by remember { mutableStateOf(false) }
+    // Account gate for actions that require a signed-in account.
+    var showAccountGate by remember { mutableStateOf(false) }
 
     // Instance HOME should select after a create; consumed once applied.
     var pendingSelectionId by remember { mutableStateOf<String?>(null) }
@@ -215,7 +218,13 @@ fun EclipseApp() {
                             onCreateInstance = { push(Route.Create) },
                             onEditInstance = { push(Route.Editor(it.id, null)) },
                             onPlay = ::play,
-                            onOpenFileManager = { instanceId -> push(Route.ManageContent(instanceId)) },
+                            onOpenFileManager = { instanceId ->
+                                if (accountState.isEmpty) {
+                                    showAccountGate = true
+                                } else {
+                                    push(Route.ManageContent(instanceId))
+                                }
+                            },
                             onOpenManageLogs = { /* TODO: open manage logs */ },
                             onOpenSettings = { push(Route.Settings(initialPage = null)) },
                             onOpenTasks = { showTasks = true },
@@ -378,6 +387,15 @@ fun EclipseApp() {
                 onCancel = { id -> scope.launch { container.tasks.cancel(id) } },
                 onDismiss = { showTasks = false },
             )
+            if (showAccountGate) {
+                AddAccountGate(
+                    onConnect = {
+                        showAccountGate = false
+                        push(Route.Accounts)
+                    },
+                    onDismiss = { showAccountGate = false },
+                )
+            }
             LaunchedEffect(showTasks) {
                 if (showTasks) container.tasks.clearFinished()
             }

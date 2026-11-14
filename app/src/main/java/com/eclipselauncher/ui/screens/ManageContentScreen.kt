@@ -87,6 +87,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -106,7 +107,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -141,6 +141,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
 import org.json.JSONObject
 
 /** Content types for installed/browse tabs. Icon + label for the sticky bar chip. */
@@ -177,6 +178,10 @@ private const val DISABLED_SUFFIX = ".disabled"
 /** Sidecar written next to content installed through this screen. */
 private const val CONTENT_META_SUFFIX = ".eclipse.json"
 
+/** Platform values carried by the installed-content metadata. */
+private const val PLATFORM_MODRINTH = "modrinth"
+private const val PLATFORM_LOCAL = "local"
+
 /** One file or folder inside the selected instance's content directories. */
 private data class InstalledContent(
     val file: File,
@@ -187,6 +192,8 @@ private data class InstalledContent(
     val enabled: Boolean,
     val projectId: String? = null,
     val author: String? = null,
+    val loaders: List<String> = emptyList(),
+    val platform: String = PLATFORM_LOCAL,
 ) {
     /** Stable across the `.disabled` rename so LazyColumn keys survive toggles. */
     val id: String get() = "${type.name}:${file.name.removeSuffix(DISABLED_SUFFIX)}"
@@ -199,6 +206,8 @@ private data class ContentMetadata(
     val author: String = "",
     val iconUrl: String = "",
     val version: String = "",
+    val loaders: List<String> = emptyList(),
+    val platform: String = "",
 )
 
 /** What the install sheet targets, including a file to replace on update. */
@@ -220,6 +229,17 @@ private data class ResolvedDependency(
     val version: ModrinthVersion?,
     val contentType: ContentType,
     val checked: Boolean,
+)
+
+/** The three filter headings shown under search. */
+private enum class ContentFilter { LOADER, VERSION, PLATFORM }
+
+/** One selectable row inside an expanded filter panel. */
+private data class FilterOption(
+    val value: String?,
+    val label: String,
+    val enabled: Boolean = true,
+    val detail: String? = null,
 )
 
 /** Custom segmented control: Installed | Browse with tap + drag gesture. */
@@ -464,6 +484,27 @@ private fun ModrinthHit.loaderNames(): List<String> =
 private fun ModrinthHit.displayCategories(): List<String> =
     categories.filterNot { it.lowercase() in LoaderCategories }.distinct()
 
+/** Loaders offered in the Browse filter; installed content builds its own list. */
+private val BrowseLoaderIds = listOf(
+    "fabric",
+    "forge",
+    "neoforge",
+    "quilt",
+    "liteloader",
+    "rift",
+)
+
+private fun loaderDisplayName(id: String): String = when (id.lowercase()) {
+    "fabric" -> "Fabric"
+    "forge" -> "Forge"
+    "neoforge" -> "NeoForge"
+    "quilt" -> "Quilt"
+    "liteloader" -> "LiteLoader"
+    "rift" -> "Rift"
+    "modloader" -> "ModLoader"
+    else -> id.replaceFirstChar { it.uppercase() }
+}
+
 /** Browse content row: name + author, description, loaders | categories, install icon. */
 @Composable
 private fun BrowseContentRow(
@@ -594,50 +635,6 @@ private fun ContentTypeFilterPanel(
     }
 }
 
-/** Full-width segmented button for provider selection (Modrinth | CurseForge). */
-@Composable
-private fun ProviderSegmentedControl(
-    selectedProvider: Provider,
-    onProviderChange: (Provider) -> Unit,
-    context: android.content.Context,
-    providerComingSoonStr: String,
-) {
-    val options = listOf(Provider.MODRINTH, Provider.CURSEFORGE)
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(0.dp),
-    ) {
-        options.forEach { provider ->
-            val isSelected = selectedProvider == provider
-            val enabled = provider != Provider.CURSEFORGE
-            val colors = FilterChipDefaults.filterChipColors(
-                containerColor = if (isSelected) MaterialTheme.colorScheme.secondaryContainer
-                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                labelColor = if (isSelected) MaterialTheme.colorScheme.onSecondaryContainer
-                else MaterialTheme.colorScheme.onSurfaceVariant,
-                selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-            FilterChip(
-                selected = isSelected,
-                onClick = {
-                    if (provider == Provider.CURSEFORGE) {
-                        Toast.makeText(context, providerComingSoonStr, Toast.LENGTH_SHORT).show()
-                    } else {
-                        onProviderChange(provider)
-                    }
-                },
-                label = { Text(text = stringResource(provider.labelRes), style = MaterialTheme.typography.labelLarge) },
-                colors = colors,
-                modifier = Modifier
-                    .weight(1f, fill = true)
-                    .graphicsLayer { alpha = if (enabled) 1f else 0.5f },
-                enabled = enabled,
-            )
-        }
-    }
-}
-
 /** Search field: full-width, leading search icon, clear button when non-empty, keyboard search action. */
 @Composable
 private fun SearchField(
@@ -645,11 +642,12 @@ private fun SearchField(
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
     onClear: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -675,6 +673,129 @@ private fun SearchField(
         // Keyboard search action handled by onSearch callback from UI
         // colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(...) // API not available in this version
     )
+}
+
+/** Compact filter heading; tapping expands the shared option panel below. */
+@Composable
+private fun FilterHeader(
+    title: String,
+    value: String,
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val contentColor = if (expanded) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else {
+        MaterialTheme.colorScheme.onSurface
+    }
+    Card(
+        modifier = modifier.clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (expanded) {
+                MaterialTheme.colorScheme.secondaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+            },
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 7.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall,
+                color = contentColor.copy(alpha = 0.7f),
+                maxLines = 1,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = contentColor,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Icon(
+                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = null,
+                    tint = contentColor,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+        }
+    }
+}
+
+/** One expanded filter's option list; scrolls so the content list stays usable. */
+@Composable
+private fun FilterOptionsPanel(
+    options: List<FilterOption>,
+    selectedValue: String?,
+    onSelect: (FilterOption) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f),
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = 220.dp)
+                .verticalScroll(rememberScrollState()),
+        ) {
+            options.forEachIndexed { index, option ->
+                if (index > 0) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(enabled = option.enabled) { onSelect(option) }
+                        .padding(horizontal = 12.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    RadioButton(
+                        selected = option.value == selectedValue,
+                        onClick = null,
+                        enabled = option.enabled,
+                    )
+                    Text(
+                        text = option.label,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (option.enabled) {
+                            MaterialTheme.colorScheme.onSurface
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        },
+                        modifier = Modifier.weight(1f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    option.detail?.let { detail ->
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = detail,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 /** Floating page pill, bottom-center: [prev] [page/total] [next]. */
@@ -791,6 +912,25 @@ fun ManageContentScreen(
     var installedReloadToken by remember(instance?.id) { mutableStateOf(0) }
     var pendingDelete by remember { mutableStateOf<InstalledContent?>(null) }
 
+    // Search and filter state is kept separately per tab.
+    var installedQuery by remember { mutableStateOf("") }
+    var installedLoader by remember { mutableStateOf<String?>(null) }
+    var installedVersion by remember { mutableStateOf<String?>(null) }
+    var installedPlatform by remember { mutableStateOf<String?>(null) }
+    var browseLoader by remember { mutableStateOf<String?>(null) }
+    var browseGameVersion by remember { mutableStateOf<String?>(null) }
+    var expandedFilter by remember { mutableStateOf<ContentFilter?>(null) }
+
+    // Minecraft versions for the Browse version filter (same manifest cache as
+    // the install sheet; the async fetch only fills it when it was empty).
+    var mcVersions by remember { mutableStateOf(versionRepository.getCachedVersions()) }
+    LaunchedEffect(versionRepository) {
+        when (val result = versionRepository.minecraftVersions()) {
+            is MetaResult.Success -> mcVersions = result.value
+            is MetaResult.Error -> Unit
+        }
+    }
+
     // The Installed tab is a real scan of the selected instance's folders.
     LaunchedEffect(instance?.id, installedReloadToken, mainTab) {
         if (mainTab == 0) {
@@ -808,6 +948,15 @@ fun ManageContentScreen(
     val toggleFailedStr = stringResource(R.string.manage_content_toggle_failed)
     val deleteFailedStr = stringResource(R.string.manage_content_delete_failed)
     val updateUnavailableStr = stringResource(R.string.manage_content_update_unavailable)
+    val createInstanceFirstStr = stringResource(R.string.manage_content_no_instance)
+
+    fun openInstallTarget(target: ContentInstallTarget) {
+        if (instance == null) {
+            Toast.makeText(context, createInstanceFirstStr, Toast.LENGTH_SHORT).show()
+            return
+        }
+        versionTarget = target
+    }
 
     fun toggleContent(content: InstalledContent) {
         scope.launch {
@@ -855,9 +1004,18 @@ fun ManageContentScreen(
         }
     }
 
-    // Auto-load: first Browse open, tab switch back, source/type/query change,
-    // page change, or explicit retry. Empty query is the default listing.
-    LaunchedEffect(mainTab, browseContentType, browseProvider, browseQuery, browsePage, reloadToken) {
+    // Auto-load: first Browse open, tab switch back, source/type/query/filter
+    // change, page change, or explicit retry. Empty query is the default listing.
+    LaunchedEffect(
+        mainTab,
+        browseContentType,
+        browseProvider,
+        browseQuery,
+        browseLoader,
+        browseGameVersion,
+        browsePage,
+        reloadToken,
+    ) {
         if (mainTab != 1) return@LaunchedEffect
 
         val requestedPage = browsePage
@@ -868,6 +1026,8 @@ fun ManageContentScreen(
             limit = BROWSE_PAGE_SIZE,
             offset = (requestedPage - 1) * BROWSE_PAGE_SIZE,
             projectType = browseContentType.modrinthProjectType,
+            loader = browseLoader.takeIf { browseContentType == ContentType.MODS },
+            gameVersion = browseGameVersion,
         )
 
         // A newer request already replaced this one; never apply stale results.
@@ -888,6 +1048,107 @@ fun ManageContentScreen(
     LaunchedEffect(browsePage) {
         if (mainTab == 1) lazyListState.animateScrollToItem(0)
     }
+
+    // ---- Search + filter model -------------------------------------------
+    val anyLabel = stringResource(R.string.manage_content_filter_any)
+    val loaderFilterTitle = stringResource(R.string.manage_content_filter_loader)
+    val versionFilterTitle = stringResource(R.string.manage_content_filter_version)
+    val platformFilterTitle = stringResource(R.string.manage_content_filter_platform)
+    val modrinthLabel = stringResource(R.string.provider_modrinth)
+    val localLabel = stringResource(R.string.platform_local)
+    val providerLabels = Provider.entries.associateWith { stringResource(it.labelRes) }
+
+    val installedOfType = installedContent.filter { it.type == installedContentType }
+    val showLoaderFilter = if (mainTab == 0) {
+        installedContentType == ContentType.MODS
+    } else {
+        browseContentType == ContentType.MODS
+    }
+
+    val loaderIds = if (mainTab == 0) {
+        installedOfType.flatMap { it.loaders }.distinct().sortedBy { it.lowercase() }
+    } else {
+        BrowseLoaderIds
+    }
+    val loaderOptions = buildList {
+        add(FilterOption(null, anyLabel))
+        loaderIds.forEach { add(FilterOption(it, loaderDisplayName(it))) }
+    }
+
+    val installedVersionOptions = buildList {
+        add(FilterOption(null, anyLabel))
+        installedOfType
+            .map { it.version }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sortedByDescending { it }
+            .forEach { add(FilterOption(it, it)) }
+    }
+    val browseVersionOptions = buildList {
+        add(FilterOption(null, anyLabel))
+        val ids = LinkedHashSet<String>()
+        instance?.minecraftVersion?.takeIf { it.isNotBlank() }?.let(ids::add)
+        mcVersions.forEach { ids.add(it.id) }
+        ids.forEach { id ->
+            val kind = mcVersions.firstOrNull { it.id == id }?.type
+            add(FilterOption(id, id, detail = kind?.takeIf { it != "release" }))
+        }
+    }
+
+    val installedPlatformOptions = buildList {
+        add(FilterOption(null, anyLabel))
+        val present = installedOfType.map { it.platform }.toSet()
+        if (PLATFORM_MODRINTH in present) {
+            add(FilterOption(PLATFORM_MODRINTH, modrinthLabel))
+        }
+        if (PLATFORM_LOCAL in present) {
+            add(FilterOption(PLATFORM_LOCAL, localLabel))
+        }
+    }
+    val browsePlatformOptions = Provider.entries.map { provider ->
+        FilterOption(
+            value = provider.name,
+            label = providerLabels[provider].orEmpty(),
+            enabled = provider == Provider.MODRINTH,
+            detail = if (provider != Provider.MODRINTH) providerComingSoonStr else null,
+        )
+    }
+
+    val loaderFilterValue = if (mainTab == 0) installedLoader else browseLoader
+    val versionFilterValue = if (mainTab == 0) installedVersion else browseGameVersion
+    val platformFilterValue = if (mainTab == 0) installedPlatform else browseProvider.name
+    val loaderFilterLabel = loaderFilterValue?.let(::loaderDisplayName) ?: anyLabel
+    val versionFilterLabel = versionFilterValue ?: anyLabel
+    val platformFilterLabel = when {
+        mainTab == 0 -> when (installedPlatform) {
+            PLATFORM_MODRINTH -> modrinthLabel
+            PLATFORM_LOCAL -> localLabel
+            else -> anyLabel
+        }
+        else -> providerLabels[browseProvider].orEmpty().ifBlank { anyLabel }
+    }
+
+    val installedQueryTrimmed = installedQuery.trim()
+    val filteredInstalled = installedOfType.filter { content ->
+        (
+            installedQueryTrimmed.isBlank() ||
+                content.name.contains(installedQueryTrimmed, ignoreCase = true) ||
+                content.version.contains(installedQueryTrimmed, ignoreCase = true) ||
+                content.author?.contains(installedQueryTrimmed, ignoreCase = true) == true
+            ) &&
+            (installedLoader == null ||
+                content.loaders.any { it.equals(installedLoader, ignoreCase = true) }) &&
+            (installedVersion == null || content.version == installedVersion) &&
+            (installedPlatform == null || content.platform == installedPlatform)
+    }
+    val hasInstalledFilters = installedQuery.isNotBlank() ||
+        installedLoader != null ||
+        installedVersion != null ||
+        installedPlatform != null
+    val hasBrowseFilters = browseQuery.isNotBlank() ||
+        browseContentType != ContentType.MODS ||
+        browseLoader != null ||
+        browseGameVersion != null
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -912,19 +1173,167 @@ fun ManageContentScreen(
         // Segmented control: Installed | Browse
         ContentSegmentedControl(
             selectedIndex = mainTab,
-            onTabSelected = { mainTab = it },
+            onTabSelected = { selected ->
+                if (selected != mainTab) {
+                    mainTab = selected
+                    expandedFilter = null
+                }
+            },
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
 
-        // Always-expanded content-type filter panel.
+        // Search field: directly below the tabs on both tabs.
+        SearchField(
+            query = if (mainTab == 0) installedQuery else browseQuery,
+            onQueryChange = { value ->
+                if (mainTab == 0) {
+                    installedQuery = value
+                } else {
+                    browseQuery = value
+                    browsePage = 1
+                }
+            },
+            onSearch = {
+                if (mainTab == 1) {
+                    browsePage = 1
+                    reloadToken++
+                }
+            },
+            onClear = {
+                if (mainTab == 0) {
+                    installedQuery = ""
+                } else {
+                    browseQuery = ""
+                    browsePage = 1
+                    reloadToken++
+                }
+            },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+        )
+
+        // Content-type chips are kept just above the list; selecting one resets
+        // the type-specific filters so no impossible combination lingers.
         val activeContentType = if (mainTab == 0) installedContentType else browseContentType
         val onTypeClick: (ContentType) -> Unit = if (mainTab == 0) {
-            { installedContentType = it }
-        } else {
-            {
-                browseContentType = it
-                browsePage = 1
+            { type ->
+                installedContentType = type
+                installedLoader = null
+                installedVersion = null
+                installedPlatform = null
+                expandedFilter = null
             }
+        } else {
+            { type ->
+                browseContentType = type
+                if (type != ContentType.MODS) browseLoader = null
+                browsePage = 1
+                expandedFilter = null
+            }
+        }
+
+        // Filter headings: loader only where the content type has loaders.
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (showLoaderFilter) {
+                FilterHeader(
+                    title = loaderFilterTitle,
+                    value = loaderFilterLabel,
+                    expanded = expandedFilter == ContentFilter.LOADER,
+                    onClick = {
+                        expandedFilter = if (expandedFilter == ContentFilter.LOADER) {
+                            null
+                        } else {
+                            ContentFilter.LOADER
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+            FilterHeader(
+                title = versionFilterTitle,
+                value = versionFilterLabel,
+                expanded = expandedFilter == ContentFilter.VERSION,
+                onClick = {
+                    expandedFilter = if (expandedFilter == ContentFilter.VERSION) {
+                        null
+                    } else {
+                        ContentFilter.VERSION
+                    }
+                },
+                modifier = Modifier.weight(1f),
+            )
+            FilterHeader(
+                title = platformFilterTitle,
+                value = platformFilterLabel,
+                expanded = expandedFilter == ContentFilter.PLATFORM,
+                onClick = {
+                    expandedFilter = if (expandedFilter == ContentFilter.PLATFORM) {
+                        null
+                    } else {
+                        ContentFilter.PLATFORM
+                    }
+                },
+                modifier = Modifier.weight(1f),
+            )
+        }
+
+        when (expandedFilter) {
+            ContentFilter.LOADER -> if (showLoaderFilter) {
+                FilterOptionsPanel(
+                    options = loaderOptions,
+                    selectedValue = loaderFilterValue,
+                    onSelect = { option ->
+                        if (mainTab == 0) {
+                            installedLoader = option.value
+                        } else {
+                            browseLoader = option.value
+                            browsePage = 1
+                        }
+                        expandedFilter = null
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                )
+            }
+
+            ContentFilter.VERSION -> FilterOptionsPanel(
+                options = if (mainTab == 0) installedVersionOptions else browseVersionOptions,
+                selectedValue = versionFilterValue,
+                onSelect = { option ->
+                    if (mainTab == 0) {
+                        installedVersion = option.value
+                    } else {
+                        browseGameVersion = option.value
+                        browsePage = 1
+                    }
+                    expandedFilter = null
+                },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+
+            ContentFilter.PLATFORM -> FilterOptionsPanel(
+                options = if (mainTab == 0) installedPlatformOptions else browsePlatformOptions,
+                selectedValue = platformFilterValue,
+                onSelect = { option ->
+                    if (mainTab == 0) {
+                        installedPlatform = option.value
+                    } else {
+                        option.value?.let { name ->
+                            runCatching { Provider.valueOf(name) }.getOrNull()?.let { provider ->
+                                browseProvider = provider
+                                browsePage = 1
+                            }
+                        }
+                    }
+                    expandedFilter = null
+                },
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            )
+
+            null -> Unit
         }
 
         ContentTypeFilterPanel(
@@ -934,52 +1343,38 @@ fun ManageContentScreen(
             isInstalledTab = mainTab == 0,
         )
 
-        if (mainTab == 1) {
-            // Search: full-width, leading icon, clear button, IME search action.
-            SearchField(
-                query = browseQuery,
-                onQueryChange = {
-                    browseQuery = it
-                    browsePage = 1
-                },
-                onSearch = {
-                    browsePage = 1
-                    reloadToken++
-                },
-                onClear = {
-                    browseQuery = ""
-                    browsePage = 1
-                    reloadToken++
-                },
-            )
-
-            // Source selector: full-width segmented control below search (Browse only).
-            ProviderSegmentedControl(
-                selectedProvider = browseProvider,
-                onProviderChange = {
-                    browseProvider = it
-                    browsePage = 1
-                },
-                context = context,
-                providerComingSoonStr = providerComingSoonStr,
-            )
-        }
-
         // Content list (pagination floats above it, never covering the last row).
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when (mainTab) {
                 0 -> {
-                    val filteredContent = installedContent.filter { it.type == installedContentType }
-                    if (filteredContent.isEmpty()) {
+                    if (filteredInstalled.isEmpty()) {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                text = stringResource(R.string.manage_content_empty),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Text(
+                                    text = stringResource(
+                                        if (hasInstalledFilters) {
+                                            R.string.manage_content_no_matches
+                                        } else {
+                                            R.string.manage_content_empty
+                                        },
+                                    ),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                if (hasInstalledFilters) {
+                                    TextButton(onClick = {
+                                        installedQuery = ""
+                                        installedLoader = null
+                                        installedVersion = null
+                                        installedPlatform = null
+                                    }) {
+                                        Text(stringResource(R.string.manage_content_clear_filters))
+                                    }
+                                }
+                            }
                         }
                     } else {
                         LazyColumn(
@@ -988,7 +1383,7 @@ fun ManageContentScreen(
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(filteredContent, key = { it.id }) { content ->
+                            items(filteredInstalled, key = { it.id }) { content ->
                                 InstalledContentRow(
                                     content = content,
                                     onUpdate = { updateContent(content) },
@@ -1031,11 +1426,14 @@ fun ManageContentScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
-                            if (browseQuery.isNotBlank() || browseContentType != ContentType.MODS) {
+                            if (hasBrowseFilters) {
                                 TextButton(onClick = {
                                     browseQuery = ""
                                     browseContentType = ContentType.MODS
+                                    browseLoader = null
+                                    browseGameVersion = null
                                     browsePage = 1
+                                    expandedFilter = null
                                     reloadToken++
                                 }) {
                                     Text(stringResource(R.string.manage_content_clear_filters))
@@ -1057,8 +1455,8 @@ fun ManageContentScreen(
                             items(browseResults, key = { it.project_id.ifBlank { it.slug } }) { hit ->
                                 BrowseContentRow(
                                     hit = hit,
-                                    onClick = { versionTarget = hit.toInstallTarget() },
-                                    onDownload = { versionTarget = hit.toInstallTarget() },
+                                    onClick = { openInstallTarget(hit.toInstallTarget()) },
+                                    onDownload = { openInstallTarget(hit.toInstallTarget()) },
                                 )
                             }
                         }
@@ -1104,6 +1502,8 @@ fun ManageContentScreen(
             media = media,
             versionRepository = versionRepository,
             client = client,
+            // Updates/downgrades replace one file; dependencies are already set up.
+            showDependencies = target.replace == null,
             onDismiss = { versionTarget = null },
             onInstalled = { _, _ ->
                 installedReloadToken++
@@ -1149,6 +1549,7 @@ private fun VersionInstallDialog(
     media: MediaStorage,
     versionRepository: VersionRepository,
     client: ModrinthClient,
+    showDependencies: Boolean = true,
     onDismiss: () -> Unit,
     onInstalled: (ModrinthVersion, Instance) -> Unit,
 ) {
@@ -1245,6 +1646,12 @@ private fun VersionInstallDialog(
     fun requestInstall(version: ModrinthVersion) {
         val targetInstance = instance ?: return
         installError = null
+        // Update/downgrade only swaps the main file and never prompts for or
+        // installs dependencies; a fresh install does the full resolution.
+        if (!showDependencies) {
+            startInstall(version, emptyList())
+            return
+        }
         val required = version.dependencies.filter { it.dependency_type == "required" }
         if (required.isEmpty()) {
             startInstall(version, emptyList())
@@ -1934,6 +2341,15 @@ private fun scanInstalledContent(filesDir: File, instance: Instance?): List<Inst
             } else {
                 baseName.substringBeforeLast('.', baseName)
             }
+            // Legacy mods have no loaders in their sidecar; a mod living in a
+            // loader instance is at least tagged with that instance's loader.
+            val loaders = metadata.loaders.ifEmpty {
+                if (type == ContentType.MODS) {
+                    listOfNotNull(loaderName(instance.loader))
+                } else {
+                    emptyList()
+                }
+            }
             InstalledContent(
                 file = file,
                 name = metadata.title.ifBlank { fallbackName },
@@ -1943,6 +2359,12 @@ private fun scanInstalledContent(filesDir: File, instance: Instance?): List<Inst
                 enabled = enabled,
                 projectId = metadata.projectId.ifBlank { null },
                 author = metadata.author.ifBlank { null },
+                loaders = loaders,
+                // Legacy sidecars have no platform; a Modrinth project id is
+                // the only reliable hint, everything else is a local file.
+                platform = metadata.platform.ifBlank {
+                    if (metadata.projectId.isNotBlank()) PLATFORM_MODRINTH else PLATFORM_LOCAL
+                },
             )
         }
     }.sortedBy { it.name.lowercase() }
@@ -1964,12 +2386,19 @@ private fun readContentMetadata(file: File): ContentMetadata {
     }
     return runCatching {
         val json = JSONObject(source.readText())
+        val loaders = json.optJSONArray("loaders")?.let { array ->
+            (0 until array.length()).mapNotNull { index ->
+                array.optString(index).takeIf { it.isNotBlank() }
+            }
+        }.orEmpty()
         ContentMetadata(
             projectId = json.optString("project_id"),
             title = json.optString("title"),
             author = json.optString("author"),
             iconUrl = json.optString("icon_url"),
             version = json.optString("version"),
+            loaders = loaders,
+            platform = json.optString("platform"),
         )
     }.getOrDefault(ContentMetadata())
 }
@@ -1981,6 +2410,8 @@ private fun writeContentMetadata(file: File, metadata: ContentMetadata): Boolean
         .put("author", metadata.author)
         .put("icon_url", metadata.iconUrl)
         .put("version", metadata.version)
+        .put("loaders", JSONArray(metadata.loaders))
+        .put("platform", metadata.platform)
     metadataFile(file).writeText(json.toString())
 }.isSuccess
 
@@ -2120,6 +2551,8 @@ private suspend fun installVersionWithDependencies(
                     title = dependency.title,
                     iconUrl = dependency.iconUrl,
                     version = dependencyVersion.version_number,
+                    loaders = dependencyVersion.loaders,
+                    platform = PLATFORM_MODRINTH,
                 ),
             )
         }
@@ -2141,6 +2574,8 @@ private suspend fun installVersionWithDependencies(
                     author = target.author,
                     iconUrl = target.iconUrl,
                     version = version.version_number,
+                    loaders = version.loaders,
+                    platform = PLATFORM_MODRINTH,
                 ),
             )
         ) {
