@@ -969,3 +969,4 @@ fun ManageContentScreen(
         }
     }
 }
+}
