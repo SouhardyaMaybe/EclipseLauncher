@@ -39,6 +39,8 @@
     <string name="cd_clear">Clear</string>
     <string name="cd_expand">Expand</string>
     <string name="cd_collapse">Collapse</string>
+    <string name="cd_prev">Previous</string>
+    <string name="cd_next">Next</string>
     <string name="account_kind_microsoft">Microsoft</string>
     <string name="account_kind_local">Local</string>
     <string name="action_add_account">Add account</string>

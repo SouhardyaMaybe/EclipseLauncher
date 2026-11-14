@@ -132,6 +132,7 @@ import com.eclipselauncher.data.ModrinthVersion
 import com.eclipselauncher.data.ModrinthVersionFile
 import com.eclipselauncher.data.VersionRepository
 import com.eclipselauncher.ui.components.InstanceIcon
+import com.eclipselauncher.ui.components.loaderDisplayName
 import java.io.File
 import java.time.Instant
 import kotlinx.coroutines.CancellationException
@@ -487,14 +488,6 @@ private fun ModrinthHit.loaderNames(): List<String> =
 
 private fun ModrinthHit.displayCategories(): List<String> =
     categories.filterNot { it.lowercase() in AllLoaderCategories }.distinct()
-
-private fun loaderDisplayName(id: String): String = when (id.lowercase()) {
-    "fabric" -> "Fabric"
-    "forge" -> "Forge"
-    "neoforge" -> "NeoForge"
-    "quilt" -> "Quilt"
-    else -> id.replaceFirstChar { it.uppercase() }
-}
 
 /** Browse content row: name + author, description, loaders | categories, install icon. */
 @Composable

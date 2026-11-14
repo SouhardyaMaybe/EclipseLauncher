@@ -319,6 +319,7 @@ fun EclipseApp() {
                     entry<Route.ModpackBrowser> {
                         ModpackBrowserScreen(
                             client = container.modrinth,
+                            versionRepository = container.versions,
                             onBack = ::pop,
                             onPickModpack = { uri -> scope.launch { importPack(uri) } },
                         )

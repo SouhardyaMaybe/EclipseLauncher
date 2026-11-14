@@ -39,3 +39,12 @@ fun LoaderIcon(
         modifier = modifier.size(size),
     )
 }
+
+/** Human-readable display name for a loader ID string. */
+fun loaderDisplayName(id: String): String = when (id.lowercase()) {
+    "fabric" -> "Fabric"
+    "forge" -> "Forge"
+    "neoforge" -> "NeoForge"
+    "quilt" -> "Quilt"
+    else -> id.replaceFirstChar { it.uppercase() }
+}

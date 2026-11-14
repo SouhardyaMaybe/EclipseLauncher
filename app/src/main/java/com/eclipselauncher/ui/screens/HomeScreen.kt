@@ -91,6 +91,7 @@ import com.eclipselauncher.ui.character.SkinHeadFace
 import com.eclipselauncher.ui.components.AccountSwitcherDialog
 import com.eclipselauncher.ui.components.AddAccountGate
 import com.eclipselauncher.ui.components.InstanceIcon
+import com.eclipselauncher.ui.components.LoaderIcon
 import com.eclipselauncher.ui.components.loaderName
 import com.eclipselauncher.ui.theme.EclipseRadius
 
@@ -627,7 +628,9 @@ private fun InstanceSwitcherDropdown(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         InstanceIcon(instance = instance, media = media, size = 30.dp)
-                        Spacer(modifier = Modifier.width(12.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        LoaderIcon(loader = instance.loader, size = 22.dp)
+                        Spacer(modifier = Modifier.width(8.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = instance.name,
@@ -648,6 +651,10 @@ private fun InstanceSwitcherDropdown(
                                 imageVector = Icons.Filled.Check,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.secondary,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
                                 modifier = Modifier.size(20.dp),
                             )
                         }
