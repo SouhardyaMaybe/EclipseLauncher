@@ -704,7 +704,7 @@ private fun PaginationPill(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ManageContentScreen(
+public fun ManageContentScreen(
     client: ModrinthClient,
     onBack: () -> Unit,
 ) {
@@ -971,5 +971,4 @@ fun ManageContentScreen(
             )
         }
     }
-}
 }
