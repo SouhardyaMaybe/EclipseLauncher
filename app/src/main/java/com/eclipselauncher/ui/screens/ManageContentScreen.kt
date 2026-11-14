@@ -131,6 +131,8 @@ import com.eclipselauncher.data.ModrinthHit
 import com.eclipselauncher.data.ModrinthVersion
 import com.eclipselauncher.data.ModrinthVersionFile
 import com.eclipselauncher.data.VersionRepository
+import com.eclipselauncher.ui.components.FilterComponents.FilterOption
+import com.eclipselauncher.ui.components.FilterComponents.ContentFilter
 import com.eclipselauncher.ui.components.InstanceIcon
 import com.eclipselauncher.ui.components.loaderDisplayName
 import java.io.File
@@ -230,17 +232,6 @@ private data class ResolvedDependency(
     val version: ModrinthVersion?,
     val contentType: ContentType,
     val checked: Boolean,
-)
-
-/** The three filter headings shown under search. */
-private enum class ContentFilter { LOADER, VERSION, PLATFORM }
-
-/** One selectable row inside an expanded filter panel. */
-private data class FilterOption(
-    val value: String?,
-    val label: String,
-    val enabled: Boolean = true,
-    val detail: String? = null,
 )
 
 /** Custom segmented control: Installed | Browse with tap + drag gesture. */

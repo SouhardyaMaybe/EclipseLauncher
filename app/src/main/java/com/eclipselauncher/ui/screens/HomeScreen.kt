@@ -655,12 +655,7 @@ private fun InstanceSwitcherDropdown(
                             )
                         }
                     }
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
-                    }
                 }
-            }
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
 

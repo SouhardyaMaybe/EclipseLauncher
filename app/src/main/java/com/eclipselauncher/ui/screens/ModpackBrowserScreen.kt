@@ -113,23 +113,14 @@ import com.eclipselauncher.data.ModrinthHit
 import com.eclipselauncher.data.ModrinthVersion
 import com.eclipselauncher.data.ModrinthVersionFile
 import com.eclipselauncher.data.VersionRepository
+import com.eclipselauncher.ui.components.FilterComponents.FilterOption
+import com.eclipselauncher.ui.components.FilterComponents.ModpackFilter
 import com.eclipselauncher.ui.components.LoaderIcon
 import com.eclipselauncher.ui.components.loaderDisplayName
 import com.eclipselauncher.ui.components.loaderName
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-/** Filter option for modpack browser dialogs. */
-private data class FilterOption(
-    val value: String?,
-    val label: String,
-    val enabled: Boolean = true,
-    val detail: String? = null,
-)
-
-/** The filter categories shown as compact headers. */
-private enum class ModpackFilter { LOADER, VERSION, PLATFORM }
-
 /** Compact filter header; tapping opens a modal chooser. */
 @Composable
 private fun FilterHeader(
