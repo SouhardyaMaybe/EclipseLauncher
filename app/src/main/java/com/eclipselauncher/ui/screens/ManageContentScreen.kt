@@ -597,8 +597,6 @@ fun ManageContentScreen(
         // Floating pagination control (only in Browse tab)
         AnimatedVisibility(
             visible = mainTab == 1 && browseTotalPages > 1,
-            enter = expandHorizontally() + fadeIn(),
-            exit = shrinkHorizontally() + fadeOut(),
         ) {
             var pageNavCollapsed by remember { mutableStateOf(false) }
             Box(
