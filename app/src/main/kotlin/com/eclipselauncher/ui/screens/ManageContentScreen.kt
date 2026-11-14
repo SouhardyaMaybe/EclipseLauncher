@@ -699,12 +699,11 @@ private fun PaginationPill(
     }
 }
 
-class ManageContentScreen {
-    @Composable
-    fun Screen(
-        client: ModrinthClient,
-        onBack: () -> Unit,
-    ) {
+@Composable
+fun ManageContentScreen(
+    client: ModrinthClient,
+    onBack: () -> Unit,
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
@@ -969,6 +968,4 @@ class ManageContentScreen {
             )
         }
     }
-}
-}
 }
