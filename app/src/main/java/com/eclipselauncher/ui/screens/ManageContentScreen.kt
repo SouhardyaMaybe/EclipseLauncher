@@ -65,7 +65,6 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -432,7 +431,6 @@ private fun BrowseContentRow(
 }
 
 /** Collapsible filter panel with drag handle. Shows content-type chips. */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CollapsibleFilterPanel(
     contentType: ContentType,
@@ -592,7 +590,6 @@ private fun SearchField(
 }
 
 /** Floating pagination pill at bottom: [collapse] [prev] [N/total] [next]. */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun PaginationPill(
     currentPage: Int,
@@ -702,7 +699,6 @@ private fun PaginationPill(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ManageContentScreen(
     client: ModrinthClient,
