@@ -113,14 +113,12 @@ import com.eclipselauncher.data.ModrinthHit
 import com.eclipselauncher.data.ModrinthVersion
 import com.eclipselauncher.data.ModrinthVersionFile
 import com.eclipselauncher.data.VersionRepository
-import com.eclipselauncher.ui.components.FilterComponents.FilterOption
-import com.eclipselauncher.ui.components.FilterComponents.ModpackFilter
+import com.eclipselauncher.ui.components.FilterOption
 import com.eclipselauncher.ui.components.LoaderIcon
+import com.eclipselauncher.ui.components.ModpackFilter
 import com.eclipselauncher.ui.components.loaderDisplayName
 import com.eclipselauncher.ui.components.loaderName
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 /** Compact filter header; tapping opens a modal chooser. */
 @Composable
 private fun FilterHeader(
@@ -295,11 +293,8 @@ private fun ModpackVersionDialog(
         loading = false
     }
 
-    // MC-version types decide which groups are stable and colour their badges.
-    // Note: we don't have a versionRepository here for MC manifest, so we
-    // can't do the full stable-groups logic. Keep it simple: show all versions.
+    // Group by game_versions, newest first
     val groups = remember(versions) {
-        // Group by game_versions, newest first
         val map = mutableMapOf<String, MutableList<ModrinthVersion>>()
         for (v in versions) {
             if (v.game_versions.isNotEmpty()) {
@@ -310,18 +305,17 @@ private fun ModpackVersionDialog(
                 map.getOrPut("any") { mutableListOf() }.add(v)
             }
         }
-        // Sort each group's versions by date descending
         map.values.forEach { it.sortByDescending { it.date_published } }
-        map.toList().sortedByDescending { it.key }
+        map.toList().sortedByDescending { it.first }
     }
 
     val visibleGroups = remember(groups, stableOnly) {
-        if (stableOnly) groups.filter { it.key != "any" } else groups
+        if (stableOnly) groups.filter { it.first != "any" } else groups
     }
 
-    Dialog(
+    androidx.compose.material3.Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(
+        properties = androidx.compose.material3.DialogProperties(
             dismissOnBackPress = true,
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
@@ -414,7 +408,7 @@ private fun ModpackVersionDialog(
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(visibleGroups, key = { it.key }) { (mcVer, versions) ->
+                            items(visibleGroups, key = { it.first }) { (mcVer, versions) ->
                                 VersionGroupCard(
                                     mcVersion = mcVer,
                                     versions = versions,
@@ -945,6 +939,23 @@ fun ModpackBrowserScreen(
         )
     }
 }
+
+@Composable
+private fun ModpackRow(
+    hit: ModrinthHit,
+    onClick: () -> Unit,
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+        ),
+    ) {
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -1002,6 +1013,33 @@ fun ModpackBrowserScreen(
                     style = MaterialTheme.typography.labelLarge,
                 )
             }
+        }
+    }
+}
+
+/** Loads the project icon through Coil; the tile shows until it arrives. */
+@Composable
+private fun ModpackIcon(url: String, size: Dp) {
+    Box(
+        modifier = Modifier
+            .size(size)
+            .clip(RoundedCornerShape(size.value * 0.2f))
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.CloudDownload,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            modifier = Modifier.size((size.value * 0.5f).dp),
+        )
+        if (url.isNotBlank()) {
+            AsyncImage(
+                model = url,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
+            )
         }
     }
 }
@@ -1082,29 +1120,10 @@ private fun PaginationPill(
     }
 }
 
-/** Loads the project icon through Coil; the tile shows until it arrives. */
-@Composable
-private fun ModpackIcon(url: String, size: Dp) {
-    Box(
-        modifier = Modifier
-            .size(size)
-            .clip(RoundedCornerShape(size.value * 0.2f))
-            .background(MaterialTheme.colorScheme.surfaceVariant),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = Icons.Filled.CloudDownload,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size((size.value * 0.5f).dp),
-        )
-        if (url.isNotBlank()) {
-            AsyncImage(
-                model = url,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
-        }
+/** Human-readable download count. */
+private fun formatDownloads(count: Long): String =
+    when {
+        count >= 1_000_000 -> "%.1fM".format(count / 1_000_000.0)
+        count >= 1_000 -> "%.1fK".format(count / 1_000.0)
+        else -> count.toString()
     }
-}

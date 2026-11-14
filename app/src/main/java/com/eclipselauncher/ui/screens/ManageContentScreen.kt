@@ -131,8 +131,8 @@ import com.eclipselauncher.data.ModrinthHit
 import com.eclipselauncher.data.ModrinthVersion
 import com.eclipselauncher.data.ModrinthVersionFile
 import com.eclipselauncher.data.VersionRepository
-import com.eclipselauncher.ui.components.FilterComponents.FilterOption
-import com.eclipselauncher.ui.components.FilterComponents.ContentFilter
+import com.eclipselauncher.ui.components.FilterOption
+import com.eclipselauncher.ui.components.ContentFilter
 import com.eclipselauncher.ui.components.InstanceIcon
 import com.eclipselauncher.ui.components.loaderDisplayName
 import java.io.File
