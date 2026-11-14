@@ -971,3 +971,4 @@ class ManageContentScreen {
     }
 }
 }
+}
