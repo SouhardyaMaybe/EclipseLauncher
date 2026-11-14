@@ -44,7 +44,7 @@ import com.eclipselauncher.ui.screens.CreateInstanceScreen
 import com.eclipselauncher.ui.screens.HomeScreen
 import com.eclipselauncher.ui.screens.InstanceEditorScreen
 import com.eclipselauncher.ui.screens.LoaderPickerScreen
-@Suppress("UNRESOLVED_REFERENCE") import com.eclipselauncher.ui.screens.ManageContentScreen
+import com.eclipselauncher.ui.screens.ManageContentScreen
 import com.eclipselauncher.ui.screens.MicrosoftAuthScreen
 import com.eclipselauncher.ui.screens.ModpackBrowserScreen
 import com.eclipselauncher.ui.screens.SettingsPage
