@@ -100,8 +100,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardActions
-import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -588,13 +586,13 @@ private fun SearchField(
                 }
             }
         },
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Search
+        keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
+            imeAction = androidx.compose.ui.text.input.ImeAction.Search
         ),
-        keyboardActions = KeyboardActions(
+        keyboardActions = androidx.compose.ui.text.input.KeyboardActions(
             onSearch = onSearch
         ),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
         ),
