@@ -699,7 +699,7 @@ private fun PaginationPill(
     }
 }
 
-class ManageContentScreen {
+class ManageContentScreenImpl {
     @Composable
     fun Screen(
         client: ModrinthClient,
