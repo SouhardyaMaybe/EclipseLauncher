@@ -126,3 +126,9 @@
 - Removed the six-dot drag handle and all collapse/drag state; filter panel is now always expanded and compact (single chip row).
 - Removed the paginator collapse chevron and edge-handle mode; pill is fixed bottom-center `‹ page/total ›`, fixed-width indicator (no button shift between 1- and 2-digit pages), spinner while loading.
 - Rapid-tap bounce: debounce page changes by 220ms, capture `requestedPage`, fetch only the settled page, and discard stale responses; scroll-to-top is debounced the same way.
+
+## 2026-11-14 — Pagination polish
+- Tab pills raised from ~20dp content to 44dp; overall header row grows by 8dp.
+- Pagination is strictly one page per tap: tap sets `browseLoading` before changing the page, and both arrows disable until the fetch completes. Removed the 220ms coalescing delay and the pill spinner.
+- Full result area now shows an M3 expressive `LoadingIndicator` over a scrim on every Browse fetch, including paging with existing rows.
+- Prev/next use IconButton disabled colors (35% alpha) at page 1 / last page / while loading.

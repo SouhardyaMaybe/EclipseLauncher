@@ -14,3 +14,6 @@ Additional standing rule: builds are verified only via GitHub Actions.
 
 ## 2026-11-13 — Research request (verbatim)
 "umm... quickly check out the exact tech stack of zalith launcher 2 from online sources"
+
+## 2026-11-14 — Instruction (verbatim)
+"its good but some modifications needed. 1. increase the heights of the installed and browse tab buttons by a lil bit.     2. make the pagination like 1 page at a time. next button tap= 1 page next loads the lists and shows progress bar/loading icon m3 expressive in the whole list screen instead of just at the paginator.       3. add responsiveness like graying out when no page next or previous.           4. go for the other parts now."

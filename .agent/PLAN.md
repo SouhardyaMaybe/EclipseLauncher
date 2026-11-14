@@ -68,3 +68,12 @@
 - [ ] Versions/install dialog + install state machine.
 - [ ] JVM tests (no `app/src/test` yet).
 - [ ] Restore lint gate in CI.
+
+## 2026-11-14 — Pagination polish + next parts
+- [x] Taller Installed/Browse tab buttons (44dp).
+- [x] One page per tap; buttons lock while a page is loading (no jump/bounce).
+- [x] Full-list M3 expressive loading overlay replaces the tiny pill spinner.
+- [x] Prev/next gray out at the first/last page and while loading.
+- [ ] Versions + install dialog (full-screen), instance target, download state.
+- [ ] JVM tests (no `app/src/test` yet).
+- [ ] Restore lint gate in CI.

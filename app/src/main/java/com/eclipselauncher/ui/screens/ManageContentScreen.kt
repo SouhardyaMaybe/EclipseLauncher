@@ -65,13 +65,14 @@ import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -103,7 +104,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import kotlinx.coroutines.delay
 import com.eclipselauncher.R
 import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
@@ -171,6 +171,7 @@ private fun ContentSegmentedControl(
         Box(
             modifier = Modifier
                 .weight(1f)
+                .height(44.dp)
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = { onTabSelected(0) },
@@ -196,6 +197,7 @@ private fun ContentSegmentedControl(
         Box(
             modifier = Modifier
                 .weight(1f)
+                .height(44.dp)
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = { onTabSelected(1) },
@@ -571,6 +573,13 @@ private fun PaginationPill(
     onPrev: () -> Unit,
     onNext: () -> Unit,
 ) {
+    val canGoPrev = currentPage > 1 && !loading
+    val canGoNext = currentPage < totalPages && !loading
+    val buttonColors = IconButtonDefaults.iconButtonColors(
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
+    )
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
@@ -587,38 +596,53 @@ private fun PaginationPill(
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                IconButton(onClick = onPrev, enabled = currentPage > 1 && !loading) {
+                IconButton(
+                    onClick = onPrev,
+                    enabled = canGoPrev,
+                    colors = buttonColors,
+                ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronLeft,
                         contentDescription = stringResource(R.string.cd_nav_previous),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
                 // Fixed width stops the buttons from shifting between 1- and 2-digit pages.
                 Box(modifier = Modifier.width(84.dp), contentAlignment = Alignment.Center) {
-                    if (loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    } else {
-                        Text(
-                            text = "$currentPage / $totalPages",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
+                    Text(
+                        text = "$currentPage / $totalPages",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-                IconButton(onClick = onNext, enabled = currentPage < totalPages && !loading) {
+                IconButton(
+                    onClick = onNext,
+                    enabled = canGoNext,
+                    colors = buttonColors,
+                ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
                         contentDescription = stringResource(R.string.cd_nav_next),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
         }
+    }
+}
+
+/** Full-list loading state: M3 expressive indicator over the result area. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun ListLoadingOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.85f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        LoadingIndicator(
+            modifier = Modifier.size(56.dp),
+            color = MaterialTheme.colorScheme.secondary,
+        )
     }
 }
 
@@ -676,8 +700,6 @@ fun ManageContentScreen(
     LaunchedEffect(mainTab, browseContentType, browseProvider, browseQuery, browsePage, reloadToken) {
         if (mainTab != 1) return@LaunchedEffect
 
-        // Coalesce rapid page taps: only the page the user stopped on is fetched.
-        delay(220)
         val requestedPage = browsePage
         browseLoading = true
         browseError = null
@@ -688,7 +710,7 @@ fun ManageContentScreen(
             projectType = browseContentType.modrinthProjectType,
         )
 
-        // A newer tap already replaced this request; never apply stale results.
+        // A newer request already replaced this one; never apply stale results.
         if (browsePage != requestedPage) return@LaunchedEffect
 
         if (result.failed) {
@@ -702,9 +724,8 @@ fun ManageContentScreen(
         browseLoading = false
     }
 
-    // Every settled page change starts at the top of the list.
+    // Every page change starts at the top of the list.
     LaunchedEffect(browsePage) {
-        delay(220)
         if (mainTab == 1) lazyListState.animateScrollToItem(0)
     }
 
@@ -820,10 +841,10 @@ fun ManageContentScreen(
                 }
                 1 -> {
                     when {
+                        // Full-list indicator below covers the initial fetch.
                         browseLoading && browseResults.isEmpty() -> Box(
                             modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) { CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary) }
+                        )
 
                         browseError != null -> Column(
                             modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -885,14 +906,30 @@ fun ManageContentScreen(
                 }
             }
 
+            // Full-list progress: replaces the small spinner that used to live
+            // in the pagination pill.
+            if (mainTab == 1 && browseLoading) {
+                ListLoadingOverlay()
+            }
+
             // Floating pagination pill (Browse only, when multiple pages).
             if (mainTab == 1 && browseTotalPages > 1) {
                 PaginationPill(
                     currentPage = browsePage,
                     totalPages = browseTotalPages,
                     loading = browseLoading,
-                    onPrev = { if (browsePage > 1) browsePage-- },
-                    onNext = { if (browsePage < browseTotalPages) browsePage++ },
+                    onPrev = {
+                        if (!browseLoading && browsePage > 1) {
+                            browseLoading = true
+                            browsePage--
+                        }
+                    },
+                    onNext = {
+                        if (!browseLoading && browsePage < browseTotalPages) {
+                            browseLoading = true
+                            browsePage++
+                        }
+                    },
                 )
             }
         }
