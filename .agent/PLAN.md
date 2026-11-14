@@ -32,3 +32,10 @@
 - [x] All CI jobs green: lint, unit tests, assembleDebug, assembleRelease.
 - [x] Failed workflow runs deleted; only green runs remain.
 - [x] Report GitHub repos for the account (6 repos listed below).
+- [x] ManageContentScreen: Segmented control Installed|Browse with drag gesture
+- [x] ManageContentScreen: Sticky content-type bar with glyph icons + count badges
+- [x] ManageContentScreen: Coil-loaded content icons for installed and browse rows
+- [x] ManageContentScreen: Auto-load browse content on initial load
+- [x] ManageContentScreen: Collapse/expand options panel (▲/▼ toggle)
+- [x] ManageContentScreen: Floating page navigation control (‹ page/total ›)
+- [x] ManageContentScreen: Single back button in top bar
