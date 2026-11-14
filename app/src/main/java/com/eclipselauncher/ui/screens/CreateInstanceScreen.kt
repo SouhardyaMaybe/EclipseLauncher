@@ -124,7 +124,7 @@ fun CreateInstanceScreen(
         launch(Dispatchers.IO) {
             when (val result = versions.minecraftVersions()) {
                 is MetaResult.Success<*> -> {
-                    allVersions = result.value as List<McVersion>
+                    allVersions = result.value as @Suppress("UNCHECKED_CAST") List<McVersion>
                     loading = false
                 }
                 is MetaResult.Error -> {

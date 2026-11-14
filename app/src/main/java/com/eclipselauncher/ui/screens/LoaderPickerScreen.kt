@@ -397,7 +397,7 @@ private fun LoaderVersionDropdown(
             )
 
             is MetaResult.Success<*> -> {
-                val options = versionList.value as List<VersionOption>
+                val options = versionList.value as @Suppress("UNCHECKED_CAST") List<VersionOption>
                 val listState = rememberLazyListState()
 
                 // Snap the open list onto the selected row. The body starts
