@@ -970,4 +970,3 @@ class ManageContentScreen {
         }
     }
 }
-}
