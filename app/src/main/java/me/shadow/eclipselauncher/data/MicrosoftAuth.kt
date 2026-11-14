@@ -269,33 +269,29 @@ private data class Profile(
             ?: throw MsAuthException(MsAuthError.UNKNOWN, "Malformed profile response")
 
         // Parse skins array
-        val skinsArray = response.optJsonArray("skins") ?: JsonArray()
+        val skinsArray = (response["skins"] as? JsonArray) ?: JsonArray()
         val skins = mutableListOf<SkinInfo>()
-        for (i in 0 until skinsArray.length()) {
-            val skinObj = skinsArray.optJsonObject(i)
-            if (skinObj != null) {
-                skins.add(SkinInfo(
-                    id = skinObj.optString("id", ""),
-                    state = skinObj.optString("state", ""),
-                    url = normalizeTextureUrl(skinObj.optString("url", "")),
-                    variant = skinObj.optString("variant").takeIf { it.isNotBlank() },
-                ))
-            }
+        for (i in 0 until skinsArray.size) {
+            val skinObj = skinsArray.getJsonObject(i)
+            skins.add(SkinInfo(
+                id = skinObj.getString("id") ?: "",
+                state = skinObj.getString("state") ?: "",
+                url = normalizeTextureUrl(skinObj.getString("url") ?: ""),
+                variant = skinObj["variant"]?.let { it.content?.takeIf { it.isNotBlank() } },
+            ))
         }
 
         // Parse capes array
-        val capesArray = response.optJsonArray("capes") ?: JsonArray()
+        val capesArray = (response["capes"] as? JsonArray) ?: JsonArray()
         val capes = mutableListOf<CapeInfo>()
-        for (i in 0 until capesArray.length()) {
-            val capeObj = capesArray.optJsonObject(i)
-            if (capeObj != null) {
-                capes.add(CapeInfo(
-                    id = capeObj.optString("id", ""),
-                    state = capeObj.optString("state", ""),
-                    url = normalizeTextureUrl(capeObj.optString("url", "")),
-                    alias = capeObj.optString("alias").takeIf { it.isNotBlank() },
-                ))
-            }
+        for (i in 0 until capesArray.size) {
+            val capeObj = capesArray.getJsonObject(i)
+            capes.add(CapeInfo(
+                id = capeObj.getString("id") ?: "",
+                state = capeObj.getString("state") ?: "",
+                url = normalizeTextureUrl(capeObj.getString("url") ?: ""),
+                alias = capeObj["alias"]?.let { it.content?.takeIf { it.isNotBlank() } },
+            ))
         }
 
         return Profile(
