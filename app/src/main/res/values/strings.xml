@@ -177,7 +177,6 @@
     <string name="manage_content_filter_version">Version</string>
     <string name="manage_content_filter_platform">Platform</string>
     <string name="manage_content_filter_any">Any</string>
-    <string name="platform_local">Local</string>
     <string name="action_retry">Retry</string>
     <string name="manage_content_search_hint">Search content</string>
     <string name="manage_content_update">Update/Degrade</string>

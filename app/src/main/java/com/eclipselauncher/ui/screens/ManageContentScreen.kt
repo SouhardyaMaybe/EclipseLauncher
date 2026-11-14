@@ -467,41 +467,32 @@ private fun InstalledContentRow(
     }
 }
 
-/** Categories the Modrinth search result also uses for mod loaders. */
-private val LoaderCategories = setOf(
+/** The only loaders the UI exposes; any other loader is excluded. */
+private val SupportedLoaderIds = listOf(
     "fabric",
     "forge",
     "neoforge",
     "quilt",
+)
+
+/** Modrinth search categories that represent a loader (including unsupported ones). */
+private val AllLoaderCategories = SupportedLoaderIds.toSet() + setOf(
     "liteloader",
     "modloader",
     "rift",
 )
 
 private fun ModrinthHit.loaderNames(): List<String> =
-    categories.filter { it.lowercase() in LoaderCategories }.distinct()
+    categories.filter { it.lowercase() in SupportedLoaderIds }.distinct()
 
 private fun ModrinthHit.displayCategories(): List<String> =
-    categories.filterNot { it.lowercase() in LoaderCategories }.distinct()
-
-/** Loaders offered in the Browse filter; installed content builds its own list. */
-private val BrowseLoaderIds = listOf(
-    "fabric",
-    "forge",
-    "neoforge",
-    "quilt",
-    "liteloader",
-    "rift",
-)
+    categories.filterNot { it.lowercase() in AllLoaderCategories }.distinct()
 
 private fun loaderDisplayName(id: String): String = when (id.lowercase()) {
     "fabric" -> "Fabric"
     "forge" -> "Forge"
     "neoforge" -> "NeoForge"
     "quilt" -> "Quilt"
-    "liteloader" -> "LiteLoader"
-    "rift" -> "Rift"
-    "modloader" -> "ModLoader"
     else -> id.replaceFirstChar { it.uppercase() }
 }
 
@@ -675,30 +666,20 @@ private fun SearchField(
     )
 }
 
-/** Compact filter heading; tapping expands the shared option panel below. */
+/** Compact Browse filter field; tapping opens a modal chooser. */
 @Composable
 private fun FilterHeader(
     title: String,
     value: String,
-    expanded: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val contentColor = if (expanded) {
-        MaterialTheme.colorScheme.onSecondaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
     Card(
         modifier = modifier.clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (expanded) {
-                MaterialTheme.colorScheme.secondaryContainer
-            } else {
-                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
-            },
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
         ),
     ) {
         Column(
@@ -709,22 +690,22 @@ private fun FilterHeader(
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
-                color = contentColor.copy(alpha = 0.7f),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
                 maxLines = 1,
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = value,
                     style = MaterialTheme.typography.titleSmall,
-                    color = contentColor,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Icon(
-                    imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    imageVector = Icons.Filled.ExpandMore,
                     contentDescription = null,
-                    tint = contentColor,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(18.dp),
                 )
             }
@@ -732,70 +713,94 @@ private fun FilterHeader(
     }
 }
 
-/** One expanded filter's option list; scrolls so the content list stays usable. */
+/** One radio row inside a filter dialog. */
 @Composable
-private fun FilterOptionsPanel(
-    options: List<FilterOption>,
-    selectedValue: String?,
-    onSelect: (FilterOption) -> Unit,
-    modifier: Modifier = Modifier,
+private fun FilterOptionRow(
+    label: String,
+    selected: Boolean,
+    enabled: Boolean,
+    detail: String?,
+    onClick: () -> Unit,
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f),
-        ),
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(enabled = enabled, onClick = onClick)
+            .padding(horizontal = 4.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 220.dp)
-                .verticalScroll(rememberScrollState()),
-        ) {
-            options.forEachIndexed { index, option ->
-                if (index > 0) {
-                    HorizontalDivider(
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f),
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(enabled = option.enabled) { onSelect(option) }
-                        .padding(horizontal = 12.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    RadioButton(
-                        selected = option.value == selectedValue,
-                        onClick = null,
-                        enabled = option.enabled,
-                    )
-                    Text(
-                        text = option.label,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (option.enabled) {
-                            MaterialTheme.colorScheme.onSurface
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
-                        },
-                        modifier = Modifier.weight(1f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    option.detail?.let { detail ->
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = detail,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-            }
+        RadioButton(
+            selected = selected,
+            onClick = null,
+            enabled = enabled,
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = if (enabled) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+            },
+            modifier = Modifier.weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+        detail?.let { detailText ->
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = detailText,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
+}
+
+/** Modal chooser for one Browse filter; the large version list only composes visible rows. */
+@Composable
+private fun FilterDialog(
+    title: String,
+    options: List<FilterOption>,
+    selectedValue: String?,
+    onSelect: (String?) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(title) },
+        text = {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 400.dp),
+            ) {
+                item(key = "__any__") {
+                    FilterOptionRow(
+                        label = stringResource(R.string.manage_content_filter_any),
+                        selected = selectedValue == null,
+                        enabled = true,
+                        detail = null,
+                        onClick = { onSelect(null) },
+                    )
+                }
+                items(options, key = { it.value ?: it.label }) { option ->
+                    FilterOptionRow(
+                        label = option.label,
+                        selected = option.value == selectedValue,
+                        enabled = option.enabled,
+                        detail = option.detail,
+                        onClick = { onSelect(option.value) },
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_close))
+            }
+        },
+    )
 }
 
 /** Floating page pill, bottom-center: [prev] [page/total] [next]. */
@@ -912,14 +917,11 @@ fun ManageContentScreen(
     var installedReloadToken by remember(instance?.id) { mutableStateOf(0) }
     var pendingDelete by remember { mutableStateOf<InstalledContent?>(null) }
 
-    // Search and filter state is kept separately per tab.
+    // Search per tab; the filter dialogs are Browse-only.
     var installedQuery by remember { mutableStateOf("") }
-    var installedLoader by remember { mutableStateOf<String?>(null) }
-    var installedVersion by remember { mutableStateOf<String?>(null) }
-    var installedPlatform by remember { mutableStateOf<String?>(null) }
     var browseLoader by remember { mutableStateOf<String?>(null) }
     var browseGameVersion by remember { mutableStateOf<String?>(null) }
-    var expandedFilter by remember { mutableStateOf<ContentFilter?>(null) }
+    var filterDialog by remember { mutableStateOf<ContentFilter?>(null) }
 
     // Minecraft versions for the Browse version filter (same manifest cache as
     // the install sheet; the async fetch only fills it when it was empty).
@@ -1049,60 +1051,27 @@ fun ManageContentScreen(
         if (mainTab == 1) lazyListState.animateScrollToItem(0)
     }
 
-    // ---- Search + filter model -------------------------------------------
+    // ---- Browse search + filter model ------------------------------------
     val anyLabel = stringResource(R.string.manage_content_filter_any)
     val loaderFilterTitle = stringResource(R.string.manage_content_filter_loader)
     val versionFilterTitle = stringResource(R.string.manage_content_filter_version)
     val platformFilterTitle = stringResource(R.string.manage_content_filter_platform)
-    val modrinthLabel = stringResource(R.string.provider_modrinth)
-    val localLabel = stringResource(R.string.platform_local)
     val providerLabels = Provider.entries.associateWith { stringResource(it.labelRes) }
 
     val installedOfType = installedContent.filter { it.type == installedContentType }
-    val showLoaderFilter = if (mainTab == 0) {
-        installedContentType == ContentType.MODS
-    } else {
-        browseContentType == ContentType.MODS
-    }
 
-    val loaderIds = if (mainTab == 0) {
-        installedOfType.flatMap { it.loaders }.distinct().sortedBy { it.lowercase() }
-    } else {
-        BrowseLoaderIds
+    // Remembering these keeps typing in the search fields from rebuilding the
+    // large Minecraft version list on every recomposition.
+    val browseLoaderOptions = remember {
+        SupportedLoaderIds.map { id -> FilterOption(id, loaderDisplayName(id)) }
     }
-    val loaderOptions = buildList {
-        add(FilterOption(null, anyLabel))
-        loaderIds.forEach { add(FilterOption(it, loaderDisplayName(it))) }
-    }
-
-    val installedVersionOptions = buildList {
-        add(FilterOption(null, anyLabel))
-        installedOfType
-            .map { it.version }
-            .filter { it.isNotBlank() }
-            .distinct()
-            .sortedByDescending { it }
-            .forEach { add(FilterOption(it, it)) }
-    }
-    val browseVersionOptions = buildList {
-        add(FilterOption(null, anyLabel))
+    val browseVersionOptions = remember(mcVersions, instance?.minecraftVersion) {
         val ids = LinkedHashSet<String>()
         instance?.minecraftVersion?.takeIf { it.isNotBlank() }?.let(ids::add)
         mcVersions.forEach { ids.add(it.id) }
-        ids.forEach { id ->
+        ids.map { id ->
             val kind = mcVersions.firstOrNull { it.id == id }?.type
-            add(FilterOption(id, id, detail = kind?.takeIf { it != "release" }))
-        }
-    }
-
-    val installedPlatformOptions = buildList {
-        add(FilterOption(null, anyLabel))
-        val present = installedOfType.map { it.platform }.toSet()
-        if (PLATFORM_MODRINTH in present) {
-            add(FilterOption(PLATFORM_MODRINTH, modrinthLabel))
-        }
-        if (PLATFORM_LOCAL in present) {
-            add(FilterOption(PLATFORM_LOCAL, localLabel))
+            FilterOption(id, id, detail = kind?.takeIf { it != "release" })
         }
     }
     val browsePlatformOptions = Provider.entries.map { provider ->
@@ -1114,37 +1083,17 @@ fun ManageContentScreen(
         )
     }
 
-    val loaderFilterValue = if (mainTab == 0) installedLoader else browseLoader
-    val versionFilterValue = if (mainTab == 0) installedVersion else browseGameVersion
-    val platformFilterValue = if (mainTab == 0) installedPlatform else browseProvider.name
-    val loaderFilterLabel = loaderFilterValue?.let(::loaderDisplayName) ?: anyLabel
-    val versionFilterLabel = versionFilterValue ?: anyLabel
-    val platformFilterLabel = when {
-        mainTab == 0 -> when (installedPlatform) {
-            PLATFORM_MODRINTH -> modrinthLabel
-            PLATFORM_LOCAL -> localLabel
-            else -> anyLabel
-        }
-        else -> providerLabels[browseProvider].orEmpty().ifBlank { anyLabel }
-    }
+    val loaderFilterLabel = browseLoader?.let(::loaderDisplayName) ?: anyLabel
+    val versionFilterLabel = browseGameVersion ?: anyLabel
+    val platformFilterLabel = providerLabels[browseProvider].orEmpty().ifBlank { anyLabel }
 
     val installedQueryTrimmed = installedQuery.trim()
     val filteredInstalled = installedOfType.filter { content ->
-        (
-            installedQueryTrimmed.isBlank() ||
-                content.name.contains(installedQueryTrimmed, ignoreCase = true) ||
-                content.version.contains(installedQueryTrimmed, ignoreCase = true) ||
-                content.author?.contains(installedQueryTrimmed, ignoreCase = true) == true
-            ) &&
-            (installedLoader == null ||
-                content.loaders.any { it.equals(installedLoader, ignoreCase = true) }) &&
-            (installedVersion == null || content.version == installedVersion) &&
-            (installedPlatform == null || content.platform == installedPlatform)
+        installedQueryTrimmed.isBlank() ||
+            content.name.contains(installedQueryTrimmed, ignoreCase = true) ||
+            content.version.contains(installedQueryTrimmed, ignoreCase = true) ||
+            content.author?.contains(installedQueryTrimmed, ignoreCase = true) == true
     }
-    val hasInstalledFilters = installedQuery.isNotBlank() ||
-        installedLoader != null ||
-        installedVersion != null ||
-        installedPlatform != null
     val hasBrowseFilters = browseQuery.isNotBlank() ||
         browseContentType != ContentType.MODS ||
         browseLoader != null ||
@@ -1176,7 +1125,7 @@ fun ManageContentScreen(
             onTabSelected = { selected ->
                 if (selected != mainTab) {
                     mainTab = selected
-                    expandedFilter = null
+                    filterDialog = null
                 }
             },
         )
@@ -1212,128 +1161,48 @@ fun ManageContentScreen(
         )
 
         // Content-type chips are kept just above the list; selecting one resets
-        // the type-specific filters so no impossible combination lingers.
+        // the Browse filters that no longer apply to the new type.
         val activeContentType = if (mainTab == 0) installedContentType else browseContentType
         val onTypeClick: (ContentType) -> Unit = if (mainTab == 0) {
-            { type ->
-                installedContentType = type
-                installedLoader = null
-                installedVersion = null
-                installedPlatform = null
-                expandedFilter = null
-            }
+            { type -> installedContentType = type }
         } else {
             { type ->
                 browseContentType = type
                 if (type != ContentType.MODS) browseLoader = null
                 browsePage = 1
-                expandedFilter = null
+                filterDialog = null
             }
         }
 
-        // Filter headings: loader only where the content type has loaders.
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            if (showLoaderFilter) {
+        // Filter fields are Browse-only; each one opens a modal chooser.
+        if (mainTab == 1) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                if (browseContentType == ContentType.MODS) {
+                    FilterHeader(
+                        title = loaderFilterTitle,
+                        value = loaderFilterLabel,
+                        onClick = { filterDialog = ContentFilter.LOADER },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
                 FilterHeader(
-                    title = loaderFilterTitle,
-                    value = loaderFilterLabel,
-                    expanded = expandedFilter == ContentFilter.LOADER,
-                    onClick = {
-                        expandedFilter = if (expandedFilter == ContentFilter.LOADER) {
-                            null
-                        } else {
-                            ContentFilter.LOADER
-                        }
-                    },
+                    title = versionFilterTitle,
+                    value = versionFilterLabel,
+                    onClick = { filterDialog = ContentFilter.VERSION },
+                    modifier = Modifier.weight(1f),
+                )
+                FilterHeader(
+                    title = platformFilterTitle,
+                    value = platformFilterLabel,
+                    onClick = { filterDialog = ContentFilter.PLATFORM },
                     modifier = Modifier.weight(1f),
                 )
             }
-            FilterHeader(
-                title = versionFilterTitle,
-                value = versionFilterLabel,
-                expanded = expandedFilter == ContentFilter.VERSION,
-                onClick = {
-                    expandedFilter = if (expandedFilter == ContentFilter.VERSION) {
-                        null
-                    } else {
-                        ContentFilter.VERSION
-                    }
-                },
-                modifier = Modifier.weight(1f),
-            )
-            FilterHeader(
-                title = platformFilterTitle,
-                value = platformFilterLabel,
-                expanded = expandedFilter == ContentFilter.PLATFORM,
-                onClick = {
-                    expandedFilter = if (expandedFilter == ContentFilter.PLATFORM) {
-                        null
-                    } else {
-                        ContentFilter.PLATFORM
-                    }
-                },
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        when (expandedFilter) {
-            ContentFilter.LOADER -> if (showLoaderFilter) {
-                FilterOptionsPanel(
-                    options = loaderOptions,
-                    selectedValue = loaderFilterValue,
-                    onSelect = { option ->
-                        if (mainTab == 0) {
-                            installedLoader = option.value
-                        } else {
-                            browseLoader = option.value
-                            browsePage = 1
-                        }
-                        expandedFilter = null
-                    },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-                )
-            }
-
-            ContentFilter.VERSION -> FilterOptionsPanel(
-                options = if (mainTab == 0) installedVersionOptions else browseVersionOptions,
-                selectedValue = versionFilterValue,
-                onSelect = { option ->
-                    if (mainTab == 0) {
-                        installedVersion = option.value
-                    } else {
-                        browseGameVersion = option.value
-                        browsePage = 1
-                    }
-                    expandedFilter = null
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-
-            ContentFilter.PLATFORM -> FilterOptionsPanel(
-                options = if (mainTab == 0) installedPlatformOptions else browsePlatformOptions,
-                selectedValue = platformFilterValue,
-                onSelect = { option ->
-                    if (mainTab == 0) {
-                        installedPlatform = option.value
-                    } else {
-                        option.value?.let { name ->
-                            runCatching { Provider.valueOf(name) }.getOrNull()?.let { provider ->
-                                browseProvider = provider
-                                browsePage = 1
-                            }
-                        }
-                    }
-                    expandedFilter = null
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
-            )
-
-            null -> Unit
         }
 
         ContentTypeFilterPanel(
@@ -1355,7 +1224,7 @@ fun ManageContentScreen(
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
                                     text = stringResource(
-                                        if (hasInstalledFilters) {
+                                        if (installedQuery.isNotBlank()) {
                                             R.string.manage_content_no_matches
                                         } else {
                                             R.string.manage_content_empty
@@ -1364,13 +1233,8 @@ fun ManageContentScreen(
                                     style = MaterialTheme.typography.titleMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
-                                if (hasInstalledFilters) {
-                                    TextButton(onClick = {
-                                        installedQuery = ""
-                                        installedLoader = null
-                                        installedVersion = null
-                                        installedPlatform = null
-                                    }) {
+                                if (installedQuery.isNotBlank()) {
+                                    TextButton(onClick = { installedQuery = "" }) {
                                         Text(stringResource(R.string.manage_content_clear_filters))
                                     }
                                 }
@@ -1433,7 +1297,7 @@ fun ManageContentScreen(
                                     browseLoader = null
                                     browseGameVersion = null
                                     browsePage = 1
-                                    expandedFilter = null
+                                    filterDialog = null
                                     reloadToken++
                                 }) {
                                     Text(stringResource(R.string.manage_content_clear_filters))
@@ -1490,6 +1354,53 @@ fun ManageContentScreen(
                     },
                 )
             }
+        }
+    }
+
+    // Browse filter choosers: modal dialogs keep the list off the main column.
+    if (mainTab == 1) {
+        when (filterDialog) {
+            ContentFilter.LOADER -> FilterDialog(
+                title = loaderFilterTitle,
+                options = browseLoaderOptions,
+                selectedValue = browseLoader,
+                onSelect = { value ->
+                    browseLoader = value
+                    browsePage = 1
+                    filterDialog = null
+                },
+                onDismiss = { filterDialog = null },
+            )
+
+            ContentFilter.VERSION -> FilterDialog(
+                title = versionFilterTitle,
+                options = browseVersionOptions,
+                selectedValue = browseGameVersion,
+                onSelect = { value ->
+                    browseGameVersion = value
+                    browsePage = 1
+                    filterDialog = null
+                },
+                onDismiss = { filterDialog = null },
+            )
+
+            ContentFilter.PLATFORM -> FilterDialog(
+                title = platformFilterTitle,
+                options = browsePlatformOptions,
+                selectedValue = browseProvider.name,
+                onSelect = { value ->
+                    value?.let { name ->
+                        runCatching { Provider.valueOf(name) }.getOrNull()?.let { provider ->
+                            browseProvider = provider
+                        }
+                    }
+                    browsePage = 1
+                    filterDialog = null
+                },
+                onDismiss = { filterDialog = null },
+            )
+
+            null -> Unit
         }
     }
 
