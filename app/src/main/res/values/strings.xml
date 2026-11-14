@@ -170,6 +170,9 @@
     <string name="manage_content_import">Import local</string>
     <string name="manage_content_import_started">Import started</string>
     <string name="manage_content_empty">No content yet</string>
+    <string name="manage_content_no_results">No results</string>
+    <string name="manage_content_clear_filters">Clear filters</string>
+    <string name="action_retry">Retry</string>
     <string name="manage_content_search_hint">Search content</string>
     <string name="manage_content_update">Update/Degrade</string>
     <string name="manage_content_install">Install</string>

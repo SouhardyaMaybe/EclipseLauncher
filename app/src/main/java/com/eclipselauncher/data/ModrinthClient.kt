@@ -40,6 +40,8 @@ data class ModrinthSearchResult(
     val totalPages: Int,
     val pageNumber: Int,
     val isLastPage: Boolean,
+    /** True when the request failed at the network/transport layer. */
+    val failed: Boolean = false,
 )
 
 @Serializable
@@ -100,6 +102,7 @@ class ModrinthClient @Inject constructor(
                 totalPages = 0,
                 pageNumber = 1,
                 isLastPage = true,
+                failed = true,
             )
         }
     }

@@ -36,11 +36,14 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ExpandLess
@@ -73,6 +76,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -397,18 +401,27 @@ private fun BrowseContentRow(
             // Content info
             Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                // Author (no download count)
-                Text(text = hit.author, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 // Description (2 lines)
                 if (hit.description.isNotBlank()) {
                     Text(text = hit.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
                 }
-                // Support range: loaders + game versions (placeholder - would come from API)
-                Text(
-                    text = "Fabric, Forge · 1.21.4, 1.21.3, 1.20.1",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                )
+                // Support range: loaders + game versions supplied by the search API.
+                val support = buildString {
+                    val loaders = hit.categories.take(3).joinToString(", ")
+                    val gameVersions = hit.versions.take(3).joinToString(", ")
+                    if (loaders.isNotBlank()) append(loaders)
+                    if (gameVersions.isNotBlank()) {
+                        if (isNotEmpty()) append(" · ")
+                        append(gameVersions)
+                    }
+                }
+                if (support.isNotBlank()) {
+                    Text(
+                        text = support,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    )
+                }
             }
             Spacer(modifier = Modifier.width(8.dp))
 
@@ -566,6 +579,8 @@ private fun SearchField(
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
         singleLine = true,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        keyboardActions = KeyboardActions(onSearch = { onSearch() }),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Filled.Search,
@@ -599,105 +614,76 @@ private fun PaginationPill(
     onCollapseToggle: () -> Unit,
     onPrev: () -> Unit,
     onNext: () -> Unit,
-    onPageChange: () -> Unit, // for scroll to top
 ) {
-    val pillHeight = 56.dp
-
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomEnd,
+        contentAlignment = if (collapsed) Alignment.CenterEnd else Alignment.BottomCenter,
     ) {
         if (collapsed) {
-            // Collapsed: compact handle at screen edge (chevron right to expand)
-            Box(
+            Surface(
                 modifier = Modifier
-                    .padding(end = 16.dp, bottom = 16.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .height(pillHeight)
-                    .width(pillHeight)
-                    .clip(RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center,
+                    .navigationBarsPadding()
+                    .padding(end = 8.dp)
+                    .size(56.dp),
+                shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 20.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                tonalElevation = 3.dp,
             ) {
-                IconButton(onClick = onCollapseToggle) {
+                IconButton(onClick = onCollapseToggle, modifier = Modifier.fillMaxSize()) {
                     Icon(
-                        imageVector = Icons.Filled.ChevronRight,
+                        imageVector = Icons.Filled.ChevronLeft,
                         contentDescription = stringResource(R.string.cd_expand),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             }
         } else {
-            // Expanded: full pill with controls
-            Box(
+            Surface(
                 modifier = Modifier
-                    .padding(end = 16.dp, bottom = 16.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        shape = RoundedCornerShape(28.dp)
-                    )
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                contentAlignment = Alignment.Center,
+                    .navigationBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                shape = RoundedCornerShape(28.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                tonalElevation = 3.dp,
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // Collapse toggle (chevron left to shrink)
                     IconButton(onClick = onCollapseToggle) {
                         Icon(
-                            imageVector = Icons.Filled.ChevronLeft,
+                            imageVector = Icons.Filled.ChevronRight,
                             contentDescription = stringResource(R.string.cd_collapse),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(24.dp).padding(4.dp),
                         )
                     }
-
-                    // Previous
-                    IconButton(
-                        onClick = {
-                            onPrev()
-                            onPageChange()
-                        },
-                        enabled = currentPage > 1 && !loading,
-                    ) {
+                    IconButton(onClick = onPrev, enabled = currentPage > 1 && !loading) {
                         Icon(
                             imageVector = Icons.Filled.ChevronLeft,
                             contentDescription = stringResource(R.string.cd_nav_previous),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage > 1 && !loading) 1f else 0.3f),
-                            modifier = Modifier.size(24.dp).padding(4.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-
-                    // Page indicator
                     Text(
                         text = "$currentPage / $totalPages",
-                        style = MaterialTheme.typography.labelMedium,
+                        style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 4.dp),
                     )
-
-                    // Next
-                    IconButton(
-                        onClick = {
-                            onNext()
-                            onPageChange()
-                        },
-                        enabled = currentPage < totalPages && !loading,
-                    ) {
+                    IconButton(onClick = onNext, enabled = currentPage < totalPages && !loading) {
                         Icon(
                             imageVector = Icons.Filled.ChevronRight,
-                        contentDescription = stringResource(R.string.cd_nav_next),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage < totalPages && !loading) 1f else 0.3f),
-                        modifier = Modifier.size(24.dp).padding(4.dp),
-                    )
+                            contentDescription = stringResource(R.string.cd_nav_next),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }
     }
 }
+
+private const val BROWSE_PAGE_SIZE = 25
 
 @Composable
 fun ManageContentScreen(
@@ -705,7 +691,6 @@ fun ManageContentScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
 
     var mainTab by remember { mutableStateOf(0) } // 0 = Installed, 1 = Browse
@@ -718,8 +703,9 @@ fun ManageContentScreen(
     var browseError by remember { mutableStateOf<String?>(null) }
     var browsePage by remember { mutableStateOf(1) }
     var browseTotalPages by remember { mutableStateOf(1) }
+    var reloadToken by remember { mutableStateOf(0) }
 
-    // Collapse state remembered per tab
+    // Collapse state remembered per tab.
     var installedTypeCollapsed by remember { mutableStateOf(false) }
     var browseTypeCollapsed by remember { mutableStateOf(false) }
     var pageNavCollapsed by remember { mutableStateOf(false) }
@@ -736,9 +722,8 @@ fun ManageContentScreen(
         )
     }
 
-    // Pre-load strings for use in non-composable callbacks
+    // Pre-load strings for use in non-composable callbacks.
     val manageContentTitle = stringResource(R.string.manage_content_title)
-    val manageContentImport = stringResource(R.string.manage_content_import)
     val manageContentImportStarted = stringResource(R.string.manage_content_import_started)
     val providerComingSoonStr = stringResource(R.string.provider_coming_soon)
     val marketErrorStr = stringResource(R.string.market_error)
@@ -752,38 +737,32 @@ fun ManageContentScreen(
         }
     }
 
-    // Auto-load browse content on initial load and when content type/page/query changes
-    LaunchedEffect(browseContentType, browseProvider, browsePage, browseQuery) {
-        if (mainTab == 1) {
-            scope.launch {
-                browseLoading = true
-                browseError = null
-                val effectiveQuery = if (browseQuery.isNotBlank()) browseQuery else ""
-                val offset = (browsePage - 1) * 25
-                val result = client.searchMods(
-                    query = effectiveQuery,
-                    limit = 25,
-                    offset = offset,
-                    projectType = browseContentType.modrinthProjectType,
-                )
-                if (result.totalPages > 0 && result.hits.isNotEmpty()) {
-                    browseResults = result.hits
-                    browseTotalPages = result.totalPages
-                    browsePage = result.pageNumber
-                    browseLoading = false
-                } else {
-                    browseError = "Failed to load results"
-                    browseLoading = false
-                }
-            }
+    // Auto-load: first Browse open, tab switch back, source/type/query change,
+    // page change, or explicit retry. Empty query is the default listing.
+    LaunchedEffect(mainTab, browseContentType, browseProvider, browseQuery, browsePage, reloadToken) {
+        if (mainTab != 1) return@LaunchedEffect
+        browseLoading = true
+        browseError = null
+        val result = client.searchMods(
+            query = browseQuery.trim(),
+            limit = BROWSE_PAGE_SIZE,
+            offset = (browsePage - 1) * BROWSE_PAGE_SIZE,
+            projectType = browseContentType.modrinthProjectType,
+        )
+        if (result.failed) {
+            browseResults = emptyList()
+            browseTotalPages = 1
+            browseError = marketErrorStr
+        } else {
+            browseResults = result.hits
+            browseTotalPages = result.totalPages.coerceAtLeast(1)
         }
+        browseLoading = false
     }
 
-    // Scroll to top when page changes
+    // Every page change starts at the top of the list.
     LaunchedEffect(browsePage) {
-        if (mainTab == 1 && !browseLoading) {
-            lazyListState.animateScrollToItem(0)
-        }
+        if (mainTab == 1) lazyListState.animateScrollToItem(0)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -817,9 +796,15 @@ fun ManageContentScreen(
         val activeContentType = if (mainTab == 0) installedContentType else browseContentType
         val activeCollapsed = if (mainTab == 0) installedTypeCollapsed else browseTypeCollapsed
         val onCollapseToggle: () -> Unit = if (mainTab == 0) { { installedTypeCollapsed = !installedTypeCollapsed } } else { { browseTypeCollapsed = !browseTypeCollapsed } }
-        val onTypeClick: (ContentType) -> Unit = if (mainTab == 0) { { installedContentType = it } } else { { browseContentType = it } }
+        val onTypeClick: (ContentType) -> Unit = if (mainTab == 0) {
+            { installedContentType = it }
+        } else {
+            {
+                browseContentType = it
+                browsePage = 1
+            }
+        }
         val onDrag = { dragAmount: Offset ->
-            // Drag vertically to collapse/expand (threshold-based)
             if (dragAmount.y > 20 && !activeCollapsed) {
                 onCollapseToggle()
             } else if (dragAmount.y < -20 && activeCollapsed) {
@@ -837,55 +822,44 @@ fun ManageContentScreen(
             onDrag = onDrag,
         )
 
-        // Search field (full-width, leading icon, clear button, keyboard search action)
-        SearchField(
-            query = browseQuery,
-            onQueryChange = { browseQuery = it },
-            onSearch = {
-                if (mainTab == 1) {
-                    scope.launch {
-                        browseLoading = true
-                        browseError = null
-                        browsePage = 1 // Reset to first page on new search
-                        val offset = 0
-                        val result = client.searchMods(
-                            query = browseQuery,
-                            limit = 25,
-                            offset = offset,
-                            projectType = browseContentType.modrinthProjectType,
-                        )
-                        if (result.totalPages > 0 && result.hits.isNotEmpty()) {
-                            browseResults = result.hits
-                            browseTotalPages = result.totalPages
-                            browsePage = result.pageNumber
-                            browseLoading = false
-                        } else {
-                            browseError = "Failed to load results"
-                            browseLoading = false
-                        }
-                    }
-                }
-            },
-            onClear = { browseQuery = "" },
-        )
-
-        // Source selector (Browse only): full-width segmented control below search
         if (mainTab == 1) {
+            // Search: full-width, leading icon, clear button, IME search action.
+            SearchField(
+                query = browseQuery,
+                onQueryChange = {
+                    browseQuery = it
+                    browsePage = 1
+                },
+                onSearch = {
+                    browsePage = 1
+                    reloadToken++
+                },
+                onClear = {
+                    browseQuery = ""
+                    browsePage = 1
+                    reloadToken++
+                },
+            )
+
+            // Source selector: full-width segmented control below search (Browse only).
             ProviderSegmentedControl(
                 selectedProvider = browseProvider,
-                onProviderChange = { browseProvider = it },
+                onProviderChange = {
+                    browseProvider = it
+                    browsePage = 1
+                },
                 context = context,
                 providerComingSoonStr = providerComingSoonStr,
             )
         }
 
-        // Content list
+        // Content list (pagination floats above it, never covering the last row).
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             when (mainTab) {
                 0 -> {
                     val filteredContent = installedContent.filter { it.type == installedContentType }
-                    when {
-                        filteredContent.isEmpty() -> Box(
+                    if (filteredContent.isEmpty()) {
+                        Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
@@ -895,11 +869,10 @@ fun ManageContentScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        else -> LazyColumn(
+                    } else {
+                        LazyColumn(
                             state = lazyListState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(bottom = 80.dp), // Space for pagination pill (not shown on Installed)
+                            modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
@@ -915,32 +888,61 @@ fun ManageContentScreen(
                     }
                 }
                 1 -> {
-                    val listPaddingBottom = if (browseTotalPages > 1) 100.dp else 80.dp // Extra space for pagination pill
                     when {
                         browseLoading && browseResults.isEmpty() -> Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) { CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary) }
 
-                        browseError != null -> Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) { Text(text = browseError ?: "", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error) }
+                        browseError != null -> Column(
+                            modifier = Modifier.fillMaxSize().padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = marketErrorStr,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            TextButton(onClick = { reloadToken++ }) {
+                                Text(stringResource(R.string.action_retry))
+                            }
+                        }
 
-                        browseResults.isEmpty() -> Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) { Text(text = stringResource(R.string.manage_content_empty), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+                        browseResults.isEmpty() -> Column(
+                            modifier = Modifier.fillMaxSize().padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.manage_content_no_results),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            if (browseQuery.isNotBlank() || browseContentType != ContentType.MODS) {
+                                TextButton(onClick = {
+                                    browseQuery = ""
+                                    browseContentType = ContentType.MODS
+                                    browsePage = 1
+                                    reloadToken++
+                                }) {
+                                    Text(stringResource(R.string.manage_content_clear_filters))
+                                }
+                            }
+                        }
 
                         else -> LazyColumn(
                             state = lazyListState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(bottom = listPaddingBottom),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 8.dp,
+                                bottom = if (browseTotalPages > 1) 96.dp else 16.dp,
+                            ),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(browseResults, key = { it.project_id }) { hit ->
+                            items(browseResults, key = { it.project_id.ifBlank { it.slug } }) { hit ->
                                 BrowseContentRow(
                                     hit = hit,
                                     onClick = { /* open mod detail */ },
@@ -951,22 +953,19 @@ fun ManageContentScreen(
                     }
                 }
             }
-            Unit // Explicit Unit to satisfy Box content lambda
-        }
 
-        // Floating pagination pill (Browse only, when multiple pages)
-        if (mainTab == 1 && browseTotalPages > 1) {
-            PaginationPill(
-                currentPage = browsePage,
-                totalPages = browseTotalPages,
-                loading = browseLoading,
-                collapsed = pageNavCollapsed,
-                onCollapseToggle = { pageNavCollapsed = !pageNavCollapsed },
-                onPrev = { if (browsePage > 1) browsePage-- },
-                onNext = { if (browsePage < browseTotalPages) browsePage++ },
-                onPageChange = { /* triggers LaunchedEffect to scroll to top */ },
-            )
+            // Floating pagination pill (Browse only, when multiple pages).
+            if (mainTab == 1 && browseTotalPages > 1) {
+                PaginationPill(
+                    currentPage = browsePage,
+                    totalPages = browseTotalPages,
+                    loading = browseLoading,
+                    collapsed = pageNavCollapsed,
+                    onCollapseToggle = { pageNavCollapsed = !pageNavCollapsed },
+                    onPrev = { if (browsePage > 1 && !browseLoading) browsePage-- },
+                    onNext = { if (browsePage < browseTotalPages && !browseLoading) browsePage++ },
+                )
+            }
         }
     }
-}
 }
