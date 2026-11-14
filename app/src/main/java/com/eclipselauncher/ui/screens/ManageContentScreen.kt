@@ -441,7 +441,7 @@ fun ManageContentScreen(
                     offset = offset,
                     projectType = browseContentType.modrinthProjectType,
                 )
-                if (result.isSuccess) {
+                if (result.totalPages > 0 && result.hits.isNotEmpty()) {
                     browseResults = result.hits
                     browseTotalPages = result.totalPages
                     browsePage = result.pageNumber
@@ -579,7 +579,7 @@ fun ManageContentScreen(
                         offset = offset,
                         projectType = browseContentType.modrinthProjectType,
                     )
-                    if (result.isSuccess) {
+                    if (result.totalPages > 0 && result.hits.isNotEmpty()) {
                         browseResults = result.hits
                         browseTotalPages = result.totalPages
                         browsePage = result.pageNumber
