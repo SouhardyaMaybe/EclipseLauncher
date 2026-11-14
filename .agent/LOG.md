@@ -132,3 +132,11 @@
 - Pagination is strictly one page per tap: tap sets `browseLoading` before changing the page, and both arrows disable until the fetch completes. Removed the 220ms coalescing delay and the pill spinner.
 - Full result area now shows an M3 expressive `LoadingIndicator` over a scrim on every Browse fetch, including paging with existing rows.
 - Prev/next use IconButton disabled colors (35% alpha) at page 1 / last page / while loading.
+
+## 2026-11-14 — Full-screen versions + install flow
+- Added `ModrinthVersion`/`ModrinthVersionFile` and `projectVersions()` (GET /v2/project/{id|slug}/version, changelog excluded).
+- Added `downloadTo()` with a 64 KiB streamed copy and Content-Length progress.
+- Browse cards and their download buttons now open a full-screen dialog: project header, per-instance target chips, "Only compatible" filter (game version, plus mod loader for mods), version cards (name, id, game versions, loaders, date, size), Install button.
+- Install streams to `<filesDir>/minecraft/instances/<instanceId>/<mods|resourcepacks|datapacks|shaderpacks|saves>/` via a `.part` file, then renames; existing files are never overwritten (numeric suffix). Back/close cancels the coroutine and deletes the partial file.
+- Success appends a row to the Installed tab for this session and switches to it.
+- CI: run 43586674218 green (ad06caa) for the first compile; cancellation cleanup added after.

@@ -1056,7 +1056,7 @@ private fun VersionInstallDialog(
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
-            dismissOnBackPress = !busy,
+            dismissOnBackPress = true,
             dismissOnClickOutside = false,
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false,
@@ -1088,7 +1088,7 @@ private fun VersionInstallDialog(
                         }
                     },
                     navigationIcon = {
-                        IconButton(onClick = onDismiss, enabled = !busy) {
+                        IconButton(onClick = onDismiss) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = stringResource(R.string.action_close),
@@ -1429,6 +1429,7 @@ private suspend fun installContentFile(
     file: ModrinthVersionFile,
     onProgress: (Float) -> Unit,
 ): Result<File> = withContext(Dispatchers.IO) {
+    var partFile: File? = null
     try {
         if (file.url.isBlank()) error("missing file url")
         val dir = File(
@@ -1442,19 +1443,22 @@ private suspend fun installContentFile(
             .ifBlank { "download" }
         val target = uniqueFile(dir, safeName)
         val part = File(dir, "${target.name}.part")
+        partFile = part
         part.delete()
         if (!client.downloadTo(file.url, part, onProgress)) {
-            part.delete()
             error("download failed")
         }
         if (!part.renameTo(target)) {
             part.copyTo(target, overwrite = true)
             part.delete()
         }
+        partFile = null
         Result.success(target)
     } catch (cancelled: CancellationException) {
+        partFile?.delete()
         throw cancelled
     } catch (error: Exception) {
+        partFile?.delete()
         Result.failure(error)
     }
 }

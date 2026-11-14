@@ -31,3 +31,8 @@
 - Action tags verified: checkout v6 exists (latest v7), setup-java v5 (latest v6), setup-gradle v5 used by ZL2, upload-artifact v7.
 - `kotlinx.serialization`: enum classes are serializable by default; `Json` has a reified `decodeFromString` member (no extra import).
 
+
+## 2026-11-14 — Modrinth versions + M3 expressive loading
+- Endpoint `GET https://api.modrinth.com/v2/project/{id|slug}/version?include_changelog=false`; response is an array with `id`, `project_id`, `name`, `version_number`, `game_versions[]`, `loaders[]`, `date_published`, `version_type`, `files[]` (`url`, `filename`, `primary`, `size`, `file_type`). Verified against `https://api.modrinth.com/v2/project/sodium/version` and https://docs.modrinth.com/api/operations/getprojectversions/.
+- Compose Material3 1.5.0-beta02 contains `LoadingIndicator` (expressive, opt-in `ExperimentalMaterial3ExpressiveApi`), `LinearWavyProgressIndicator`, `CircularWavyProgressIndicator`; verified by inspecting `material3-android-1.5.0-beta02.aar` from Google Maven.
+- Ktor 3.6.1 `HttpResponse.bodyAsChannel()` + `ByteReadChannel.readAvailable(ByteArray, offset, length)` used for streamed downloads; verified against the resolved `ktor-io-jvm-3.6.1` / `ktor-client-core-jvm-3.6.1` jars in the Gradle cache.

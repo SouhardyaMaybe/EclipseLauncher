@@ -29,3 +29,10 @@
 - Source selector is two weighted `FilterChip`s, not M3 `SingleChoiceSegmentedButtonRow`.
 - Modrinth `project_type:world` may be unsupported; Worlds browse may show error/empty.
 - `nemo` branch / off-limits repos instruction still unresolved; all work/pushes remain on `main` of `SouhardyaMaybe/EclipseLauncher` because that is the only repo with this CI/APK.
+
+## 2026-11-14 — Install limitations (NOT hidden)
+- Successful installs are appended to the in-memory Installed list only; after relaunch the files are on disk but the Installed tab is seeded with mock rows again. Real directory/jar scanning is not wired.
+- Worlds are saved as archives in `saves/`; they are not extracted. Datapacks land at the instance root, not inside a specific world.
+- Compatibility filtering uses the instance's `minecraftVersion` and (mods only) loader name; a Vanilla instance shows all mods because no loader filter applies.
+- Back/close cancels a running download; the `.part` file is deleted. There is no resume.
+- `Installed` rows' update/toggle/delete actions are still visual placeholders.

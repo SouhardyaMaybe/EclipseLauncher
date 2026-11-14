@@ -74,6 +74,10 @@
 - [x] One page per tap; buttons lock while a page is loading (no jump/bounce).
 - [x] Full-list M3 expressive loading overlay replaces the tiny pill spinner.
 - [x] Prev/next gray out at the first/last page and while loading.
-- [ ] Versions + install dialog (full-screen), instance target, download state.
+- [x] Versions + install dialog (full-screen), instance target, download state.
 - [ ] JVM tests (no `app/src/test` yet).
 - [ ] Restore lint gate in CI.
+- [x] Modrinth `/project/{id}/version` client + streamed file download.
+- [x] Full-screen dialog with instance chips, compatibility filter, version cards, progress and retry.
+- [ ] Persist installed content across relaunch (Installed tab still mock-seeded).
+- [ ] Wire Installed actions (update/toggle/delete) to the selected instance.
