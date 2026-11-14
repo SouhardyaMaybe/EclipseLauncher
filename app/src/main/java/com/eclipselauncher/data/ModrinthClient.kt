@@ -32,10 +32,41 @@ data class ModrinthHit(
 )
 
 @Serializable
+data class ModrinthSearchResult(
+    val hits: List<ModrinthHit>,
+    val totalHits: Int,
+    val offset: Int,
+    val limit: Int,
+    val totalPages: Int,
+    val pageNumber: Int,
+    val isLastPage: Boolean,
+) : MetaResult<List<ModrinthHit>> {
+    override val value: List<ModrinthHit> = this.hits
+    override val isSuccess: Boolean = true
+}
+
+@Serializable
 private data class ModrinthSearchResponse(
     val hits: List<ModrinthHit> = emptyList(),
-    val totalHits: Int = 0,
-)
+    val total_hits: Int = 0,
+    val offset: Int = 0,
+    val limit: Int = 0,
+) {
+    fun toResult(limit: Int, offset: Int): ModrinthSearchResult {
+        val totalPages = (total_hits + limit - 1) / limit
+        val pageNumber = offset / limit + 1
+        val isLastPage = (offset + limit) >= total_hits
+        return ModrinthSearchResult(
+            hits = hits,
+            totalHits = total_hits,
+            offset = offset,
+            limit = limit,
+            totalPages = totalPages,
+            pageNumber = pageNumber,
+            isLastPage = isLastPage,
+        )
+    }
+}
 
 @Singleton
 class ModrinthClient @Inject constructor(
@@ -49,19 +80,30 @@ class ModrinthClient @Inject constructor(
     suspend fun searchMods(
         query: String,
         limit: Int = 25,
+        offset: Int = 0,
         projectType: String = "mod",
-    ): MetaResult<List<ModrinthHit>> = withContext(Dispatchers.IO) {
+    ): ModrinthSearchResult = withContext(Dispatchers.IO) {
         try {
             val parsed: ModrinthSearchResponse = network.http.get(SEARCH_URL) {
                 parameter("query", query.trim())
                 parameter("limit", limit)
+                parameter("offset", offset)
                 parameter("facets", "[[\"project_type:$projectType\"]]")
             }.body()
-            MetaResult.Success(parsed.hits)
+            parsed.toResult(limit, offset)
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
-            MetaResult.Error("Network error while searching Modrinth.")
+            // Return error result instead of throwing
+            ModrinthSearchResult(
+                hits = emptyList(),
+                totalHits = 0,
+                offset = 0,
+                limit = limit,
+                totalPages = 0,
+                pageNumber = 1,
+                isLastPage = true,
+            )
         }
     }
 

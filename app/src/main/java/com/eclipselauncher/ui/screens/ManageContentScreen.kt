@@ -434,15 +434,21 @@ fun ManageContentScreen(
                 browseLoading = true
                 browseError = null
                 val effectiveQuery = if (browseQuery.isNotBlank()) browseQuery else ""
-                when (val result = client.searchMods(effectiveQuery, projectType = browseContentType.modrinthProjectType)) {
-                    is MetaResult.Success -> {
-                        browseResults = result.value
-                        browseLoading = false
-                    }
-                    is MetaResult.Error -> {
-                        browseError = result.message.ifBlank { marketErrorStr }
-                        browseLoading = false
-                    }
+                val offset = (browsePage - 1) * 25
+                val result = client.searchMods(
+                    query = effectiveQuery,
+                    limit = 25,
+                    offset = offset,
+                    projectType = browseContentType.modrinthProjectType,
+                )
+                if (result.isSuccess) {
+                    browseResults = result.hits
+                    browseTotalPages = result.totalPages
+                    browsePage = result.pageNumber
+                    browseLoading = false
+                } else {
+                    browseError = "Failed to load results"
+                    browseLoading = false
                 }
             }
         }
@@ -566,21 +572,105 @@ fun ManageContentScreen(
                 scope.launch {
                     browseLoading = true
                     browseError = null
-                    when (val result = client.searchMods(browseQuery, projectType = browseContentType.modrinthProjectType)) {
-                        is MetaResult.Success -> {
-                            browseResults = result.value
-                            browseLoading = false
-                        }
-                        is MetaResult.Error -> {
-                            browseError = result.message.ifBlank { marketErrorStr }
-                            browseLoading = false
-                        }
+                    val offset = (browsePage - 1) * 25
+                    val result = client.searchMods(
+                        query = browseQuery,
+                        limit = 25,
+                        offset = offset,
+                        projectType = browseContentType.modrinthProjectType,
+                    )
+                    if (result.isSuccess) {
+                        browseResults = result.hits
+                        browseTotalPages = result.totalPages
+                        browsePage = result.pageNumber
+                        browseLoading = false
+                    } else {
+                        browseError = "Failed to load results"
+                        browseLoading = false
                     }
                 }
             }) {
                 Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.action_search), tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(24.dp))
             }
         }
+
+        // Floating pagination control (only in Browse tab)
+        AnimatedVisibility(
+            visible = mainTab == 1 && browseTotalPages > 1,
+            enter = expandHorizontally() + fadeIn(),
+            exit = shrinkHorizontally() + fadeOut(),
+        ) {
+            var pageNavCollapsed by remember { mutableStateOf(false) }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(end = 16.dp, top = 8.dp),
+            ) {
+                if (pageNavCollapsed) {
+                    IconButton(onClick = { pageNavCollapsed = false }) {
+                        Icon(
+                            imageVector = Icons.Filled.ExpandMore,
+                            contentDescription = stringResource(R.string.cd_expand),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(24.dp).padding(12.dp),
+                        )
+                    }
+                } else {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        // Previous page
+                        IconButton(
+                            onClick = {
+                                if (browsePage > 1) {
+                                    browsePage--
+                                }
+                            },
+                            enabled = browsePage > 1,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowLeft,
+                                contentDescription = stringResource(R.string.cd_nav_previous),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (browsePage > 1) 1f else 0.3f),
+                                modifier = Modifier.size(24.dp).padding(12.dp),
+                            )
+                        }
+                        // Page indicator
+                        Text(
+                            text = "$browsePage / $browseTotalPages",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        // Next page
+                        IconButton(
+                            onClick = {
+                                if (browsePage < browseTotalPages) {
+                                    browsePage++
+                                }
+                            },
+                            enabled = browsePage < browseTotalPages,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowRight,
+                                contentDescription = stringResource(R.string.cd_nav_next),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (browsePage < browseTotalPages) 1f else 0.3f),
+                                modifier = Modifier.size(24.dp).padding(12.dp),
+                            )
+                        }
+                        // Collapse/Expand toggle
+                        IconButton(onClick = { pageNavCollapsed = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.ExpandMore,
+                                contentDescription = stringResource(R.string.cd_collapse),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp).padding(12.dp),
+                            )
+                        }
+                    }
+                }
+            }
+        )
 
         // Content list
         Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
