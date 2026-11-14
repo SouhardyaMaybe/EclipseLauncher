@@ -8,6 +8,7 @@
  */
 package com.eclipselauncher.ui.screens
 
+import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -34,6 +35,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -61,17 +63,20 @@ import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -88,6 +93,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -103,11 +109,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil3.compose.AsyncImage
 import com.eclipselauncher.R
+import com.eclipselauncher.data.Instance
+import com.eclipselauncher.data.LoaderKind
 import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
 import com.eclipselauncher.data.ModrinthHit
+import com.eclipselauncher.data.ModrinthVersion
+import com.eclipselauncher.data.ModrinthVersionFile
+import java.io.File
+import java.util.Locale
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Content types for installed/browse tabs. Icon + label for the sticky bar chip. */
 private enum class ContentType(
@@ -651,6 +669,7 @@ private const val BROWSE_PAGE_SIZE = 25
 @Composable
 fun ManageContentScreen(
     client: ModrinthClient,
+    instances: List<Instance>,
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
@@ -667,16 +686,19 @@ fun ManageContentScreen(
     var browsePage by remember { mutableStateOf(1) }
     var browseTotalPages by remember { mutableStateOf(1) }
     var reloadToken by remember { mutableStateOf(0) }
+    var versionTarget by remember { mutableStateOf<ModrinthHit?>(null) }
 
-    // Mock installed content
-    val installedContent = remember {
-        listOf(
-            InstalledContent("1", "Sodium", "0.5.8", ContentType.MODS, null, true),
-            InstalledContent("2", "Iris Shaders", "1.7.4", ContentType.MODS, null, true),
-            InstalledContent("3", "Fabric API", "0.96.0", ContentType.MODS, null, true),
-            InstalledContent("4", "Vanilla Resource Pack", "1.21", ContentType.RESOURCE_PACKS, null, true),
-            InstalledContent("5", "BSL Shaders", "8.2.01", ContentType.SHADERS, null, true),
-            InstalledContent("6", "My World", "1.0", ContentType.WORLDS, null, true),
+    // Mock installed content; successful installs are appended in this session.
+    var installedContent by remember {
+        mutableStateOf(
+            listOf(
+                InstalledContent("1", "Sodium", "0.5.8", ContentType.MODS, null, true),
+                InstalledContent("2", "Iris Shaders", "1.7.4", ContentType.MODS, null, true),
+                InstalledContent("3", "Fabric API", "0.96.0", ContentType.MODS, null, true),
+                InstalledContent("4", "Vanilla Resource Pack", "1.21", ContentType.RESOURCE_PACKS, null, true),
+                InstalledContent("5", "BSL Shaders", "8.2.01", ContentType.SHADERS, null, true),
+                InstalledContent("6", "My World", "1.0", ContentType.WORLDS, null, true),
+            ),
         )
     }
 
@@ -897,8 +919,8 @@ fun ManageContentScreen(
                             items(browseResults, key = { it.project_id.ifBlank { it.slug } }) { hit ->
                                 BrowseContentRow(
                                     hit = hit,
-                                    onClick = { /* open mod detail */ },
-                                    onDownload = { /* open versions dialog */ },
+                                    onClick = { versionTarget = hit },
+                                    onDownload = { versionTarget = hit },
                                 )
                             }
                         }
@@ -934,4 +956,534 @@ fun ManageContentScreen(
             }
         }
     }
+
+    versionTarget?.let { hit ->
+        VersionInstallDialog(
+            hit = hit,
+            contentType = browseContentType,
+            instances = instances,
+            client = client,
+            onDismiss = { versionTarget = null },
+            onInstalled = { version, instance ->
+                val id = "installed:${instance.id}:${version.id}"
+                installedContent = installedContent.filterNot { it.id == id } + InstalledContent(
+                    id = id,
+                    name = hit.title,
+                    version = version.version_number,
+                    type = browseContentType,
+                    iconUrl = hit.icon_url.ifBlank { null },
+                    enabled = true,
+                )
+                installedContentType = browseContentType
+                mainTab = 0
+            },
+        )
+    }
+}
+
+/** Full-screen version chooser + installer for one Modrinth project. */
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+@Composable
+private fun VersionInstallDialog(
+    hit: ModrinthHit,
+    contentType: ContentType,
+    instances: List<Instance>,
+    client: ModrinthClient,
+    onDismiss: () -> Unit,
+    onInstalled: (ModrinthVersion, Instance) -> Unit,
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var instanceId by remember { mutableStateOf(instances.firstOrNull()?.id) }
+    val instance = instances.firstOrNull { it.id == instanceId } ?: instances.firstOrNull()
+    var versions by remember { mutableStateOf<List<ModrinthVersion>>(emptyList()) }
+    var loading by remember { mutableStateOf(true) }
+    var failed by remember { mutableStateOf(false) }
+    var reloadToken by remember { mutableStateOf(0) }
+    var onlyCompatible by remember(instance?.id, contentType) { mutableStateOf(instance != null) }
+    var downloadingId by remember { mutableStateOf<String?>(null) }
+    var downloadProgress by remember { mutableStateOf(0f) }
+    var installError by remember { mutableStateOf<String?>(null) }
+    val busy = downloadingId != null
+
+    LaunchedEffect(hit.project_id, hit.slug, reloadToken) {
+        loading = true
+        failed = false
+        val result = client.projectVersions(hit.project_id.ifBlank { hit.slug })
+        versions = result.versions
+        failed = result.failed
+        loading = false
+    }
+
+    val visibleVersions = remember(versions, instance, contentType, onlyCompatible) {
+        if (!onlyCompatible || instance == null) versions
+        else versions.filter { it.isCompatibleWith(instance, contentType) }
+    }
+
+    fun install(version: ModrinthVersion) {
+        val targetInstance = instance ?: return
+        val file = version.files.firstOrNull { it.primary } ?: version.files.firstOrNull()
+        if (file == null) {
+            installError = context.getString(R.string.manage_content_install_failed)
+            return
+        }
+        installError = null
+        downloadingId = version.id
+        downloadProgress = 0f
+        scope.launch {
+            val result = installContentFile(context, client, targetInstance, contentType, file) { progress ->
+                downloadProgress = progress
+            }
+            downloadingId = null
+            result.fold(
+                onSuccess = {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.manage_content_installed_toast, targetInstance.name),
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                    onInstalled(version, targetInstance)
+                    onDismiss()
+                },
+                onFailure = {
+                    installError = context.getString(R.string.manage_content_install_failed)
+                },
+            )
+        }
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(
+            dismissOnBackPress = !busy,
+            dismissOnClickOutside = false,
+            usePlatformDefaultWidth = false,
+            decorFitsSystemWindows = false,
+        ),
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .systemBarsPadding(),
+            ) {
+                TopAppBar(
+                    title = {
+                        Column {
+                            Text(
+                                text = hit.title.ifBlank { hit.slug },
+                                style = MaterialTheme.typography.titleMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                text = stringResource(R.string.manage_content_versions_subtitle),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = onDismiss, enabled = !busy) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.action_close),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                    ),
+                )
+                HorizontalDivider(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f))
+
+                // Instance target: content is installed into that instance's folder.
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.manage_content_install_to),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    if (instances.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.manage_content_no_instance),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    } else {
+                        Row(
+                            modifier = Modifier
+                                .weight(1f)
+                                .horizontalScroll(rememberScrollState()),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            instances.forEach { candidate ->
+                                FilterChip(
+                                    selected = candidate.id == instance?.id,
+                                    onClick = { instanceId = candidate.id },
+                                    enabled = !busy,
+                                    label = {
+                                        Text(
+                                            text = candidate.name,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                        )
+                                    },
+                                    leadingIcon = if (candidate.id == instance?.id) {
+                                        {
+                                            Icon(
+                                                imageVector = Icons.Filled.Check,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp),
+                                            )
+                                        }
+                                    } else {
+                                        null
+                                    },
+                                )
+                            }
+                        }
+                    }
+                }
+
+                if (instance != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        FilterChip(
+                            selected = onlyCompatible,
+                            onClick = { onlyCompatible = !onlyCompatible },
+                            enabled = !busy,
+                            label = { Text(stringResource(R.string.manage_content_only_compatible)) },
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        Text(
+                            text = stringResource(
+                                R.string.manage_content_versions_count,
+                                visibleVersions.size,
+                            ),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
+                if (downloadingId != null) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                    ) {
+                        LinearProgressIndicator(
+                            progress = { downloadProgress },
+                            modifier = Modifier.fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = stringResource(
+                                R.string.manage_content_installing,
+                                (downloadProgress * 100).toInt(),
+                            ),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+
+                installError?.let { message ->
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                    )
+                }
+
+                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                    when {
+                        loading -> LoadingIndicator(
+                            modifier = Modifier.align(Alignment.Center).size(56.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+
+                        failed -> Column(
+                            modifier = Modifier.fillMaxSize().padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.manage_content_versions_error),
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                            TextButton(onClick = { reloadToken++ }) {
+                                Text(stringResource(R.string.action_retry))
+                            }
+                        }
+
+                        versions.isEmpty() -> CenteredDialogMessage(
+                            text = stringResource(R.string.manage_content_no_versions),
+                        )
+
+                        visibleVersions.isEmpty() -> Column(
+                            modifier = Modifier.fillMaxSize().padding(24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text(
+                                text = stringResource(R.string.manage_content_no_compatible_versions),
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                            TextButton(onClick = { onlyCompatible = false }) {
+                                Text(stringResource(R.string.manage_content_show_all_versions))
+                            }
+                        }
+
+                        else -> LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 8.dp,
+                                bottom = 24.dp,
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(visibleVersions, key = { it.id }) { version ->
+                                VersionRow(
+                                    version = version,
+                                    installing = downloadingId == version.id,
+                                    installEnabled = instance != null &&
+                                        downloadingId == null &&
+                                        version.files.isNotEmpty(),
+                                    onInstall = { install(version) },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** One version card: name, version id, game versions/loaders, date/size, install button. */
+@Composable
+private fun VersionRow(
+    version: ModrinthVersion,
+    installing: Boolean,
+    installEnabled: Boolean,
+    onInstall: () -> Unit,
+) {
+    val primaryFile = version.files.firstOrNull { it.primary } ?: version.files.firstOrNull()
+    val meta = buildList {
+        addAll(version.game_versions.take(4))
+        addAll(version.loaders.take(2))
+    }.joinToString(" · ")
+    val date = version.date_published.take(10).takeIf { it.isNotBlank() }
+    val size = formatFileSize(primaryFile?.size ?: 0)
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+        ),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(14.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = version.name.ifBlank { version.version_number },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    if (version.version_number.isNotBlank() &&
+                        version.version_number != version.name
+                    ) {
+                        Text(
+                            text = version.version_number,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                if (version.version_type.isNotBlank() && version.version_type != "release") {
+                    Text(
+                        text = version.version_type.uppercase(Locale.US),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                    )
+                }
+            }
+            if (meta.isNotBlank()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = meta,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            val details = listOfNotNull(date, size.takeIf { it.isNotBlank() }).joinToString(" · ")
+            if (details.isNotBlank()) {
+                Text(
+                    text = details,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            FilledTonalButton(
+                onClick = onInstall,
+                enabled = installEnabled,
+                modifier = Modifier.align(Alignment.End),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CloudDownload,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = stringResource(
+                        if (installing) R.string.manage_content_installing_short
+                        else R.string.manage_content_install,
+                    ),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CenteredDialogMessage(text: String) {
+    Box(
+        modifier = Modifier.fillMaxSize().padding(24.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+/** MODS -> mods, RESOURCE_PACKS -> resourcepacks, etc. */
+private val ContentType.installDirectory: String
+    get() = when (this) {
+        ContentType.MODS -> "mods"
+        ContentType.RESOURCE_PACKS -> "resourcepacks"
+        ContentType.DATA_PACKS -> "datapacks"
+        ContentType.SHADERS -> "shaderpacks"
+        ContentType.WORLDS -> "saves"
+    }
+
+/** Modrinth loader names used in a version's `loaders` array. */
+private val LoaderKind.modrinthLoaderName: String?
+    get() = when (this) {
+        LoaderKind.VANILLA -> null
+        LoaderKind.FABRIC -> "fabric"
+        LoaderKind.FORGE -> "forge"
+        LoaderKind.NEOFORGE -> "neoforge"
+        LoaderKind.QUILT -> "quilt"
+        LoaderKind.OPTIFINE -> "optifine"
+    }
+
+/** True when this version matches the target instance's game version (and mod loader). */
+private fun ModrinthVersion.isCompatibleWith(instance: Instance, type: ContentType): Boolean {
+    if (game_versions.isNotEmpty() && !game_versions.contains(instance.minecraftVersion)) return false
+    if (type != ContentType.MODS) return true
+    val loaderName = instance.loader.modrinthLoaderName ?: return true
+    return loaders.isEmpty() || loaders.any { it.equals(loaderName, ignoreCase = true) }
+}
+
+/** Streams a Modrinth file into the selected instance's content folder. */
+private suspend fun installContentFile(
+    context: Context,
+    client: ModrinthClient,
+    instance: Instance,
+    type: ContentType,
+    file: ModrinthVersionFile,
+    onProgress: (Float) -> Unit,
+): Result<File> = withContext(Dispatchers.IO) {
+    try {
+        if (file.url.isBlank()) error("missing file url")
+        val dir = File(
+            context.filesDir,
+            "minecraft/instances/${instance.id}/${type.installDirectory}",
+        )
+        if (!dir.exists() && !dir.mkdirs()) error("cannot create ${dir.path}")
+        val safeName = file.filename
+            .substringAfterLast('/')
+            .substringAfterLast('\\')
+            .ifBlank { "download" }
+        val target = uniqueFile(dir, safeName)
+        val part = File(dir, "${target.name}.part")
+        part.delete()
+        if (!client.downloadTo(file.url, part, onProgress)) {
+            part.delete()
+            error("download failed")
+        }
+        if (!part.renameTo(target)) {
+            part.copyTo(target, overwrite = true)
+            part.delete()
+        }
+        Result.success(target)
+    } catch (cancelled: CancellationException) {
+        throw cancelled
+    } catch (error: Exception) {
+        Result.failure(error)
+    }
+}
+
+/** Never overwrite an existing file; add " (1)", " (2)" before the extension. */
+private fun uniqueFile(dir: File, filename: String): File {
+    val first = File(dir, filename)
+    if (!first.exists()) return first
+    val dot = filename.lastIndexOf('.')
+    val base = if (dot > 0) filename.substring(0, dot) else filename
+    val extension = if (dot > 0) filename.substring(dot) else ""
+    var index = 1
+    var candidate = first
+    while (candidate.exists()) {
+        candidate = File(dir, "$base ($index)$extension")
+        index++
+    }
+    return candidate
+}
+
+private fun formatFileSize(bytes: Long): String {
+    if (bytes <= 0) return ""
+    if (bytes < 1024) return "$bytes B"
+    val units = listOf("KB", "MB", "GB")
+    var value = bytes / 1024.0
+    var index = 0
+    while (value >= 1024 && index < units.lastIndex) {
+        value /= 1024
+        index++
+    }
+    return String.format(Locale.getDefault(), "%.1f %s", value, units[index])
 }

@@ -349,6 +349,7 @@ fun EclipseApp() {
                     entry<Route.ManageContent> {
                         ManageContentScreen(
                             client = container.modrinth,
+                            instances = instances,
                             onBack = ::pop,
                         )
                     }
