@@ -623,6 +623,7 @@ private fun VersionRow(
     }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ModpackBrowserScreen(
     client: ModrinthClient,
