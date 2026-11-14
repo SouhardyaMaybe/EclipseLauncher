@@ -56,3 +56,15 @@
 - [ ] Versions/install dialog + install state machine.
 - [ ] JVM tests for auto-load/filtering (no test source set exists yet).
 - [ ] Restore lint gate in CI.
+
+## 2026-11-14 — Visual cleanup + fast pagination (220998f)
+- [x] Remove six-dot drag handle and drag/collapse state; filter panel always expanded.
+- [x] Compact filters to a single horizontally scrollable chip row.
+- [x] Remove paginator collapse chevron; pill fixed bottom-center `‹ page / total ›`.
+- [x] Fixed-width page indicator so buttons do not shift between 1- and 2-digit pages.
+- [x] Debounce page taps 220ms; fetch only settled page; discard stale responses.
+- [x] CI green: run 43583005389 (220998f).
+- [ ] Phone verification of handle removal, centered pill, fast paging.
+- [ ] Versions/install dialog + install state machine.
+- [ ] JVM tests (no `app/src/test` yet).
+- [ ] Restore lint gate in CI.
