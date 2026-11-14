@@ -106,7 +106,7 @@ fun ModpackBrowserScreen(
         error = null
         scope.launch {
             when (val result = client.searchMods(term, projectType = "modpack")) {
-                is MetaResult.Success -> {
+                is MetaResult.Success<*> -> {
                     results = result.value
                     loading = false
                 }

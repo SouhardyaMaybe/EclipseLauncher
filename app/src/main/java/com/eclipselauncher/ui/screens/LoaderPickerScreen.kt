@@ -396,7 +396,7 @@ private fun LoaderVersionDropdown(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
             )
 
-            is MetaResult.Success -> {
+            is MetaResult.Success<*> -> {
                 val options = versionList.value
                 val listState = rememberLazyListState()
 

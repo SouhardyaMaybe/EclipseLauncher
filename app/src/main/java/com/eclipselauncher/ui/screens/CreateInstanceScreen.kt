@@ -123,7 +123,7 @@ fun CreateInstanceScreen(
         if (cachedVersions.isEmpty()) loading = true
         launch(Dispatchers.IO) {
             when (val result = versions.minecraftVersions()) {
-                is MetaResult.Success -> {
+                is MetaResult.Success<*> -> {
                     allVersions = result.value
                     loading = false
                 }
