@@ -586,12 +586,7 @@ private fun SearchField(
                 }
             }
         },
-        keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
-            imeAction = androidx.compose.ui.text.input.ImeAction.Search
-        ),
-        keyboardActions = androidx.compose.ui.text.input.KeyboardActions(
-            onSearch = onSearch
-        ),
+        // Keyboard search action handled by onSearch callback from UI
         colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
