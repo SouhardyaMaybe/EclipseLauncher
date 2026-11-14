@@ -274,9 +274,9 @@ private data class Profile(
         for (i in 0 until skinsArray.size) {
             val skinObj = skinsArray[i] as JsonObject
             skins.add(SkinInfo(
-                id = skinObj.getString("id") ?: "",
-                state = skinObj.getString("state") ?: "",
-                url = normalizeTextureUrl(skinObj.getString("url") ?: ""),
+                id = skinObj.strOrEmpty("id"),
+                state = skinObj.strOrEmpty("state"),
+                url = normalizeTextureUrl(skinObj.strOrEmpty("url")),
                 variant = skinObj["variant"]?.let { it.content?.takeIf { it.isNotBlank() } },
             ))
         }
@@ -287,9 +287,9 @@ private data class Profile(
         for (i in 0 until capesArray.size) {
             val capeObj = capesArray[i] as JsonObject
             capes.add(CapeInfo(
-                id = capeObj.getString("id") ?: "",
-                state = capeObj.getString("state") ?: "",
-                url = normalizeTextureUrl(capeObj.getString("url") ?: ""),
+                id = capeObj.strOrEmpty("id"),
+                state = capeObj.strOrEmpty("state"),
+                url = normalizeTextureUrl(capeObj.strOrEmpty("url")),
                 alias = capeObj["alias"]?.let { it.content?.takeIf { it.isNotBlank() } },
             ))
         }
@@ -301,6 +301,10 @@ private data class Profile(
             capes = capes,
         )
     }
+
+    /** Gets string value or empty string if missing. */
+    private fun JsonObject.strOrEmpty(key: String): String =
+        (get(key) as? JsonPrimitive)?.content ?: ""
 
     /** Normalizes texture URLs to use HTTPS. */
     private fun normalizeTextureUrl(url: String): String {
