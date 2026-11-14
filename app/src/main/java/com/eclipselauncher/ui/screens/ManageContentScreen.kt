@@ -587,10 +587,7 @@ private fun SearchField(
             }
         },
         // Keyboard search action handled by onSearch callback from UI
-        colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-        ),
+        // colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(...) // API not available in this version
     )
 }
 
