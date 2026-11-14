@@ -89,4 +89,4 @@
 - [x] Group content versions by Minecraft version in manifest order; expandable cards with release/snapshot badges.
 - [x] Expanded rows: name, version, relative updated time + icon, downloads + icon, trailing install icon.
 - [x] Highlight the group matching the instance's Minecraft version with a green border/tint.
-- [ ] CI green for this batch.
+- [x] CI green: run 43599566733 (b35932d).

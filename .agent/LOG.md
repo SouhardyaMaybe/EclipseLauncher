@@ -148,4 +148,4 @@
 - Group cards expand in place. Rows show content name, `version_number`, a schedule icon + `DateUtils` relative time, a download icon + `formatDownloads(version.downloads)`, and a trailing `FilledTonalIconButton` install icon. Per-row progress appears under the active version.
 - The group whose MC version equals `instance.minecraftVersion` gets a green border and 12% green tint; every other group keeps the dynamic/Urban `surfaceVariant` card color.
 - Dropped the now-unused loader compatibility helpers and the old `size`-based version card. Added `downloads` to `ModrinthVersion`.
-- Not yet CI-verified at the time of writing.
+- CI green: run 43599566733 (b35932d); APK artifact 14115911181.
