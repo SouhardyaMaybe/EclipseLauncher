@@ -38,8 +38,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.defaults.ExpandLess
-import androidx.compose.material.icons.defaults.ExpandMore
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -361,7 +359,7 @@ private fun ToggleButton(
 ) {
     IconButton(onClick = onToggle) {
         Icon(
-            imageVector = if (collapsed) Icons.Default.ExpandMore else Icons.Default.ExpandLess,
+            imageVector = if (collapsed) Icons.Filled.ExpandMore else Icons.Filled.ExpandLess,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
