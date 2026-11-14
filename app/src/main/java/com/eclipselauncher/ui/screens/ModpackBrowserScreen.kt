@@ -977,7 +977,7 @@ private fun ModpackRow(
                     maxLines = 1,
                 )
                 Text(
-                    text = hit.author + " · " + formatDownloads(hit.downloads),
+                    text = hit.author + " · " + formatModpackDownloads(hit.downloads),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary,
                 )
@@ -1125,7 +1125,7 @@ private fun PaginationPill(
 }
 
 /** Human-readable download count. */
-private fun formatDownloads(count: Long): String =
+private fun formatModpackDownloads(count: Long): String =
     when {
         count >= 1_000_000 -> "%.1fM".format(count / 1_000_000.0)
         count >= 1_000 -> "%.1fK".format(count / 1_000.0)
