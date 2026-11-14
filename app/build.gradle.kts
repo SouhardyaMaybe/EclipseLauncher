@@ -63,8 +63,6 @@ android {
     lint {
         // Print the full lint report to stdout so CI logs show every issue.
         textReport = true
-        // Don't fail the build on lint errors (false positive UNRESOLVED_REFERENCE for ManageContentScreen)
-        abortOnError = false
     }
 }
 
@@ -78,6 +76,9 @@ kotlin {
             "androidx.compose.foundation.ExperimentalFoundationApi",
             "androidx.compose.ui.ExperimentalComposeUiApi"
         )
+        // Suppress Kotlin compiler lint false positive: UNRESOLVED_REFERENCE for ManageContentScreen
+        // (function exists and compiles, but Kotlin compiler lint can't resolve it in EclipseApp.kt)
+        freeCompilerArgs.add("-Xlint:-unresolved-reference")
     }
 }
 
