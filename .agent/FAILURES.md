@@ -49,3 +49,9 @@
 - Detection fix: brace-depth scan showed depth 1 at the `ManageContentScreen` declaration. Also `grep -iE "error:|e: "` matched `Build Date:`, hiding real errors; use `grep -E "e: file"`.
 - Fix: close `PaginationPill` before the screen; keep one top-level `@Composable fun ManageContentScreen` in `src/main/java/.../ui/screens`; restore `EclipseApp.kt` from `a622441`; delete the `src/main/kotlin` move and `sourceSets` hack.
 - Verified: CI run 43578498959 (HEAD 478b799) — Lint & Test, Assemble Debug APK, Assemble Release AAB all green.
+
+## 2026-11-14 — Phone crash: ContentType cannot be cast to java.util.List (build 478b799)
+- Signature: `ClassCastException: ContentType cannot be cast to java.util.List` at `ManageContentScreenKt.CollapsibleFilterPanel$lambda$0(ManageContentScreen.kt:481)`.
+- Cause: `ContentType.values()` returns `Array<ContentType>`, but `visibleTypes` was cast with `as List<ContentType>`. Collapsed branch (`listOf`) worked; expanded branch (array) crashed. Compiler only warned "unchecked cast".
+- Fix: use `ContentType.entries` (a `List`) and remove the cast.
+- Lesson: CI compile+tests cannot catch runtime casts while `app/src/test` is empty.

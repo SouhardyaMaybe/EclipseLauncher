@@ -454,11 +454,11 @@ private fun CollapsibleFilterPanel(
     onCollapseToggle: () -> Unit,
     onDrag: (Offset) -> Unit,
 ) {
-    val allTypes = ContentType.values()
+    val allTypes: List<ContentType> = ContentType.entries
     val selectedType = contentType
 
     // When collapsed, show only selected type; when expanded, show all
-    val visibleTypes = if (collapsed) listOf(selectedType) else allTypes
+    val visibleTypes: List<ContentType> = if (collapsed) listOf(selectedType) else allTypes
 
     Card(
         modifier = Modifier
@@ -478,7 +478,7 @@ private fun CollapsibleFilterPanel(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                (visibleTypes as List<ContentType>).forEach { type ->
+                visibleTypes.forEach { type ->
                     val count = if (isInstalledTab) {
                         installedContent.count { it.type == type }
                     } else 0

@@ -116,3 +116,8 @@
 - Browse rows now use real `categories` + `versions` from the search response; removed hardcoded support range, author line, and download counts.
 - CI run 43578498959: all three jobs green.
 - NOT done: versions/install dialog; JVM auto-load test (no `app/src/test` exists); lint step remains absent from ci.yml.
+
+## 2026-11-14 — Phone crash fix: enum values() is an Array
+- Reproduced from user log at ManageContentScreen.kt:481.
+- `ContentType.values()` -> `Array`; cast to `List` crashed whenever the filter panel expanded.
+- Replaced with `ContentType.entries`; removed the cast. Pushed for CI verification.
