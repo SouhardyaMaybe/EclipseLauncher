@@ -77,4 +77,4 @@ All builds run in GitHub Actions (`.github/workflows/`). No local building requi
 - Material 3 theming with dynamic color
 
 ## License
-TBD
+TBD# CI trigger
