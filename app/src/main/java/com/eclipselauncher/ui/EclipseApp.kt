@@ -8,6 +8,7 @@
  * HOME's top-right buttons open the latter two). The tasks dialog floats
  * above everything, and play holds an honest stop: no runtime is wired yet.
  */
+@file:Suppress("UNRESOLVED_REFERENCE")
 package com.eclipselauncher.ui
 
 import android.net.Uri
@@ -44,7 +45,6 @@ import com.eclipselauncher.ui.screens.CreateInstanceScreen
 import com.eclipselauncher.ui.screens.HomeScreen
 import com.eclipselauncher.ui.screens.InstanceEditorScreen
 import com.eclipselauncher.ui.screens.LoaderPickerScreen
-@Suppress("UNRESOLVED_REFERENCE")
 import com.eclipselauncher.ui.screens.ManageContentScreen
 import com.eclipselauncher.ui.screens.MicrosoftAuthScreen
 import com.eclipselauncher.ui.screens.ModpackBrowserScreen
