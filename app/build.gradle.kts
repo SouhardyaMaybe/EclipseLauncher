@@ -16,6 +16,12 @@ android {
         }
     }
 
+    sourceSets {
+        getByName("main") {
+            kotlin.srcDirs("src/main/java", "src/main/kotlin")
+        }
+    }
+
     defaultConfig {
         applicationId = "com.eclipselauncher"
         minSdk = libs.versions.minSdk.get().toInt()
