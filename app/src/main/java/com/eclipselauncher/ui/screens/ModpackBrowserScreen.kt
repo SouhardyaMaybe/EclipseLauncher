@@ -62,6 +62,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Search
@@ -355,7 +356,7 @@ private fun ModpackVersionDialog(
                     },
                     navigationIcon = {
                         IconButton(onClick = onDismiss) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
+                            Icon(ArrowBack, contentDescription = stringResource(R.string.cd_back))
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -735,7 +736,7 @@ fun ModpackBrowserScreen(
             navigationIcon = {
                 androidx.compose.material3.IconButton(onClick = onBack) {
                     Icon(
-                        Icons.Filled.ArrowBack,
+                        ArrowBack,
                         contentDescription = stringResource(R.string.cd_back),
                     )
                 }
