@@ -106,3 +106,13 @@
 - Theme: Dynamic (Material You default) + Urban (from ZL2 urbanAsh urbanAsh palette) with Crossfade animation; no Dark/Light.
 - Settings: Single `<- Back` button in TopAppBar (back-to-root when in sub-page, exits when at root); microphone permission asker with granted/denied state.
 - Installed tab matches reference UI exactly: glyph icon card, name + "version · type" line, ⟳ refresh, toggle switch, 🗑 delete button per row.
+
+## 2026-11-14 — Green build restored + Browse auto-load fixed (478b799)
+- Root cause of ~40 red runs: one missing brace made `ManageContentScreen` a *local* function inside `PaginationPill`. Fixed nesting; screen is top-level again in the normal `src/main/java` source set.
+- Restored `EclipseApp.kt` byte-for-byte from known-good `a622441`; removed all inlining, duplicate imports, `@file:Suppress`, `src/main/kotlin`, and the `sourceSets` hack.
+- Auto-load bug: `LaunchedEffect` keys omitted `mainTab`, so opening Browse never fetched. Added `mainTab` + retry/page/type/source/query keys; empty query now sends the default listing.
+- Split transport failure from empty results via `ModrinthSearchResult.failed`; added error+Retry, empty+Clear filters, and request cancellation by `LaunchedEffect` restart.
+- Pagination pill now floats over the list (was after a `weight(1f)` box and got 0 height), bottom-center, edge-collapsed, nav-bar padded, 96dp list bottom inset.
+- Browse rows now use real `categories` + `versions` from the search response; removed hardcoded support range, author line, and download counts.
+- CI run 43578498959: all three jobs green.
+- NOT done: versions/install dialog; JVM auto-load test (no `app/src/test` exists); lint step remains absent from ci.yml.

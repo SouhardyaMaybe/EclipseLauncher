@@ -42,3 +42,10 @@
 - Signature: `Error: Querying resource values using LocalContext.current is not configuration-aware...` at 7 sites (EclipseApp, InstanceEditorScreen x4, ManageContentScreen, MarketScreen).
 - Cause: using `context.getString(R.string.xxx)` inside composables instead of `stringResource(R.string.xxx)`.
 - Fix: replaced all 7 occurrences with `stringResource()` (Compose's locale/configuration-aware accessor). Evidence: Compose lint rule flags direct `Context.getString` from `LocalContext.current`.
+
+## 2026-11-14 — ManageContentScreen unresolved/private-local errors (runs 43573673663..43576770952)
+- Signatures: `EclipseApp.kt: Unresolved reference 'ManageContentScreen'`; `ManageContentScreen.kt: Modifier 'private' is not applicable to 'local function'`; `Named object cannot be local`; then `Conflicting import: imported name 'X' is ambiguous`.
+- Root cause: `PaginationPill` was missing its closing brace. The final EOF brace closed it instead, so `ManageContentScreen` was nested *inside* `PaginationPill`. Kotlin reported the nesting as unresolved/local/private errors at the call site. Inlining the screen into `EclipseApp.kt` then duplicated imports and tried to import file-private helpers.
+- Detection fix: brace-depth scan showed depth 1 at the `ManageContentScreen` declaration. Also `grep -iE "error:|e: "` matched `Build Date:`, hiding real errors; use `grep -E "e: file"`.
+- Fix: close `PaginationPill` before the screen; keep one top-level `@Composable fun ManageContentScreen` in `src/main/java/.../ui/screens`; restore `EclipseApp.kt` from `a622441`; delete the `src/main/kotlin` move and `sourceSets` hack.
+- Verified: CI run 43578498959 (HEAD 478b799) — Lint & Test, Assemble Debug APK, Assemble Release AAB all green.

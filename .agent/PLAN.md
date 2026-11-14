@@ -42,3 +42,17 @@
 - [x] ManageContentScreen: Matches reference UI (installed tab with glyph chips, toggle rows, Coil icons)
 - [x] All CI jobs green: lint, unit tests, assembleDebug, assembleRelease
 - [x] Failed workflow runs deleted; only green runs remain
+
+## 2026-11-14 — Track B Batch 1 recovery
+- [x] Diagnose real compiler errors from CI logs (not the `Date:` noise).
+- [x] Fix `PaginationPill` missing brace; make `ManageContentScreen` top-level.
+- [x] Restore `EclipseApp.kt` from `a622441`; remove inlining + duplicate imports.
+- [x] Move screen back to `src/main/java`; remove `src/main/kotlin` + `sourceSets` hack.
+- [x] Fix Browse auto-load trigger (`mainTab` key); default listing on empty query.
+- [x] Add error/retry, empty/clear-filters, loading states; transport `failed` flag.
+- [x] Float pagination pill over list with safe-area padding and no last-row cover.
+- [x] Use API-provided loader/game-version metadata on browse rows.
+- [x] CI green: run 43578498959 (478b799).
+- [ ] Versions/install dialog + install state machine.
+- [ ] JVM tests for auto-load/filtering (no test source set exists yet).
+- [ ] Restore lint gate in CI.

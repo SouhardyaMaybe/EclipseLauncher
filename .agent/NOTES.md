@@ -21,3 +21,11 @@
 - Old JSON data files are not imported into Room; acceptable because no released data exists.
 - `README.md` still describes the old stack/layout; intentionally unchanged.
 
+
+## 2026-11-14 — Noticed, not touched
+- `app/src/test` does not exist: CI "Run Unit Tests" executes zero tests; "gate tests stay green" is currently vacuous.
+- `.github/workflows/ci.yml` has no lint step (job is still named "Lint & Test"); build.gradle only sets `lint { textReport = true }`.
+- Installed tab still uses six mock `InstalledContent` rows; no jar metadata/hash icon lookup wired.
+- Source selector is two weighted `FilterChip`s, not M3 `SingleChoiceSegmentedButtonRow`.
+- Modrinth `project_type:world` may be unsupported; Worlds browse may show error/empty.
+- `nemo` branch / off-limits repos instruction still unresolved; all work/pushes remain on `main` of `SouhardyaMaybe/EclipseLauncher` because that is the only repo with this CI/APK.
