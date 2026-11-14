@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<lint>
-    <!-- Suppress false positive UNRESOLVED_REFERENCE for ManageContentScreen -->
-    <issue id="UnresolvedReference" severity="ignore" />
-</lint>
