@@ -703,12 +703,6 @@ private fun PaginationPill(
 fun ManageContentScreen(
     client: ModrinthClient,
     onBack: () -> Unit,
-) = ManageContentScreenImpl(client, onBack)
-
-@Composable
-private fun ManageContentScreenImpl(
-    client: ModrinthClient,
-    onBack: () -> Unit,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -974,6 +968,5 @@ private fun ManageContentScreenImpl(
             )
         }
     }
-}
 }
 }
