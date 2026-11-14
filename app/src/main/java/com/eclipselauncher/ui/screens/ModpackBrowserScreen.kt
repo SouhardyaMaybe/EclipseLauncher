@@ -395,7 +395,7 @@ private fun ModpackVersionDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.end,
+                            horizontalArrangement = Arrangement.End,
                         ) {
                             androidx.compose.material3.Checkbox(
                                 checked = stableOnly,
@@ -673,8 +673,8 @@ fun ModpackBrowserScreen(
         error = null
         page = pageNum
         scope.launch {
-            val loader = selectedLoader.takeIf { it.isNotBlank() }
-            val gameVersion = selectedGameVersion.takeIf { it.isNotBlank() }
+            val loader = selectedLoader?.takeIf { it.isNotBlank() }
+            val gameVersion = selectedGameVersion?.takeIf { it.isNotBlank() }
             val result = client.searchMods(
                 query = term.trim(),
                 limit = 25,
