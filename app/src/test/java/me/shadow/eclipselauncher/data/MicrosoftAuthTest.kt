@@ -91,10 +91,12 @@ class MicrosoftAuthTest {
     }
 
     @Test
-    fun testParseRedirectCustomSchemeWithoutQueryReturnsNull() {
+    fun testParseRedirectCustomSchemeWithoutQueryReturnsFailure() {
         val url = "ms-xal-00000000402b5328://auth/"
         val result = auth.parseRedirect(url)
-        assertNull(result)
+        assertNotNull(result)
+        assertTrue(result is RedirectResult.Failure)
+        assertEquals("unknown", (result as RedirectResult.Failure).error)
     }
 
     @Test
