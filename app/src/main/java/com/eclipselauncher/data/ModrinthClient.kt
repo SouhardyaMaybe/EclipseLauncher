@@ -40,7 +40,7 @@ data class ModrinthSearchResult(
     val totalPages: Int,
     val pageNumber: Int,
     val isLastPage: Boolean,
-)
+) : MetaResult.Success<List<ModrinthHit>>(hits)
 
 @Serializable
 private data class ModrinthSearchResponse(
@@ -91,7 +91,7 @@ class ModrinthClient @Inject constructor(
         } catch (cancelled: CancellationException) {
             throw cancelled
         } catch (_: Exception) {
-            // Return error result instead of throwing
+            // Return empty result on error; callers check hits.isEmpty()
             ModrinthSearchResult(
                 hits = emptyList(),
                 totalHits = 0,

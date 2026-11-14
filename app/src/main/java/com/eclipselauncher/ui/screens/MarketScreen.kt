@@ -79,11 +79,11 @@ fun MarketPage(client: ModrinthClient) {
         error = null
         scope.launch {
             val result = client.searchMods(term)
-            if (result is MetaResult.Success<*>) {
-                results = result.value as List<ModrinthHit>
+            if (result.hits.isNotEmpty()) {
+                results = result.hits
                 loading = false
-            } else if (result is MetaResult.Error) {
-                error = result.message.ifBlank { networkError }
+            } else {
+                error = networkError
                 loading = false
             }
         }

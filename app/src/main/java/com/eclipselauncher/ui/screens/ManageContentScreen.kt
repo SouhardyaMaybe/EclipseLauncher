@@ -75,7 +75,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Horizontal
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -604,7 +603,7 @@ fun ManageContentScreen(
             var pageNavCollapsed by remember { mutableStateOf(false) }
             Box(
                 modifier = Modifier
-                    .align(Alignment.Horizontal(1f))
+                    .align(Alignment.End)
                     .padding(end = 16.dp, top = 8.dp),
             ) {
                 if (pageNavCollapsed) {
