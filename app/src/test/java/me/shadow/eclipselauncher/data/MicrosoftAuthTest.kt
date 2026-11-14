@@ -2,24 +2,20 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * Unit tests for MicrosoftAuth redirect parsing and authentication flow.
+ * Unit tests for MicrosoftAuth redirect parsing.
+ * Tests the parseRedirect method which handles both the desktop redirect
+ * and the custom scheme redirect (ms-xal-{client_id}://auth/).
  */
 package me.shadow.eclipselauncher.data
 
-import io.ktor.client.mock.MockEngine
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.http.ContentType
-import io.ktor.serialization.kotlinx.json.json
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Assert.assertFalse
 import org.junit.Test
 
 class MicrosoftAuthTest {
@@ -125,25 +121,5 @@ class MicrosoftAuthTest {
         assertNotNull(result)
         assertTrue(result is RedirectResult.Success)
         assertEquals("test-code", (result as RedirectResult.Success).code)
-    }
-}
-
-class MicrosoftAuthFlowTest {
-
-    private val testDispatcher = TestCoroutineDispatcher()
-
-    @Test
-    fun testLoginFlowSuccess() = runTest {
-        // This test would require a mock HTTP server to test the full chain
-        // For now, we verify the redirect parsing works
-        val client = HttpClient(MockEngine)
-        val auth = MicrosoftAuth(NetworkClient(client))
-
-        val redirectUrl = "ms-xal-00000000402b5328://auth/?code=fake-code"
-        val result = auth.parseRedirect(redirectUrl)
-
-        assertNotNull(result)
-        assertTrue(result is RedirectResult.Success)
-        assertEquals("fake-code", (result as RedirectResult.Success).code)
     }
 }
