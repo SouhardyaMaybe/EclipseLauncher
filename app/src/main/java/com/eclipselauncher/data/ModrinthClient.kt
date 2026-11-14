@@ -40,9 +40,8 @@ data class ModrinthSearchResult(
     val totalPages: Int,
     val pageNumber: Int,
     val isLastPage: Boolean,
-) : MetaResult<List<ModrinthHit>> {
+) : MetaResult.Success<List<ModrinthHit>> {
     override val value: List<ModrinthHit> = this.hits
-    override val isSuccess: Boolean = true
 }
 
 @Serializable
