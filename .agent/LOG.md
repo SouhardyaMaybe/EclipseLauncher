@@ -149,3 +149,59 @@
 - The group whose MC version equals `instance.minecraftVersion` gets a green border and 12% green tint; every other group keeps the dynamic/Urban `surfaceVariant` card color.
 - Dropped the now-unused loader compatibility helpers and the old `size`-based version card. Added `downloads` to `ModrinthVersion`.
 - CI green: run 43599566733 (b35932d); APK artifact 14115911181.
+
+## 2026-11-14 — Manage Content: real files, working actions, dependencies (f181b5e)
+- Browse rows now show title (titleLarge), `by <author>` (titleMedium), description, then `loaders • ... | categories`; loader names are split from Modrinth's mixed `categories`.
+- Deleted the six mock Installed rows. Installed is now a disk scan of the selected instance's `mods`, `resourcepacks`, `datapacks`, `shaderpacks`, `saves`.
+- Added `<file>.eclipse.json` sidecars for project id/title/author/icon/version; `.disabled` suffix is the enable/disable mechanism and sidecars move with the rename.
+- Installed actions: update/downgrade opens the version sheet for the saved project id and deletes the replaced file after a successful install; toggle renames; delete confirms then removes file/folder + sidecar.
+- Added required-dependency resolution (pinned `version_id` or latest compatible project version) and a checkbox prompt with Ignore/Install. Checked dependencies are downloaded first with `skipExisting`; the main file and metadata follow.
+- `installContentFile` now supports `skipExisting` for dependencies; main installs still get unique names.
+- CI green: run 43603798526 (f181b5e); artifacts app-debug-apk 14117796027 and app-release-aab 14117965542.
+- No local builds were run.
+
+## 2026-11-14 — Search + filters + account/no-instance gates
+- Added shared search below the tabs; content-type chips moved below the filter panel so search → Loader/Version/Platform is the literal order.
+- Loader/Version/Platform are compact headings with a single shared expandable radio panel; one open at a time. Loader is hidden for non-mod content (resource packs, datapacks, shaders, worlds).
+- Browse: loader maps to Modrinth `categories:<loader>` and version to `versions:<mc>`; both are `LaunchedEffect` keys and reset paging.
+- Installed: search covers name/version/author; loader/version/platform filter the real disk scan. Empty states distinguish "No content yet" from "No matching content" with Clear filters.
+- Sidecars now store `loaders[]` and `platform`; legacy files without them infer platform from `project_id` (Modrinth vs Local) and mods inherit the instance loader.
+- Browse row tap/download with no instance now toasts `manage_content_no_instance` and never opens the version sheet.
+- Manage Content entry in `EclipseApp` is account-gated with `AddAccountGate`; Connect pushes Accounts, dismiss just closes.
+- `VersionInstallDialog(showDependencies = target.replace == null)`; update/downgrade calls `startInstall(version, emptyList())` before any dependency resolution, so no prompt and no dependency downloads.
+- Removed the now-unused `ProviderSegmentedControl` (platform heading replaced it).
+- Verification so far: `R.string` references all defined, no duplicate string names, lexer brace/paren balance clean, `git diff --check` clean. No local build run; CI is the build gate.
+- Pending: push and confirm the GitHub Actions run.
+- CI green: run 43606302835 (6ee0ba7) — Lint & Test, Assemble Debug APK, Assemble Release AAB all succeeded. Artifacts: app-debug-apk 14118314103, app-release-aab 14118735690.
+- Not device-tested: no Android device/emulator available in this environment.
+
+## 2026-11-14 — Filters: Browse-only modal dialogs, 4 loaders
+- Removed all filter headers (loader, version, platform) from Installed tab; only search remains.
+- Browse tab: three compact FilterHeader cards open modal AlertDialog choosers (FilterDialog).
+- Loader filter only appears for Mods content type.
+- Loader list restricted to exactly 4: Fabric, Forge, NeoForge, Quilt (SupportedLoaderIds).
+- All other loaders (LiteLoader, ModLoader, Rift, etc.) excluded from UI and from row display.
+- Provider (Platform) filter dialog replaces the old ProviderSegmentedControl.
+- Search in Installed tab filters by name/version/author only.
+- Version filter uses Minecraft manifest versions; includes instance version + all cached versions.
+- Clear-filters button resets browseQuery, browseContentType, browseLoader, browseGameVersion.
+- openInstallTarget() guards no-instance case with toast.
+- VersionInstallDialog(showDependencies = target.replace == null) skips dependency prompt for updates/downgrades.
+- CI verification pending.
+
+## 2026-11-14 — Browse-only modal filters, 4 loaders — CI GREEN
+- CI run 43614295594 (435fdc2): Lint & Test, Assemble Debug APK, Assemble Release AAB all succeeded.
+- Artifacts: app-debug-apk 14121985250, app-release-aab 14121408338.
+- All three user requirements satisfied:
+  1. Installed tab has no loader/version/platform filters (search only).
+  2. Browse tab filters are modal dialogs (FilterDialog via AlertDialog).
+  3. Loader list restricted to exactly 4: Fabric, Forge, NeoForge, Quilt.
+
+## 2026-11-14 — Modpack Browser + Instance loader icon — CI GREEN
+- CI run 43621279346 (8ad018b): Lint & Test, Assemble Debug APK, Assemble Release AAB all succeeded.
+- Artifacts: app-debug-apk 14124755686, app-release-aab 14124302077.
+- ModpackBrowserScreen: added Loader/Version/Platform filter headers below search, each opening a modal dialog.
+- ModpackBrowserScreen: clicking a modpack opens a version picker dialog (ModpackVersionDialog) listing all versions grouped by Minecraft version.
+- ModpackBrowserScreen: version picker shows stable-only toggle, expandable groups, download progress, install buttons.
+- InstanceSwitcherDropdown in HomeScreen: now shows LoaderIcon alongside instance name/version.
+- All build issues resolved: ArrowBack import, Arrangement.End, safe calls for nullable strings, LoadingIndicator opt-in.

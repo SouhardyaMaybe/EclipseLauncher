@@ -37,3 +37,18 @@
 - Mod loader compatibility is no longer filtered in the install sheet, by request. A Fabric mod can be listed under a Forge instance if both target the same MC version.
 - Back/close cancels a running download; the `.part` file is deleted. There is no resume.
 - `Installed` rows' update/toggle/delete actions are still visual placeholders.
+
+## 2026-11-14 — Manage Content resolution
+- Resolved: Installed is no longer mock-seeded; it scans real instance folders and persists metadata in sidecars.
+- Resolved: update/downgrade, enable/disable and delete are wired to the filesystem.
+- Not touched: worlds are still not extracted from archives; dependency installs use the dependency version's files without loader re-filtering when `version_id` is pinned.
+- Not touched: files installed before this change have no sidecar, so update/downgrade reports "not installed from Modrinth"; toggle/delete still work.
+- Not fixed: `app/src/test` still does not exist and CI has no lint step (same as prior notes).
+- `nemo` branch / off-limits repo instruction still unresolved; all work/pushes remain on `main` of `SouhardyaMaybe/EclipseLauncher`.
+
+## 2026-11-14 — Search/filter pass (noticed, not touched)
+- Worlds on Modrinth still use `project_type:world`, which Modrinth may not support; unchanged from before.
+- Installed version labels are sorted lexicographically (mod version strings are not semver-normalized); filter correctness is exact-match regardless of order.
+- `browseVersionOptions` lists every cached Minecraft version in a 220dp scroll panel; there is no type-ahead inside the panel.
+- Import local still only shows a "started" toast (pre-existing unimplemented path).
+- `.agent/` changes remain uncommitted per operating rules.

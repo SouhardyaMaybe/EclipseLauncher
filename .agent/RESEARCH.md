@@ -40,3 +40,12 @@
 ## 2026-11-14 — Modrinth version downloads + relative time
 - `GET /v2/project/sodium/version?include_changelog=false` includes a numeric `downloads` field per version (verified: first Sodium version returned `downloads: 41127`). Added to `ModrinthVersion` with a 0 default.
 - Android `DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS)` produces the required "4 days ago / 1 month ago / 2 years ago" labels without an extra dependency. Modrinth timestamps (`2026-11-12T01:12:30.162066Z`) parse with `java.time.Instant.parse` on minSdk 26.
+
+## 2026-11-14 — Modrinth dependency API
+- `GET /v2/project/{id|slug}/version` includes `dependencies[]` on each version: `version_id`, `project_id`, `file_name`, `dependency_type` (`required`, `optional`, `incompatible`, `embedded`). Verified against Iris version `Ag5S66CF` (requires Sodium `VHtnT9Q4`) and https://docs.modrinth.com/api/operations/getprojectversions/.
+- `GET /v2/version/{id}` returns a single version with files + dependencies; `GET /v2/project/{id}` returns project title/icon/`project_type` used for the dependency row and install folder. Verified against Sodium project `AANobbMI` and version `VHtnT9Q4`.
+- Search `categories` mixes loaders and categories (Sodium: `fabric`, `neoforge`, `optimization`, `quilt`); the UI partitions them with a loader set.
+
+## 2026-11-14 — Modrinth search facets for loader + game version
+- Search facets are AND-ed: `[["project_type:mod"],["categories:fabric"],["versions:1.21.1"]]`; `categories` carries loader ids for mods. Verified with `curl https://api.modrinth.com/v2/search?...facets=...` → `total_hits: 20330`, first hit Fabric API.
+- Implemented optional `loader`/`gameVersion` args on `ModrinthClient.searchMods()`; facets are only appended when non-blank, so the default listing is unchanged.

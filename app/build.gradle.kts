@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.eclipselauncher"
+    namespace = "me.shadow.eclipselauncher"
     compileSdk {
         version = release(37) {
             minorApiLevel = 2
@@ -17,7 +17,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.eclipselauncher"
+        applicationId = "me.shadow.eclipselauncher"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1

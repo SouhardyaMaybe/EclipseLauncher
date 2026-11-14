@@ -1,17 +1,17 @@
 # ProGuard rules for EclipseLauncher
 
 # Keep Application class
--keep class com.eclipselauncher.EclipseLauncherApplication {
+-keep class me.shadow.eclipselauncher.EclipseLauncherApplication {
     *;
 }
 
 # Keep MainActivity
--keep class com.eclipselauncher.MainActivity {
+-keep class me.shadow.eclipselauncher.MainActivity {
     *;
 }
 
 # Keep ViewModels
--keep class com.eclipselauncher.**ViewModel {
+-keep class me.shadow.eclipselauncher.**ViewModel {
     *;
 }
 

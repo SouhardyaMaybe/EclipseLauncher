@@ -90,3 +90,36 @@
 - [x] Expanded rows: name, version, relative updated time + icon, downloads + icon, trailing install icon.
 - [x] Highlight the group matching the instance's Minecraft version with a green border/tint.
 - [x] CI green: run 43599566733 (b35932d).
+
+## 2026-11-14 — Real installed content + actions + dependency prompt (f181b5e)
+- [x] Browse rows: large name, "by author", description, `loaders • ... | categories`.
+- [x] Remove all mock Sodium/Iris/Fabric API/pack/world rows.
+- [x] Scan `<filesDir>/minecraft/instances/<id>/<mods|resourcepacks|datapacks|shaderpacks|saves>/` for Installed.
+- [x] Sidecar metadata (`<file>.eclipse.json`) so rows keep project id/icon/version across relaunch.
+- [x] Wire update/downgrade to the version sheet; delete the replaced file after success.
+- [x] Wire enable/disable (`.disabled` rename) and delete (file/folder + sidecar, with confirmation).
+- [x] Required-dependency prompt with tappable checkbox rows, Ignore and Install.
+- [x] Resolve pinned dependency versions or latest compatible project-only dependencies.
+- [x] Install checked dependencies first with `skipExisting`, then the main file.
+- [x] CI green: run 43603798526 (f181b5e); debug APK 14117796027, release AAB 14117965542.
+
+## 2026-11-14 — Search + Loader/Version/Platform filters + gates
+- [x] Search field directly below the Installed/Browse tabs.
+- [x] Expandable Loader/Version/Platform headings under search (one panel open at a time).
+- [x] Loader filter only for mods; Version + Platform for every content type.
+- [x] Browse Loader → Modrinth `categories` facet; Version → `versions` facet.
+- [x] Installed filters over scanned content (name/version/author, loaders, version, platform).
+- [x] Persist `loaders` + `platform` in sidecars; legacy fallback (instance loader for mods, project id → Modrinth).
+- [x] No-instance download tap shows "Create an instance first" toast instead of opening the sheet.
+- [x] Account gate on Manage Content using `AddAccountGate` (same dialog as Play without an account).
+- [x] Update/downgrade skips dependency resolution, prompt, and installs.
+- [x] Static checks: all `R.string` refs exist, no duplicate strings, brace/paren balance, `git diff --check`.
+- [x] CI green: run 43606302835 (6ee0ba7); debug APK 14118314103, release AAB 14118735690.
+
+## 2026-11-14 — Modpack Browser filters + version picker + loader icon fix
+- [ ] ModpackBrowserScreen: add Loader/Version/Platform filter headers below search
+- [ ] ModpackBrowserScreen: clicking a modpack opens version picker dialog (like ManageContent's VersionInstallDialog)
+- [ ] ModpackBrowserScreen: version picker lists all modpack versions from Modrinth
+- [ ] ModpackBrowserScreen: no green highlight for instance version match
+- [ ] InstanceSwitcherDropdown: show loader icon alongside instance icon/name
+- [x] CI green: run 43621279346 (8ad018b); debug APK 14124755686, release AAB 14124302077
