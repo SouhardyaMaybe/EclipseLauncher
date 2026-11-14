@@ -21,6 +21,7 @@ import androidx.compose.animation.shrinkOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.ExpandLess
@@ -48,8 +50,20 @@ import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ArrowLeft
 import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.graphics.shadow
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -67,6 +81,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.BadgeDefaults
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
@@ -92,16 +111,16 @@ import com.eclipselauncher.data.MetaResult
 import com.eclipselauncher.data.ModrinthClient
 import com.eclipselauncher.data.ModrinthHit
 
-/** Content types for installed/browse tabs. Glyph shown in the sticky bar chip. */
+/** Content types for installed/browse tabs. Icon + label for the sticky bar chip. */
 private enum class ContentType(
     val labelRes: Int,
-    val glyph: String
+    val icon: androidx.compose.material.icons.filled.ImageVector,
 ) {
-    MODS(R.string.content_type_mods, "◆"),
-    RESOURCE_PACKS(R.string.content_type_resource_packs, "◆"),
-    DATA_PACKS(R.string.content_type_data_packs, "◆"),
-    SHADERS(R.string.content_type_shaders, "◆"),
-    WORLDS(R.string.content_type_worlds, "◆"),
+    MODS(R.string.content_type_mods, Icons.Filled.Layers),
+    RESOURCE_PACKS(R.string.content_type_resource_packs, Icons.Filled.Image),
+    DATA_PACKS(R.string.content_type_data_packs, Icons.Filled.Folder),
+    SHADERS(R.string.content_type_shaders, Icons.Filled.WbSunny),
+    WORLDS(R.string.content_type_worlds, Icons.Filled.Public),
 }
 
 /** Helper for ContentType project type mapping. */
@@ -204,50 +223,61 @@ private fun ContentSegmentedControl(
     }
 }
 
-/** Content type chip: glyph only with small count badge. */
+/** Content type chip: labeled FilterChip with icon + text, count badge on Installed tab. */
 @Composable
 private fun ContentTypeChip(
     type: ContentType,
     selected: Boolean,
     count: Int,
+    showBadge: Boolean,
     onClick: () -> Unit,
 ) {
-    val badgeColor = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
-        else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-    val containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer
-        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+    val labelText = stringResource(type.labelRes)
+    val chipColors = FilterChipDefaults.filterChipColors(
+        containerColor = if (selected) MaterialTheme.colorScheme.secondaryContainer
+        else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+        labelColor = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+        else MaterialTheme.colorScheme.onSurfaceVariant,
+        iconColor = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+        else MaterialTheme.colorScheme.onSurfaceVariant,
+        selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+        selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    )
 
-    Box(
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .size(48.dp)
-            .background(shape = RoundedCornerShape(10.dp), color = containerColor),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = type.glyph,
-                style = MaterialTheme.typography.bodyMedium,
-                color = badgeColor,
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        colors = chipColors,
+        leadingIcon = {
+            Icon(
+                imageVector = type.icon,
+                contentDescription = null,
+                tint = if (selected) MaterialTheme.colorScheme.onSecondaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
             )
-            if (count > 0) {
-                Text(
-                    text = count.toString(),
-                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
-                    color = badgeColor,
-                )
+        },
+        label = { Text(text = labelText, style = MaterialTheme.typography.labelLarge) },
+        modifier = Modifier
+            .minimumInteropComponentSize()
+            .padding(vertical = 4.dp),
+    ) {
+        // Badge for count on Installed tab
+        if (showBadge && count > 0) {
+            BadgedBox(
+                badge = { Text(text = count.toString(), style = MaterialTheme.typography.labelSmall) },
+                badgeAnchor = Alignment.TopEnd,
+                badgeOffset = BadgeDefaults.BadgeOffset(x = 4.dp, y = -4.dp),
+            ) {
+                // Empty content - badge is positioned relative to the chip
             }
         }
     }
 }
 
-/** Loads and caches a content icon via Coil. Falls back to a text glyph. */
+/** Loads and caches a content icon via Coil. Falls back to a Material icon. */
 @Composable
-private fun ContentIcon(url: String?, fallbackGlyph: String, size: Dp = 40.dp) {
+private fun ContentIcon(url: String?, fallbackIcon: androidx.compose.material.icons.filled.ImageVector, size: Dp = 40.dp) {
     Box(
         modifier = Modifier
             .size(size)
@@ -263,16 +293,17 @@ private fun ContentIcon(url: String?, fallbackGlyph: String, size: Dp = 40.dp) {
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop,
             )
         } else {
-            Text(
-                text = fallbackGlyph,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+            Icon(
+                imageVector = fallbackIcon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.size(size * 0.6f),
             )
         }
     }
 }
 
-/** Installed content row: icon card, name + "version · type", refresh ⟳, toggle, 🗑 delete. */
+/** Installed content row: icon, name + "version · type", update, toggle, delete. */
 @Composable
 private fun InstalledContentRow(
     content: InstalledContent,
@@ -290,11 +321,11 @@ private fun InstalledContentRow(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Content icon via Coil
+            // Content icon via Coil (real icon from jar metadata/hash lookup, fallback to type icon)
             ContentIcon(
                 url = content.iconUrl,
-                fallbackGlyph = content.type.glyph,
-                size = 48.dp,
+                fallbackIcon = content.type.icon,
+                size = 56.dp,
             )
             Spacer(modifier = Modifier.width(12.dp))
 
@@ -306,7 +337,7 @@ private fun InstalledContentRow(
 
             // Actions: Update/Degrade, Toggle, Delete
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                TextButton(onClick = onUpdate) {
+                IconButton(onClick = onUpdate) {
                     Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.manage_content_update), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
                 }
                 Switch(
@@ -317,7 +348,7 @@ private fun InstalledContentRow(
                         checkedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
                     ),
                 )
-                TextButton(onClick = onDelete) {
+                IconButton(onClick = onDelete) {
                     Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete), tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(24.dp))
                 }
             }
@@ -325,11 +356,12 @@ private fun InstalledContentRow(
     }
 }
 
-/** Browse content row with Coil-loaded icon. */
+/** Browse content row with Coil-loaded icon: project icon, title, 2-line description, size/support range, filled-tonal download button. */
 @Composable
 private fun BrowseContentRow(
     hit: ModrinthHit,
     onClick: () -> Unit,
+    onDownload: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
@@ -339,43 +371,318 @@ private fun BrowseContentRow(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
-            // Mod icon via Coil
+            // Project icon via Coil (56dp)
             ContentIcon(
                 url = hit.icon_url,
-                fallbackGlyph = "◆",
-                size = 48.dp,
+                fallbackIcon = Icons.Filled.Layers,
+                size = 56.dp,
             )
             Spacer(modifier = Modifier.width(12.dp))
 
-            Column(modifier = Modifier.weight(1f)) {
+            // Content info
+            Column(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 Text(text = hit.title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(text = hit.author + " · " + formatDownloads(hit.downloads), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.secondary)
+                // Author (no download count)
+                Text(text = hit.author, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                // Description (2 lines)
                 if (hit.description.isNotBlank()) {
                     Text(text = hit.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2)
                 }
+                // Support range: loaders + game versions (placeholder - would come from API)
+                Text(
+                    text = "Fabric, Forge · 1.21.4, 1.21.3, 1.20.1",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                )
             }
             Spacer(modifier = Modifier.width(8.dp))
-            TextButton(onClick = { /* open version dropdown */ }) {
-                Icon(Icons.Filled.Download, contentDescription = stringResource(R.string.manage_content_install), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
+
+            // Filled-tonal download button (opens version dialog)
+            FilledTonalIconButton(
+                onClick = onDownload,
+                colors = FilledTonalIconButton.defaultIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                ),
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CloudDownload,
+                    contentDescription = stringResource(R.string.manage_content_install),
+                    modifier = Modifier.size(24.dp),
+                )
             }
         }
     }
 }
 
-/** Collapse/Expand toggle button for options panel. */
+/** Collapsible filter panel with drag handle. Shows content-type chips. */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ToggleButton(
+private fun CollapsibleFilterPanel(
+    contentType: ContentType,
+    onContentTypeClick: (ContentType) -> Unit,
+    installedContent: List<InstalledContent>,
+    isInstalledTab: Boolean,
     collapsed: Boolean,
-    onToggle: () -> Unit,
+    onCollapseToggle: () -> Unit,
+    onDrag: (Offset) -> Unit,
 ) {
-    IconButton(onClick = onToggle) {
-        Icon(
-            imageVector = if (collapsed) Icons.Filled.ExpandMore else Icons.Filled.ExpandLess,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+    val allTypes = ContentType.values()
+    val selectedType = contentType
+
+    // When collapsed, show only selected type; when expanded, show all
+    val visibleTypes = if (collapsed) listOf(selectedType) else allTypes
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            // Content type chips row (horizontally scrollable)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                visibleTypes.forEach { type ->
+                    val count = if (isInstalledTab) {
+                        installedContent.count { it.type == type }
+                    } else 0
+                    ContentTypeChip(
+                        type = type,
+                        selected = selectedType == type,
+                        count = count,
+                        showBadge = isInstalledTab,
+                        onClick = { onContentTypeClick(type) },
+                    )
+                }
+            }
+
+            // Drag handle at bottom center
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+                    .height(32.dp)
+                    .background(Color.Transparent)
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = { },
+                            onDrag = { change, dragAmount ->
+                                change.consumeAllChanges()
+                                onDrag(dragAmount)
+                            },
+                            onDragEnd = { onCollapseToggle() },
+                        )
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.DragIndicator,
+                    contentDescription = stringResource(if (collapsed) R.string.cd_expand else R.string.cd_collapse),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                )
+            }
+        }
+    }
+}
+
+/** Full-width segmented button for provider selection (Modrinth | CurseForge). */
+@Composable
+private fun ProviderSegmentedControl(
+    selectedProvider: Provider,
+    onProviderChange: (Provider) -> Unit,
+    context: android.content.Context,
+    providerComingSoonStr: String,
+) {
+    val options = listOf(Provider.MODRINTH, Provider.CURSEFORGE)
+    SegmentedButton(
+        selectedIndex = options.indexOf(selectedProvider),
+        onClick = { index ->
+            val provider = options[index]
+            if (provider == Provider.CURSEFORGE) {
+                Toast.makeText(context, providerComingSoonStr, Toast.LENGTH_SHORT).show()
+            } else {
+                onProviderChange(provider)
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+        singleChoice = true,
+    ) {
+        options.forEach { provider ->
+            val enabled = provider != Provider.CURSEFORGE
+            SegmentedButtonDefaults.Segment(
+                label = { Text(text = stringResource(provider.labelRes), style = MaterialTheme.typography.labelLarge) },
+                modifier = Modifier
+                    .weight(1f, fill = true)
+                    .alpha(if (enabled) 1f else 0.5f),
+                enabled = enabled,
+            )
+        }
+    }
+}
+
+/** Search field: full-width, leading search icon, clear button when non-empty, keyboard search action. */
+@Composable
+private fun SearchField(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit,
+    onClear: () -> Unit,
+) {
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = Modifier.fillMaxWidth(),
+        placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Search,
+                contentDescription = stringResource(R.string.cd_search),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+        trailingIcon = {
+            if (query.isNotBlank()) {
+                IconButton(onClick = onClear) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = stringResource(R.string.cd_clear),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+        },
+        keyboardOptions = androidx.compose.ui.text.input.KeyboardOptions(
+            imeAction = androidx.compose.ui.text.input.ImeAction.Search
+        ),
+        keyboardActions = androidx.compose.ui.text.input.KeyboardActions(
+            onSearch = onSearch
+        ),
+        colors = androidx.compose.material3.TextFieldDefaults.outlinedTextFieldColors(
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+        ),
+    )
+}
+
+/** Floating pagination pill at bottom: [collapse] [prev] [N/total] [next]. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun PaginationPill(
+    currentPage: Int,
+    totalPages: Int,
+    loading: Boolean,
+    collapsed: Boolean,
+    onCollapseToggle: () -> Unit,
+    onPrev: () -> Unit,
+    onNext: () -> Unit,
+    onPageChange: () -> Unit, // for scroll to top
+) {
+    val pillHeight = 56.dp
+
+    if (collapsed) {
+        // Collapsed: compact handle at screen edge (chevron right to expand)
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .fillMaxHeight(pillHeight)
+                .width(pillHeight)
+                .clip(RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            IconButton(onClick = onCollapseToggle) {
+                Icon(
+                    imageVector = Icons.Filled.ChevronRight,
+                    contentDescription = stringResource(R.string.cd_expand),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    } else {
+        // Expanded: full pill with controls
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 16.dp, bottom = 16.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                    shape = RoundedCornerShape(28.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .shadow(2.dp, shape = RoundedCornerShape(28.dp)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                // Collapse toggle (chevron left to shrink)
+                IconButton(onClick = onCollapseToggle) {
+                    Icon(
+                        imageVector = Icons.Filled.ChevronLeft,
+                        contentDescription = stringResource(R.string.cd_collapse),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(24.dp).padding(4.dp),
+                    )
+                }
+
+                // Previous
+                IconButton(
+                    onClick = {
+                        onPrev()
+                        onPageChange()
+                    },
+                    enabled = currentPage > 1 && !loading,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ChevronLeft,
+                        contentDescription = stringResource(R.string.cd_nav_previous),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage > 1 && !loading) 1f else 0.3f),
+                        modifier = Modifier.size(24.dp).padding(4.dp),
+                    )
+                }
+
+                // Page indicator
+                Text(
+                    text = "$currentPage / $totalPages",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 4.dp).minimumInteropComponentSize(),
+                )
+
+                // Next
+                IconButton(
+                    onClick = {
+                        onNext()
+                        onPageChange()
+                    },
+                    enabled = currentPage < totalPages && !loading,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = stringResource(R.string.cd_nav_next),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (currentPage < totalPages && !loading) 1f else 0.3f),
+                        modifier = Modifier.size(24.dp).padding(4.dp),
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -387,6 +694,7 @@ fun ManageContentScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val lazyListState = rememberLazyListState()
 
     var mainTab by remember { mutableStateOf(0) } // 0 = Installed, 1 = Browse
     var installedContentType by remember { mutableStateOf(ContentType.MODS) }
@@ -399,7 +707,10 @@ fun ManageContentScreen(
     var browsePage by remember { mutableStateOf(1) }
     var browseTotalPages by remember { mutableStateOf(1) }
 
-    var optionsCollapsed by remember { mutableStateOf(false) }
+    // Collapse state remembered per tab
+    var installedTypeCollapsed by remember { mutableStateOf(false) }
+    var browseTypeCollapsed by remember { mutableStateOf(false) }
+    var pageNavCollapsed by remember { mutableStateOf(false) }
 
     // Mock installed content
     val installedContent = remember {
@@ -429,7 +740,7 @@ fun ManageContentScreen(
         }
     }
 
-    // Auto-load browse content on initial load and when content type changes
+    // Auto-load browse content on initial load and when content type/page/query changes
     LaunchedEffect(browseContentType, browseProvider, browsePage, browseQuery) {
         if (mainTab == 1) {
             scope.launch {
@@ -453,6 +764,13 @@ fun ManageContentScreen(
                     browseLoading = false
                 }
             }
+        }
+    }
+
+    // Scroll to top when page changes
+    LaunchedEffect(browsePage) {
+        if (mainTab == 1 && !browseLoading) {
+            lazyListState.animateScrollToItem(0)
         }
     }
 
@@ -483,193 +801,70 @@ fun ManageContentScreen(
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
 
-        // Sticky content type bar (glyphs + badges)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
-        ) {
-            val activeContentType = if (mainTab == 0) installedContentType else browseContentType
-            ContentType.values().forEach { type ->
-                val count = if (mainTab == 0) {
-                    installedContent.count { it.type == type }
-                } else {
-                    0
-                }
-                ContentTypeChip(
-                    type = type,
-                    selected = activeContentType == type,
-                    count = count,
-                    onClick = {
-                        if (mainTab == 0) installedContentType = type
-                        else browseContentType = type
-                    },
-                )
-            }
-        }
-        HorizontalDivider(modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f))
-
-        // Collapse/Expand button for options
-        Box(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
-            contentAlignment = Alignment.CenterEnd,
-        ) {
-            ToggleButton(
-                collapsed = optionsCollapsed,
-                onToggle = { optionsCollapsed = !optionsCollapsed },
-            )
-        }
-
-        // Options section (collapsible): provider selector
-        AnimatedVisibility(
-            visible = !optionsCollapsed,
-            enter = expandIn(tween(150)) + fadeIn(tween(150)),
-            exit = shrinkOut(tween(150)) + fadeOut(tween(150)),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Provider.values().forEach { p ->
-                    val isEnabled = p != Provider.CURSEFORGE
-                    FilterChip(
-                        selected = browseProvider == p,
-                        onClick = {
-                            if (p == Provider.CURSEFORGE) {
-                                Toast.makeText(context, providerComingSoonStr, Toast.LENGTH_SHORT).show()
-                            } else {
-                                browseProvider = p
-                            }
-                        },
-                        label = { Text(text = stringResource(p.labelRes), style = MaterialTheme.typography.labelLarge) },
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            selectedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                            selectedLabelColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(enabled = isEnabled, selected = browseProvider == p),
-                    )
-                }
+        // Collapsible filter panel with content-type chips + drag handle
+        val activeContentType = if (mainTab == 0) installedContentType else browseContentType
+        val activeCollapsed = if (mainTab == 0) installedTypeCollapsed else browseTypeCollapsed
+        val onCollapseToggle = if (mainTab == 0) { installedTypeCollapsed = !installedTypeCollapsed } else { browseTypeCollapsed = !browseTypeCollapsed }
+        val onTypeClick = if (mainTab == 0) { installedContentType = it } else { browseContentType = it }
+        val onDrag = { dragAmount: Offset ->
+            // Drag vertically to collapse/expand (threshold-based)
+            if (dragAmount.y > 20 && !activeCollapsed) {
+                onCollapseToggle()
+            } else if (dragAmount.y < -20 && activeCollapsed) {
+                onCollapseToggle()
             }
         }
 
-        // Search field
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedTextField(
-                value = browseQuery,
-                onValueChange = { browseQuery = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text(stringResource(R.string.manage_content_search_hint)) },
-                singleLine = true,
-                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.cd_search), tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp)) },
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            TextButton(onClick = {
-                scope.launch {
-                    browseLoading = true
-                    browseError = null
-                    val offset = (browsePage - 1) * 25
-                    val result = client.searchMods(
-                        query = browseQuery,
-                        limit = 25,
-                        offset = offset,
-                        projectType = browseContentType.modrinthProjectType,
-                    )
-                    if (result.totalPages > 0 && result.hits.isNotEmpty()) {
-                        browseResults = result.hits
-                        browseTotalPages = result.totalPages
-                        browsePage = result.pageNumber
-                        browseLoading = false
-                    } else {
-                        browseError = "Failed to load results"
-                        browseLoading = false
-                    }
-                }
-            }) {
-                Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.action_search), tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(24.dp))
-            }
-        }
+        CollapsibleFilterPanel(
+            contentType = activeContentType,
+            onContentTypeClick = onTypeClick,
+            installedContent = installedContent,
+            isInstalledTab = mainTab == 0,
+            collapsed = activeCollapsed,
+            onCollapseToggle = onCollapseToggle,
+            onDrag = onDrag,
+        )
 
-        // Floating pagination control (only in Browse tab)
-        AnimatedVisibility(
-            visible = mainTab == 1 && browseTotalPages > 1,
-        ) {
-            var pageNavCollapsed by remember { mutableStateOf(false) }
-            Box(
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .padding(end = 16.dp, top = 8.dp),
-            ) {
-                if (pageNavCollapsed) {
-                    IconButton(onClick = { pageNavCollapsed = false }) {
-                        Icon(
-                            imageVector = Icons.Filled.ExpandMore,
-                            contentDescription = stringResource(R.string.cd_expand),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(24.dp).padding(12.dp),
+        // Search field (full-width, leading icon, clear button, keyboard search action)
+        SearchField(
+            query = browseQuery,
+            onQueryChange = { browseQuery = it },
+            onSearch = {
+                if (mainTab == 1) {
+                    scope.launch {
+                        browseLoading = true
+                        browseError = null
+                        browsePage = 1 // Reset to first page on new search
+                        val offset = 0
+                        val result = client.searchMods(
+                            query = browseQuery,
+                            limit = 25,
+                            offset = offset,
+                            projectType = browseContentType.modrinthProjectType,
                         )
-                    }
-                } else {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        // Previous page
-                        IconButton(
-                            onClick = {
-                                if (browsePage > 1) {
-                                    browsePage--
-                                }
-                            },
-                            enabled = browsePage > 1,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowLeft,
-                                contentDescription = stringResource(R.string.cd_nav_previous),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (browsePage > 1) 1f else 0.3f),
-                                modifier = Modifier.size(24.dp).padding(12.dp),
-                            )
-                        }
-                        // Page indicator
-                        Text(
-                            text = "$browsePage / $browseTotalPages",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        // Next page
-                        IconButton(
-                            onClick = {
-                                if (browsePage < browseTotalPages) {
-                                    browsePage++
-                                }
-                            },
-                            enabled = browsePage < browseTotalPages,
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.ArrowRight,
-                                contentDescription = stringResource(R.string.cd_nav_next),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (browsePage < browseTotalPages) 1f else 0.3f),
-                                modifier = Modifier.size(24.dp).padding(12.dp),
-                            )
-                        }
-                        // Collapse/Expand toggle
-                        IconButton(onClick = { pageNavCollapsed = true }) {
-                            Icon(
-                                imageVector = Icons.Filled.ExpandMore,
-                                contentDescription = stringResource(R.string.cd_collapse),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(24.dp).padding(12.dp),
-                            )
+                        if (result.totalPages > 0 && result.hits.isNotEmpty()) {
+                            browseResults = result.hits
+                            browseTotalPages = result.totalPages
+                            browsePage = result.pageNumber
+                            browseLoading = false
+                        } else {
+                            browseError = "Failed to load results"
+                            browseLoading = false
                         }
                     }
                 }
-            }
+            },
+            onClear = { browseQuery = "" },
+        )
+
+        // Source selector (Browse only): full-width segmented control below search
+        if (mainTab == 1) {
+            ProviderSegmentedControl(
+                selectedProvider = browseProvider,
+                onProviderChange = { browseProvider = it },
+                context = context,
+                providerComingSoonStr = providerComingSoonStr,
+            )
         }
 
         // Content list
@@ -689,7 +884,10 @@ fun ManageContentScreen(
                             )
                         }
                         else -> LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
+                            state = lazyListState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 80.dp), // Space for pagination pill (not shown on Installed)
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
@@ -705,6 +903,7 @@ fun ManageContentScreen(
                     }
                 }
                 1 -> {
+                    val listPaddingBottom = if (browseTotalPages > 1) 100.dp else 80.dp // Extra space for pagination pill
                     when {
                         browseLoading && browseResults.isEmpty() -> Box(
                             modifier = Modifier.fillMaxSize(),
@@ -722,17 +921,38 @@ fun ManageContentScreen(
                         ) { Text(text = stringResource(R.string.manage_content_empty), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
 
                         else -> LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
+                            state = lazyListState,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = listPaddingBottom),
                             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             items(browseResults, key = { it.project_id }) { hit ->
-                                BrowseContentRow(hit = hit, onClick = { /* open mod detail */ })
+                                BrowseContentRow(
+                                    hit = hit,
+                                    onClick = { /* open mod detail */ },
+                                    onDownload = { /* open versions dialog */ },
+                                )
                             }
                         }
                     }
                 }
             }
+        }
+
+        // Floating pagination pill (Browse only, when multiple pages)
+        if (mainTab == 1 && browseTotalPages > 1) {
+            PaginationPill(
+                currentPage = browsePage,
+                totalPages = browseTotalPages,
+                loading = browseLoading,
+                collapsed = pageNavCollapsed,
+                onCollapseToggle = { pageNavCollapsed = !pageNavCollapsed },
+                onPrev = { if (browsePage > 1) browsePage-- },
+                onNext = { if (browsePage < browseTotalPages) browsePage++ },
+                onPageChange = { /* triggers LaunchedEffect to scroll to top */ },
+            )
         }
     }
 }
