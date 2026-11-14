@@ -655,7 +655,8 @@ private fun InstanceSwitcherDropdown(
                             )
                         }
                     }
-                }  // Close LazyColumn
+                }  // Close items lambda
+            }  // Close LazyColumn
 
             HorizontalDivider(modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp))
 
