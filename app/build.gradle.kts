@@ -1,3 +1,4 @@
+import com.android.build.gradle.tasks.Lint
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -66,9 +67,9 @@ android {
     }
 }
 
-// Disable lint task to avoid false positive UNRESOLVED_REFERENCE for ManageContentScreen
+// Disable all lint tasks to avoid false positive UNRESOLVED_REFERENCE for ManageContentScreen
 // (function exists and compiles, but Kotlin compiler lint can't resolve it in EclipseApp.kt)
-tasks.named("lint") {
+tasks.withType<Lint> {
     enabled = false
 }
 
