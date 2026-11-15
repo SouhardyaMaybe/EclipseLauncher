@@ -27,8 +27,10 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.align
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -58,8 +60,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.align
-import androidx.compose.foundation.layout.Alignment
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.getValue
@@ -75,7 +75,7 @@ private const val ZOOM_MIN = 0.65f
 private const val ZOOM_MAX = 2.6f
 
 /** Full-screen toggle button size. */
-private const val FULLSCREEN_BUTTON_SIZE = 40.dp
+private val FULLSCREEN_BUTTON_SIZE = 40.dp
 
 /**
  * Renders the account's character as a live 3D model the user can turn and
