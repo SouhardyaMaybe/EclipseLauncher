@@ -64,6 +64,14 @@ android {
         // Print the full lint report to stdout so CI logs show every issue.
         textReport = true
     }
+
+    testOptions {
+        unitTests {
+            // Robolectric needs the merged app resources/manifest for the real dialog tests.
+            isIncludeAndroidResources = true
+            all { it.maxHeapSize = "2g" }
+        }
+    }
 }
 
 kotlin {
@@ -124,6 +132,10 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation("io.ktor:ktor-client-mock:3.6.1")
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.junit)
+    testImplementation(platform(libs.androidx.compose.bom))
+    testImplementation(libs.androidx.compose.ui.test.junit4)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

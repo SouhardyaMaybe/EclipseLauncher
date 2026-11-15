@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -68,6 +69,10 @@ private const val ZOOM_MAX = 2.6f
 
 /** Full-screen toggle button size. */
 private val FULLSCREEN_BUTTON_SIZE = 40.dp
+
+/** Test hooks: the real dialog tests use these to read layout bounds. */
+const val SKIN_MODEL_CANVAS_TAG = "skinModelCanvas"
+const val FULLSCREEN_BUTTON_TAG = "fullscreenButton"
 
 /**
  * Renders the account's character as a live 3D model the user can turn and
@@ -129,6 +134,7 @@ fun SkinModelView(
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
+                .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
                     detectTransformGestures { _, pan, zoomChange, _ ->
                         // Horizontal: drag right = rotate model right (yaw increases)
@@ -221,7 +227,7 @@ fun SkinModelView(
         ) {
             IconButton(
                 onClick = { isFullscreen = !isFullscreen },
-                modifier = Modifier.size(48.dp),
+                modifier = Modifier.size(48.dp).testTag(FULLSCREEN_BUTTON_TAG),
             ) {
                 Icon(
                     imageVector = if (isFullscreen) Icons.Outlined.FullscreenExit else Icons.Outlined.Fullscreen,
