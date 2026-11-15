@@ -228,7 +228,7 @@ fun SkinModelView(
     // Full-screen toggle button at top-right
     Box(
         modifier = Modifier
-            Modifier.then(androidx.compose.foundation.layout.align(androidx.compose.foundation.layout.Alignment.TopEnd))
+            .align(androidx.compose.foundation.layout.Alignment.TopEnd)
             .padding(12.dp)
             .size(40.dp)
             .background(
