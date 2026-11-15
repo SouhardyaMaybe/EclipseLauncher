@@ -17,7 +17,6 @@
 package me.shadow.eclipselauncher.ui.character
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
@@ -46,12 +45,8 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import java.io.File
-import kotlin.coroutines.coroutineContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.withContext
 import me.shadow.eclipselauncher.data.MediaStorage
+import me.shadow.eclipselauncher.ui.character.loadSkin
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.FullscreenExit
@@ -118,13 +113,7 @@ fun SkinModelView(
     val context = LocalContext.current
     var skin by remember(skinFileName) { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(skinFileName) {
-        skin = withContext(Dispatchers.IO) {
-            if (skinFileName == null) {
-                defaultSkin(context)
-            } else {
-                media.resolve(skinFileName)?.let(::decodeSkin) ?: defaultSkin(context)
-            }
-        }
+        skin = loadSkin(context, media, skinFileName)
     }
 
     val rig = remember { PlayerRig() }
@@ -340,18 +329,3 @@ fun SkinModelView(
     LaunchedEffect(isFullscreen) {
         onFullscreenChange?.invoke(isFullscreen)
     }
-}
-
-/** Decodes a skin file, tolerating the legacy 64x32 layout. */
-internal fun decodeSkin(file: File): Bitmap? =
-    runCatching {
-        BitmapFactory.decodeFile(file.absolutePath)?.let { bitmap ->
-            val legacy = bitmap.width == 64 && bitmap.height == 32
-            if (!legacy && !(bitmap.width == 64 && bitmap.height == 64)) {
-                bitmap.recycle()
-                null
-            } else {
-                bitmap
-            }
-        }
-    }.getOrNull()

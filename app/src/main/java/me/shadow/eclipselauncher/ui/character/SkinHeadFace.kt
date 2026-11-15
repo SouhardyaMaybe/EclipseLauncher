@@ -32,9 +32,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import kotlin.math.roundToInt
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import me.shadow.eclipselauncher.data.MediaStorage
+import me.shadow.eclipselauncher.ui.character.loadSkin
 
 /**
  * Renders the skin's head front face — base plus overlay hat layer — as a
@@ -51,13 +50,7 @@ fun SkinHeadFace(
     val context = LocalContext.current
     var bitmap by remember(skinFileName) { mutableStateOf<Bitmap?>(null) }
     LaunchedEffect(skinFileName) {
-        bitmap = withContext(Dispatchers.IO) {
-            if (skinFileName == null) {
-                defaultSkin(context)
-            } else {
-                media.resolve(skinFileName)?.let(::decodeSkin) ?: defaultSkin(context)
-            }
-        }
+        bitmap = loadSkin(context, media, skinFileName)
     }
     val image = remember(bitmap) { bitmap?.asImageBitmap() }
 
