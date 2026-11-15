@@ -25,6 +25,7 @@ enum class PartKind {
     ARM_LEFT,
     LEG_RIGHT,
     LEG_LEFT,
+    CAPE,
 }
 
 class BoxModel(
@@ -53,6 +54,30 @@ class RenderFace {
     var w = 0
     var h = 0
     var depth = 0f
+
+    /** Which body part produced this quad. */
+    var part = PartKind.BODY
+
+    /** Box face slot: 0=+Z, 1=-Z, 2=+X, 3=-X, 4=+Y, 5=-Y. */
+    var slot = 0
+
+    /** Set only for the six cape quads. */
+    var capeFace: CapeFace? = null
+
+    /**
+     * True when the projected quad winds the way a face toward the camera
+     * does (positive signed area in Compose's y-down screen space). The
+     * renderer draws both sides, so this is only used to report/test the
+     * visible side; painter order still decides occlusion.
+     */
+    fun isFrontFacing(): Boolean {
+        var area = 0f
+        for (i in 0 until 4) {
+            val j = (i + 1) % 4
+            area += pts[i * 2] * pts[j * 2 + 1] - pts[j * 2] * pts[i * 2 + 1]
+        }
+        return area > 0f
+    }
 }
 
 /** All animation channels for one frame. */
@@ -117,9 +142,15 @@ data class Pose(
  * overlays that exist on 64x64 skins), then projects the pose into screen
  * space with an orthographic transform and painter-ordered faces.
  */
-class PlayerRig {
+class PlayerRig(
+    private val hasCape: Boolean = false,
+    private val capeUvScale: Int = 1,
+) {
     val faces: Array<RenderFace>
     private val boxes: List<BoxModel>
+
+    /** Six when a cape box was built, zero when the account has no cape. */
+    val capeFaceCount: Int get() = boxes.count { it.kind == PartKind.CAPE } * 6
 
     init {
         boxes = buildBoxes()
@@ -136,6 +167,12 @@ class PlayerRig {
         var index = 0
         for (box in boxes) {
             writeBox(box, cx, cy, scale, index)
+            for (slot in 0 until 6) {
+                val face = faces[index + slot]
+                face.part = box.kind
+                face.slot = slot
+                face.capeFace = if (box.kind == PartKind.CAPE) CAPE_SLOT_FACES[slot] else null
+            }
             index += 6
         }
         faces.sortWith(depthOrder)
@@ -278,6 +315,17 @@ class PlayerRig {
                 pz = nz
             }
             PartKind.LEG_RIGHT, PartKind.LEG_LEFT, PartKind.BODY -> Unit
+            PartKind.CAPE -> {
+                // Hangs from the shoulder line and tilts its bottom away from
+                // the back. Same pivot for thickness and height, so the top
+                // edge stays attached while the hem clears the torso.
+                val dy = py - CapeGeometry.TOP_Y
+                val dz = pz - CapeGeometry.INNER_Z
+                val cosTilt = cos(CapeGeometry.TILT_RADIANS)
+                val sinTilt = sin(CapeGeometry.TILT_RADIANS)
+                py = CapeGeometry.TOP_Y + dy * cosTilt - dz * sinTilt
+                pz = CapeGeometry.INNER_Z + dy * sinTilt + dz * cosTilt
+            }
         }
 
         // Breath: scale vertically around the chest.
@@ -309,6 +357,20 @@ class PlayerRig {
 
         /** Hip height: the fulcrum the whole-body drag tilt pivots around. */
         private const val TIP_Y = 16f
+
+        /**
+         * writeBox order is +Z, -Z, +X, -X, +Y, -Y. The cape texture is
+         * authored for a box rotated 180 degrees around Y, so its local +Z
+         * region is the inner face and its local -Z region the outer one.
+         */
+        private val CAPE_SLOT_FACES = arrayOf(
+            CapeFace.INNER,
+            CapeFace.OUTER,
+            CapeFace.LEFT,
+            CapeFace.RIGHT,
+            CapeFace.TOP,
+            CapeFace.BOTTOM,
+        )
 
         private val depthOrder = Comparator<RenderFace> { a, b -> a.depth.compareTo(b.depth) }
     }

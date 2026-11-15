@@ -107,17 +107,14 @@ class MediaStorage(context: Context) {
      * Downloads an image from a URL, validates it, and stores it in the media directory.
      * Returns the stored file name, or null if download/validation fails.
      */
-    suspend fun importImageFromUrl(targetName: String, url: String, kind: ImportKind): String? =
+    suspend fun importImageFromUrl(
+        targetName: String,
+        url: String,
+        kind: ImportKind,
+        fetch: (String) -> ByteArray? = { httpImageBytes(it) },
+    ): String? =
         withContext(Dispatchers.IO) {
-            val client = okhttp3.OkHttpClient()
-            val request = okhttp3.Request.Builder()
-                .url(url)
-                .header("User-Agent", "EclipseLauncher/1.0")
-                .build()
-            val response = client.newCall(request).execute()
-            if (!response.isSuccessful) return@withContext null
-            val body = response.body ?: return@withContext null
-            val bytes = body.bytes()
+            val bytes = fetch(url) ?: return@withContext null
             val decoded = runCatching {
                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             }.getOrNull() ?: return@withContext null
@@ -160,4 +157,16 @@ class MediaStorage(context: Context) {
         if (scaled !== bitmap) bitmap.recycle()
         return scaled
     }
+}
+
+/** Real HTTP GET for [MediaStorage.importImageFromUrl]; tests inject a fake. */
+private fun httpImageBytes(url: String): ByteArray? {
+    val client = OkHttpClient()
+    val request = Request.Builder()
+        .url(url)
+        .header("User-Agent", "EclipseLauncher/1.0")
+        .build()
+    val response = client.newCall(request).execute()
+    if (!response.isSuccessful) return null
+    return response.body?.bytes()
 }

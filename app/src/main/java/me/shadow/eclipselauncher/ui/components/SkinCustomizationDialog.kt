@@ -133,6 +133,7 @@ fun SkinCustomizationDialog(
             ) {
                 SkinModelStage(
                     skinFileName = account.skinFileName,
+                    capeFileName = account.capeFileName,
                     media = media,
                     isFullscreen = true,
                     onFullscreenToggle = { isFullscreen = false },
@@ -177,6 +178,7 @@ fun SkinCustomizationDialog(
                     // The model stage: drag to turn, pinch to zoom.
                     SkinModelStage(
                         skinFileName = account.skinFileName,
+                        capeFileName = account.capeFileName,
                         media = media,
                         isFullscreen = false,
                         onFullscreenToggle = { isFullscreen = true },
@@ -239,6 +241,7 @@ fun SkinCustomizationDialog(
 @Composable
 private fun SkinModelStage(
     skinFileName: String?,
+    capeFileName: String?,
     media: MediaStorage,
     isFullscreen: Boolean,
     onFullscreenToggle: () -> Unit,
@@ -258,6 +261,7 @@ private fun SkinModelStage(
     ) {
         SkinModelView(
             skinFileName = skinFileName,
+            capeFileName = capeFileName,
             media = media,
             isFullscreen = isFullscreen,
             onFullscreenToggle = onFullscreenToggle,

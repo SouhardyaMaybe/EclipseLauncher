@@ -71,6 +71,77 @@ data class MsLoginResult(
     val capeUrl: String? = null,
 )
 
+/** One entry of the profile's `skins` array. */
+internal data class ProfileSkin(
+    val id: String,
+    val state: String,
+    val url: String,
+    val variant: String?,
+)
+
+/** One entry of the profile's `capes` array. */
+internal data class ProfileCape(
+    val id: String,
+    val state: String,
+    val url: String,
+    val alias: String?,
+)
+
+/** Parsed Minecraft services profile (only the fields the launcher uses). */
+internal data class MinecraftProfile(
+    val name: String,
+    val uuid: String,
+    val skins: List<ProfileSkin> = emptyList(),
+    val capes: List<ProfileCape> = emptyList(),
+) {
+    val activeSkin: ProfileSkin? get() = skins.firstOrNull { it.state == "ACTIVE" }
+    val activeCape: ProfileCape? get() = capes.firstOrNull { it.state == "ACTIVE" }
+}
+
+/**
+ * Pure profile parsing: picks the first ACTIVE skin/cape and normalizes
+ * texture URLs to HTTPS. Missing arrays and non-object entries are ignored.
+ */
+internal fun parseMinecraftProfile(response: JsonObject): MinecraftProfile {
+    val skins = (response["skins"] as? JsonArray).orEmpty().mapNotNull { element ->
+        (element as? JsonObject)?.let { skin ->
+            ProfileSkin(
+                id = skin.strOrEmpty("id"),
+                state = skin.strOrEmpty("state"),
+                url = normalizeTextureUrl(skin.strOrEmpty("url")),
+                variant = (skin["variant"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
+            )
+        }
+    }
+    val capes = (response["capes"] as? JsonArray).orEmpty().mapNotNull { element ->
+        (element as? JsonObject)?.let { cape ->
+            ProfileCape(
+                id = cape.strOrEmpty("id"),
+                state = cape.strOrEmpty("state"),
+                url = normalizeTextureUrl(cape.strOrEmpty("url")),
+                alias = (cape["alias"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
+            )
+        }
+    }
+    return MinecraftProfile(
+        name = response.requiredString("name"),
+        uuid = response.requiredString("id"),
+        skins = skins,
+        capes = capes,
+    )
+}
+
+/** Normalizes texture URLs to use HTTPS. */
+internal fun normalizeTextureUrl(url: String): String =
+    if (url.startsWith("http://")) "https://" + url.substring(7) else url
+
+private fun JsonObject.strOrEmpty(key: String): String =
+    (get(key) as? JsonPrimitive)?.content ?: ""
+
+private fun JsonObject.requiredString(key: String): String =
+    (get(key) as? JsonPrimitive)?.content
+        ?: throw MsAuthException(MsAuthError.UNKNOWN, "Missing field '$key'")
+
 @Singleton
 class MicrosoftAuth @Inject constructor(
     private val network: NetworkClient,
@@ -157,33 +228,6 @@ class MicrosoftAuth @Inject constructor(
 
     private data class MinecraftToken(val accessToken: String, val expiresIn: Long)
 
-    private data class SkinInfo(
-    val id: String,
-    val state: String,
-    val url: String,
-    val variant: String?,
-)
-
-private data class CapeInfo(
-    val id: String,
-    val state: String,
-    val url: String,
-    val alias: String?,
-)
-
-private data class Profile(
-    val name: String,
-    val uuid: String,
-    val skins: List<SkinInfo> = emptyList(),
-    val capes: List<CapeInfo> = emptyList(),
-) {
-    val activeSkin: SkinInfo?
-        get() = skins.firstOrNull { it.state == "ACTIVE" }
-
-    val activeCape: CapeInfo?
-        get() = capes.firstOrNull { it.state == "ACTIVE" }
-}
-
     private suspend fun exchangeCode(code: String): LiveToken {
         val response = postForm(
             TOKEN_URL,
@@ -254,7 +298,7 @@ private data class Profile(
         )
     }
 
-    private suspend fun minecraftProfile(accessToken: String): Profile {
+    private suspend fun minecraftProfile(accessToken: String): MinecraftProfile {
         val (code, text) = request(MC_PROFILE_URL, null, null, accessToken)
         if (code == 404) {
             throw MsAuthException(
@@ -267,50 +311,7 @@ private data class Profile(
         }
         val response = runCatching { json.parseToJsonElement(text) as? JsonObject }.getOrNull()
             ?: throw MsAuthException(MsAuthError.UNKNOWN, "Malformed profile response")
-
-        // Parse skins array
-        val skinsArray = (response["skins"] as? JsonArray) ?: JsonArray(content = emptyList())
-        val skins = mutableListOf<SkinInfo>()
-        for (i in 0 until skinsArray.size) {
-            val skinObj = skinsArray[i] as JsonObject
-            skins.add(SkinInfo(
-                id = skinObj.strOrEmpty("id"),
-                state = skinObj.strOrEmpty("state"),
-                url = normalizeTextureUrl(skinObj.strOrEmpty("url")),
-                variant = (skinObj["variant"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
-            ))
-        }
-
-        // Parse capes array
-        val capesArray = (response["capes"] as? JsonArray) ?: JsonArray(content = emptyList())
-        val capes = mutableListOf<CapeInfo>()
-        for (i in 0 until capesArray.size) {
-            val capeObj = capesArray[i] as JsonObject
-            capes.add(CapeInfo(
-                id = capeObj.strOrEmpty("id"),
-                state = capeObj.strOrEmpty("state"),
-                url = normalizeTextureUrl(capeObj.strOrEmpty("url")),
-                alias = (capeObj["alias"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
-            ))
-        }
-
-        return Profile(
-            name = response.str("name"),
-            uuid = response.str("id"),
-            skins = skins,
-            capes = capes,
-        )
-    }
-
-    /** Gets string value or empty string if missing. */
-    private fun JsonObject.strOrEmpty(key: String): String =
-        (get(key) as? JsonPrimitive)?.content ?: ""
-
-    /** Normalizes texture URLs to use HTTPS. */
-    private fun normalizeTextureUrl(url: String): String {
-        return if (url.startsWith("http://")) {
-            "https://" + url.substring(7)
-        } else url
+        return parseMinecraftProfile(response)
     }
 
     private fun Long?.toAuthError(): MsAuthError = when (this) {
