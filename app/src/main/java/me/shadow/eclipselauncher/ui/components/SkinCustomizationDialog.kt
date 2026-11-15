@@ -7,7 +7,10 @@
  * actions — pick a skin, pick a cape, clear the skin, clear the cape. Picks
  * import through MediaStorage (validated on the IO dispatcher) and land on
  * the account via onUpdate; clears just null the field so the default Steve
- * shows again. Presented in the standard Material 3 basic dialog.
+ * shows again. Presented in the standard Material 3 basic dialog, with a real
+ * full-screen Dialog (not a resized card) when the model's toggle is used.
+ * Microsoft accounts keep the model and full-screen control but hide the
+ * pick/clear actions.
  */
 package me.shadow.eclipselauncher.ui.components
 
@@ -21,6 +24,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,7 +43,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +55,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.Account
@@ -74,6 +84,8 @@ fun SkinCustomizationDialog(
     val scope = rememberCoroutineScope()
     val skinError = stringResource(R.string.error_skin_size)
     val mediaError = stringResource(R.string.error_media_import)
+    // Saveable so rotating while full screen keeps the full-screen dialog.
+    var isFullscreen by rememberSaveable { mutableStateOf(false) }
 
     val pickSkin = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument(),
@@ -104,101 +116,153 @@ fun SkinCustomizationDialog(
         }
     }
 
-    BasicAlertDialog(onDismissRequest = onDismiss) {
-        Surface(
-            shape = RoundedCornerShape(EclipseRadius.dialog),
-            color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 6.dp,
+    if (isFullscreen) {
+        // A real window, not a resized card: it spans the whole screen behind
+        // the system bars. Back reaches onDismissRequest, which exits full
+        // screen instead of closing the whole skin dialog.
+        Dialog(
+            onDismissRequest = { isFullscreen = false },
+            properties = DialogProperties(
+                usePlatformDefaultWidth = false,
+                decorFitsSystemWindows = false,
+            ),
         ) {
-            Column(
-                modifier = Modifier
-                    .width(340.dp)
-                    .padding(horizontal = 14.dp, vertical = 16.dp),
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.surface,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = stringResource(R.string.skin_section),
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.weight(1f),
-                    )
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = stringResource(R.string.action_close),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                // The model stage: drag to turn, pinch to zoom.
-                Box(
+                SkinModelStage(
+                    skinFileName = account.skinFileName,
+                    media = media,
+                    isFullscreen = true,
+                    onFullscreenToggle = { isFullscreen = false },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+    } else {
+        BasicAlertDialog(onDismissRequest = onDismiss) {
+            Surface(
+                shape = RoundedCornerShape(EclipseRadius.dialog),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 6.dp,
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(240.dp)
-                        .clip(RoundedCornerShape(EclipseRadius.panel))
-                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)),
-                    contentAlignment = Alignment.Center,
+                        .width(340.dp)
+                        .padding(horizontal = 14.dp, vertical = 16.dp),
                 ) {
-                    SkinModelView(
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.skin_section),
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f),
+                        )
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = stringResource(R.string.action_close),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(22.dp),
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // The model stage: drag to turn, pinch to zoom.
+                    SkinModelStage(
                         skinFileName = account.skinFileName,
                         media = media,
+                        isFullscreen = false,
+                        onFullscreenToggle = { isFullscreen = true },
                         modifier = Modifier.fillMaxWidth().height(240.dp),
-                        onFullscreenChange = { isFullscreen ->
-                            // Full-screen handling could be expanded here if needed
-                        },
                     )
-                }
 
-                Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.height(14.dp))
 
-                // Pick and clear, skin over cape: icon + text on every action.
-                // Only shown for accounts that support customization (local/offline accounts).
-                if (canCustomize) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        DialogActionButton(
-                            icon = Icons.Filled.Checkroom,
-                            text = stringResource(R.string.action_pick_skin),
-                            modifier = Modifier.weight(1f),
-                            primary = true,
-                            onClick = { pickSkin.launch(arrayOf("image/png")) },
-                        )
-                        DialogActionButton(
-                            icon = Icons.Filled.Delete,
-                            text = stringResource(R.string.action_clear_skin),
-                            modifier = Modifier.weight(1f),
-                            enabled = account.skinFileName != null,
-                            destructive = true,
-                            onClick = { onUpdate(account.copy(skinFileName = null)) },
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        DialogActionButton(
-                            icon = Icons.Filled.Checkroom,
-                            text = stringResource(R.string.action_pick_cape),
-                            modifier = Modifier.weight(1f),
-                            primary = true,
-                            onClick = { pickCape.launch(arrayOf("image/png")) },
-                        )
-                        DialogActionButton(
-                            icon = Icons.Filled.Delete,
-                            text = stringResource(R.string.action_clear_cape),
-                            modifier = Modifier.weight(1f),
-                            enabled = account.capeFileName != null,
-                            destructive = true,
-                            onClick = { onUpdate(account.copy(capeFileName = null)) },
-                        )
+                    // Pick and clear, skin over cape: icon + text on every action.
+                    // Only shown for accounts that support customization (local/offline accounts).
+                    if (canCustomize) {
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            DialogActionButton(
+                                icon = Icons.Filled.Checkroom,
+                                text = stringResource(R.string.action_pick_skin),
+                                modifier = Modifier.weight(1f),
+                                primary = true,
+                                onClick = { pickSkin.launch(arrayOf("image/png")) },
+                            )
+                            DialogActionButton(
+                                icon = Icons.Filled.Delete,
+                                text = stringResource(R.string.action_clear_skin),
+                                modifier = Modifier.weight(1f),
+                                enabled = account.skinFileName != null,
+                                destructive = true,
+                                onClick = { onUpdate(account.copy(skinFileName = null)) },
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            DialogActionButton(
+                                icon = Icons.Filled.Checkroom,
+                                text = stringResource(R.string.action_pick_cape),
+                                modifier = Modifier.weight(1f),
+                                primary = true,
+                                onClick = { pickCape.launch(arrayOf("image/png")) },
+                            )
+                            DialogActionButton(
+                                icon = Icons.Filled.Delete,
+                                text = stringResource(R.string.action_clear_cape),
+                                modifier = Modifier.weight(1f),
+                                enabled = account.capeFileName != null,
+                                destructive = true,
+                                onClick = { onUpdate(account.copy(capeFileName = null)) },
+                            )
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+/**
+ * The model stage shared by the normal card and the full-screen window, so
+ * both account kinds and both states run the same implementation. Only the
+ * frame around the model differs: a clipped tonal panel in the card, the
+ * whole screen in full screen.
+ */
+@Composable
+private fun SkinModelStage(
+    skinFileName: String?,
+    media: MediaStorage,
+    isFullscreen: Boolean,
+    onFullscreenToggle: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.then(
+            if (isFullscreen) {
+                Modifier
+            } else {
+                Modifier
+                    .clip(RoundedCornerShape(EclipseRadius.panel))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
+            },
+        ),
+        contentAlignment = Alignment.Center,
+    ) {
+        SkinModelView(
+            skinFileName = skinFileName,
+            media = media,
+            isFullscreen = isFullscreen,
+            onFullscreenToggle = onFullscreenToggle,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 

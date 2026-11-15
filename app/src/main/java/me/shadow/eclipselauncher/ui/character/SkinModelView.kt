@@ -26,39 +26,39 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.Alignment
-import kotlin.math.sqrt
-
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kotlin.math.sqrt
+import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.ui.character.loadSkin
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Fullscreen
-import androidx.compose.material.icons.outlined.FullscreenExit
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 
 /** Radians of yaw/pitch per pixel of drag — a full swipe turns the model. */
 private const val DRAG_PER_PX = 0.011f
@@ -66,9 +66,6 @@ private const val DRAG_PER_PX = 0.011f
 /** Zoom bounds: closer inspection without losing the model off-frame. */
 private const val ZOOM_MIN = 0.65f
 private const val ZOOM_MAX = 2.6f
-
-/** Full-screen toggle button size. */
-private val FULLSCREEN_BUTTON_SIZE = 40.dp
 
 /** Test hooks: the real dialog tests use these to read layout bounds. */
 const val SKIN_MODEL_CANVAS_TAG = "skinModelCanvas"
@@ -82,15 +79,17 @@ const val FULLSCREEN_BUTTON_TAG = "fullscreenButton"
  *
  * Features:
  * - Natural drag rotation (surface follows finger, 360° on both axes)
- * - Full-screen toggle button at top-right
+ * - Full-screen toggle button at top-right; the hosting dialog owns the
+ *   full-screen state and switches to a real full-screen window
  * - Pinch to zoom
  */
 @Composable
 fun SkinModelView(
     skinFileName: String?,
     media: MediaStorage,
+    isFullscreen: Boolean,
+    onFullscreenToggle: () -> Unit,
     modifier: Modifier = Modifier,
-    onFullscreenChange: ((Boolean) -> Unit)? = null,
 ) {
     // Draw-phase clock: animateFloatAsState with infiniteRepeatable works
     // with Compose test clock (test-compatible) and real clock (production).
@@ -107,9 +106,6 @@ fun SkinModelView(
     var yaw by remember { mutableFloatStateOf(0f) }
     var pitch by remember { mutableFloatStateOf(0f) }
     var zoom by remember { mutableFloatStateOf(1f) }
-
-    // Full-screen state
-    var isFullscreen by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     var skin by remember(skinFileName) { mutableStateOf<Bitmap?>(null) }
@@ -219,28 +215,49 @@ fun SkinModelView(
             }
         }
 
-        // Full-screen toggle button at top-right (48dp, theme colors, no black background)
+        // Full-screen toggle at top-right. The icon is a 24dp drawable inside a
+        // 48dp tonal button; no inner padding, so the glyph always has draw area.
+        // In full screen the button is inset from system bars while the canvas
+        // itself continues behind them.
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(12.dp)
+                .then(
+                    if (isFullscreen) {
+                        Modifier.windowInsetsPadding(WindowInsets.safeDrawing)
+                    } else {
+                        Modifier
+                    },
+                ),
         ) {
-            IconButton(
-                onClick = { isFullscreen = !isFullscreen },
+            FilledTonalIconButton(
+                onClick = onFullscreenToggle,
                 modifier = Modifier.size(48.dp).testTag(FULLSCREEN_BUTTON_TAG),
+                colors = IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
             ) {
                 Icon(
-                    imageVector = if (isFullscreen) Icons.Outlined.FullscreenExit else Icons.Outlined.Fullscreen,
-                    contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
+                    painter = painterResource(
+                        if (isFullscreen) {
+                            R.drawable.ic_fullscreen_exit_24
+                        } else {
+                            R.drawable.ic_fullscreen_24
+                        },
+                    ),
+                    contentDescription = stringResource(
+                        if (isFullscreen) {
+                            R.string.cd_exit_fullscreen
+                        } else {
+                            R.string.cd_enter_fullscreen
+                        },
+                    ),
                     tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp).padding(12.dp),
+                    modifier = Modifier.size(24.dp),
                 )
             }
         }
-    }
-
-    // Notify parent of fullscreen change
-    LaunchedEffect(isFullscreen) {
-        onFullscreenChange?.invoke(isFullscreen)
     }
 }

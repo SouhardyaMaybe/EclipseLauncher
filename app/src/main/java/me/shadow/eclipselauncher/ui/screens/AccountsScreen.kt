@@ -52,6 +52,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -81,8 +82,9 @@ fun AccountsScreen(
     onRemove: (String) -> Unit,
 ) {
     var showLocalDialog by remember { mutableStateOf(false) }
-    // Which account's skin dialog is open (null = none).
-    var customizingId by remember { mutableStateOf<String?>(null) }
+    // Which account's skin dialog is open (null = none). Saveable so rotation
+    // keeps the dialog open; its full-screen flag is saveable too.
+    var customizingId by rememberSaveable { mutableStateOf<String?>(null) }
     val customizing = accountState.accounts.firstOrNull { it.id == customizingId }
     // Which account's deletion awaits confirmation (null = none). The row's
     // trash icon only stages the delete; this dialog performs it.
