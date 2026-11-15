@@ -56,6 +56,7 @@ object AppModule {
         val factory = SupportOpenHelperFactory(passphrase.getPassphrase())
         return Room.databaseBuilder(context, AppDatabase::class.java, "eclipse.db")
             .openHelperFactory(factory)
+            .addMigrations(AppDatabase.MIGRATION_1_2)
             .build()
     }
 
