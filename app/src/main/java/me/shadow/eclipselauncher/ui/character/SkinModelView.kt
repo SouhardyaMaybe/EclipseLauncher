@@ -31,7 +31,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment as ComposeAlignment
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -229,7 +228,6 @@ fun SkinModelView(
     // Full-screen toggle button at top-right
     Box(
         modifier = Modifier
-            .align(ComposeAlignment.TopEnd)
             .padding(12.dp)
             .size(40.dp)
             .background(
@@ -241,6 +239,13 @@ fun SkinModelView(
                     onTap = {
                         isFullscreen = !isFullscreen
                     }
+                )
+            }
+            .offset {
+                // Position at top-right of parent
+                IntOffset(
+                    x = (size.width - 40.dp.roundToPx() - 12.dp.roundToPx()).coerceAtMost(0),
+                    y = 12.dp.roundToPx()
                 )
             }
     ) {
