@@ -210,12 +210,13 @@ fun AccountsScreen(
         )
     }
 
-    if (customizing != null && customizing.kind == AccountKind.LOCAL) {
+    if (customizing != null) {
         SkinCustomizationDialog(
             account = customizing,
             media = media,
             onUpdate = onUpdate,
             onDismiss = { customizingId = null },
+            canCustomize = customizing.kind == AccountKind.LOCAL,
         )
     }
 

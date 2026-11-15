@@ -65,3 +65,22 @@
 - No native/JNI code affected
 - No Microsoft auth redirect URI changes needed (uses standard desktop redirect)
 - All proguard rules updated
+
+## 2026-11-15 — SkinModelView: Full-screen toggle + natural rotation
+
+**Commit**: `54afa92` (main branch)
+**CI Run**: `43685980565` (GREEN - all 3 jobs passed)
+**Artifacts**:
+- Debug APK: `14150047248`
+- Release AAB: `14150571536`
+- Test Reports: `14150227712`
+
+**Changes**:
+1. Added full-screen toggle button at top-right of 3D model view
+2. Implemented quaternion-based rotation for natural, gimbal-lock-free dragging
+3. Inverted yaw direction (drag right = rotate model left, natural behavior)
+4. Removed pitch clamp for full 360° rotation on both axes
+5. Used `Box` with `contentAlignment = Alignment.TopEnd` for button positioning
+
+**CI**: Run `43685980565` (commit `54afa92`) — all 3 jobs GREEN.
+**Artifacts**: Debug APK `14150047248`, Release AAB `14150571536`, Test Reports `14150227712`

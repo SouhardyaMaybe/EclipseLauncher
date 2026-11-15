@@ -273,3 +273,58 @@
 **CI Verification**: Run 43628269693 (commit `8d94c3a`) - all 11 tests pass, all 3 jobs GREEN
 
 **Artifacts**: Debug APK 14127340323, Release AAB 14126579887, Test Reports 14126724051
+
+## 2026-11-15 — SkinModelView: Full-screen toggle + natural rotation
+
+**Problem**: The SkinModelView needed:
+1. A full-screen toggle button at top-right
+2. Natural drag rotation (surface follows finger, 360° on both axes, no clamping)
+3. Fixed inverted yaw direction
+
+**Solution**:
+- Added full-screen toggle button at top-right using `Box` with `contentAlignment = Alignment.TopEnd`
+- Changed rotation to use quaternion for natural, gimbal-lock-free dragging
+- Inverted yaw direction (drag right = rotate model left, natural behavior)
+- Removed pitch clamp for full 360° rotation on both axes
+- Used `Modifier.offset` initially, then switched to `Box` with `contentAlignment = Alignment.TopEnd` for button positioning
+
+**CI Verification**: Run `43685980565` (commit `54afa92`) — all 3 jobs GREEN (Lint & Test, Assemble Debug APK, Assemble Release AAB). 11 MicrosoftAuth tests pass.
+
+**Artifacts**:
+- Debug APK: `14150047248`
+- Release AAB: `14150571536`
+- Test Reports: `14150227712`
+
+**Phone Test Steps**:
+1. Uninstall any existing `com.eclipselauncher` or `me.shadow.eclipselauncher` build
+2. Install debug APK (artifact `14150047248`)
+3. Open app → Accounts → "Sign in with Microsoft"
+4. Enter credentials, tap Continue
+5. Verify: Account appears in Accounts screen with **skin head** (not default Steve)
+7. Tap account → verify **dress icon (customize) is shown** for Microsoft account (3D model view opens)
+8. In 3D model view: drag to rotate (natural direction), pinch to zoom, tap top-right button to toggle full-screen
+9. Create local account → verify dress icon **shown** and pick/clear actions available
+10. Verify: Settings persist after app restart (MMKV store at `me.shadow.eclipselauncher`)
+
+**CI**: Run `43685980565` (commit `54afa92`) — all 3 jobs GREEN.
+
+## 2026-11-15 — SkinModelView: Full-screen toggle + natural rotation
+
+**Problem**: The SkinModelView needed:
+1. A full-screen toggle button at top-right
+2. Natural drag rotation (surface follows finger, 360° on both axes, no clamping)
+3. Fixed inverted yaw direction
+
+**Solution**:
+- Added full-screen toggle button at top-right using `Box` with `contentAlignment = Alignment.TopEnd`
+- Changed rotation to use quaternion for natural, gimbal-lock-free dragging
+- Inverted yaw direction (drag right = rotate model left, natural behavior)
+- Removed pitch clamp for full 360° rotation on both axes
+- Used `Box` with `contentAlignment = Alignment.TopEnd` for button positioning
+
+**CI Verification**: Run `43685980565` (commit `54afa92`) — all 3 jobs GREEN (Lint & Test, Assemble Debug APK, Assemble Release AAB). 11 MicrosoftAuth tests pass.
+
+**Artifacts**:
+- Debug APK: `14150047248`
+- Release AAB: `14150571536`
+- Test Reports: `14150227712`

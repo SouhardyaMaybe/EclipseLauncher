@@ -139,18 +139,20 @@ fun SkinModelView(
     val srcPts = remember { FloatArray(8) }
     val path = remember { Path() }
 
-    Canvas(
-        modifier = modifier
-            .pointerInput(Unit) {
-                detectTransformGestures { _, pan, zoomChange, _ ->
-                    // Invert yaw: drag right = rotate model left (natural)
-                    yaw -= pan.x * DRAG_PER_PX
-                    // Remove pitch clamp for full 360° rotation
-                    pitch -= pan.y * DRAG_PER_PX
-                    zoom = (zoom * zoomChange).coerceIn(ZOOM_MIN, ZOOM_MAX)
-                }
-            },
-    ) {
+    Box(modifier = modifier) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoomChange, _ ->
+                        // Horizontal: drag right = rotate model right (yaw increases)
+                        yaw += pan.x * DRAG_PER_PX
+                        // Vertical: drag down = tilt model down (pitch increases)
+                        pitch += pan.y * DRAG_PER_PX
+                        zoom = (zoom * zoomChange).coerceIn(ZOOM_MIN, ZOOM_MAX)
+                    }
+                },
+        ) {
         val bitmap = skin ?: return@Canvas
         val baseScale = minOf(size.height / 46f, size.width / 30f)
         val scale = baseScale * zoom
@@ -225,32 +227,111 @@ fun SkinModelView(
         }
     }
 
-    // Full-screen toggle button at top-right
-    Box(
-        modifier = Modifier.padding(12.dp),
-        contentAlignment = Alignment.TopEnd
-    ) {
+    Box(modifier = modifier) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(Unit) {
+                    detectTransformGestures { _, pan, zoomChange, _ ->
+                        // Horizontal: drag right = rotate model right (yaw increases)
+                        yaw += pan.x * DRAG_PER_PX
+                        // Vertical: drag down = tilt model down (pitch increases)
+                        pitch += pan.y * DRAG_PER_PX
+                        zoom = (zoom * zoomChange).coerceIn(ZOOM_MIN, ZOOM_MAX)
+                    }
+                },
+        ) {
+            val bitmap = skin ?: return@Canvas
+            val baseScale = minOf(size.height / 46f, size.width / 30f)
+            val scale = baseScale * zoom
+            val cx = size.width / 2f
+            val cy = size.height * 0.46f
+
+            // The idle choreography, with the user's turn and tilt layered on.
+            // Dragging up/down tilts the whole character around the hips — the
+            // head keeps only its idle glances, never the user's pitch.
+            val idle = Pose.at(timeSeconds)
+            val pose = Pose(
+                yaw = idle.yaw + yaw,
+                headYaw = idle.headYaw,
+                headPitch = idle.headPitch,
+                armSwing = idle.armSwing,
+                breath = idle.breath,
+                bodyPitch = pitch,
+            )
+            val faces = rig.project(pose, cx, cy, scale)
+
+            // Bounded canvas: an invisible rectangle the model lives inside, so
+            // nothing can bleed past it when zoomed in — and the rectangle is
+            // never itself drawn.
+            val boundsLeft = cx - 12f * scale
+            val boundsTop = cy - 21f * scale
+            val boundsRight = cx + 12f * scale
+            val boundsBottom = cy + 19f * scale
+
+            clipRect(
+                left = boundsLeft,
+                top = boundsTop,
+                right = boundsRight,
+                bottom = boundsBottom,
+            ) {
+                val native = drawContext.canvas.nativeCanvas
+                for (face in faces) {
+                    if (face.w <= 0 || face.h <= 0) continue
+                    srcPts[0] = face.u.toFloat()
+                    srcPts[1] = face.v.toFloat()
+                    srcPts[2] = (face.u + face.w).toFloat()
+                    srcPts[3] = face.v.toFloat()
+                    srcPts[4] = (face.u + face.w).toFloat()
+                    srcPts[5] = (face.v + face.h).toFloat()
+                    srcPts[6] = face.u.toFloat()
+                    srcPts[7] = (face.v + face.h).toFloat()
+                    matrix.reset()
+                    if (!matrix.setPolyToPoly(srcPts, 0, face.pts, 0, 4)) continue
+
+                    // Expand the clip a hair past each edge so neighbouring quads
+                    // don't leave hairline seams between them.
+                    path.rewind()
+                    val qx = (face.pts[0] + face.pts[2] + face.pts[4] + face.pts[6]) / 4f
+                    val qy = (face.pts[1] + face.pts[3] + face.pts[5] + face.pts[7]) / 4f
+                    for (corner in 0 until 4) {
+                        val px = face.pts[corner * 2]
+                        val py = face.pts[corner * 2 + 1]
+                        val dx = px - qx
+                        val dy = py - qy
+                        val len = sqrt(dx * dx + dy * dy)
+                        val grow = if (len > 0.001f) 0.6f / len else 0f
+                        val ex = px + dx * grow
+                        val ey = py + dy * grow
+                        if (corner == 0) path.moveTo(ex, ey) else path.lineTo(ex, ey)
+                    }
+                    path.close()
+
+                    native.save()
+                    native.clipPath(path)
+                    native.drawBitmap(bitmap, matrix, paint)
+                    native.restore()
+                }
+            }
+        }
+
+        // Full-screen toggle button at top-right (48dp, theme colors, no black background)
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .background(
-                    MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                    RoundedCornerShape(12.dp)
-                )
-                .pointerInput(Unit) {
-                    detectTapGestures(
-                        onTap = {
-                            isFullscreen = !isFullscreen
-                        }
-                    )
-                }
+                .align(Alignment.TopEnd)
+                .padding(12.dp)
         ) {
-            Icon(
-                imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
-                contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(24.dp).padding(8.dp),
-            )
+            IconButton(
+                onClick = { isFullscreen = !isFullscreen },
+                modifier = Modifier.size(48.dp),
+            ) {
+                Icon(
+                    imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
+                    contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp).padding(12.dp),
+                )
+            }
         }
     }
 

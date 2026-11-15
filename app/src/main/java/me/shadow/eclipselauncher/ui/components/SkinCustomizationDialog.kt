@@ -60,6 +60,7 @@ import me.shadow.eclipselauncher.ui.theme.EclipseRadius
 /**
  * Skin and cape management for one account: the draggable/zoomable 3D model
  * plus pick/clear actions for both media slots.
+ * For Microsoft accounts, the model is shown but pick/clear actions are hidden.
  */
 @Composable
 fun SkinCustomizationDialog(
@@ -67,6 +68,7 @@ fun SkinCustomizationDialog(
     media: MediaStorage,
     onUpdate: (Account) -> Unit,
     onDismiss: () -> Unit,
+    canCustomize: Boolean = true,
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -157,40 +159,43 @@ fun SkinCustomizationDialog(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 // Pick and clear, skin over cape: icon + text on every action.
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    DialogActionButton(
-                        icon = Icons.Filled.Checkroom,
-                        text = stringResource(R.string.action_pick_skin),
-                        modifier = Modifier.weight(1f),
-                        primary = true,
-                        onClick = { pickSkin.launch(arrayOf("image/png")) },
-                    )
-                    DialogActionButton(
-                        icon = Icons.Filled.Delete,
-                        text = stringResource(R.string.action_clear_skin),
-                        modifier = Modifier.weight(1f),
-                        enabled = account.skinFileName != null,
-                        destructive = true,
-                        onClick = { onUpdate(account.copy(skinFileName = null)) },
-                    )
-                }
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    DialogActionButton(
-                        icon = Icons.Filled.Checkroom,
-                        text = stringResource(R.string.action_pick_cape),
-                        modifier = Modifier.weight(1f),
-                        primary = true,
-                        onClick = { pickCape.launch(arrayOf("image/png")) },
-                    )
-                    DialogActionButton(
-                        icon = Icons.Filled.Delete,
-                        text = stringResource(R.string.action_clear_cape),
-                        modifier = Modifier.weight(1f),
-                        enabled = account.capeFileName != null,
-                        destructive = true,
-                        onClick = { onUpdate(account.copy(capeFileName = null)) },
-                    )
+                // Only shown for accounts that support customization (local/offline accounts).
+                if (canCustomize) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        DialogActionButton(
+                            icon = Icons.Filled.Checkroom,
+                            text = stringResource(R.string.action_pick_skin),
+                            modifier = Modifier.weight(1f),
+                            primary = true,
+                            onClick = { pickSkin.launch(arrayOf("image/png")) },
+                        )
+                        DialogActionButton(
+                            icon = Icons.Filled.Delete,
+                            text = stringResource(R.string.action_clear_skin),
+                            modifier = Modifier.weight(1f),
+                            enabled = account.skinFileName != null,
+                            destructive = true,
+                            onClick = { onUpdate(account.copy(skinFileName = null)) },
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        DialogActionButton(
+                            icon = Icons.Filled.Checkroom,
+                            text = stringResource(R.string.action_pick_cape),
+                            modifier = Modifier.weight(1f),
+                            primary = true,
+                            onClick = { pickCape.launch(arrayOf("image/png")) },
+                        )
+                        DialogActionButton(
+                            icon = Icons.Filled.Delete,
+                            text = stringResource(R.string.action_clear_cape),
+                            modifier = Modifier.weight(1f),
+                            enabled = account.capeFileName != null,
+                            destructive = true,
+                            onClick = { onUpdate(account.copy(capeFileName = null)) },
+                        )
+                    }
                 }
             }
         }
