@@ -49,8 +49,8 @@ import androidx.compose.ui.unit.dp
 import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.ui.character.loadSkin
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.default.Fullscreen
-import androidx.compose.material.icons.default.FullscreenExit
+import androidx.compose.material.icons.outlined.Fullscreen
+import androidx.compose.material.icons.outlined.FullscreenExit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -224,7 +224,7 @@ fun SkinModelView(
                 modifier = Modifier.size(48.dp),
             ) {
                 Icon(
-                    imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                    imageVector = if (isFullscreen) Icons.Outlined.FullscreenExit else Icons.Outlined.Fullscreen,
                     contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp).padding(12.dp),
