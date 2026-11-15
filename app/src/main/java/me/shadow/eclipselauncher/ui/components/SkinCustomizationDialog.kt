@@ -148,6 +148,9 @@ fun SkinCustomizationDialog(
                         skinFileName = account.skinFileName,
                         media = media,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
+                        onFullscreenChange = { isFullscreen ->
+                            // Full-screen handling could be expanded here if needed
+                        },
                     )
                 }
 
