@@ -317,16 +317,15 @@ private fun AccountRow(
             )
             Spacer(modifier = Modifier.width(2.dp))
         }
-        // Dress: opens the skin dialog for LOCAL accounts only.
-        if (account.kind == AccountKind.LOCAL) {
-            IconButton(onClick = onCustomize) {
-                Icon(
-                    Icons.Filled.Checkroom,
-                    contentDescription = stringResource(R.string.cd_customize_skin),
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(22.dp),
-                )
-            }
+        // Dress: opens the skin dialog for all account types.
+        // Microsoft accounts see the model but pick/clear actions are hidden in the dialog.
+        IconButton(onClick = onCustomize) {
+            Icon(
+                Icons.Filled.Checkroom,
+                contentDescription = stringResource(R.string.cd_customize_skin),
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(22.dp),
+            )
         }
         // Delete: arms the removal; the screen's dialog confirms it first.
         IconButton(onClick = onDelete) {
