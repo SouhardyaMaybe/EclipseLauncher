@@ -30,7 +30,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.layout.align as composeAlign
+import androidx.compose.foundation.layout.align
 import androidx.compose.ui.Alignment as ComposeAlignment
 
 import androidx.compose.runtime.Composable
@@ -229,7 +229,7 @@ fun SkinModelView(
     // Full-screen toggle button at top-right
     Box(
         modifier = Modifier
-            .composeAlign(ComposeAlignment.TopEnd)
+            .align(ComposeAlignment.TopEnd)
             .padding(12.dp)
             .size(40.dp)
             .background(
