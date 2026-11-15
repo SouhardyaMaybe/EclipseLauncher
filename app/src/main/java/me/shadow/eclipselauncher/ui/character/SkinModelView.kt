@@ -28,7 +28,6 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 
@@ -229,7 +228,7 @@ fun SkinModelView(
     // Full-screen toggle button at top-right
     Box(
         modifier = Modifier
-            .align(Alignment.TopEnd)
+            Modifier.then(androidx.compose.foundation.layout.align(androidx.compose.foundation.layout.Alignment.TopEnd))
             .padding(12.dp)
             .size(40.dp)
             .background(
