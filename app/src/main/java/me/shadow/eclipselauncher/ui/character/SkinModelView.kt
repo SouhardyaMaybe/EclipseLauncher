@@ -59,11 +59,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 
 /** Radians of yaw/pitch per pixel of drag — a full swipe turns the model. */
 private const val DRAG_PER_PX = 0.011f
@@ -305,27 +300,27 @@ fun SkinModelView(
                     native.restore()
                 }
             }
-        }
+    }
 
-        // Full-screen toggle button at top-right (48dp, theme colors, no black background)
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(12.dp)
+    // Full-screen toggle button at top-right (48dp, theme colors, no black background)
+    Box(
+        modifier = Modifier
+            .align(Alignment.TopEnd)
+            .padding(12.dp)
+    ) {
+        IconButton(
+            onClick = { isFullscreen = !isFullscreen },
+            modifier = Modifier.size(48.dp),
         ) {
-            IconButton(
-                onClick = { isFullscreen = !isFullscreen },
-                modifier = Modifier.size(48.dp),
-            ) {
-                Icon(
-                    imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
-                    contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp).padding(12.dp),
-                )
-            }
+            Icon(
+                imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
+                contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(24.dp).padding(12.dp),
+            )
         }
     }
+}
 
     // Notify parent of fullscreen change
     LaunchedEffect(isFullscreen) {
