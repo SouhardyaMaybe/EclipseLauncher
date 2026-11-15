@@ -269,7 +269,7 @@ private data class Profile(
             ?: throw MsAuthException(MsAuthError.UNKNOWN, "Malformed profile response")
 
         // Parse skins array
-        val skinsArray = (response["skins"] as? JsonArray) ?: JsonArray()
+        val skinsArray = (response["skins"] as? JsonArray) ?: JsonArray(content = emptyList())
         val skins = mutableListOf<SkinInfo>()
         for (i in 0 until skinsArray.size) {
             val skinObj = skinsArray[i] as JsonObject
@@ -282,7 +282,7 @@ private data class Profile(
         }
 
         // Parse capes array
-        val capesArray = (response["capes"] as? JsonArray) ?: JsonArray()
+        val capesArray = (response["capes"] as? JsonArray) ?: JsonArray(content = emptyList())
         val capes = mutableListOf<CapeInfo>()
         for (i in 0 until capesArray.size) {
             val capeObj = capesArray[i] as JsonObject
