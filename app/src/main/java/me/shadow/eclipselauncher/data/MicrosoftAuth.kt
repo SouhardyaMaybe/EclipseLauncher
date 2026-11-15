@@ -277,7 +277,7 @@ private data class Profile(
                 id = skinObj.strOrEmpty("id"),
                 state = skinObj.strOrEmpty("state"),
                 url = normalizeTextureUrl(skinObj.strOrEmpty("url")),
-                variant = skinObj["variant"]?.let { it.content?.takeIf { it.isNotBlank() } },
+                variant = (skinObj["variant"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
             ))
         }
 
@@ -290,7 +290,7 @@ private data class Profile(
                 id = capeObj.strOrEmpty("id"),
                 state = capeObj.strOrEmpty("state"),
                 url = normalizeTextureUrl(capeObj.strOrEmpty("url")),
-                alias = capeObj["alias"]?.let { it.content?.takeIf { it.isNotBlank() } },
+                alias = (capeObj["alias"] as? JsonPrimitive)?.content?.takeIf { it.isNotBlank() },
             ))
         }
 
