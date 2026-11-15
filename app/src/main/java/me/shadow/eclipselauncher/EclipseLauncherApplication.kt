@@ -37,6 +37,8 @@ class EclipseLauncherApplication : Application(), SingletonImageLoader.Factory {
         val container = EntryPoints.get(this, EclipseContainer::class.java)
         // Fail tasks interrupted by the previous process before the first frame.
         runBlocking { container.tasks.load() }
+        // Refresh Microsoft account profiles in background (skins/capes can change outside the launcher).
+        runBlocking { container.accounts.refreshMicrosoftProfiles(container.media) }
     }
 
     override fun newImageLoader(context: PlatformContext): ImageLoader =

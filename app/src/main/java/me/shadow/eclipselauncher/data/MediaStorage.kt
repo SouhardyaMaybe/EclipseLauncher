@@ -106,15 +106,24 @@ class MediaStorage(context: Context) {
 
     /**
      * Downloads an image from a URL, validates it, and stores it in the media directory.
-     * Returns the stored file name, or null if download/validation fails.
+     * Uses the texture hash from the URL (textures.minecraft.net/texture/<hash>) as the
+     * filename for content-addressed caching. Returns the stored file name, or null if
+     * download/validation fails.
      */
     suspend fun importImageFromUrl(
-        targetName: String,
         url: String,
         kind: ImportKind,
         fetch: (String) -> ByteArray? = { httpImageBytes(it) },
     ): String? =
         withContext(Dispatchers.IO) {
+            // Extract texture hash for content-addressed caching.
+            // URL format: https://textures.minecraft.net/texture/<hash>
+            val textureHash = extractTextureHash(url)
+            val cachedName = textureHash?.let { "${kind.name().lowercase()}_$it.png" }
+            if (cachedName != null && file(cachedName).exists()) {
+                return@withContext cachedName
+            }
+
             val bytes = fetch(url) ?: return@withContext null
             val decoded = runCatching {
                 BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
@@ -138,6 +147,7 @@ class MediaStorage(context: Context) {
                 decoded
             }
 
+            val targetName = cachedName ?: newId() + "_${kind.name().lowercase()}.png"
             runCatching {
                 file(targetName).outputStream().use { out ->
                     toWrite.compress(Bitmap.CompressFormat.PNG, 100, out)
@@ -145,6 +155,18 @@ class MediaStorage(context: Context) {
                 targetName
             }.onFailure { toWrite.recycle() }.getOrNull()
         }
+
+    /** Extracts the texture hash from a Minecraft texture URL. */
+    private fun extractTextureHash(url: String): String? {
+        val prefix = "textures.minecraft.net/texture/"
+        val idx = url.indexOf(prefix)
+        if (idx < 0) return null
+        val start = idx + prefix.length
+        val end = url.indexOf('/', start)
+        val hashPart = if (end >= 0) url.substring(start, end) else url.substring(start)
+        // Hash should be hex, 64 chars for SHA-256
+        return if (hashPart.matches(Regex("^[a-f0-9]{32,}$"))) hashPart else null
+    }
 
     private fun scaleDown(bitmap: Bitmap, maxDimension: Float): Bitmap {
         val largest = maxOf(bitmap.width, bitmap.height)

@@ -1,5 +1,42 @@
 # LOG
 
+## 2026-11-15 — Microsoft Account Skin/Cape Display Fix
+
+**Problem**: Microsoft sign-in completes but real skin/cape don't show anywhere in the app. Skin/cape customization incorrectly offered for Microsoft accounts (should be LOCAL only).
+
+**Root Causes Found**:
+1. `skinVariant` (CLASSIC/SLIM) parsed from profile but NOT stored in Account model → SLIM skins rendered as CLASSIC (wrong arm width)
+2. No profile refresh on app start / token expiry → stale skin/cape if changed on Minecraft website
+3. No content-addressed caching by texture hash → re-downloads on every sign-in
+4. Dress button shown for Microsoft accounts in AccountsScreen → should be hidden
+5. SkinModelView didn't use `skinVariant` for SLIM model selection
+
+**Fixes Applied**:
+1. **Models.kt**: Added `skinVariant: String?` to Account data class
+2. **Entities.kt**: Added `skinVariant` column to AccountEntity Room table
+3. **MicrosoftAuth.kt**: 
+   - Added `fetchProfile(refreshToken)` public function for background refresh
+   - `parseMinecraftProfile()` already correctly extracts ACTIVE skin/cape and normalizes HTTP→HTTPS
+4. **MicrosoftAuthScreen.kt**: Pass `skinVariant` when creating Account; use new content-addressed `importImageFromUrl(url, kind)`
+5. **MediaStorage.kt**: 
+   - New `importImageFromUrl(url, kind)` overload extracts texture hash from URL for content-addressed caching
+   - Returns cached file if texture hash already exists
+6. **AccountStore.kt**: 
+   - Injected MicrosoftAuth
+   - Added `refreshMicrosoftProfiles(media)` called on app start
+   - Uses content-addressed import and updates skinVariant
+7. **EclipseLauncherApplication.kt**: Calls `refreshMicrosoftProfiles()` on startup
+8. **SkinModelView.kt**: Added `skinVariant` parameter, passes to `PlayerRig(slim = variant == "SLIM")`
+9. **SkinCustomizationDialog.kt**: Passes `account.skinVariant` to SkinModelStage
+10. **AccountsScreen.kt**: 
+    - Added test tags (`account_row_${id}`, `skin_head_${id}`)
+    - Hide dress button for Microsoft accounts (`if (account.kind == AccountKind.LOCAL)`)
+11. **Tests Added**:
+    - MicrosoftAuthTest.kt: 6 profile parsing tests (ACTIVE skin/cape, SLIM variant, no cape, HTTP→HTTPS normalization, missing arrays, non-object entries ignored)
+    - AccountsScreenUITest.kt: 3 UI wiring tests (Microsoft no customize, Local has customize, mixed accounts)
+
+**CI Budget**: 3 runs remaining (1 for this fix, 2 for verification)
+
 ## 2026-11-13
 - Restored `.agent` context; HEAD 3f67213 broken at build-script compile (`strictly` unresolved).
 - Rewrote `app/build.gradle.kts` without force/strictly/failOnVersionConflict; explicit Compose 1.6.1, M3 1.2.1, adaptive 1.0.0-alpha01, nav-compose 2.7.7, icons 1.6.1.

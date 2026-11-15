@@ -280,7 +280,8 @@ private fun AccountRow(
                 },
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 10.dp),
+            .padding(horizontal = 12.dp, vertical = 10.dp)
+            .testTag("account_row_${account.id}"),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         // Skin head: base face + hat overlay, so local accounts without a
@@ -288,7 +289,7 @@ private fun AccountRow(
         SkinHeadFace(
             skinFileName = account.skinFileName,
             media = media,
-            modifier = Modifier.size(44.dp),
+            modifier = Modifier.size(44.dp).testTag("skin_head_${account.id}"),
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -319,15 +320,18 @@ private fun AccountRow(
             )
             Spacer(modifier = Modifier.width(2.dp))
         }
-        // Dress: opens the skin dialog for all account types.
-        // Microsoft accounts see the model but pick/clear actions are hidden in the dialog.
-        IconButton(onClick = onCustomize) {
-            Icon(
-                Icons.Filled.Checkroom,
-                contentDescription = stringResource(R.string.cd_customize_skin),
-                tint = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.size(22.dp),
-            )
+        // Dress: opens the skin dialog. Only for LOCAL accounts — Microsoft
+        // accounts use the official Minecraft profile for skin/cape and cannot
+        // customize them in the launcher.
+        if (account.kind == AccountKind.LOCAL) {
+            IconButton(onClick = onCustomize) {
+                Icon(
+                    Icons.Filled.Checkroom,
+                    contentDescription = stringResource(R.string.cd_customize_skin),
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(22.dp),
+                )
+            }
         }
         // Delete: arms the removal; the screen's dialog confirms it first.
         IconButton(onClick = onDelete) {

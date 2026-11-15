@@ -222,6 +222,17 @@ class MicrosoftAuth @Inject constructor(
             }.getOrNull()
         }
 
+    /**
+     * Fetches the Minecraft profile using a refresh token. Refreshes the access
+     * token first, then calls the profile endpoint. Returns the parsed profile
+     * with active skin/cape URLs and variant, or null on failure.
+     */
+    suspend fun fetchProfile(refreshToken: String): MinecraftProfile? =
+        withContext(Dispatchers.IO) {
+            val accessToken = refreshAccessToken(refreshToken) ?: return@withContext null
+            runCatching { minecraftProfile(accessToken) }.getOrNull()
+        }
+
     // ------------------------------------------------------------------ steps
 
     private data class LiveToken(val accessToken: String, val refreshToken: String)

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 @Singleton
 class AccountStore @Inject constructor(
     private val dao: AccountDao,
+    private val microsoftAuth: MicrosoftAuth,
 ) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -57,6 +58,50 @@ class AccountStore @Inject constructor(
     suspend fun setMedia(id: String, skin: String?, cape: String?) {
         dao.getById(id)?.let { entity ->
             dao.update(entity.copy(skinFileName = skin, capeFileName = cape))
+        }
+    }
+
+    /**
+     * Refreshes Microsoft account profiles from the Minecraft services API.
+     * For each Microsoft account with a refresh token, fetches the latest profile
+     * and updates the stored skin/cape URLs and variant if they changed.
+     * Call on app start and when the access token expires.
+     */
+    suspend fun refreshMicrosoftProfiles(media: MediaStorage) {
+        val accounts = dao.getAll().first()
+        val microsoftAccounts = accounts.filter { it.kind == AccountKind.MICROSOFT && it.refreshToken != null }
+        for (entity in microsoftAccounts) {
+            val profile = microsoftAuth.fetchProfile(entity.refreshToken!!)
+                ?: continue
+            val activeSkin = profile.activeSkin
+            val activeCape = profile.activeCape
+            val newSkinUrl = activeSkin?.url
+            val newCapeUrl = activeCape?.url
+            val newVariant = activeSkin?.variant
+            val skinChanged = newSkinUrl != null && newSkinUrl != entity.skinFileName
+            val capeChanged = newCapeUrl != null && newCapeUrl != entity.capeFileName
+            val variantChanged = newVariant != null && newVariant != entity.skinVariant
+            if (skinChanged || capeChanged || variantChanged) {
+                var skinFileName = entity.skinFileName
+                var capeFileName = entity.capeFileName
+                if (skinChanged) {
+                    skinFileName = media.importImageFromUrl(
+                        newSkinUrl,
+                        ImportKind.SKIN
+                    ) ?: entity.skinFileName
+                }
+                if (capeChanged) {
+                    capeFileName = media.importImageFromUrl(
+                        newCapeUrl,
+                        ImportKind.CAPE
+                    ) ?: entity.capeFileName
+                }
+                dao.update(entity.copy(
+                    skinFileName = skinFileName,
+                    capeFileName = capeFileName,
+                    skinVariant = newVariant ?: entity.skinVariant,
+                ))
+            }
         }
     }
 }

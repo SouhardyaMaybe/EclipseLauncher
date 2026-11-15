@@ -28,6 +28,8 @@ data class AccountEntity(
     val expiresAtEpochSeconds: Long = 0,
     val skinFileName: String? = null,
     val capeFileName: String? = null,
+    /** Skin variant: "CLASSIC" (Steve) or "SLIM" (Alex). Null = not set / default CLASSIC. */
+    val skinVariant: String? = null,
     val selected: Boolean = false,
 ) {
     fun toModel(): Account = Account(
@@ -40,6 +42,7 @@ data class AccountEntity(
         expiresAtEpochSeconds = expiresAtEpochSeconds,
         skinFileName = skinFileName,
         capeFileName = capeFileName,
+        skinVariant = skinVariant,
     )
 
     companion object {
@@ -53,6 +56,7 @@ data class AccountEntity(
             expiresAtEpochSeconds = account.expiresAtEpochSeconds,
             skinFileName = account.skinFileName,
             capeFileName = account.capeFileName,
+            skinVariant = account.skinVariant,
             selected = selected,
         )
     }

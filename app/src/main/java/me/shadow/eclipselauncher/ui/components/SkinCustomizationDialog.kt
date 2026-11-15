@@ -134,6 +134,7 @@ fun SkinCustomizationDialog(
                 SkinModelStage(
                     skinFileName = account.skinFileName,
                     capeFileName = account.capeFileName,
+                    skinVariant = account.skinVariant,
                     media = media,
                     isFullscreen = true,
                     onFullscreenToggle = { isFullscreen = false },
@@ -179,6 +180,7 @@ fun SkinCustomizationDialog(
                     SkinModelStage(
                         skinFileName = account.skinFileName,
                         capeFileName = account.capeFileName,
+                        skinVariant = account.skinVariant,
                         media = media,
                         isFullscreen = false,
                         onFullscreenToggle = { isFullscreen = true },
@@ -242,6 +244,8 @@ fun SkinCustomizationDialog(
 private fun SkinModelStage(
     skinFileName: String?,
     capeFileName: String?,
+    /** Skin variant: "CLASSIC" (Steve, 4px arms) or "SLIM" (Alex, 3px arms). */
+    skinVariant: String? = null,
     media: MediaStorage,
     isFullscreen: Boolean,
     onFullscreenToggle: () -> Unit,
@@ -262,6 +266,7 @@ private fun SkinModelStage(
         SkinModelView(
             skinFileName = skinFileName,
             capeFileName = capeFileName,
+            skinVariant = skinVariant,
             media = media,
             isFullscreen = isFullscreen,
             onFullscreenToggle = onFullscreenToggle,

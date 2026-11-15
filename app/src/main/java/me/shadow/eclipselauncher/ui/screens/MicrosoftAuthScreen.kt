@@ -113,19 +113,17 @@ fun MicrosoftAuthScreen(
                                 val result = auth.login(code) { stage ->
                                     ui = AuthUi.Progress(stage)
                                 }
-                                // Download skin and cape images
+                                // Download skin and cape images (content-addressed by texture hash)
                                 var skinFileName: String? = null
                                 var capeFileName: String? = null
                                 if (result.skinUrl != null) {
                                     skinFileName = media.importImageFromUrl(
-                                        newId() + "_skin.png",
                                         result.skinUrl!!,
                                         ImportKind.SKIN
                                     )
                                 }
                                 if (result.capeUrl != null) {
                                     capeFileName = media.importImageFromUrl(
-                                        newId() + "_cape.png",
                                         result.capeUrl!!,
                                         ImportKind.CAPE
                                     )
@@ -141,6 +139,7 @@ fun MicrosoftAuthScreen(
                                         expiresAtEpochSeconds = result.expiresAtEpochSeconds,
                                         skinFileName = skinFileName,
                                         capeFileName = capeFileName,
+                                        skinVariant = result.skinVariant,
                                     ),
                                     skinFileName,
                                     capeFileName,

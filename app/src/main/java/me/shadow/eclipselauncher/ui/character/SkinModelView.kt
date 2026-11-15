@@ -90,11 +90,14 @@ const val CAPE_DIAGNOSTICS_TAG = "capeDiagnostics"
  * - Full-screen toggle button at top-right; the hosting dialog owns the
  *   full-screen state and switches to a real full-screen window
  * - Pinch to zoom
+ * - SLIM variant (Alex model) uses 3px arm width instead of 4px
  */
 @Composable
 fun SkinModelView(
     skinFileName: String?,
     capeFileName: String? = null,
+    /** Skin variant: "CLASSIC" (Steve, 4px arms) or "SLIM" (Alex, 3px arms). */
+    skinVariant: String? = null,
     media: MediaStorage,
     isFullscreen: Boolean,
     onFullscreenToggle: () -> Unit,
@@ -150,8 +153,9 @@ fun SkinModelView(
     }
 
     val capeScale = cape?.let { CapeTextureLayout.scaleFor(it.width, it.height) } ?: 1
-    val rig = remember(cape) {
-        PlayerRig(hasCape = cape != null, capeUvScale = capeScale)
+    val isSlim = (skinVariant == "SLIM")
+    val rig = remember(cape, isSlim) {
+        PlayerRig(hasCape = cape != null, capeUvScale = capeScale, slim = isSlim)
     }
     // Nearest-neighbour sampling: no bilinear filtering, no dithering. Skin
     // texels stay hard-edged at every scale, like pixel blending off in 3D.
@@ -218,6 +222,12 @@ fun SkinModelView(
             ) {
                 val native = drawContext.canvas.nativeCanvas
                 for (face in faces) {
+                    // Solid boxes only need their camera-facing surface; an
+                    // inside-out face would otherwise paint through the part
+                    // in front of it. Transparent overlay texels still reveal
+                    // the base layer, exactly like vanilla's culled entity
+                    // render types.
+                    if (!face.isFrontFacing()) continue
                     // The cape quads sample the cape bitmap; every other quad
                     // keeps sampling the skin. Painter order is shared.
                     val bitmap = if (face.part == PartKind.CAPE) capeBitmap else skinBitmap

@@ -55,6 +55,30 @@ class RenderFace {
     var h = 0
     var depth = 0f
 
+    /** Per-corner transformed z; larger is nearer the camera. */
+    val depths = FloatArray(4)
+
+    /** Stable identity in the current projection (0..faces.size-1). */
+    var faceId = 0
+
+    /** Index of the box that produced this quad. */
+    var boxIndex = 0
+
+    /** Average depth of every quad in this quad's box. */
+    var boxDepth = 0f
+
+    /** 0 = base layer, 1 = overlay layer, 2 = cape. */
+    var layer = 0
+
+    /**
+     * Far-to-near rank of this face's body group for the current camera.
+     * Body boxes share one rank; the cape and the head each move to the
+     * front or the back depending on which side of the torso's back plane
+     * and the neck plane the camera is on. Grouping before sorting keeps
+     * the comparator a total order.
+     */
+    var paintRank = 0
+
     /** Which body part produced this quad. */
     var part = PartKind.BODY
 
@@ -145,6 +169,10 @@ data class Pose(
 class PlayerRig(
     private val hasCape: Boolean = false,
     private val capeUvScale: Int = 1,
+    /** Measurement/test option: build the hat/jacket/sleeve/pants overlays. */
+    private val hasOverlay: Boolean = true,
+    /** Measurement/test option: vanilla 3-px-wide slim arms. */
+    private val slim: Boolean = false,
 ) {
     val faces: Array<RenderFace>
     private val boxes: List<BoxModel>
@@ -153,7 +181,7 @@ class PlayerRig(
     val capeFaceCount: Int get() = boxes.count { it.kind == PartKind.CAPE } * 6
 
     init {
-        boxes = buildBoxes(hasCape, capeUvScale)
+        boxes = buildBoxes(hasCape, capeUvScale, hasOverlay, slim)
         faces = Array(boxes.size * 6) { RenderFace() }
     }
 
@@ -165,15 +193,41 @@ class PlayerRig(
     fun project(pose: Pose, cx: Float, cy: Float, scale: Float): Array<RenderFace> {
         beginPose(pose)
         var index = 0
-        for (box in boxes) {
+        var previousBoxDepth = 0f
+        for ((boxIndex, box) in boxes.withIndex()) {
             writeBox(box, cx, cy, scale, index)
+            var boxDepth = 0f
+            for (slot in 0 until 6) {
+                boxDepth += faces[index + slot].depth
+            }
+            boxDepth /= 6f
+            // An overlay encloses its base, so their centres are identical.
+            // Share the base's key and let [layer] break the tie, guaranteeing
+            // that the overlay is painted after the box it belongs to.
+            val keyDepth = if (box.inflate > 0f) previousBoxDepth else boxDepth
             for (slot in 0 until 6) {
                 val face = faces[index + slot]
+                face.faceId = index + slot
+                face.boxIndex = boxIndex
+                face.boxDepth = keyDepth
+                face.layer = when {
+                    box.kind == PartKind.CAPE -> 2
+                    box.inflate > 0f -> 1
+                    else -> 0
+                }
                 face.part = box.kind
                 face.slot = slot
                 face.capeFace = if (box.kind == PartKind.CAPE) CAPE_SLOT_FACES[slot] else null
             }
+            previousBoxDepth = boxDepth
             index += 6
+        }
+        for (face in faces) {
+            face.paintRank = when (face.part) {
+                PartKind.HEAD -> rankHead
+                PartKind.CAPE -> rankCape
+                else -> rankBody
+            }
         }
         faces.sortWith(depthOrder)
         return faces
@@ -208,6 +262,11 @@ class PlayerRig(
     private var bodyPitchCos = 1f
     private var bodyPitchSin = 0f
 
+    /** Paint ranks for the head, cape and body groups, once per frame. */
+    private var rankBody = 0
+    private var rankCape = 0
+    private var rankHead = 0
+
     private fun beginPose(pose: Pose) {
         cosYaw = cos(pose.yaw)
         sinYaw = sin(pose.yaw)
@@ -220,6 +279,18 @@ class PlayerRig(
         breathScale = 1f + pose.breath
         bodyPitchCos = cos(pose.bodyPitch)
         bodyPitchSin = sin(pose.bodyPitch)
+        // Three groups are separated by two planes: the torso's back plane
+        // (z = -2) and the neck plane (y = 24). The transformed normals'
+        // view-space z says which side the camera is on, so ranking the
+        // groups by those signs is a total order with no comparator cycles.
+        // Near a plane, keep the group on the far side to avoid flicker.
+        val cameraBehindBack = -cosYaw * bodyPitchCos > BACK_EPSILON
+        val cameraAbove = bodyPitchSin >= 0f
+        val behindRank = if (cameraBehindBack) 1 else 0
+        val belowRank = if (cameraAbove) 0 else 1
+        rankHead = if (cameraAbove) 2 else 0
+        rankBody = (1 - behindRank) + belowRank
+        rankCape = behindRank + belowRank
     }
 
     // ------------------------------------------------------------- projection
@@ -267,6 +338,7 @@ class PlayerRig(
             transform(corners[corner * 3], corners[corner * 3 + 1], corners[corner * 3 + 2], kind)
             face.pts[corner * 2] = cx + scratch[0] * scale
             face.pts[corner * 2 + 1] = cy - (scratch[1] - 16f) * scale
+            face.depths[corner] = scratch[2]
             depth += scratch[2]
         }
         face.depth = depth / 4f
@@ -350,6 +422,22 @@ class PlayerRig(
         scratch[2] = pz
     }
 
+    /**
+     * Far-to-near: body group first, then one body part (box) at a time.
+     * All six faces of a box share [RenderFace.boxDepth]; the layer key
+     * keeps each overlay after its base box, and hidden faces are removed
+     * before drawing.
+     */
+    private val depthOrder = Comparator<RenderFace> { a, b ->
+        val byRank = a.paintRank.compareTo(b.paintRank)
+        if (byRank != 0) return@Comparator byRank
+        val byBox = a.boxDepth.compareTo(b.boxDepth)
+        if (byBox != 0) return@Comparator byBox
+        val byLayer = a.layer.compareTo(b.layer)
+        if (byLayer != 0) return@Comparator byLayer
+        a.faceId.compareTo(b.faceId)
+    }
+
     companion object {
         private const val NECK_Y = 24f
         private const val SHOULDER_Y = 23f
@@ -357,6 +445,9 @@ class PlayerRig(
 
         /** Hip height: the fulcrum the whole-body drag tilt pivots around. */
         private const val TIP_Y = 16f
+
+        /** Below this the back plane is edge-on; keep the cape behind. */
+        private const val BACK_EPSILON = 0.05f
 
         /**
          * writeBox order is +Z, -Z, +X, -X, +Y, -Y. The cape texture is
@@ -372,7 +463,6 @@ class PlayerRig(
             CapeFace.BOTTOM,
         )
 
-        private val depthOrder = Comparator<RenderFace> { a, b -> a.depth.compareTo(b.depth) }
     }
 }
 
@@ -385,7 +475,14 @@ class PlayerRig(
  * size (1.0 for the hat, 0.5 elsewhere) — so no overlay floats twice as
  * far from its base as it should.
  */
-private fun buildBoxes(hasCape: Boolean, capeUvScale: Int): List<BoxModel> {
+private fun buildBoxes(
+    hasCape: Boolean,
+    capeUvScale: Int,
+    hasOverlay: Boolean,
+    slim: Boolean,
+): List<BoxModel> {
+    val armRightX0 = if (slim) -7f else -8f
+    val armLeftX1 = if (slim) 7f else 8f
     fun box(
         kind: PartKind,
         x0: Float, y0: Float, z0: Float,
@@ -400,7 +497,9 @@ private fun buildBoxes(hasCape: Boolean, capeUvScale: Int): List<BoxModel> {
         left = Uv(16, 8, 8, 8), top = Uv(8, 0, 8, 8), bottom = Uv(16, 0, 8, 8),
     )
     val hat = box(
-        PartKind.HEAD, -4f, 24f, -4f, 4f, 32f, 4f, 0.5f,
+        // Inflated 0.5 on every side except the bottom: the hat must not dip
+        // below the neck plane, where it would interpenetrate the cape top.
+        PartKind.HEAD, -4f, 24.5f, -4f, 4f, 32f, 4f, 0.5f,
         front = Uv(40, 8, 8, 8), back = Uv(56, 8, 8, 8), right = Uv(32, 8, 8, 8),
         left = Uv(48, 8, 8, 8), top = Uv(40, 0, 8, 8), bottom = Uv(48, 0, 8, 8),
     )
@@ -415,22 +514,22 @@ private fun buildBoxes(hasCape: Boolean, capeUvScale: Int): List<BoxModel> {
         left = Uv(28, 36, 4, 12), top = Uv(20, 32, 8, 4), bottom = Uv(28, 32, 8, 4),
     )
     val armRight = box(
-        PartKind.ARM_RIGHT, -8f, 12f, -2f, -4f, 24f, 2f, 0f,
+        PartKind.ARM_RIGHT, armRightX0, 12f, -2f, -4f, 24f, 2f, 0f,
         front = Uv(44, 20, 4, 12), back = Uv(52, 20, 4, 12), right = Uv(40, 20, 4, 12),
         left = Uv(48, 20, 4, 12), top = Uv(44, 16, 4, 4), bottom = Uv(48, 16, 4, 4),
     )
     val sleeveRight = box(
-        PartKind.ARM_RIGHT, -8f, 12f, -2f, -4f, 24f, 2f, 0.25f,
+        PartKind.ARM_RIGHT, armRightX0, 12f, -2f, -4f, 24f, 2f, 0.25f,
         front = Uv(44, 36, 4, 12), back = Uv(52, 36, 4, 12), right = Uv(40, 36, 4, 12),
         left = Uv(48, 36, 4, 12), top = Uv(44, 32, 4, 4), bottom = Uv(48, 32, 4, 4),
     )
     val armLeft = box(
-        PartKind.ARM_LEFT, 4f, 12f, -2f, 8f, 24f, 2f, 0f,
+        PartKind.ARM_LEFT, 4f, 12f, -2f, armLeftX1, 24f, 2f, 0f,
         front = Uv(36, 52, 4, 12), back = Uv(44, 52, 4, 12), right = Uv(32, 52, 4, 12),
         left = Uv(40, 52, 4, 12), top = Uv(36, 48, 4, 4), bottom = Uv(40, 48, 4, 4),
     )
     val sleeveLeft = box(
-        PartKind.ARM_LEFT, 4f, 12f, -2f, 8f, 24f, 2f, 0.25f,
+        PartKind.ARM_LEFT, 4f, 12f, -2f, armLeftX1, 24f, 2f, 0.25f,
         front = Uv(52, 52, 4, 12), back = Uv(60, 52, 4, 12), right = Uv(48, 52, 4, 12),
         left = Uv(56, 52, 4, 12), top = Uv(52, 48, 4, 4), bottom = Uv(56, 48, 4, 4),
     )
@@ -472,10 +571,19 @@ private fun buildBoxes(hasCape: Boolean, capeUvScale: Int): List<BoxModel> {
         null
     }
 
-    return listOf(
-        head, hat,
-        body, jacket,
-        armRight, sleeveRight, armLeft, sleeveLeft,
-        legRight, pantsRight, legLeft, pantsLeft,
-    ) + listOfNotNull(cape)
+    return buildList {
+        add(head)
+        if (hasOverlay) add(hat)
+        add(body)
+        if (hasOverlay) add(jacket)
+        add(armRight)
+        if (hasOverlay) add(sleeveRight)
+        add(armLeft)
+        if (hasOverlay) add(sleeveLeft)
+        add(legRight)
+        if (hasOverlay) add(pantsRight)
+        add(legLeft)
+        if (hasOverlay) add(pantsLeft)
+        if (cape != null) add(cape)
+    }
 }

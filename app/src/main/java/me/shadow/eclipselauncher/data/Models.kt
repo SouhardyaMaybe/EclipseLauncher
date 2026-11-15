@@ -27,6 +27,8 @@ data class Account(
     /** Media file names relative to the media root; null means the default. */
     val skinFileName: String? = null,
     val capeFileName: String? = null,
+    /** Skin variant: "CLASSIC" (Steve) or "SLIM" (Alex). Null = not set / default CLASSIC. */
+    val skinVariant: String? = null,
 )
 
 @Serializable

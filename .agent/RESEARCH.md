@@ -1,51 +1,90 @@
-# RESEARCH
+# RESEARCH: Minecraft Profile API
 
-- Google Maven POMs (curl, Nov 2026):
-  - material3-adaptive-navigation-suite:1.0.0-alpha01 exists (200) and transitively needs lifecycle-runtime-compose 2.7.0-rc01, material3 [1.2.0-alpha11].
-  - material3-adaptive:1.0.0-alpha01 exists.
-  - material-icons-extended:1.6.1 exists.
-  - navigation-compose:2.7.7 exists; depends on activity-compose 1.7.0, no Compose 1.7.
-- lifecycle-runtime-compose:2.8.2 → compose runtime 1.6.5 (highest transitive; no 1.7.x).
-- lifecycle-viewmodel-compose:2.8.2 → compose runtime 1.6.0.
-- activity-compose:1.9.0 → compose runtime 1.0.1 (lowest), upgraded to 1.6.1 by conflict resolution.
-- M3 1.2.1 sources inspected (`material3-1.2.1-sources.jar`) for Surface, ColorScheme, TextFieldDefaults, SwitchDefaults signatures.
+## Official Sources
+1. **Minecraft Wiki - Mojang API**: https://minecraft.wiki/w/Mojang_API
+2. **Mojang API Docs (gapple)**: https://mojang-api-docs.gapple.pw/needs-auth/change-skin
+3. **OpenAPI Spec (apis.io)**: https://apis.io/apis/mojang/mojang-profile-api
 
-## 2026-11-13 — Zalith Launcher 2 exact stack (read-only research)
-- Repo: https://github.com/ZalithLauncher/ZalithLauncher2, main @ `50f08ca973994e33e0ca347f289b09aa740e5b54` (2026-11-13). Latest release 2.8.2 (2026-11-06). GPL-3.0, Kotlin.
-- Sources: `gradle/libs.versions.toml`, `ZalithLauncher/build.gradle.kts`, root `build.gradle.kts`, `settings.gradle.kts`, `gradle/wrapper/gradle-wrapper.properties`, `.github/workflows/build.yml`, README.
-- Build: AGP 9.3.0, Kotlin 2.4.21, Gradle 9.5.0, KSP 2.3.12, JDK 21 CI, Java/Kotlin target 17, compileSdk 37 (minor 2), targetSdk 34, minSdk 26, NDK declared 25.2.9519653.
-- UI: Compose BOM 2026.09.00, M3 1.5.0-beta02, activity-compose 1.13.0, Navigation3 1.2.0, lifecycle 2.11.0, Material (views) 1.14.0, MaterialKolor 5.0.1, Coil 3.6.3, Media3 1.11.1, RichText 1.0.0-alpha05, sora-editor BOM 0.24.7, Reorderable 3.1.0, Fishnet 1.1.0 (crash dumper).
-- DI/data: Hilt/Dagger 2.60.1, androidx hilt-navigation-compose 1.4.0, Room 2.8.5, SQLCipher 4.20.0, MMKV 1.3.14, Gson 2.15.0, kotlinx.serialization plugin.
-- Net/util: Ktor 3.6.1, OkHttp 5.5.1, Okio 3.18.2, coroutines 1.11.0, Commons IO/Codec/Compress, Zip4j 2.11.6, XZ 1.12, Toml4j 0.7.2, Maven Artifact 3.10.0, MiniDNS HLA 1.1.3, Process Phoenix 3.0.0, ByteHook 1.0.10, proxy-client-android 0.0.5, BuildKeys 1.0.0.
-- Local modules: LayerController, ColorPicker, CardGrid, Terracotta (LAN multiplayer proxy), InputMap, Guide, PetLib (Rust skin/animation renderer), LWJGL 3.3.3 + 3.4.1. JREs 8/17/21/25. README credits ANGLE, gl4es, NG-GL4ES, MobileGlues, Mesa/Turnip, LTW.
-- Note: README's "environment requirements" (JDK 11, target API 35) are stale vs the build files (JDK 17 target / CI 21, targetSdk 34).
+## Profile API Endpoint
+- **GET** `https://api.minecraftservices.com/minecraft/profile`
+- **Auth**: `Authorization: Bearer <access_token>` (Minecraft access token from XSTS exchange)
+- **Error**: HTTP 401 if token missing/invalid
 
-## 2026-11-13 — Implementation API checks
-- `compileSdk { version = release(37) { minorApiLevel = 2 } }` confirmed in ZL2 `ZalithLauncher/build.gradle.kts`.
-- `platforms;android-37.2`, `android-37.1`, `android-37.0` exist in `repository2-3.xml`; runner sdkmanager can install `platforms;android-37.2`.
-- AGP 9.3 compatibility: Gradle 9.5.0 min/default; Build Tools 36.0.0 min/default; JDK 17 min.
-- Room 2.8.5 POM depends on androidx.sqlite 2.6.2; `sqlcipher-android` 4.20.0 declares androidx.sqlite 2.7.0, so the catalog pins `androidx.sqlite:sqlite:2.7.0`. `SupportOpenHelperFactory(byte[])` and `RoomDatabase.Builder.openHelperFactory(...)` verified with javap.
-- M3 1.5.0-beta02 sources: only `Modifier.menuAnchor(ExposedDropdownMenuAnchorType, enabled = true)` exists; `BasicAlertDialog(onDismissRequest, modifier, properties, content)` unchanged.
-- Navigation3 1.2.0 sources: `NavBackStack(vararg elements)`, `NavDisplay(backStack, onBack, entryProvider=...)`, `entryProvider { entry<T> {} }` confirmed.
-- Coil 3.6.3: `AsyncImage` in `coil-compose`; `KtorNetworkFetcherFactory()` no-arg creates its own `HttpClient`.
-- Action tags verified: checkout v6 exists (latest v7), setup-java v5 (latest v6), setup-gradle v5 used by ZL2, upload-artifact v7.
-- `kotlinx.serialization`: enum classes are serializable by default; `Json` has a reified `decodeFromString` member (no extra import).
+## Response Format (AuthenticatedProfile)
+```json
+{
+  "id": "player UUID without hyphens",
+  "name": "username",
+  "skins": [
+    {
+      "id": "skin UUID",
+      "state": "ACTIVE" | "INACTIVE",
+      "url": "https://textures.minecraft.net/texture/...",
+      "variant": "CLASSIC" | "SLIM",
+      "alias": "skin nickname (optional)"
+    }
+  ],
+  "capes": [
+    {
+      "id": "cape UUID",
+      "state": "ACTIVE" | "INACTIVE",
+      "url": "https://textures.minecraft.net/texture/...",
+      "alias": "cape display name (optional)"
+    }
+  ],
+  "profileActions": ["FORCED_NAME_CHANGE", ...]
+}
+```
 
+## Texture Host
+- `textures.minecraft.net` - serves **HTTPS** (also accessible via HTTP but Android blocks cleartext)
+- Current code normalizes `http://` → `https://` in `normalizeTextureUrl()` - CORRECT
 
-## 2026-11-14 — Modrinth versions + M3 expressive loading
-- Endpoint `GET https://api.modrinth.com/v2/project/{id|slug}/version?include_changelog=false`; response is an array with `id`, `project_id`, `name`, `version_number`, `game_versions[]`, `loaders[]`, `date_published`, `version_type`, `files[]` (`url`, `filename`, `primary`, `size`, `file_type`). Verified against `https://api.modrinth.com/v2/project/sodium/version` and https://docs.modrinth.com/api/operations/getprojectversions/.
-- Compose Material3 1.5.0-beta02 contains `LoadingIndicator` (expressive, opt-in `ExperimentalMaterial3ExpressiveApi`), `LinearWavyProgressIndicator`, `CircularWavyProgressIndicator`; verified by inspecting `material3-android-1.5.0-beta02.aar` from Google Maven.
-- Ktor 3.6.1 `HttpResponse.bodyAsChannel()` + `ByteReadChannel.readAvailable(ByteArray, offset, length)` used for streamed downloads; verified against the resolved `ktor-io-jvm-3.6.1` / `ktor-client-core-jvm-3.6.1` jars in the Gradle cache.
+## Key Fields for Launcher
+- **Active skin**: first skin with `state == "ACTIVE"` → use its `url` and `variant`
+- **Active cape**: first cape with `state == "ACTIVE"` → use its `url`
+- **Skin variant**: `CLASSIC` = Steve model (4px arms), `SLIM` = Alex model (3px arms)
+- **Legacy skins**: 64x32 supported (current validation allows 64x64 or 64x32)
 
-## 2026-11-14 — Modrinth version downloads + relative time
-- `GET /v2/project/sodium/version?include_changelog=false` includes a numeric `downloads` field per version (verified: first Sodium version returned `downloads: 41127`). Added to `ModrinthVersion` with a 0 default.
-- Android `DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS)` produces the required "4 days ago / 1 month ago / 2 years ago" labels without an extra dependency. Modrinth timestamps (`2026-11-12T01:12:30.162066Z`) parse with `java.time.Instant.parse` on minSdk 26.
+## Current Code Analysis (MicrosoftAuth.kt)
+- Lines 75-132: `parseMinecraftProfile()` - correctly extracts ACTIVE skin/cape, normalizes URLs
+- Line 97-98: `activeSkin` / `activeCape` computed properties - CORRECT
+- Line 135-136: `normalizeTextureUrl()` - normalizes http→https - CORRECT
+- Line 63-72: `MsLoginResult` includes `skinVariant` but it's **NOT stored in Account model**
+- Line 210-212: `skinUrl`, `skinVariant`, `capeUrl` passed to `MsLoginResult`
 
-## 2026-11-14 — Modrinth dependency API
-- `GET /v2/project/{id|slug}/version` includes `dependencies[]` on each version: `version_id`, `project_id`, `file_name`, `dependency_type` (`required`, `optional`, `incompatible`, `embedded`). Verified against Iris version `Ag5S66CF` (requires Sodium `VHtnT9Q4`) and https://docs.modrinth.com/api/operations/getprojectversions/.
-- `GET /v2/version/{id}` returns a single version with files + dependencies; `GET /v2/project/{id}` returns project title/icon/`project_type` used for the dependency row and install folder. Verified against Sodium project `AANobbMI` and version `VHtnT9Q4`.
-- Search `categories` mixes loaders and categories (Sodium: `fabric`, `neoforge`, `optimization`, `quilt`); the UI partitions them with a loader set.
+## Account Model Gap (Models.kt)
+- `Account` has `skinFileName`, `capeFileName` but **NO `skinVariant` field**
+- This means SLIM variant is lost → renders as CLASSIC (wrong model for Alex skins)
 
-## 2026-11-14 — Modrinth search facets for loader + game version
-- Search facets are AND-ed: `[["project_type:mod"],["categories:fabric"],["versions:1.21.1"]]`; `categories` carries loader ids for mods. Verified with `curl https://api.modrinth.com/v2/search?...facets=...` → `total_hits: 20330`, first hit Fabric API.
-- Implemented optional `loader`/`gameVersion` args on `ModrinthClient.searchMods()`; facets are only appended when non-blank, so the default listing is unchanged.
+## MediaStorage Gap
+- Downloads images but **no content-addressed caching by texture hash**
+- No placeholder/fallback handling in UI
+- No background refresh on app start/token expiry
+
+## Display Points (All use skinFileName/capeFileName from Account)
+1. **HomeScreen.kt:201-205** → `SkinHeadFace` (static head avatar)
+2. **AccountSwitcherDialog.kt:130-134** → `SkinHeadFace`
+3. **AccountsScreen.kt:288-292** → `SkinHeadFace` in AccountRow
+4. **SkinCustomizationDialog.kt:179-186** → `SkinModelStage` → `SkinModelView` (3D model)
+5. **SkinModelView.kt:120-155** → loads skin/cape bitmaps, creates `PlayerRig`
+
+## Customization Entry Points
+1. **AccountsScreen.kt:324-331** - Dress button (ALWAYS shown, should hide for Microsoft)
+2. **SkinCustomizationDialog.kt:192** - Pick/clear actions guarded by `canCustomize` (correctly false for Microsoft)
+3. **HomeScreen** - Head click opens AccountsScreen (not direct customize)
+
+## Hypotheses to Test
+a. ✅ Profile requested, skins/capes parsed correctly (code looks correct)
+b. ❓ Profile request fails silently - need to check error handling
+c. ✅ URLs normalized to HTTPS (normalizeTextureUrl does this)
+d. ✅ Display code handles both account kinds (uses skinFileName from Account)
+e. ✅ Skin loaded once at sign-in, never refreshed - **CONFIRMED GAP**
+
+## Fix Priority
+1. Add `skinVariant` to Account model and propagate through storage
+2. Use `skinVariant` in SkinHeadFace and SkinModelView for SLIM rendering
+3. Add texture-hash-based caching in MediaStorage
+4. Add profile refresh on app start / token expiry for Microsoft accounts
+5. Hide dress button for Microsoft accounts in AccountsScreen
+6. Add JVM tests for parsing, HTTP, and UI wiring

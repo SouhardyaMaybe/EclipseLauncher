@@ -1,125 +1,28 @@
 # PLAN
 
-- [x] Research ZL2 stack (`50f08ca`) and Android SDK 37.2 availability.
-- [x] Add `gradle/libs.versions.toml` and rewrite root/settings/app Gradle scripts.
-- [x] Bump Gradle wrapper to 9.5.0 and CI to JDK 21 + SDK 37.2 + current actions.
-- [x] Add Room+SQLCipher entities/DAOs/database, Keystore-wrapped passphrase, Hilt module, Hilt Application/Activity.
-- [x] Replace JSON AccountStore/InstanceStore/TaskStore with Room-backed Hilt singletons.
-- [x] Replace SharedPreferences SettingsStore with MMKV + legacy migration.
-- [x] Add shared Ktor `NetworkClient`; migrate ModrinthClient, VersionRepository, MicrosoftAuth.
-- [x] Rewrite EclipseApp on Navigation3; thread `auth`/`client` through screens.
-- [x] Replace manual bitmap download with Coil `AsyncImage` (ModIcon/ModpackIcon).
-- [x] Remove unused `JsonStore.kt`; update M3 1.5 `menuAnchor` call.
-- [x] Commit/push and get all three CI jobs green.
-- [x] Delete failed workflow runs; keep green ones.
-- [x] Final scope check against GOAL.md.
-- [x] Hide slider step dots/notches (`steps = 0` in SliderPreference).
-- [x] Add theme option: dynamic (Material You default), Urban (copied from Zalith Lancer 2 urbanAsh); black + deep blue palette (no violet/purple).
-- [x] Smooth animated theme switching via Crossfade (250ms).
-- [x] Removed Dark/Light theme options (Dynamic + Urban only).
-- [x] Replace "<- Back to the last screen" with "<- Back" in settings sub-pages.
-- [x] Single back button in TopAppBar navigation icon (no duplicate beneath it); works as back-to-root when in sub-page, exits settings when at root.
-- [x] Remove Sandbox .jar execution toggle (JAVA_SANDBOX).
-- [x] Remove game download source selection (DOWNLOAD_SOURCE) - default official only.
-- [x] Remove import data (IMPORT_DATA/pickTree).
-- [x] Remove auto-install dependencies (AUTO_INSTALL_DEPENDENCIES).
-- [x] Remove disable server blocklist (DISABLE_SERVER_BLOCKLIST).
-- [x] Remove OpenSL audio (ALSOFT_OPENSL).
-- [x] Remove UBWC compression (UBWC).
-- [x] Remove force language to English toggle (FORCE_ENGLISH).
-- [x] Add microphone permission asker button with granted/denied state.
-- [x] CurseForge key option preserved.
-- [x] All CI jobs green: lint, unit tests, assembleDebug, assembleRelease.
-- [x] Failed workflow runs deleted; only green runs remain.
-- [x] Report GitHub repos for the account (6 repos listed below).
-- [x] ManageContentScreen: Segmented control Installed|Browse with drag gesture
-- [x] ManageContentScreen: Sticky content-type bar with glyph icons + count badges
-- [x] ManageContentScreen: Coil-loaded content icons for installed and browse rows
-- [x] ManageContentScreen: Auto-load browse content on initial load
-- [x] ManageContentScreen: Collapse/expand options panel (▲/▼ toggle)
-- [x] ManageContentScreen: Floating page navigation control (‹ page/total ›)
-- [x] ManageContentScreen: Single back button in top bar
-- [x] ManageContentScreen: Matches reference UI (installed tab with glyph chips, toggle rows, Coil icons)
-- [x] All CI jobs green: lint, unit tests, assembleDebug, assembleRelease
-- [x] Failed workflow runs deleted; only green runs remain
+- [x] Phase 0: Research & verify Minecraft profile API format (official docs)
+- [x] Phase 1: Trace the full display path and identify all bugs
+- [ ] Phase 2: Fix profile parsing + storage (MicrosoftAuth, Account model, MediaStorage)
+  - [ ] Add texture hash-based caching in MediaStorage
+  - [ ] Normalize URLs to HTTPS in parser (already done, verify)
+  - [ ] Store skinVariant (slim) in Account model
+  - [ ] Add profile refresh function in MicrosoftAuth
+- [ ] Phase 3: Fix display at all points
+  - [ ] SkinHeadFace: use skinVariant for slim rendering
+  - [ ] SkinModelView: use skinVariant for slim model
+  - [ ] Account switcher, Home screen, Accounts screen: verify they work
+- [ ] Phase 4: Hide customization for Microsoft accounts
+  - [ ] Remove dress button from AccountsScreen for Microsoft accounts
+  - [ ] Verify SkinCustomizationDialog already hides actions (canCustomize=false)
+  - [ ] Check any other entry points
+- [ ] Phase 5: Add profile refresh on app start / token expiry
+  - [ ] Background refresh when app starts with Microsoft account
+  - [ ] Refresh on token refresh (expiresAtEpochSeconds)
+- [ ] Phase 6: JVM Tests
+  - [ ] Profile parsing test with fixtures (active skin, slim, active cape, no cape)
+  - [ ] Fake HTTP test (success, 401, network error)
+  - [ ] UI wiring test: Microsoft account shows skin, no customize; local has customize
+- [ ] Phase 7: CI run, collect links, report, STOP for phone test
 
-## 2026-11-14 — Track B Batch 1 recovery
-- [x] Diagnose real compiler errors from CI logs (not the `Date:` noise).
-- [x] Fix `PaginationPill` missing brace; make `ManageContentScreen` top-level.
-- [x] Restore `EclipseApp.kt` from `a622441`; remove inlining + duplicate imports.
-- [x] Move screen back to `src/main/java`; remove `src/main/kotlin` + `sourceSets` hack.
-- [x] Fix Browse auto-load trigger (`mainTab` key); default listing on empty query.
-- [x] Add error/retry, empty/clear-filters, loading states; transport `failed` flag.
-- [x] Float pagination pill over list with safe-area padding and no last-row cover.
-- [x] Use API-provided loader/game-version metadata on browse rows.
-- [x] CI green: run 43578498959 (478b799).
-- [ ] Versions/install dialog + install state machine.
-- [ ] JVM tests for auto-load/filtering (no test source set exists yet).
-- [ ] Restore lint gate in CI.
-
-## 2026-11-14 — Visual cleanup + fast pagination (220998f)
-- [x] Remove six-dot drag handle and drag/collapse state; filter panel always expanded.
-- [x] Compact filters to a single horizontally scrollable chip row.
-- [x] Remove paginator collapse chevron; pill fixed bottom-center `‹ page / total ›`.
-- [x] Fixed-width page indicator so buttons do not shift between 1- and 2-digit pages.
-- [x] Debounce page taps 220ms; fetch only settled page; discard stale responses.
-- [x] CI green: run 43583005389 (220998f).
-- [ ] Phone verification of handle removal, centered pill, fast paging.
-- [ ] Versions/install dialog + install state machine.
-- [ ] JVM tests (no `app/src/test` yet).
-- [ ] Restore lint gate in CI.
-
-## 2026-11-14 — Pagination polish + next parts
-- [x] Taller Installed/Browse tab buttons (44dp).
-- [x] One page per tap; buttons lock while a page is loading (no jump/bounce).
-- [x] Full-list M3 expressive loading overlay replaces the tiny pill spinner.
-- [x] Prev/next gray out at the first/last page and while loading.
-- [x] Versions + install dialog (full-screen), instance target, download state.
-- [ ] JVM tests (no `app/src/test` yet).
-- [ ] Restore lint gate in CI.
-- [x] Modrinth `/project/{id}/version` client + streamed file download.
-- [x] Full-screen dialog with instance chips, compatibility filter, version cards, progress and retry.
-- [ ] Persist installed content across relaunch (Installed tab still mock-seeded).
-- [ ] Wire Installed actions (update/toggle/delete) to the selected instance.
-
-## 2026-11-14 — Install sheet: single instance + stable MC groups
-- [x] Route passes the HOME-selected instance id; Manage Content targets that instance only.
-- [x] Replace instance chips / "Install to" with "Selected Instance: <icon> <name>".
-- [x] Replace "Only compatible" with "Show for Stable Mc Versions Only" (manifest release filter).
-- [x] Group content versions by Minecraft version in manifest order; expandable cards with release/snapshot badges.
-- [x] Expanded rows: name, version, relative updated time + icon, downloads + icon, trailing install icon.
-- [x] Highlight the group matching the instance's Minecraft version with a green border/tint.
-- [x] CI green: run 43599566733 (b35932d).
-
-## 2026-11-14 — Real installed content + actions + dependency prompt (f181b5e)
-- [x] Browse rows: large name, "by author", description, `loaders • ... | categories`.
-- [x] Remove all mock Sodium/Iris/Fabric API/pack/world rows.
-- [x] Scan `<filesDir>/minecraft/instances/<id>/<mods|resourcepacks|datapacks|shaderpacks|saves>/` for Installed.
-- [x] Sidecar metadata (`<file>.eclipse.json`) so rows keep project id/icon/version across relaunch.
-- [x] Wire update/downgrade to the version sheet; delete the replaced file after success.
-- [x] Wire enable/disable (`.disabled` rename) and delete (file/folder + sidecar, with confirmation).
-- [x] Required-dependency prompt with tappable checkbox rows, Ignore and Install.
-- [x] Resolve pinned dependency versions or latest compatible project-only dependencies.
-- [x] Install checked dependencies first with `skipExisting`, then the main file.
-- [x] CI green: run 43603798526 (f181b5e); debug APK 14117796027, release AAB 14117965542.
-
-## 2026-11-14 — Search + Loader/Version/Platform filters + gates
-- [x] Search field directly below the Installed/Browse tabs.
-- [x] Expandable Loader/Version/Platform headings under search (one panel open at a time).
-- [x] Loader filter only for mods; Version + Platform for every content type.
-- [x] Browse Loader → Modrinth `categories` facet; Version → `versions` facet.
-- [x] Installed filters over scanned content (name/version/author, loaders, version, platform).
-- [x] Persist `loaders` + `platform` in sidecars; legacy fallback (instance loader for mods, project id → Modrinth).
-- [x] No-instance download tap shows "Create an instance first" toast instead of opening the sheet.
-- [x] Account gate on Manage Content using `AddAccountGate` (same dialog as Play without an account).
-- [x] Update/downgrade skips dependency resolution, prompt, and installs.
-- [x] Static checks: all `R.string` refs exist, no duplicate strings, brace/paren balance, `git diff --check`.
-- [x] CI green: run 43606302835 (6ee0ba7); debug APK 14118314103, release AAB 14118735690.
-
-## 2026-11-14 — Modpack Browser filters + version picker + loader icon fix
-- [ ] ModpackBrowserScreen: add Loader/Version/Platform filter headers below search
-- [ ] ModpackBrowserScreen: clicking a modpack opens version picker dialog (like ManageContent's VersionInstallDialog)
-- [ ] ModpackBrowserScreen: version picker lists all modpack versions from Modrinth
-- [ ] ModpackBrowserScreen: no green highlight for instance version match
-- [ ] InstanceSwitcherDropdown: show loader icon alongside instance icon/name
-- [x] CI green: run 43621279346 (8ad018b); debug APK 14124755686, release AAB 14124302077
+## CI Budget
+- Max 4 CI runs (3 for fixes, 1 for final verification)
