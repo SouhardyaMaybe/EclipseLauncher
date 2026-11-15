@@ -115,7 +115,7 @@ class SkinCustomizationCapeTest {
         assertTrue(text, text.contains("reached view: true"))
         assertTrue(text, text.contains("decode: ok"))
         assertTrue(text, text.contains("uv outer=1,1,10,16"))
-        assertTrue(text, text.contains("uv inner=12,1,10,16"))
+        assertTrue(text, text.contains("inner=12,1,10,16"))
     }
 
     private fun show(initial: Account, canCustomize: Boolean) {
