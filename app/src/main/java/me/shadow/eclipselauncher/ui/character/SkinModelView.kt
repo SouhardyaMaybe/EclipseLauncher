@@ -30,7 +30,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.align
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Alignment
+import kotlin.math.sqrt
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -329,3 +331,4 @@ fun SkinModelView(
     LaunchedEffect(isFullscreen) {
         onFullscreenChange?.invoke(isFullscreen)
     }
+}

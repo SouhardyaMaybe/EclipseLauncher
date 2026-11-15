@@ -15,13 +15,6 @@ import kotlinx.coroutines.withContext
 import me.shadow.eclipselauncher.data.MediaStorage
 
 /**
- * Loads the default Steve skin from bundled assets.
- */
-fun defaultSkin(context: Context): Bitmap = BitmapFactory.decodeStream(
-    context.assets.open("steve.png")
-)
-
-/**
  * Decodes a skin file, tolerating the legacy 64x32 layout.
  * Returns null if the file cannot be decoded or has invalid dimensions.
  */
