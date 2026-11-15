@@ -83,6 +83,7 @@
 
     <!-- Media errors -->
     <string name="error_skin_size">That image is not a 64x64 Minecraft skin.</string>
+    <string name="error_cape_size">That image is not a Minecraft cape (64x32).</string>
     <string name="error_media_import">Could not read that image.</string>
     <string name="error_import_file">Could not import that file.</string>
 

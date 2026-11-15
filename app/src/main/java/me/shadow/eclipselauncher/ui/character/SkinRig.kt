@@ -153,7 +153,7 @@ class PlayerRig(
     val capeFaceCount: Int get() = boxes.count { it.kind == PartKind.CAPE } * 6
 
     init {
-        boxes = buildBoxes()
+        boxes = buildBoxes(hasCape, capeUvScale)
         faces = Array(boxes.size * 6) { RenderFace() }
     }
 
@@ -385,7 +385,7 @@ class PlayerRig(
  * size (1.0 for the hat, 0.5 elsewhere) — so no overlay floats twice as
  * far from its base as it should.
  */
-private fun buildBoxes(): List<BoxModel> {
+private fun buildBoxes(hasCape: Boolean, capeUvScale: Int): List<BoxModel> {
     fun box(
         kind: PartKind,
         x0: Float, y0: Float, z0: Float,
@@ -455,10 +455,27 @@ private fun buildBoxes(): List<BoxModel> {
         left = Uv(8, 52, 4, 12), top = Uv(4, 48, 4, 4), bottom = Uv(8, 48, 4, 4),
     )
 
+    val cape = if (hasCape) {
+        box(
+            PartKind.CAPE,
+            -CapeGeometry.WIDTH / 2f, CapeGeometry.BOTTOM_Y, CapeGeometry.OUTER_Z,
+            CapeGeometry.WIDTH / 2f, CapeGeometry.TOP_Y, CapeGeometry.INNER_Z,
+            0f,
+            front = CapeGeometry.uv(CapeFace.INNER, capeUvScale),
+            back = CapeGeometry.uv(CapeFace.OUTER, capeUvScale),
+            right = CapeGeometry.uv(CapeFace.RIGHT, capeUvScale),
+            left = CapeGeometry.uv(CapeFace.LEFT, capeUvScale),
+            top = CapeGeometry.uv(CapeFace.TOP, capeUvScale),
+            bottom = CapeGeometry.uv(CapeFace.BOTTOM, capeUvScale),
+        )
+    } else {
+        null
+    }
+
     return listOf(
         head, hat,
         body, jacket,
         armRight, sleeveRight, armLeft, sleeveLeft,
         legRight, pantsRight, legLeft, pantsLeft,
-    )
+    ) + listOfNotNull(cape)
 }

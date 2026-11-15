@@ -83,7 +83,7 @@ fun SkinCustomizationDialog(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val skinError = stringResource(R.string.error_skin_size)
-    val mediaError = stringResource(R.string.error_media_import)
+    val capeError = stringResource(R.string.error_cape_size)
     // Saveable so rotating while full screen keeps the full-screen dialog.
     var isFullscreen by rememberSaveable { mutableStateOf(false) }
 
@@ -110,7 +110,7 @@ fun SkinCustomizationDialog(
                 if (stored != null) {
                     onUpdate(account.copy(capeFileName = stored))
                 } else {
-                    Toast.makeText(context, mediaError, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, capeError, Toast.LENGTH_SHORT).show()
                 }
             }
         }

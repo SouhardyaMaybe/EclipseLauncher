@@ -70,7 +70,8 @@ class MediaStorage(context: Context) {
             val valid = when (kind) {
                 ImportKind.SKIN ->
                     decoded.width == 64 && (decoded.height == 64 || decoded.height == 32)
-                ImportKind.CAPE -> decoded.width in 1..512 && decoded.height in 1..512
+                ImportKind.CAPE ->
+                    CapeTextureLayout.scaleFor(decoded.width, decoded.height) != null
                 ImportKind.INSTANCE_ICON -> decoded.width in 1..2048 && decoded.height in 1..2048
             }
             if (!valid) {
@@ -122,7 +123,8 @@ class MediaStorage(context: Context) {
             val valid = when (kind) {
                 ImportKind.SKIN ->
                     decoded.width == 64 && (decoded.height == 64 || decoded.height == 32)
-                ImportKind.CAPE -> decoded.width in 1..512 && decoded.height in 1..512
+                ImportKind.CAPE ->
+                    CapeTextureLayout.scaleFor(decoded.width, decoded.height) != null
                 ImportKind.INSTANCE_ICON -> decoded.width in 1..2048 && decoded.height in 1..2048
             }
             if (!valid) {

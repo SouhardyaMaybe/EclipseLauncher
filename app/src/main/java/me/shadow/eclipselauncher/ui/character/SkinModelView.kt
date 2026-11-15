@@ -122,15 +122,37 @@ fun SkinModelView(
         skin = loadSkin(context, media, skinFileName)
     }
 
-    // Red phase: the cape flag reaches the view, but neither the bitmap nor
-    // the geometry exists yet. The diagnostic below reports that state.
-    val cape: Bitmap? = null
-    val capeStatus = "not loaded"
+    // Cape loading mirrors the skin: a stored file is decoded off the main
+    // thread, and only a usable bitmap builds the cape box. A missing or
+    // invalid file therefore shows no cape geometry at all.
+    var cape by remember(capeFileName) { mutableStateOf<Bitmap?>(null) }
+    var capeStatus by remember(capeFileName) {
+        mutableStateOf(if (capeFileName == null) "none" else "not loaded")
+    }
     val capeFileExists = remember(capeFileName) {
         capeFileName != null && media.resolve(capeFileName) != null
     }
+    LaunchedEffect(capeFileName) {
+        if (capeFileName == null) {
+            cape = null
+            capeStatus = "none"
+        } else {
+            val decoded = loadCape(media, capeFileName)
+            cape = decoded
+            capeStatus = if (decoded != null) {
+                "ok (${CapeTextureLayout.describe(decoded.width, decoded.height)})"
+            } else if (capeFileExists) {
+                "failed (not a cape or unreadable)"
+            } else {
+                "missing file"
+            }
+        }
+    }
 
-    val rig = remember(capeFileName) { PlayerRig(hasCape = capeFileName != null) }
+    val capeScale = cape?.let { CapeTextureLayout.scaleFor(it.width, it.height) } ?: 1
+    val rig = remember(cape) {
+        PlayerRig(hasCape = cape != null, capeUvScale = capeScale)
+    }
     // Nearest-neighbour sampling: no bilinear filtering, no dithering. Skin
     // texels stay hard-edged at every scale, like pixel blending off in 3D.
     val paint = remember {
@@ -158,7 +180,9 @@ fun SkinModelView(
                     }
                 },
         ) {
-            val bitmap = skin ?: return@Canvas
+            val skinBitmap = skin
+            val capeBitmap = cape
+            if (skinBitmap == null && capeBitmap == null) return@Canvas
             val baseScale = minOf(size.height / 46f, size.width / 30f)
             val scale = baseScale * zoom
             val cx = size.width / 2f
@@ -194,7 +218,10 @@ fun SkinModelView(
             ) {
                 val native = drawContext.canvas.nativeCanvas
                 for (face in faces) {
-                    if (face.w <= 0 || face.h <= 0) continue
+                    // The cape quads sample the cape bitmap; every other quad
+                    // keeps sampling the skin. Painter order is shared.
+                    val bitmap = if (face.part == PartKind.CAPE) capeBitmap else skinBitmap
+                    if (bitmap == null || face.w <= 0 || face.h <= 0) continue
                     srcPts[0] = face.u.toFloat()
                     srcPts[1] = face.v.toFloat()
                     srcPts[2] = (face.u + face.w).toFloat()
@@ -352,9 +379,9 @@ private fun capeDiagnosticText(
         appendLine("exists: $fileExists")
         appendLine("bitmap: ${cape?.let { "${it.width}x${it.height}" } ?: "not loaded"}")
         appendLine("decode: $capeStatus")
-        appendLine("reached view: ${capeFileName != null}")
+        appendLine("reached view: ${cape != null}")
         appendLine("cape faces: ${rig.capeFaceCount}")
-        appendLine("uv: $uvs")
+        appendLine("uv $uvs")
         appendLine("drawn far->near @ yaw ${yawDegrees}deg tilt ${tiltDegrees}deg: $order")
         append("front-facing: $front")
     }
