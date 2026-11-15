@@ -227,34 +227,31 @@ fun SkinModelView(
 
     // Full-screen toggle button at top-right
     Box(
-        modifier = Modifier
-            .padding(12.dp)
-            .size(40.dp)
-            .background(
-                MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
-                RoundedCornerShape(12.dp)
-            )
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onTap = {
-                        isFullscreen = !isFullscreen
-                    }
-                )
-            }
-            .offset {
-                // Position at top-right of parent
-                IntOffset(
-                    x = (size.width - 40.dp.roundToPx() - 12.dp.roundToPx()).coerceAtMost(0),
-                    y = 12.dp.roundToPx()
-                )
-            }
+        modifier = Modifier.padding(12.dp),
+        contentAlignment = Alignment.TopEnd
     ) {
-        Icon(
-            imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
-            contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(24.dp).padding(8.dp),
-        )
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(
+                    MaterialTheme.colorScheme.surface.copy(alpha = 0.85f),
+                    RoundedCornerShape(12.dp)
+                )
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            isFullscreen = !isFullscreen
+                        }
+                    )
+                }
+        ) {
+            Icon(
+                imageVector = if (isFullscreen) Icons.Filled.FullscreenExit else Icons.Filled.Fullscreen,
+                contentDescription = if (isFullscreen) "Exit full screen" else "Enter full screen",
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(24.dp).padding(8.dp),
+            )
+        }
     }
 
     // Notify parent of fullscreen change
