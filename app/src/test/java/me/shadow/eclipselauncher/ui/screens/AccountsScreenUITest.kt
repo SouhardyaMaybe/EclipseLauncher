@@ -11,9 +11,11 @@ package me.shadow.eclipselauncher.ui.screens
 
 import android.app.Application
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.test.HasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.hasTestTag
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.AccountKind
@@ -55,7 +57,7 @@ class AccountsScreenUITest {
         showAccountsScreen(listOf(microsoftAccount))
 
         // Skin head should exist (shows default Steve head)
-        composeRule.onNodeWithTag("skin_head_${microsoftAccount.id}")
+        composeRule.onNode(hasTestTag("skin_head_${microsoftAccount.id}"), useUnmergedTree = true)
             .assertExists()
 
         // Customize button should NOT exist for Microsoft accounts
@@ -75,7 +77,7 @@ class AccountsScreenUITest {
         showAccountsScreen(listOf(localAccount))
 
         // Skin head should exist
-        composeRule.onNodeWithTag("skin_head_${localAccount.id}")
+        composeRule.onNode(hasTestTag("skin_head_${localAccount.id}"), useUnmergedTree = true)
             .assertExists()
 
         // Customize button SHOULD exist for Local accounts
@@ -100,11 +102,11 @@ class AccountsScreenUITest {
         showAccountsScreen(listOf(microsoftAccount, localAccount))
 
         // Microsoft account row: no customize button
-        composeRule.onNodeWithTag("account_row_${microsoftAccount.id}")
+        composeRule.onNode(hasTestTag("account_row_${microsoftAccount.id}"), useUnmergedTree = true)
             .assertExists()
 
         // Local account row: has customize button
-        composeRule.onNodeWithTag("account_row_${localAccount.id}")
+        composeRule.onNode(hasTestTag("account_row_${localAccount.id}"), useUnmergedTree = true)
             .assertExists()
     }
 

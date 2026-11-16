@@ -83,13 +83,16 @@ class MediaStorageCapeTest {
     @Test
     fun urlImportStoresFetchedCape() = runBlocking {
         val bytes = png(64, 32)
+        // Use a valid SHA-256 hash (64 hex chars) to match the extractTextureHash regex
+        val textureHash = "abc123def4567890abc123def4567890abc123def4567890abc123def4567890"
+        val url = "https://textures.minecraft.net/texture/$textureHash"
         val name = media.importImageFromUrl(
-            "https://textures.minecraft.net/texture/abc123",
+            url,
             ImportKind.CAPE,
         ) { bytes }
         assertNotNull(name)
         // Content-addressed caching: filename is derived from texture hash
-        assertTrue(name!!.startsWith("cape_abc123."))
+        assertTrue(name!!.startsWith("cape_$textureHash."))
         assertTrue(name.endsWith(".png"))
         assertTrue(media.file(name!!).exists())
     }

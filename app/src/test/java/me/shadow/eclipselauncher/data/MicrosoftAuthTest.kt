@@ -184,7 +184,7 @@ class MicrosoftAuthTest {
                 "id": "44444444444444444444444444444444",
                 "name": "RobustPlayer",
                 "skins": [
-                    { "state": "ACTIVE" },  // missing id, url, variant
+                    { "state": "ACTIVE" },
                     {
                         "id": "skin-valid",
                         "state": "ACTIVE",
@@ -193,7 +193,7 @@ class MicrosoftAuthTest {
                     }
                 ],
                 "capes": [
-                    { "state": "ACTIVE" },  // missing id, url
+                    { "state": "ACTIVE" },
                     {
                         "id": "cape-valid",
                         "state": "ACTIVE",
