@@ -11,7 +11,6 @@ package me.shadow.eclipselauncher.ui.screens
 
 import android.app.Application
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.test.HasTestTag
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
