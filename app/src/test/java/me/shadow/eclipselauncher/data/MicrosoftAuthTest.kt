@@ -178,13 +178,14 @@ class MicrosoftAuthTest {
     @Test
     fun testParseMinecraftProfile_NonObjectEntriesIgnored() {
         // Profile with entries missing required fields (should be ignored by mapNotNull)
-        // The parser's mapNotNull filters out entries that don't have all required fields.
+        // The parser's mapNotNull keeps all JsonObjects, but activeSkin/activeCape pick the first ACTIVE.
+        // Make the incomplete entries INACTIVE so they're ignored by activeSkin/activeCape.
         val response = parseJson("""
             {
                 "id": "44444444444444444444444444444444",
                 "name": "RobustPlayer",
                 "skins": [
-                    { "state": "ACTIVE" },
+                    { "state": "INACTIVE" },
                     {
                         "id": "skin-valid",
                         "state": "ACTIVE",
@@ -193,7 +194,7 @@ class MicrosoftAuthTest {
                     }
                 ],
                 "capes": [
-                    { "state": "ACTIVE" },
+                    { "state": "INACTIVE" },
                     {
                         "id": "cape-valid",
                         "state": "ACTIVE",
