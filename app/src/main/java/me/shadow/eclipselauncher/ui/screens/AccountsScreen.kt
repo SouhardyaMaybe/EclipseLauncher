@@ -321,18 +321,15 @@ private fun AccountRow(
             )
             Spacer(modifier = Modifier.width(2.dp))
         }
-        // Dress: opens the skin dialog. Only for LOCAL accounts — Microsoft
-        // accounts use the official Minecraft profile for skin/cape and cannot
-        // customize them in the launcher.
-        if (account.kind == AccountKind.LOCAL) {
-            IconButton(onClick = onCustomize) {
-                Icon(
-                    Icons.Filled.Checkroom,
-                    contentDescription = stringResource(R.string.cd_customize_skin),
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(22.dp),
-                )
-            }
+        // Dress: opens the skin dialog (interactive 3D model with full-screen).
+        // For Microsoft accounts, pick/clear actions are hidden in the dialog.
+        IconButton(onClick = onCustomize) {
+            Icon(
+                Icons.Filled.Checkroom,
+                contentDescription = stringResource(R.string.cd_customize_skin),
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(22.dp),
+            )
         }
         // Delete: arms the removal; the screen's dialog confirms it first.
         IconButton(onClick = onDelete) {

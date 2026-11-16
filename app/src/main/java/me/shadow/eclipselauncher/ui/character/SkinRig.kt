@@ -427,6 +427,9 @@ class PlayerRig(
      * All six faces of a box share [RenderFace.boxDepth]; the layer key
      * keeps each overlay after its base box, and hidden faces are removed
      * before drawing.
+     * Within the same rank/box/layer, sort by depth (far to near) so
+     * geometrically correct painter order is preserved for coplanar faces
+     * (e.g., cape outer/inner).
      */
     private val depthOrder = Comparator<RenderFace> { a, b ->
         val byRank = a.paintRank.compareTo(b.paintRank)
@@ -435,7 +438,8 @@ class PlayerRig(
         if (byBox != 0) return@Comparator byBox
         val byLayer = a.layer.compareTo(b.layer)
         if (byLayer != 0) return@Comparator byLayer
-        a.faceId.compareTo(b.faceId)
+        // Far to near: smaller depth = farther = drawn first
+        a.depth.compareTo(b.depth)
     }
 
     companion object {

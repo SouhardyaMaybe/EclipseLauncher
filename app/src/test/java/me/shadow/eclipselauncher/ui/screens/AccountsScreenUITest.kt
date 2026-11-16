@@ -45,7 +45,7 @@ class AccountsScreenUITest {
     private val customizeDesc = context.getString(R.string.cd_customize_skin)
 
     @Test
-    fun microsoftAccount_showsSkinHead_noCustomizeButton() {
+    fun microsoftAccount_showsSkinHead_andCustomizeButtonOpensModel() {
         val microsoftAccount = Account(
             id = "ms-test-1",
             kind = AccountKind.MICROSOFT,
@@ -59,9 +59,10 @@ class AccountsScreenUITest {
         composeRule.onNode(hasTestTag("skin_head_${microsoftAccount.id}"), useUnmergedTree = true)
             .assertExists()
 
-        // Customize button should NOT exist for Microsoft accounts
+        // Customize button SHOULD exist for Microsoft accounts — opens model view
+        // (pick/clear actions are hidden inside the dialog via canCustomize=false)
         composeRule.onNodeWithContentDescription(customizeDesc, useUnmergedTree = true)
-            .assertDoesNotExist()
+            .assertExists()
     }
 
     @Test
