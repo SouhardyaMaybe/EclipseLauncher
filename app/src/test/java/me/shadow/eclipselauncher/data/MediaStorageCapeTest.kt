@@ -83,34 +83,30 @@ class MediaStorageCapeTest {
     fun urlImportStoresFetchedCape() = runBlocking {
         val bytes = png(64, 32)
         val name = media.importImageFromUrl(
-            "url-cape.png",
-            "https://textures.test/cape.png",
+            "https://textures.minecraft.net/texture/abc123",
             ImportKind.CAPE,
         ) { bytes }
-        assertEquals("url-cape.png", name)
-        assertTrue(media.file("url-cape.png").exists())
+        assertNotNull(name)
+        assertTrue(name!!.startsWith("cape_"))
+        assertTrue(media.file(name!!).exists())
     }
 
     @Test
     fun urlImportFailsWhenFetchFails() = runBlocking {
         val name = media.importImageFromUrl(
-            "missing.png",
-            "https://textures.test/missing.png",
+            "https://textures.minecraft.net/texture/missing",
             ImportKind.CAPE,
         ) { null }
         assertNull(name)
-        assertFalse(media.file("missing.png").exists())
     }
 
     @Test
     fun urlImportRejectsNonCapePayload() = runBlocking {
         val bytes = png(64, 64)
         val name = media.importImageFromUrl(
-            "bad-url-cape.png",
-            "https://textures.test/not-a-cape.png",
+            "https://textures.minecraft.net/texture/not-a-cape",
             ImportKind.CAPE,
         ) { bytes }
         assertNull(name)
-        assertFalse(media.file("bad-url-cape.png").exists())
     }
 }

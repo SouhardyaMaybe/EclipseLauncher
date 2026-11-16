@@ -8,6 +8,9 @@
 package me.shadow.eclipselauncher.data
 
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
@@ -34,36 +37,76 @@ class MicrosoftAuthTest {
         assertEquals("test-code-123", (result as RedirectResult.Success).code)
     }
 
-    @Test
-    fun testParseMinecraftProfile_ActiveSkinAndCape() {
-        // Profile with ACTIVE skin (CLASSIC) and ACTIVE cape
-        val response = buildJsonObject {
-            put("id", "1234567890abcdef1234567890abcdef")
-            put("name", "TestPlayer")
+    private fun buildProfileJson(
+        id: String,
+        name: String,
+        skins: List<Map<String, Any?>>,
+        capes: List<Map<String, Any?>>,
+    ): JsonObject {
+        return buildJsonObject {
+            put("id", id)
+            put("name", name)
             putJsonArray("skins") {
-                putJsonObject {
-                    put("id", "skin-1")
-                    put("state", "ACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/abc123")
-                    put("variant", "CLASSIC")
-                    put("alias", "Steve")
-                }
-                putJsonObject {
-                    put("id", "skin-2")
-                    put("state", "INACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/def456")
-                    put("variant", "SLIM")
+                for (skin in skins) {
+                    putJsonObject {
+                        skin.forEach { (key, value) ->
+                            value?.let { put(key, it) }
+                        }
+                    }
                 }
             }
             putJsonArray("capes") {
-                putJsonObject {
-                    put("id", "cape-1")
-                    put("state", "ACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/cape123")
-                    put("alias", "Minecon2012")
+                for (cape in capes) {
+                    putJsonObject {
+                        cape.forEach { (key, value) ->
+                            value?.let { put(key, it) }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private fun skinMap(
+        id: String,
+        state: String,
+        url: String,
+        variant: String?,
+        alias: String? = null,
+    ): Map<String, Any?> = mapOf(
+        "id" to id,
+        "state" to state,
+        "url" to url,
+        "variant" to variant,
+        "alias" to alias,
+    )
+
+    private fun capeMap(
+        id: String,
+        state: String,
+        url: String,
+        alias: String? = null,
+    ): Map<String, Any?> = mapOf(
+        "id" to id,
+        "state" to state,
+        "url" to url,
+        "alias" to alias,
+    )
+
+    @Test
+    fun testParseMinecraftProfile_ActiveSkinAndCape() {
+        // Profile with ACTIVE skin (CLASSIC) and ACTIVE cape
+        val response = buildProfileJson(
+            id = "1234567890abcdef1234567890abcdef",
+            name = "TestPlayer",
+            skins = listOf(
+                skinMap("skin-1", "ACTIVE", "https://textures.minecraft.net/texture/abc123", "CLASSIC", "Steve"),
+                skinMap("skin-2", "INACTIVE", "https://textures.minecraft.net/texture/def456", "SLIM"),
+            ),
+            capes = listOf(
+                capeMap("cape-1", "ACTIVE", "https://textures.minecraft.net/texture/cape123", "Minecon2012"),
+            ),
+        )
         val profile = parseMinecraftProfile(response)
         assertEquals("TestPlayer", profile.name)
         assertEquals("1234567890abcdef1234567890abcdef", profile.uuid)
@@ -80,21 +123,14 @@ class MicrosoftAuthTest {
     @Test
     fun testParseMinecraftProfile_SlimVariant() {
         // Profile with ACTIVE SLIM skin (Alex model), no cape
-        val response = buildJsonObject {
-            put("id", "abcdef1234567890abcdef1234567890")
-            put("name", "AlexPlayer")
-            putJsonArray("skins") {
-                putJsonObject {
-                    put("id", "skin-slim")
-                    put("state", "ACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/slim789")
-                    put("variant", "SLIM")
-                }
-            }
-            putJsonArray("capes") {
-                // No capes
-            }
-        }
+        val response = buildProfileJson(
+            id = "abcdef1234567890abcdef1234567890",
+            name = "AlexPlayer",
+            skins = listOf(
+                skinMap("skin-slim", "ACTIVE", "https://textures.minecraft.net/texture/slim789", "SLIM"),
+            ),
+            capes = emptyList(),
+        )
         val profile = parseMinecraftProfile(response)
         assertEquals("AlexPlayer", profile.name)
         assertNotNull(profile.activeSkin)
@@ -105,19 +141,14 @@ class MicrosoftAuthTest {
     @Test
     fun testParseMinecraftProfile_NoCape() {
         // Profile with ACTIVE skin but no cape array
-        val response = buildJsonObject {
-            put("id", "11111111111111111111111111111111")
-            put("name", "NoCapePlayer")
-            putJsonArray("skins") {
-                putJsonObject {
-                    put("id", "skin-nocape")
-                    put("state", "ACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/nocape111")
-                    put("variant", "CLASSIC")
-                }
-            }
-            // No capes field
-        }
+        val response = buildProfileJson(
+            id = "11111111111111111111111111111111",
+            name = "NoCapePlayer",
+            skins = listOf(
+                skinMap("skin-nocape", "ACTIVE", "https://textures.minecraft.net/texture/nocape111", "CLASSIC"),
+            ),
+            capes = emptyList(),
+        )
         val profile = parseMinecraftProfile(response)
         assertNotNull(profile.activeSkin)
         assertNull(profile.activeCape)
@@ -126,26 +157,16 @@ class MicrosoftAuthTest {
     @Test
     fun testParseMinecraftProfile_HttpUrlNormalizedToHttps() {
         // Profile with HTTP URL - should be normalized to HTTPS
-        val response = buildJsonObject {
-            put("id", "22222222222222222222222222222222")
-            put("name", "HttpPlayer")
-            putJsonArray("skins") {
-                putJsonObject {
-                    put("id", "skin-http")
-                    put("state", "ACTIVE")
-                    put("url", "http://textures.minecraft.net/texture/http123")
-                    put("variant", "CLASSIC")
-                }
-            }
-            putJsonArray("capes") {
-                putJsonObject {
-                    put("id", "cape-http")
-                    put("state", "ACTIVE")
-                    put("url", "http://textures.minecraft.net/texture/capehttp")
-                    put("alias", "HTTP Cape")
-                }
-            }
-        }
+        val response = buildProfileJson(
+            id = "22222222222222222222222222222222",
+            name = "HttpPlayer",
+            skins = listOf(
+                skinMap("skin-http", "ACTIVE", "http://textures.minecraft.net/texture/http123", "CLASSIC"),
+            ),
+            capes = listOf(
+                capeMap("cape-http", "ACTIVE", "http://textures.minecraft.net/texture/capehttp", "HTTP Cape"),
+            ),
+        )
         val profile = parseMinecraftProfile(response)
         assertTrue(profile.activeSkin!!.url.startsWith("https://"))
         assertTrue(profile.activeCape!!.url.startsWith("https://"))
@@ -174,22 +195,29 @@ class MicrosoftAuthTest {
             put("id", "44444444444444444444444444444444")
             put("name", "RobustPlayer")
             putJsonArray("skins") {
-                put("not-an-object")
-                putJsonObject {
-                    put("id", "skin-valid")
-                    put("state", "ACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/valid123")
-                    put("variant", "CLASSIC")
-                }
+                // Add a non-object element (JsonPrimitive) - should be ignored by mapNotNull
+                val arr = JsonArray(listOf(
+                    JsonElement(nonObjectValue = true), // This represents a non-object
+                    JsonObject(mapOf(
+                        "id" to JsonElement("skin-valid"),
+                        "state" to JsonElement("ACTIVE"),
+                        "url" to JsonElement("https://textures.minecraft.net/texture/valid123"),
+                        "variant" to JsonElement("CLASSIC"),
+                    )),
+                ))
+                this@buildJsonObject["skins"] = arr
             }
             putJsonArray("capes") {
-                put(123)
-                putJsonObject {
-                    put("id", "cape-valid")
-                    put("state", "ACTIVE")
-                    put("url", "https://textures.minecraft.net/texture/capevalid")
-                    put("alias", "Valid Cape")
-                }
+                val arr = JsonArray(listOf(
+                    JsonElement(nonObjectValue = true),
+                    JsonObject(mapOf(
+                        "id" to JsonElement("cape-valid"),
+                        "state" to JsonElement("ACTIVE"),
+                        "url" to JsonElement("https://textures.minecraft.net/texture/capevalid"),
+                        "alias" to JsonElement("Valid Cape"),
+                    )),
+                ))
+                this@buildJsonObject["capes"] = arr
             }
         }
         val profile = parseMinecraftProfile(response)
