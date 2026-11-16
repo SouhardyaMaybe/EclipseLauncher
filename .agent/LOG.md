@@ -37,6 +37,18 @@
 
 **CI Budget**: 3 runs remaining (1 for this fix, 2 for verification)
 
+---
+
+## 2026-11-15 — CI Failure: Room Migration Missing
+
+**Problem**: CI failed because adding `skinVariant` column to AccountEntity without a Room migration causes schema mismatch on app startup.
+
+**Fix Applied**:
+1. **AppDatabase.kt**: Added `MIGRATION_1_2` that executes `ALTER TABLE accounts ADD COLUMN skinVariant TEXT`, bumped version to 2
+2. **AppModule.kt**: Registered `.addMigrations(AppDatabase.MIGRATION_1_2)` in database builder
+
+**Commit**: 51cf319 - pushed, CI re-running
+
 ## 2026-11-13
 - Restored `.agent` context; HEAD 3f67213 broken at build-script compile (`strictly` unresolved).
 - Rewrote `app/build.gradle.kts` without force/strictly/failOnVersionConflict; explicit Compose 1.6.1, M3 1.2.1, adaptive 1.0.0-alpha01, nav-compose 2.7.7, icons 1.6.1.

@@ -119,7 +119,7 @@ class MediaStorage(context: Context) {
             // Extract texture hash for content-addressed caching.
             // URL format: https://textures.minecraft.net/texture/<hash>
             val textureHash = extractTextureHash(url)
-            val cachedName = textureHash?.let { "${kind.name().lowercase()}_$it.png" }
+            val cachedName = textureHash?.let { "${kind.name.lowercase()}_$it.png" }
             if (cachedName != null && file(cachedName).exists()) {
                 return@withContext cachedName
             }
@@ -147,7 +147,7 @@ class MediaStorage(context: Context) {
                 decoded
             }
 
-            val targetName = cachedName ?: newId() + "_${kind.name().lowercase()}.png"
+            val targetName = cachedName ?: newId() + "_${kind.name.lowercase()}.png"
             runCatching {
                 file(targetName).outputStream().use { out ->
                     toWrite.compress(Bitmap.CompressFormat.PNG, 100, out)

@@ -72,7 +72,7 @@ data class MsLoginResult(
 )
 
 /** One entry of the profile's `skins` array. */
-internal data class ProfileSkin(
+data class ProfileSkin(
     val id: String,
     val state: String,
     val url: String,
@@ -80,7 +80,7 @@ internal data class ProfileSkin(
 )
 
 /** One entry of the profile's `capes` array. */
-internal data class ProfileCape(
+data class ProfileCape(
     val id: String,
     val state: String,
     val url: String,
@@ -88,7 +88,7 @@ internal data class ProfileCape(
 )
 
 /** Parsed Minecraft services profile (only the fields the launcher uses). */
-internal data class MinecraftProfile(
+data class MinecraftProfile(
     val name: String,
     val uuid: String,
     val skins: List<ProfileSkin> = emptyList(),
@@ -102,7 +102,7 @@ internal data class MinecraftProfile(
  * Pure profile parsing: picks the first ACTIVE skin/cape and normalizes
  * texture URLs to HTTPS. Missing arrays and non-object entries are ignored.
  */
-internal fun parseMinecraftProfile(response: JsonObject): MinecraftProfile {
+fun parseMinecraftProfile(response: JsonObject): MinecraftProfile {
     val skins = (response["skins"] as? JsonArray).orEmpty().mapNotNull { element ->
         (element as? JsonObject)?.let { skin ->
             ProfileSkin(
@@ -132,7 +132,7 @@ internal fun parseMinecraftProfile(response: JsonObject): MinecraftProfile {
 }
 
 /** Normalizes texture URLs to use HTTPS. */
-internal fun normalizeTextureUrl(url: String): String =
+fun normalizeTextureUrl(url: String): String =
     if (url.startsWith("http://")) "https://" + url.substring(7) else url
 
 private fun JsonObject.strOrEmpty(key: String): String =
