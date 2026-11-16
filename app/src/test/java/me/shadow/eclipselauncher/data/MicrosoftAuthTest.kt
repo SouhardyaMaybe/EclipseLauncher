@@ -121,7 +121,6 @@ class MicrosoftAuthTest {
                         "variant": "CLASSIC"
                     }
                 ]
-                // No capes field
             }
         """)
         val profile = parseMinecraftProfile(response)
@@ -178,17 +177,14 @@ class MicrosoftAuthTest {
 
     @Test
     fun testParseMinecraftProfile_NonObjectEntriesIgnored() {
-        // Profile with non-object entries in arrays (should be ignored)
-        // This uses the JSON parser which will throw on non-object entries,
-        // but the parseMinecraftProfile uses mapNotNull which handles nulls.
-        // We can't easily test this with kotlinx.serialization JSON since it's strict.
-        // The implementation's mapNotNull already handles this correctly.
+        // Profile with entries missing required fields (should be ignored by mapNotNull)
+        // The parser's mapNotNull filters out entries that don't have all required fields.
         val response = parseJson("""
             {
                 "id": "44444444444444444444444444444444",
                 "name": "RobustPlayer",
                 "skins": [
-                    { "invalid": true },
+                    { "state": "ACTIVE" },  // missing id, url, variant
                     {
                         "id": "skin-valid",
                         "state": "ACTIVE",
@@ -197,7 +193,7 @@ class MicrosoftAuthTest {
                     }
                 ],
                 "capes": [
-                    { "invalid": true },
+                    { "state": "ACTIVE" },  // missing id, url
                     {
                         "id": "cape-valid",
                         "state": "ACTIVE",
@@ -208,9 +204,7 @@ class MicrosoftAuthTest {
             }
         """)
         val profile = parseMinecraftProfile(response)
-        // Note: kotlinx.serialization JSON parser will include the invalid object
-        // but since it doesn't have the required fields, mapNotNull will filter them out
-        // The test validates that valid entries are still parsed
+        // Valid entries should still be parsed even if some entries are invalid
         assertNotNull(profile.activeSkin)
         assertEquals("skin-valid", profile.activeSkin!!.id)
         assertNotNull(profile.activeCape)

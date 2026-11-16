@@ -88,7 +88,9 @@ class MediaStorageCapeTest {
             ImportKind.CAPE,
         ) { bytes }
         assertNotNull(name)
-        assertTrue(name!!.startsWith("cape_"))
+        // Content-addressed caching: filename is derived from texture hash
+        assertTrue(name!!.startsWith("cape_abc123."))
+        assertTrue(name.endsWith(".png"))
         assertTrue(media.file(name!!).exists())
     }
 
