@@ -12,9 +12,13 @@ import android.app.Application
 import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.test.core.app.ApplicationProvider
+import me.shadow.eclipselauncher.data.room.AccountDao
+import me.shadow.eclipselauncher.data.room.AccountEntity
+import me.shadow.eclipselauncher.data.room.AppDatabase
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -26,7 +30,6 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34], application = Application::class)
 class DatabaseMigrationTest {
 
-    private lateinit var db: AppDatabase
     private lateinit var context: Application
 
     @Before
