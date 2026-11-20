@@ -189,6 +189,8 @@ class PlayerRig(
      * Fills and returns [faces] sorted far-to-near.
      * [cx]/[cy] place model point (0, 16, 0) at screen center; [scale] is
      * pixels per skin pixel.
+     * Only front-facing faces are returned (back-face culling), matching the
+     * renderer's culling so the painter order only includes visible faces.
      */
     fun project(pose: Pose, cx: Float, cy: Float, scale: Float): Array<RenderFace> {
         beginPose(pose)
@@ -222,6 +224,7 @@ class PlayerRig(
             previousBoxDepth = boxDepth
             index += 6
         }
+        // Assign paint ranks
         for (face in faces) {
             face.paintRank = when (face.part) {
                 PartKind.HEAD -> rankHead
@@ -229,8 +232,12 @@ class PlayerRig(
                 else -> rankBody
             }
         }
-        faces.sortWith(depthOrder)
-        return faces
+        // Back-face culling: only keep front-facing faces for the painter order.
+        // This matches the renderer's culling so the painter order only includes
+        // visible faces. The winding test uses the projected 2D points.
+        val frontFaces = faces.filter { it.isFrontFacing() }
+        frontFaces.sortWith(depthOrder)
+        return frontFaces.toTypedArray()
     }
 
     /** Projects an arbitrary model point (used for the nametag anchor). */
@@ -427,9 +434,10 @@ class PlayerRig(
      * All six faces of a box share [RenderFace.boxDepth]; the layer key
      * keeps each overlay after its base box, and hidden faces are removed
      * before drawing.
-     * Within the same rank/box/layer, sort by depth (far to near) so
-     * geometrically correct painter order is preserved for coplanar faces
-     * (e.g., cape outer/inner).
+     * Within the same rank/box/layer, sort by MAX depth (farthest corner)
+     * far-to-near so geometrically correct painter order is preserved for
+     * coplanar faces (e.g., cape outer/inner). Using max depth ensures the
+     * face that extends farthest back is drawn first.
      */
     private val depthOrder = Comparator<RenderFace> { a, b ->
         val byRank = a.paintRank.compareTo(b.paintRank)
@@ -438,8 +446,11 @@ class PlayerRig(
         if (byBox != 0) return@Comparator byBox
         val byLayer = a.layer.compareTo(b.layer)
         if (byLayer != 0) return@Comparator byLayer
-        // Far to near: smaller depth = farther = drawn first
-        a.depth.compareTo(b.depth)
+        // Far to near: smaller maxDepth = farther = drawn first.
+        // Use max of the four corner depths (the farthest corner).
+        val aMax = a.depths.maxOrNull() ?: a.depth
+        val bMax = b.depths.maxOrNull() ?: b.depth
+        aMax.compareTo(bMax)
     }
 
     companion object {
@@ -501,9 +512,11 @@ private fun buildBoxes(
         left = Uv(16, 8, 8, 8), top = Uv(8, 0, 8, 8), bottom = Uv(16, 0, 8, 8),
     )
     val hat = box(
-        // Inflated 0.5 on every side except the bottom: the hat must not dip
-        // below the neck plane, where it would interpenetrate the cape top.
-        PartKind.HEAD, -4f, 24.5f, -4f, 4f, 32f, 4f, 0.5f,
+        // Inflated 1px on all sides to match ZL2 PetLib (hat inflate = 1).
+        // The 1px bottom inflation goes slightly below the neck plane (y=24),
+        // matching ZL2's behavior where the hat brim extends 1px past the neck.
+        // The neck area is covered by the body/head so this is not visible.
+        PartKind.HEAD, -4f, 24f, -4f, 4f, 32f, 4f, 1f,
         front = Uv(40, 8, 8, 8), back = Uv(56, 8, 8, 8), right = Uv(32, 8, 8, 8),
         left = Uv(48, 8, 8, 8), top = Uv(40, 0, 8, 8), bottom = Uv(48, 0, 8, 8),
     )
