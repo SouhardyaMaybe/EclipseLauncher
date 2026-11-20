@@ -435,10 +435,9 @@ class PlayerRig(
      * All six faces of a box share [RenderFace.boxDepth]; the layer key
      * keeps each overlay after its base box, and hidden faces are removed
      * before drawing.
-     * Within the same rank/box/layer, sort by MAX depth (farthest corner)
-     * far-to-near so geometrically correct painter order is preserved for
-     * coplanar faces (e.g., cape outer/inner). Using max depth ensures the
-     * face that extends farthest back is drawn first.
+     * Within the same rank/box/layer, preserve insertion order (faceId)
+     * to match ZL2 PetLib behavior where faces of the same box are not
+     * depth-sorted against each other (they share the box-center depth).
      */
     private val depthOrder = Comparator<RenderFace> { a, b ->
         val byRank = a.paintRank.compareTo(b.paintRank)
@@ -447,11 +446,8 @@ class PlayerRig(
         if (byBox != 0) return@Comparator byBox
         val byLayer = a.layer.compareTo(b.layer)
         if (byLayer != 0) return@Comparator byLayer
-        // Far to near: smaller maxDepth = farther = drawn first.
-        // Use max of the four corner depths (the farthest corner).
-        val aMax = a.depths.maxOrNull() ?: a.depth
-        val bMax = b.depths.maxOrNull() ?: b.depth
-        aMax.compareTo(bMax)
+        // Same rank/box/layer: preserve insertion order (faceId)
+        a.faceId.compareTo(b.faceId)
     }
 
     companion object {
