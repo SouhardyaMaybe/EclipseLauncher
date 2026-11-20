@@ -429,9 +429,9 @@ class PlayerRig(
      * All six faces of a box share [RenderFace.boxDepth]; the layer key
      * keeps each overlay after its base box, and hidden faces are removed
      * before drawing.
-     * Within the same rank/box/layer, preserve insertion order (faceId)
-     * to match ZL2 PetLib behavior where faces of the same box are not
-     * depth-sorted against each other (they share the box-center depth).
+     * Within the same rank/box/layer, sort by average depth (far-to-near)
+     * to match ZL2 PetLib's geometric ordering, with faceId as final
+     * tiebreaker for truly equal depths.
      */
     private val depthOrder = Comparator<RenderFace> { a, b ->
         val byRank = a.paintRank.compareTo(b.paintRank)
@@ -440,7 +440,10 @@ class PlayerRig(
         if (byBox != 0) return@Comparator byBox
         val byLayer = a.layer.compareTo(b.layer)
         if (byLayer != 0) return@Comparator byLayer
-        // Same rank/box/layer: preserve insertion order (faceId)
+        // Same rank/box/layer: sort by average depth (far-to-near),
+        // then faceId as final tiebreaker for truly equal depths.
+        val depthCmp = a.depth.compareTo(b.depth)
+        if (depthCmp != 0) return@Comparator depthCmp
         a.faceId.compareTo(b.faceId)
     }
 
