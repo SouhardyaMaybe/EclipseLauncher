@@ -509,11 +509,9 @@ private fun buildBoxes(
         left = Uv(16, 8, 8, 8), top = Uv(8, 0, 8, 8), bottom = Uv(16, 0, 8, 8),
     )
     val hat = box(
-        // Inflated 1px on all sides to match ZL2 PetLib (hat inflate = 1).
-        // The 1px bottom inflation goes slightly below the neck plane (y=24),
-        // matching ZL2's behavior where the hat brim extends 1px past the neck.
-        // The neck area is covered by the body/head so this is not visible.
-        PartKind.HEAD, -4f, 24f, -4f, 4f, 32f, 4f, 1f,
+        // Inflated 0.5px on all sides except the bottom: the hat must not dip
+        // below the neck plane, where it would interpenetrate the cape top.
+        PartKind.HEAD, -4f, 24.5f, -4f, 4f, 32f, 4f, 0.5f,
         front = Uv(40, 8, 8, 8), back = Uv(56, 8, 8, 8), right = Uv(32, 8, 8, 8),
         left = Uv(48, 8, 8, 8), top = Uv(40, 0, 8, 8), bottom = Uv(48, 0, 8, 8),
     )
