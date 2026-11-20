@@ -189,8 +189,8 @@ class PlayerRig(
      * Fills and returns [faces] sorted far-to-near.
      * [cx]/[cy] place model point (0, 16, 0) at screen center; [scale] is
      * pixels per skin pixel.
-     * Front-facing faces are sorted far-to-near; back-facing faces are appended
-     * unsorted at the end (for testing/inspection). The renderer culls back faces.
+     * Back faces are sorted as "infinitely far" (drawn last) so they don't
+     * affect front-face ordering, but remain in the array for testing.
      */
     fun project(pose: Pose, cx: Float, cy: Float, scale: Float): Array<RenderFace> {
         beginPose(pose)
@@ -232,13 +232,20 @@ class PlayerRig(
                 else -> rankBody
             }
         }
-        // Partition: front faces sorted far-to-near, back faces appended unsorted.
-        // This keeps all faces for testing while ensuring painter order only
-        // includes visible faces in correct depth order.
-        val (frontFaces, backFaces) = faces.partition { it.isFrontFacing() }
-        val sortedFront = frontFaces.toMutableList()
-        sortedFront.sortWith(depthOrder)
-        return (sortedFront + backFaces).toTypedArray()
+        // Sort all faces: front faces by depth, back faces treated as "infinitely far"
+        // (sorted last). This keeps all faces for testing while ensuring painter
+        // order only includes visible faces in correct depth order.
+        faces.sortWith(Comparator { a, b ->
+            val aFront = a.isFrontFacing()
+            val bFront = b.isFrontFacing()
+            if (aFront != bFront) {
+                // Front faces first, back faces last
+                return@Comparator if (aFront) -1 else 1
+            }
+            // Both front or both back: use depthOrder
+            depthOrder.compare(a, b)
+        })
+        return faces
     }
 
     /** Projects an arbitrary model point (used for the nametag anchor). */
