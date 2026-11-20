@@ -168,8 +168,8 @@
     <string name="modpack_use_button">Use</string>
     <string name="modpack_tab_import">Import local</string>
 
-    <!-- Manage Content screen -->
-    <string name="manage_content_title">Manage Content</string>
+    <!-- Content Manager screen -->
+    <string name="manage_content_title">Content Manager</string>
     <string name="manage_content_installed">Installed</string>
     <string name="manage_content_browse">Browse</string>
     <string name="manage_content_import">Import local</string>

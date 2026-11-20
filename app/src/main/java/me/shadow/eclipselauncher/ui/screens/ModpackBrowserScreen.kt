@@ -395,12 +395,14 @@ private fun ModpackVersionDialog(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.End,
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
                             androidx.compose.material3.Checkbox(
                                 checked = stableOnly,
                                 onCheckedChange = { stableOnly = it },
                             )
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = stringResource(R.string.manage_content_stable_only),
                                 style = MaterialTheme.typography.bodyMedium,

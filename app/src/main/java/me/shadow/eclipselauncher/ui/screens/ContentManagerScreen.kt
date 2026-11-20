@@ -2,7 +2,7 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * MANAGE CONTENT: unified screen for both installed content and browsing.
+ * CONTENT MANAGER: unified screen for both installed content and browsing.
  * Segmented control for Installed | Browse. Sticky content-type bar with
  * glyph chips + count badges. Content icons loaded via Coil with caching.
  */
@@ -872,7 +872,7 @@ private fun ListLoadingOverlay() {
 private const val BROWSE_PAGE_SIZE = 25
 
 @Composable
-fun ManageContentScreen(
+fun ContentManagerScreen(
     client: ModrinthClient,
     instance: Instance?,
     media: MediaStorage,

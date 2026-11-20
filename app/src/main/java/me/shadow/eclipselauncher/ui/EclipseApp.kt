@@ -45,7 +45,7 @@ import me.shadow.eclipselauncher.ui.screens.CreateInstanceScreen
 import me.shadow.eclipselauncher.ui.screens.HomeScreen
 import me.shadow.eclipselauncher.ui.screens.InstanceEditorScreen
 import me.shadow.eclipselauncher.ui.screens.LoaderPickerScreen
-import me.shadow.eclipselauncher.ui.screens.ManageContentScreen
+import me.shadow.eclipselauncher.ui.screens.ContentManagerScreen
 import me.shadow.eclipselauncher.ui.screens.MicrosoftAuthScreen
 import me.shadow.eclipselauncher.ui.screens.ModpackBrowserScreen
 import me.shadow.eclipselauncher.ui.screens.SettingsPage
@@ -360,7 +360,7 @@ fun EclipseApp() {
                     }
 
                     entry<Route.ManageContent> { route ->
-                        ManageContentScreen(
+                        ContentManagerScreen(
                             client = container.modrinth,
                             instance = instances.firstOrNull { it.id == route.instanceId }
                                 ?: instances.firstOrNull(),
