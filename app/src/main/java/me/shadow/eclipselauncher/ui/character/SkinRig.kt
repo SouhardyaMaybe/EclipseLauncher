@@ -235,7 +235,7 @@ class PlayerRig(
         // Back-face culling: only keep front-facing faces for the painter order.
         // This matches the renderer's culling so the painter order only includes
         // visible faces. The winding test uses the projected 2D points.
-        val frontFaces = faces.filter { it.isFrontFacing() }
+        val frontFaces = faces.filter { it.isFrontFacing() }.toMutableList()
         frontFaces.sortWith(depthOrder)
         return frontFaces.toTypedArray()
     }
