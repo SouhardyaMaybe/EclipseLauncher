@@ -15,6 +15,7 @@ import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * Per-pixel depth buffer software rasterizer matching ZL2 PetLib's technique.
@@ -53,7 +54,7 @@ class SoftwareRasterizer(
 
     private fun drawPart(part: ProjectedPart, light: Lighting) {
         val tex = part.texture
-        val sz = part.size + Vec3(part.inflate)
+        val sz = part.size.add(Vec3(part.inflate))
         val inflate = part.inflate
 
         // 6 faces of the box, UV regions per ZL2's strip order: right/front/left/back then top/bottom
@@ -97,22 +98,22 @@ class SoftwareRasterizer(
                 for (ix in 0..1) {
                     val i = iy * 2 + ix
                     var a = Vec3.ZERO
-                    a[uax] = (ix * ww - ww / 2f) * ud
-                    a[vax] = (iy * hh - hh / 2f) * vd
-                    a[wax] = dd / 2f
+                    a = a.setComponent(uax, (ix * ww - ww / 2f) * ud)
+                    a = a.setComponent(vax, (iy * hh - hh / 2f) * vd)
+                    a = a.setComponent(wax, dd / 2f)
                     if (part.mirror) a.x = -a.x
 
-                    pos[i] = project(part.transform.transformPoint3(a))
-                    uv[i] = Vec2(
+                    pos.set(i, project(part.transform.transformPoint3(a)))
+                    uv.set(i, Vec2(
                         u + ix * tw,
                         v + (if (f == 3) (1 - iy) * th else iy * th)
-                    )
+                    ))
                 }
             }
 
             // Two triangles per quad, winding depends on face orientation
             for (ids in listOf(intArrayOf(0, 2, 1), intArrayOf(2, 3, 1))) {
-                val area = edge(pos[ids[0]], pos[ids[1]], pos[ids[2]])
+                val area = edge(pos.get(ids[0]), pos.get(ids[1]), pos.get(ids[2]))
                 if (inflate == 0f && ((area >= 0f) != part.mirror)) continue
 
                 drawTriangle(ids, pos, uv, part.texture, lut)
@@ -127,53 +128,60 @@ class SoftwareRasterizer(
         tex: Texture,
         lut: Array<UByteArray>
     ) {
-        val area = edge(pos[ids[0]], pos[ids[1]], pos[ids[2]])
+        val p0 = pos.get(ids[0])
+        val p1 = pos.get(ids[1])
+        val p2 = pos.get(ids[2])
+        val area = edge(p0, p1, p2)
         if (abs(area) < 0.0001f) return
 
         val invArea = 1f / area
-        val minX = max(0, floor(min(pos[ids[0]].x, pos[ids[1]].x, pos[ids[2]].x)).toInt())
-        val maxX = min(width - 1, ceil(max(pos[ids[0]].x, pos[ids[1]].x, pos[ids[2]].x)).toInt())
-        val minY = max(0, floor(min(pos[ids[0]].y, pos[ids[1]].y, pos[ids[2]].y)).toInt())
-        val maxY = min(height - 1, ceil(max(pos[ids[0]].y, pos[ids[1]].y, pos[ids[2]].y)).toInt())
+        val minX = max(0, floor(min(min(p0.x, p1.x), p2.x)).toInt())
+        val maxX = min(width - 1, ceil(max(max(p0.x, p1.x), p2.x)).toInt())
+        val minY = max(0, floor(min(min(p0.y, p1.y), p2.y)).toInt())
+        val maxY = min(height - 1, ceil(max(max(p0.y, p1.y), p2.y)).toInt())
         if (minX > maxX || minY > maxY) return
 
-        val t = uv.map { it * tex.scale }
-        val ta = t[0] - t[1]
-        val tc = t[2] - t[1]
+        val t0 = uv.get(0).times(tex.scale)
+        val t1 = uv.get(1).times(tex.scale)
+        val t2 = uv.get(2).times(tex.scale)
+        val ta = t0.minus(t1)
+        val tc = t2.minus(t1)
 
         // 256× fixed-point edge bias for exact edge sharing
-        val points = pos.map { v ->
-            longArrayOf((v.x * 256f).roundToLong(), (v.y * 256f).roundToLong())
-        }
+        val points = arrayOf(
+            longArrayOf((p0.x * 256f).roundToLong(), (p0.y * 256f).roundToLong()),
+            longArrayOf((p1.x * 256f).roundToLong(), (p1.y * 256f).roundToLong()),
+            longArrayOf((p2.x * 256f).roundToLong(), (p2.y * 256f).roundToLong())
+        )
         val edges = arrayOf(
             edge256(points[ids[0]], points[ids[1]]),
             edge256(points[ids[1]], points[ids[2]]),
             edge256(points[ids[2]], points[ids[0]])
-        ).map { (dx, dy, start) ->
-            val bias = if (dy < 0 || (dy == 0 && dx > 0)) 0 else -1
-            longArrayOf(dx.toLong(), dy.toLong(), (start + bias).toLong())
-        }.toTypedArray()
-
-        val stepY256 = edges.map { it[1] * 256L }.toLongArray()
+        )
+        val stepY256 = longArrayOf(edges[0][1] * 256L, edges[1][1] * 256L, edges[2][1] * 256L)
         val texW = tex.width
-        val invArea = 1f / edge(pos[ids[0]], pos[ids[1]], pos[ids[2]])
+        val invArea = 1f / edge(p0, p1, p2)
 
         // Barycentric coefficients
-        val ax = -(pos[ids[2]].y - pos[ids[1]].y) * invArea
-        val ay =  (pos[ids[2]].x - pos[ids[1]].x) * invArea
-        val cx = -(pos[ids[1]].y - pos[ids[0]].y) * invArea
-        val cy =  (pos[ids[1]].x - pos[ids[0]].x) * invArea
+        val ax = -(p2.y - p1.y) * invArea
+        val ay =  (p2.x - p1.x) * invArea
+        val cx = -(p1.y - p0.y) * invArea
+        val cy =  (p1.x - p0.x) * invArea
 
         val origin = Vec3(minX.toFloat() + 0.5f, minY.toFloat() + 0.5f, 0f)
-        val a0 = edge(pos[ids[1]], pos[ids[2]], origin) * invArea
-        val c0 = edge(pos[ids[0]], pos[ids[1]], origin) * invArea
-        val za = pos[ids[0]].z - pos[ids[1]].z
-        val zc = pos[ids[2]].z - pos[ids[1]].z
+        val a0 = edge(uv.get(ids[1]), uv.get(ids[2]), origin) * invArea
+        val c0 = edge(uv.get(ids[0]), uv.get(ids[1]), origin) * invArea
+        val za = pos.get(ids[0]).z - pos.get(ids[1]).z
+        val zc = pos.get(ids[2]).z - pos.get(ids[1]).z
 
         for (y in minY..maxY) {
             val row = y * width
             val stepY = (y - minY) * 256L
-            var coverage = edges.map { it[2] + it[1] * stepY }.toLongArray()
+            var coverage = longArrayOf(
+                edges[0][2] + edges[0][1] * stepY,
+                edges[1][2] + edges[1][1] * stepY,
+                edges[2][2] + edges[2][1] * stepY
+            )
             val steps = stepY256
 
             val rowA = a0 + (y - minY) * ay
@@ -195,12 +203,12 @@ class SoftwareRasterizer(
 
                 val a = rowA + i * ax
                 val c = rowC + i * cx
-                val z = pos[ids[1]].z + za * a + zc * c
+                val z = pos.get(ids[1]).z + za * a + zc * c
                 val idx = row + x
                 if (z >= depthBuffer[idx]) continue
 
-                val tx = t[1].x + ta.x * a + tc.x * c
-                val ty = t[1].y + ta.y * a + tc.y * c
+                val tx = t1.x + ta.x * a + tc.x * c
+                val ty = t1.y + ta.y * a + tc.y * c
                 val xx = min(max((tx * tex.scale).toInt(), 0), tex.width - 1)
                 val yy = min(max((ty * tex.scale).toInt(), 0), tex.height - 1)
                 val base = tex.pixels[yy * texW + xx]
@@ -238,7 +246,7 @@ class SoftwareRasterizer(
         val forward = Vec3(30f, 23f, 70f).normalize()
         val right = Vec3(0f, 1f, 0f).cross(forward).normalize()
         val up = forward.cross(right)
-        val v2 = v - Vec3(0f, 16f, 0f)
+        val v2 = v.minus(Vec3(0f, 16f, 0f))
         val scale = width / 44f
         return Vec3(
             width / 2f + v2.dot(right) * scale,
@@ -255,10 +263,6 @@ class SoftwareRasterizer(
         }
         bitmap.setPixels(pixels, 0, width, 0, 0, width, height)
         return bitmap
-    }
-
-    companion object {
-        private const val EDGE_BIAS = 256f
     }
 }
 
@@ -279,14 +283,20 @@ data class Vec3(
     operator fun div(s: Float) = Vec3(x / s, y / s, z / s)
     fun dot(other: Vec3) = x * other.x + y * other.y + z * other.z
     fun cross(other: Vec3) = Vec3(y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x)
-    fun length() = kotlin.math.sqrt(dot(this))
-    fun normalize() = this / length()
+    fun length() = sqrt(dot(this))
+    fun normalize() = this.div(length())
+    fun setComponent(index: Int, value: Float): Vec3 = when (index) {
+        0 -> Vec3(value, y, z)
+        1 -> Vec3(x, value, z)
+        2 -> Vec3(x, y, value)
+        else -> throw IndexOutOfBoundsException()
+    }
     fun transformPoint3(m: Mat4): Vec3 {
         val w = m.m03 * x + m.m13 * y + m.m23 * z + m.m33
         return Vec3(
             (m.m00 * x + m.m10 * y + m.m20 * z + m.m30) / w,
             (m.m01 * x + m.m11 * y + m.m21 * z + m.m31) / w,
-            (m.m02 * x + m.m22 * z + m.m32) / w
+            (m.m02 * x + m.m12 * y + m.m22 * z + m.m32) / w
         )
     }
     fun transformVector3(m: Mat4): Vec3 = Vec3(
@@ -300,6 +310,7 @@ data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     companion object { val ZERO = Vec2() }
     operator fun times(s: Float) = Vec2(x * s, y * s)
     operator fun plus(other: Vec2) = Vec2(x + other.x, y + other.y)
+    fun minus(other: Vec2) = Vec2(x - other.x, y - other.y)
 }
 
 class Mat4(
@@ -343,7 +354,7 @@ class Mat4(
         fun transformVector3(v: Vec3): Vec3 = Vec3(
             m00 * v.x + m10 * v.y + m20 * v.z,
             m01 * v.x + m11 * v.y + m21 * v.z,
-            m02 * v.x + m.m12 * v.y + m.m22 * v.z
+            m02 * v.x + m12 * v.y + m22 * v.z
         )
         operator fun get(index: Int): Float = when (index) {
             0 -> m00; 1 -> m01; 2 -> m02; 3 -> m03
@@ -382,19 +393,21 @@ data class Quat(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f, var w: 
             val ratioA = kotlin.math.sin((1 - t) * theta) / sinTheta
             val ratioB = kotlin.math.sin(t * theta) / sinTheta
             return Quat(
-                a.x * ratioA + bx * ratioB,
-                a.y * ratioA + by * ratioB,
-                a.z * ratioA + bz * ratioB,
-                a.w * ratioA + bw * ratioB
+                a.x * ratioA + b.x * ratioB,
+                a.y * ratioA + b.y * ratioB,
+                a.z * ratioA + b.z * ratioB,
+                a.w * ratioA + b.w * ratioB
             ).normalize()
         }
     }
-    fun normalize() = this / kotlin.math.sqrt(x * x + y * y + z * z + w * w)
+    fun normalize() = this.div(sqrt(x * x + y * y + z * z + w * w))
     fun absDiffEq(other: Quat, eps: Float) = (x - other.x).absoluteValue < eps && (y - other.y).absoluteValue < eps && (z - other.z).absoluteValue < eps && (w - other.w).absoluteValue < eps
+    operator fun div(s: Float) = Quat(x / s, y / s, z / s, w / s)
+    fun normalize(): Quat = div(sqrt(x * x + y * y + z * z + w * w))
 }
 
 data class UVRegion(var x: Float, var y: Float, var w: Float, var h: Float) {
-    fun toTuple() = Triple(x, y, Triple(w, h, 0f)) // hack for destructuring
+    fun toTuple() = Triple(x, y, Triple(w, h, 0f))
 }
 
 data class Plane(var uax: Int, var vax: Int, var wax: Int, var ud: Float, var vd: Float, var ww: Float, var hh: Float, var dd: Float) {
@@ -406,16 +419,20 @@ class Texture(val width: Int, val height: Int, val pixels: Array<UByteArray>, va
     val texH = height
 }
 
-data class Vec3Array(val array: Array<Vec3>) {
-    constructor(size: Int) : this(Array(size) { Vec3() })
+class Vec3Array(size: Int) {
+    val array = Array(size) { Vec3() }
     operator fun get(i: Int) = array[i]
-    operator fun set(i: Int, v: Vec3) { array[i] = v }
+    fun set(i: Int, v: Vec3) { array[i] = v }
+    fun get(i: Int) = array[i]
+    fun set(i: Int, v: Vec3) { array[i] = v }
 }
 
-data class Vec2Array(val array: Array<Vec2>) {
-    constructor(size: Int) : this(Array(size) { Vec2() })
+class Vec2Array(size: Int) {
+    val array = Array(size) { Vec2() }
     operator fun get(i: Int) = array[i]
-    operator fun set(i: Int, v: Vec2) { array[i] = v }
+    fun set(i: Int, v: Vec2) { array[i] = v }
+    fun get(i: Int) = array[i]
+    fun set(i: Int, v: Vec2) { array[i] = v }
 }
 
 data class ProjectedPart(
