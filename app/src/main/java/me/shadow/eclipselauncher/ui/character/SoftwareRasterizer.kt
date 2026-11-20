@@ -54,7 +54,7 @@ class SoftwareRasterizer(
 
     private fun drawPart(part: ProjectedPart, light: Lighting) {
         val tex = part.texture
-        val sz = part.size.add(Vec3(part.inflate))
+        val sz = part.size.plus(Vec3(part.inflate))
         val inflate = part.inflate
 
         // 6 faces of the box, UV regions per ZL2's strip order: right/front/left/back then top/bottom
@@ -113,7 +113,10 @@ class SoftwareRasterizer(
 
             // Two triangles per quad, winding depends on face orientation
             for (ids in listOf(intArrayOf(0, 2, 1), intArrayOf(2, 3, 1))) {
-                val area = edge(pos.get(ids[0]), pos.get(ids[1]), pos.get(ids[2]))
+                val p0 = pos.get(ids[0])
+                val p1 = pos.get(ids[1])
+                val p2 = pos.get(ids[2])
+                val area = edge(p0, p1, p2)
                 if (inflate == 0f && ((area >= 0f) != part.mirror)) continue
 
                 drawTriangle(ids, pos, uv, part.texture, lut)
@@ -182,7 +185,7 @@ class SoftwareRasterizer(
                 edges[1][2] + edges[1][1] * stepY,
                 edges[2][2] + edges[2][1] * stepY
             )
-            val steps = stepY256
+            val steps = longArrayOf(stepY256[0], stepY256[1], stepY256[2])
 
             val rowA = a0 + (y - minY) * ay
             val rowC = c0 + (y - minY) * cy
@@ -203,7 +206,7 @@ class SoftwareRasterizer(
 
                 val a = rowA + i * ax
                 val c = rowC + i * cx
-                val z = pos.get(ids[1]).z + za * a + zc * c
+                val z = p1.z + za * a + zc * c
                 val idx = row + x
                 if (z >= depthBuffer[idx]) continue
 
@@ -304,13 +307,14 @@ data class Vec3(
         m.m01 * x + m.m11 * y + m.m21 * z,
         m.m02 * x + m.m12 * y + m.m22 * z
     )
+    operator fun unaryMinus() = Vec3(-x, -y, -z)
 }
 
 data class Vec2(var x: Float = 0f, var y: Float = 0f) {
     companion object { val ZERO = Vec2() }
     operator fun times(s: Float) = Vec2(x * s, y * s)
     operator fun plus(other: Vec2) = Vec2(x + other.x, y + other.y)
-    fun minus(other: Vec2) = Vec2(x - other.x, y - other.y)
+    operator fun minus(other: Vec2) = Vec2(x - other.x, y - other.y)
 }
 
 class Mat4(
@@ -407,7 +411,7 @@ data class Quat(var x: Float = 0f, var y: Float = 0f, var z: Float = 0f, var w: 
 }
 
 data class UVRegion(var x: Float, var y: Float, var w: Float, var h: Float) {
-    fun toTuple() = Triple(x, y, Triple(w, h, 0f))
+    fun toTuple(): Triple<Float, Float, Triple<Float, Float, Float>> = Triple(x, y, Triple(w, h, 0f))
 }
 
 data class Plane(var uax: Int, var vax: Int, var wax: Int, var ud: Float, var vd: Float, var ww: Float, var hh: Float, var dd: Float) {
@@ -419,19 +423,15 @@ class Texture(val width: Int, val height: Int, val pixels: Array<UByteArray>, va
     val texH = height
 }
 
-class Vec3Array(size: Int) {
+class Vec3Array(val size: Int) {
     val array = Array(size) { Vec3() }
     operator fun get(i: Int) = array[i]
     fun set(i: Int, v: Vec3) { array[i] = v }
-    fun get(i: Int) = array[i]
-    fun set(i: Int, v: Vec3) { array[i] = v }
 }
 
-class Vec2Array(size: Int) {
+class Vec2Array(val size: Int) {
     val array = Array(size) { Vec2() }
     operator fun get(i: Int) = array[i]
-    fun set(i: Int, v: Vec2) { array[i] = v }
-    fun get(i: Int) = array[i]
     fun set(i: Int, v: Vec2) { array[i] = v }
 }
 
