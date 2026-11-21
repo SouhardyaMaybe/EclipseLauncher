@@ -49,7 +49,7 @@ class FakeModrinthClient : ModrinthClient(NetworkClient()) {
         gameVersion: String?,
     ): ModrinthSearchResult = withContext(Dispatchers.IO) {
         if (shouldFailSearch) {
-            return ModrinthSearchResult(
+            ModrinthSearchResult(
                 hits = emptyList(),
                 totalHits = 0,
                 offset = 0,
@@ -59,33 +59,34 @@ class FakeModrinthClient : ModrinthClient(NetworkClient()) {
                 isLastPage = true,
                 failed = true,
             )
+        } else {
+            // Return a page of the pre-configured results
+            val hits = searchResults.hits.drop(offset).take(limit)
+            val totalPages = (searchResults.totalHits + limit - 1) / limit
+            val pageNumber = offset / limit + 1
+            val isLastPage = (offset + limit) >= searchResults.totalHits
+            ModrinthSearchResult(
+                hits = hits,
+                totalHits = searchResults.totalHits,
+                offset = offset,
+                limit = limit,
+                totalPages = totalPages,
+                pageNumber = pageNumber,
+                isLastPage = isLastPage,
+                failed = false,
+            )
         }
-        // Return a page of the pre-configured results
-        val hits = searchResults.hits.drop(offset).take(limit)
-        val totalPages = (searchResults.totalHits + limit - 1) / limit
-        val pageNumber = offset / limit + 1
-        val isLastPage = (offset + limit) >= searchResults.totalHits
-        ModrinthSearchResult(
-            hits = hits,
-            totalHits = searchResults.totalHits,
-            offset = offset,
-            limit = limit,
-            totalPages = totalPages,
-            pageNumber = pageNumber,
-            isLastPage = isLastPage,
-            failed = false,
-        )
     }
 
     override suspend fun projectVersions(projectId: String): ModrinthVersionsResult = withContext(Dispatchers.IO) {
         if (shouldFailVersions) {
-            return ModrinthVersionsResult(failed = true)
+            ModrinthVersionsResult(failed = true)
+        } else {
+            projectVersions
         }
-        return projectVersions
     }
 
     override suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
-        if (shouldFailProject) return null
-        return projectData
+        if (shouldFailProject) null else projectData
     }
 }
