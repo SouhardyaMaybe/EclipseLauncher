@@ -415,7 +415,6 @@ private fun ModpackVersionDialog(
                                 downloadingId = downloadingId,
                                 downloadProgress = downloadProgress,
                                 projectIconUrl = projectIconUrl,
-                                modifier = Modifier.testTag("version_group_$mcVer"),
                             )
                         }
                     }
