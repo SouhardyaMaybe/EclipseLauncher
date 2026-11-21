@@ -421,7 +421,7 @@ private fun ModpackVersionDialog(
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(visibleGroups, key = { it.first }) { (mcVer, versions) ->
+                            items(filteredGroups, key = { it.first }) { (mcVer, versions) ->
                                 VersionGroupCard(
                                     mcVersion = mcVer,
                                     versions = versions,
