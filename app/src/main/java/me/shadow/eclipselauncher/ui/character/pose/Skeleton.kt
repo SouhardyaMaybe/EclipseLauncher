@@ -8,6 +8,7 @@
  */
 package me.shadow.eclipselauncher.ui.character.pose
 
+import me.shadow.eclipselauncher.ui.character.pose.SkeletonConstants.DEG2RAD
 import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.cos
