@@ -87,7 +87,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.testTag
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -442,7 +442,7 @@ private fun VersionGroupCard(
     )
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("version_group_$mcVersion"),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
@@ -513,7 +513,7 @@ private fun VersionRow(
     val file = version.files.firstOrNull { it.primary } ?: version.files.firstOrNull()
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("version_group_${version.version_type}"),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -843,7 +843,7 @@ fun ModpackBrowserScreen(
                 }
 
                 else -> {
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.fillMaxSize().testTag("modpack_list")) {
                         LazyColumn(
                             state = lazyListState,
                             modifier = Modifier.fillMaxSize(),
