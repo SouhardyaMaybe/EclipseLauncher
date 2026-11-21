@@ -758,8 +758,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             "bottom" to uv(8, 48) to uv(12, 52)
         )
 
-        val parts = mutableListOf<ModelPart>()
-
         // Head
         parts.add(addBox(-4f, 24f, -4f, 4f, 32f, 4f, headUV))
 
