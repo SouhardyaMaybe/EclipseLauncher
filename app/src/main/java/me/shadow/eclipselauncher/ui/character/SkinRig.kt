@@ -175,7 +175,8 @@ class PlayerRig(
     private val slim: Boolean = false,
 ) {
     val faces: Array<RenderFace>
-    private val boxes: List<BoxModel>
+    /** All box models; exposed for testing UV/geometry correctness. */
+    val boxes: List<BoxModel>
 
     /** Six when a cape box was built, zero when the account has no cape. */
     val capeFaceCount: Int get() = boxes.count { it.kind == PartKind.CAPE } * 6
