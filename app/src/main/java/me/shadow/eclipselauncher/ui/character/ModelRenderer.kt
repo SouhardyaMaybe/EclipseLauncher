@@ -370,8 +370,8 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
     private fun updateCamera() {
         Matrix.setIdentityM(modelMatrix, 0)
         Matrix.translateM(modelMatrix, 0, 0f, -0.8f, 0f)
-        Matrix.rotateM(modelMatrix, 0, -cameraPitch * 180f / kotlin.math.PI, 1f, 0f, 0f)
-        Matrix.rotateM(modelMatrix, 0, cameraYaw * 180f / kotlin.math.PI, 0f, 1f, 0f)
+        Matrix.rotateM(modelMatrix, 0, -cameraPitch * (180f / kotlin.math.PI.toFloat()), 1f, 0f, 0f)
+        Matrix.rotateM(modelMatrix, 0, cameraYaw * (180f / kotlin.math.PI.toFloat()), 0f, 1f, 0f)
 
         Matrix.setLookAtM(viewMatrix, 0,
             0f, 0f, cameraDistance,
