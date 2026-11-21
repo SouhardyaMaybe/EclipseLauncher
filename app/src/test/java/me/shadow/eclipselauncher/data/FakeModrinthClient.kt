@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
  * Use [setSearchResults] to control search results.
  * Use [setProjectVersions] to control version results.
  */
-class FakeModrinthClient : ModrinthClient(null) {
+class FakeModrinthClient : ModrinthClient(NetworkClient()) {
 
     // Test data storage
     private var searchResults: ModrinthSearchResult = ModrinthSearchResult(emptyList(), 0, 0, 25, 1, true, false)
