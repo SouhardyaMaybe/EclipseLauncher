@@ -10,34 +10,14 @@
 package me.shadow.eclipselauncher.ui.screens
 
 import android.app.Application
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.assertExists
-import androidx.compose.ui.test.assertDoesNotExist
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.waitUntil
-import me.shadow.eclipselauncher.R
-import me.shadow.eclipselauncher.data.ModrinthClient
-import me.shadow.eclipselauncher.data.ModrinthHit
-import me.shadow.eclipselauncher.data.ModrinthVersion
-import me.shadow.eclipselauncher.data.ModrinthVersionFile
 import me.shadow.eclipselauncher.data.ThemeMode
-import me.shadow.eclipselauncher.data.VersionRepository
 import me.shadow.eclipselauncher.ui.theme.EclipseTheme
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
@@ -50,10 +30,6 @@ class ModpackBrowserScreenUITest {
 
     @get:Rule
     val composeRule = createComposeRule()
-
-    private val context = RuntimeEnvironment.getApplication()
-    private val prevDesc = context.getString(R.string.cd_nav_previous)
-    private val nextDesc = context.getString(R.string.cd_nav_next)
 
     @Test
     fun paginationPill_floatsOverList_listReachesBottom_pillNarrowerThanScreen_noFullWidthBehind() {
