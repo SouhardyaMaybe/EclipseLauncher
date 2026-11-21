@@ -355,7 +355,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         lastFrameTime = now
 
         if (isAnimating) {
-            animationTime += (now - lastFrameTime) / 1e9f
+            animationTime += dt
         }
 
         // Arm swing (walking motion)
@@ -421,18 +421,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
     private fun buildModelParts(): List<ModelPart> {
         val parts = mutableListOf<ModelPart>()
-
-        // Part dimensions
-        val headSize = 8f
-        val bodyWidth = 8f
-        val bodyHeight = 12f
-        val bodyDepth = 4f
-        val armWidth = if (isSlim) 3f else 4f
-        val armHeight = 12f
-        val armDepth = 4f
-        val legWidth = 4f
-        val legHeight = 12f
-        val legDepth = 4f
 
         // Texture coordinates for each face of each part
         // Vanilla Minecraft skin layout (64x64)
@@ -586,22 +574,23 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             val norms = FloatArray(24)
             val inds = shortArrayOf(0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23)
 
-            val (fx0, fy0, fz0) = (x0 - inflate, y0 - inflate, z0 - inflate)
-            val (fx1, fy1, fz1) = (x1 + inflate, y1 + inflate, z1 + inflate)
+            val fx0 = x0 - inflate
+            val fy0 = y0 - inflate
+            val fz0 = z0 - inflate
+            val fx1 = x1 + inflate
+            val fy1 = y1 + inflate
+            val fz1 = z1 + inflate
 
             val verts = FloatArray(24)
             val texs = FloatArray(16)
             val norms = FloatArray(24)
             val inds = shortArrayOf(0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23)
 
-            val (fx0, fy0, fz0) = (x0 - inflate, y0 - inflate, z0 - inflate)
-            val (fx1, fy1, fz1) = (x1 + inflate, y1 + inflate, z1 + inflate)
-
             // Front face (+Z)
-            verts[0] = fx0; verts[1] = fy1; verts[2] = fz1
-            verts[3] = fx1; verts[4] = fy1; verts[5] = fz1
-            verts[6] = fx1; verts[7] = fy0; verts[8] = fz1
-            verts[9] = fx0; verts[10] = fy0; verts[11] = fz1
+            verts[0] = x0 - inflate; verts[1] = y1 + inflate; verts[2] = z1 + inflate
+            verts[3] = x1 + inflate; verts[4] = y1 + inflate; verts[5] = z1 + inflate
+            verts[6] = x1 + inflate; verts[7] = y0 - inflate; verts[8] = z1 + inflate
+            verts[9] = x0 - inflate; verts[10] = y0 - inflate; verts[11] = z1 + inflate
             texs[0] = uvMap["front"]!!.first.first; texs[1] = uvMap["front"]!!.second.second
             texs[2] = uvMap["front"]!!.second.first; texs[3] = uvMap["front"]!!.second.second
             texs[4] = uvMap["front"]!!.second.first; texs[5] = uvMap["front"]!!.first.second
@@ -612,10 +601,10 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             norms[9] = 0f; norms[10] = 0f; norms[11] = 1f
 
             // Back face (-Z)
-            verts[12] = fx1; verts[13] = fy1; verts[14] = fz0
-            verts[15] = fx0; verts[16] = fy1; verts[17] = fz0
-            verts[18] = fx0; verts[19] = fy0; verts[20] = fz0
-            verts[21] = fx1; verts[22] = fy0; verts[23] = fz0
+            verts[12] = x1 + inflate; verts[13] = y1 + inflate; verts[14] = z0 - inflate
+            verts[15] = x0 - inflate; verts[16] = y1 + inflate; verts[17] = z0 - inflate
+            verts[18] = x0 - inflate; verts[19] = y0 - inflate; verts[20] = z0 - inflate
+            verts[21] = x1 + inflate; verts[22] = y0 - inflate; verts[23] = z0 - inflate
             texs[8] = uvMap["back"]!!.second.first; texs[9] = uvMap["back"]!!.second.second
             texs[10] = uvMap["back"]!!.first.first; texs[11] = uvMap["back"]!!.second.second
             texs[12] = uvMap["back"]!!.first.first; texs[13] = uvMap["back"]!!.first.second
@@ -625,13 +614,20 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             norms[18] = 0f; norms[19] = 0f; norms[20] = -1f
             norms[21] = 0f; norms[22] = 0f; norms[23] = -1f
 
-            // Right face (+X)
-            // Left face (-X)
-            // Top face (+Y)
-            // Bottom face (-Y)
-            // Simplified: just return front/back for now
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
+
+        // Part dimensions
+        val headSize = 8f
+        val bodyWidth = 8f
+        val bodyHeight = 12f
+        val bodyDepth = 4f
+        val armWidth = if (isSlim) 3f else 4f
+        val armHeight = 12f
+        val armDepth = 4f
+        val legWidth = 4f
+        val legHeight = 12f
+        val legDepth = 4f
 
         // Texture coordinates for each face of each part
         // Vanilla Minecraft skin layout (64x64)
