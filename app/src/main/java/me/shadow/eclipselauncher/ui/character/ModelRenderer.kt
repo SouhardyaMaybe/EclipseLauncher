@@ -160,7 +160,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
     override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
         val ratio = width.toFloat() / height.toFloat()
-        Matrix.perspectiveM(projectionMatrix, 0, 45f, ratio, 0.1f, 100f)
+        Matrix.perspectiveM(projectionMatrix, 0, 45f, width.toFloat() / height.toFloat(), 0.1f, 100f)
     }
 
     override fun onDrawFrame(gl: GL10?) {
@@ -355,7 +355,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         lastFrameTime = now
 
         if (isAnimating) {
-            animationTime += dt
+            animationTime += (now - lastFrameTime) / 1e9f
         }
 
         // Arm swing (walking motion)
@@ -416,12 +416,11 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         val indices: ShortArray
     )
 
+    // UV helper - defined once at class level
+    private fun uv(u: Int, v: Int): Pair<Float, Float> = (u / 64f) to (v / 64f)
+
     private fun buildModelParts(): List<ModelPart> {
         val parts = mutableListOf<ModelPart>()
-
-        // Skin texture coordinates (64x64 texture)
-        // Format: U, V (0-1 range)
-        fun uv(u: Int, v: Int): Pair<Float, Float> = (u / 64f) to (v / 64f)
 
         // Part dimensions
         val headSize = 8f
@@ -437,6 +436,8 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Texture coordinates for each face of each part
         // Vanilla Minecraft skin layout (64x64)
+        val uv = { u: Int, v: Int -> (u / 64f) to (v / 64f) }
+
         val headUV = mapOf(
             "front" to uv(8, 8) to uv(16, 16),
             "back" to uv(24, 8) to uv(32, 16),
@@ -562,13 +563,32 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             "bottom" to uv(8, 48) to uv(12, 52)
         )
 
+        // Part dimensions
+        val headSize = 8f
+        val bodyWidth = 8f
+        val bodyHeight = 12f
+        val bodyDepth = 4f
+        val armWidth = if (isSlim) 3f else 4f
+        val armHeight = 12f
+        val armDepth = 4f
+        val legWidth = 4f
+        val legHeight = 12f
+        val legDepth = 4f
+
         fun addBox(
             x0: Float, y0: Float, z0: Float,
             x1: Float, y1: Float, z1: Float,
             uvMap: Map<String, Pair<Pair<Float, Float>, Pair<Float, Float>>>,
-            inflate: Float = 0f,
-            overlay: Boolean = false
+            inflate: Float = 0f
         ): ModelPart {
+            val verts = FloatArray(24)
+            val texs = FloatArray(16)
+            val norms = FloatArray(24)
+            val inds = shortArrayOf(0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23)
+
+            val (fx0, fy0, fz0) = (x0 - inflate, y0 - inflate, z0 - inflate)
+            val (fx1, fy1, fz1) = (x1 + inflate, y1 + inflate, z1 + inflate)
+
             val verts = FloatArray(24)
             val texs = FloatArray(16)
             val norms = FloatArray(24)
@@ -613,22 +633,10 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        fun uv(u: Int, v: Int): Pair<Float, Float> = (u / 64f) to (v / 64f)
-
-        // Part dimensions
-        val headSize = 8f
-        val bodyWidth = 8f
-        val bodyHeight = 12f
-        val bodyDepth = 4f
-        val armWidth = if (isSlim) 3f else 4f
-        val armHeight = 12f
-        val armDepth = 4f
-        val legWidth = 4f
-        val legHeight = 12f
-        val legDepth = 4f
-
         // Texture coordinates for each face of each part
         // Vanilla Minecraft skin layout (64x64)
+        val uv = { u: Int, v: Int -> (u / 64f) to (v / 64f) }
+
         val headUV = mapOf(
             "front" to uv(8, 8) to uv(16, 16),
             "back" to uv(24, 8) to uv(32, 16),
@@ -761,7 +769,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Hat (overlay)
         if (overlayEnabled) {
-            parts.add(addBox(-4f, 24.5f, -4f, 4f, 32f, 4f, hatUV, 0.5f, true))
+            parts.add(addBox(-4f, 24.5f, -4f, 4f, 32f, 4f, hatUV, 0.5f))
         }
 
         // Body
@@ -769,7 +777,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Jacket (overlay)
         if (overlayEnabled) {
-            parts.add(addBox(-4f, 12f, -2f, 4f, 24f, 2f, jacketUV, 0.25f, true))
+            parts.add(addBox(-4f, 12f, -2f, 4f, 24f, 2f, jacketUV, 0.25f))
         }
 
         // Right arm
@@ -778,7 +786,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Right sleeve (overlay)
         if (overlayEnabled) {
-            parts.add(addBox(armRX0, 12f, -2f, -4f, 24f, 2f, sleeveRUV, 0.25f, true))
+            parts.add(addBox(armRX0, 12f, -2f, -4f, 24f, 2f, sleeveRUV, 0.25f))
         }
 
         // Left arm
@@ -787,7 +795,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Left sleeve (overlay)
         if (overlayEnabled) {
-            parts.add(addBox(4f, 12f, -2f, armLX1, 24f, 2f, sleeveLUV, 0.25f, true))
+            parts.add(addBox(4f, 12f, -2f, armLX1, 24f, 2f, sleeveLUV, 0.25f))
         }
 
         // Right leg
@@ -795,7 +803,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Right pants (overlay)
         if (overlayEnabled) {
-            parts.add(addBox(-4f, 0f, -2f, 0f, 12f, 2f, pantsRUV, 0.25f, true))
+            parts.add(addBox(-4f, 0f, -2f, 0f, 12f, 2f, pantsRUV, 0.25f))
         }
 
         // Left leg
@@ -803,7 +811,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
 
         // Left pants (overlay)
         if (overlayEnabled) {
-            parts.add(addBox(0f, 0f, -2f, 4f, 12f, 2f, pantsLUV, 0.25f, true))
+            parts.add(addBox(0f, 0f, -2f, 4f, 12f, 2f, pantsLUV, 0.25f))
         }
 
         return parts
