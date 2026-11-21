@@ -125,7 +125,7 @@ private data class ModrinthSearchResponse(
 }
 
 @Singleton
-class ModrinthClient @Inject constructor(
+open class ModrinthClient @Inject constructor(
     private val network: NetworkClient,
 ) {
     /**
