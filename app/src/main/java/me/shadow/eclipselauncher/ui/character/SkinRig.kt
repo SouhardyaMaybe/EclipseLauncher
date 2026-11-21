@@ -426,23 +426,17 @@ class PlayerRig(
     }
 
     /**
-     * Far-to-near: body group first, then one body part (box) at a time.
-     * All six faces of a box share [RenderFace.boxDepth]; the layer key
-     * keeps each overlay after its base box, and hidden faces are removed
-     * before drawing.
-     * Within the same rank/box/layer, sort by average depth (far-to-near)
-     * to match ZL2 PetLib's geometric ordering, with faceId as final
-     * tiebreaker for truly equal depths.
+     * Far-to-near painter's order: sort individual faces by actual depth.
+     * paintRank groups major parts (body → cape → head). Within each rank,
+     * base layer (0) before overlay (1) before cape (2). Then by face depth
+     * (far to near), with faceId as tiebreaker. This avoids box-level grouping
+     * which misorders interpenetrating parts (e.g., arm vs. body).
      */
     private val depthOrder = Comparator<RenderFace> { a, b ->
         val byRank = a.paintRank.compareTo(b.paintRank)
         if (byRank != 0) return@Comparator byRank
-        val byBox = a.boxDepth.compareTo(b.boxDepth)
-        if (byBox != 0) return@Comparator byBox
         val byLayer = a.layer.compareTo(b.layer)
         if (byLayer != 0) return@Comparator byLayer
-        // Same rank/box/layer: sort by average depth (far-to-near),
-        // then faceId as final tiebreaker for truly equal depths.
         val depthCmp = a.depth.compareTo(b.depth)
         if (depthCmp != 0) return@Comparator depthCmp
         a.faceId.compareTo(b.faceId)
