@@ -75,3 +75,7 @@ secrets.gradle
 
 # CI/CD
 !/.github/workflows/
+
+# Agent analysis & decompiled study artifacts (local only)
+.agent/analysis/
+/tmp/Skinseed*
