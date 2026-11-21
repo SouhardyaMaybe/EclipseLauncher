@@ -221,6 +221,9 @@ class HomeScreenUITest {
         onOpenSettings: () -> Unit = {},
         onOpenTasks: () -> Unit = {},
     ) {
+        // Compute hasActiveTasks from the tasks state
+        val hasActiveTasks = tasks.value.any { !it.isFinished }
+
         composeRule.setContent {
             EclipseTheme(themeMode = ThemeMode.URBAN) {
                 HomeScreen(
@@ -237,6 +240,7 @@ class HomeScreenUITest {
                     onOpenSettings = onOpenSettings,
                     onOpenTasks = onOpenTasks,
                     onOpenContentManager = onOpenContentManager,
+                    hasActiveTasks = hasActiveTasks,
                     pendingSelectionId = null,
                 )
             }
