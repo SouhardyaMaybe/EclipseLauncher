@@ -72,36 +72,67 @@ class AccountStore @Inject constructor(
         val accounts = dao.getAll().first()
         val microsoftAccounts = accounts.filter { it.kind == AccountKind.MICROSOFT && it.refreshToken != null }
         for (entity in microsoftAccounts) {
-            val profile = microsoftAuth.fetchProfile(entity.refreshToken!!)
-                ?: continue
-            val activeSkin = profile.activeSkin
-            val activeCape = profile.activeCape
-            val newSkinUrl = activeSkin?.url
-            val newCapeUrl = activeCape?.url
-            val newVariant = activeSkin?.variant
-            val skinChanged = newSkinUrl != null && newSkinUrl != entity.skinFileName
-            val capeChanged = newCapeUrl != null && newCapeUrl != entity.capeFileName
-            val variantChanged = newVariant != null && newVariant != entity.skinVariant
-            if (skinChanged || capeChanged || variantChanged) {
-                var skinFileName = entity.skinFileName
-                var capeFileName = entity.capeFileName
-                if (skinChanged) {
-                    skinFileName = media.importImageFromUrl(
-                        newSkinUrl,
-                        ImportKind.SKIN
-                    ) ?: entity.skinFileName
+            refreshSingleAccount(entity, media)
+        }
+    }
+
+    /**
+     * Refreshes a single Microsoft account profile from the Minecraft services API.
+     * Fetches the latest profile and updates the stored skin/cape URLs and variant if they changed.
+     * For local accounts, this reloads skin/cape from storage.
+     */
+    suspend fun refreshSingleAccount(accountId: String, media: MediaStorage) {
+        dao.getById(accountId)?.let { entity ->
+            if (entity.kind == AccountKind.MICROSOFT && entity.refreshToken != null) {
+                val profile = microsoftAuth.fetchProfile(entity.refreshToken!!)
+                    ?: return
+                val activeSkin = profile.activeSkin
+                val activeCape = profile.activeCape
+                val newSkinUrl = activeSkin?.url
+                val newCapeUrl = activeCape?.url
+                val newVariant = activeSkin?.variant
+                val skinChanged = newSkinUrl != null && newSkinUrl != entity.skinFileName
+                val capeChanged = newCapeUrl != null && newCapeUrl != entity.capeFileName
+                val variantChanged = newVariant != null && newVariant != entity.skinVariant
+                if (skinChanged || capeChanged || variantChanged) {
+                    var skinFileName = entity.skinFileName
+                    var capeFileName = entity.capeFileName
+                    if (skinChanged) {
+                        skinFileName = media.importImageFromUrl(
+                            newSkinUrl,
+                            ImportKind.SKIN
+                        ) ?: entity.skinFileName
+                    }
+                    if (capeChanged) {
+                        capeFileName = media.importImageFromUrl(
+                            newCapeUrl,
+                            ImportKind.CAPE
+                        ) ?: entity.capeFileName
+                    }
+                    dao.update(entity.copy(
+                        skinFileName = skinFileName,
+                        capeFileName = capeFileName,
+                        skinVariant = newVariant ?: entity.skinVariant,
+                    ))
                 }
-                if (capeChanged) {
-                    capeFileName = media.importImageFromUrl(
-                        newCapeUrl,
-                        ImportKind.CAPE
-                    ) ?: entity.capeFileName
+            } else if (entity.kind == AccountKind.LOCAL) {
+                // For local accounts, reload skin/cape from storage
+                val skinFileName = if (entity.skinFileName != null && media.resolve(entity.skinFileName!!) != null) {
+                    entity.skinFileName
+                } else {
+                    null
                 }
-                dao.update(entity.copy(
-                    skinFileName = skinFileName,
-                    capeFileName = capeFileName,
-                    skinVariant = newVariant ?: entity.skinVariant,
-                ))
+                val capeFileName = if (entity.capeFileName != null && media.resolve(entity.capeFileName!!) != null) {
+                    entity.capeFileName
+                } else {
+                    null
+                }
+                if (skinFileName != entity.skinFileName || capeFileName != entity.capeFileName) {
+                    dao.update(entity.copy(
+                        skinFileName = skinFileName,
+                        capeFileName = capeFileName,
+                    ))
+                }
             }
         }
     }

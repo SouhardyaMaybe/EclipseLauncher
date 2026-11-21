@@ -59,6 +59,7 @@
     <string name="cd_instance_icon">Instance icon</string>
     <string name="cd_selected_account">Selected</string>
     <string name="cd_customize_skin">Customize skin</string>
+    <string name="cd_refresh_account">Refresh account</string>
     <string name="cd_enter_fullscreen">Enter full screen</string>
     <string name="cd_exit_fullscreen">Exit full screen</string>
     <string name="cd_expand_account">Expand</string>

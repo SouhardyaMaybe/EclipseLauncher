@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -81,6 +82,7 @@ fun AccountsScreen(
     onCreateLocal: (String) -> Unit,
     onUpdate: (Account) -> Unit,
     onRemove: (String) -> Unit,
+    onRefresh: (String) -> Unit = {},
 ) {
     var showLocalDialog by remember { mutableStateOf(false) }
     // Which account's skin dialog is open (null = none). Saveable so rotation
@@ -178,6 +180,7 @@ fun AccountsScreen(
                         },
                         onCustomize = { customizingId = account.id },
                         onDelete = { pendingDeleteId = account.id },
+                        onRefresh = { onRefresh(account.id) },
                     )
                 }
 
@@ -268,6 +271,7 @@ private fun AccountRow(
     onClick: () -> Unit,
     onCustomize: () -> Unit,
     onDelete: () -> Unit,
+    onRefresh: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -320,6 +324,15 @@ private fun AccountRow(
                 modifier = Modifier.size(20.dp),
             )
             Spacer(modifier = Modifier.width(2.dp))
+        }
+        // Refresh: re-fetches Microsoft profile or reloads local skin/cape.
+        IconButton(onClick = onRefresh) {
+            Icon(
+                Icons.Filled.Refresh,
+                contentDescription = stringResource(R.string.cd_refresh_account),
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(22.dp),
+            )
         }
         // Dress: opens the skin dialog (interactive 3D model with full-screen).
         // For Microsoft accounts, pick/clear actions are hidden in the dialog.

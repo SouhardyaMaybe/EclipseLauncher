@@ -255,6 +255,7 @@ fun EclipseApp() {
                             },
                             onUpdate = { account -> scope.launch { container.accounts.update(account) } },
                             onRemove = { id -> scope.launch { container.accounts.remove(id) } },
+                            onRefresh = { id -> scope.launch { container.accounts.refreshSingleAccount(id, container.media) } },
                         )
                     }
 
