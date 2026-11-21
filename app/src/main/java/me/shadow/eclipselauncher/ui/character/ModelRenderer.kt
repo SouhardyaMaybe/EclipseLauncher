@@ -617,21 +617,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        val sleeveLUV = if (isSlim) mapOf(
-            "front" to (uv(52, 52) to uv(55, 64)),
-            "back" to (uv(59, 52) to uv(62, 64)),
-            "right" to (uv(48, 52) to uv(51, 64)),
-            "left" to (uv(55, 52) to uv(58, 64)),
-            "top" to (uv(52, 48) to uv(55, 52)),
-            "bottom" to (uv(55, 48) to uv(58, 52))
-        ) else mapOf(
-            "front" to (uv(52, 52) to uv(56, 64)),
-            "back" to (uv(60, 52) to uv(64, 64)),
-            "right" to (uv(48, 52) to uv(52, 64)),
-            "left" to (uv(56, 52) to uv(60, 64)),
-            "top" to (uv(52, 48) to uv(56, 52)),
-            "bottom" to (uv(56, 48) to uv(60, 52))
-        )
         val legRUV = mapOf(
             "front" to (uv(4, 20) to uv(8, 32)),
             "back" to (uv(12, 20) to uv(16, 32)),
