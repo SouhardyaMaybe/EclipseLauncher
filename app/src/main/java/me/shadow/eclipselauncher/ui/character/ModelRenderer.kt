@@ -665,7 +665,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         return parts
     }
 
-    private const val VERTEX_SHADER_SOURCE = """
+    private val VERTEX_SHADER_SOURCE = """
         attribute vec3 aPosition;
         attribute vec2 aTexCoord;
         attribute vec3 aNormal;
@@ -687,7 +687,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         }
     """.trimIndent()
 
-    private const val FRAGMENT_SHADER_SOURCE = """
+    private val FRAGMENT_SHADER_SOURCE = """
         precision mediump float;
 
         uniform sampler2D uTexture;
