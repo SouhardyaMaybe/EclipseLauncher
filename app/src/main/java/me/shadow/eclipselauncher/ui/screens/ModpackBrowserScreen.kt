@@ -414,6 +414,7 @@ private fun ModpackVersionDialog(
                                 downloadingId = downloadingId,
                                 downloadProgress = downloadProgress,
                                 projectIconUrl = projectIconUrl,
+                                modifier = Modifier.testTag("version_group_$mcVer"),
                             )
                         }
                     }
@@ -762,7 +763,7 @@ fun ModpackBrowserScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("search_field"),
                 placeholder = { Text(stringResource(R.string.modpack_search_hint)) },
                 singleLine = true,
                 leadingIcon = {
@@ -793,19 +794,19 @@ fun ModpackBrowserScreen(
                 title = loaderFilterTitle,
                 value = loaderLabel,
                 onClick = { filterDialog = ModpackFilter.LOADER },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("loader_filter_header"),
             )
             FilterHeader(
                 title = versionFilterTitle,
                 value = versionLabel,
                 onClick = { filterDialog = ModpackFilter.VERSION },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("version_filter_header"),
             )
             FilterHeader(
                 title = platformFilterTitle,
                 value = platformLabel,
                 onClick = { filterDialog = ModpackFilter.PLATFORM },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("platform_filter_header"),
             )
         }
 
@@ -858,6 +859,7 @@ fun ModpackBrowserScreen(
                                 ModpackRow(
                                     hit = hit,
                                     onClick = { versionDialogTarget = hit },
+                                    modifier = Modifier.testTag("modpack_row_${results.indexOf(hit)}"),
                                 )
                             }
                         }
@@ -1074,7 +1076,8 @@ private fun PaginationPill(
         Surface(
             modifier = Modifier
                 .navigationBarsPadding()
-                .padding(bottom = 12.dp),
+                .padding(bottom = 12.dp)
+                .testTag("pagination_pill"),
             shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 3.dp,
@@ -1087,6 +1090,7 @@ private fun PaginationPill(
                     onClick = onPrev,
                     enabled = canGoPrev,
                     colors = buttonColors,
+                    modifier = Modifier.testTag("pagination_prev"),
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronLeft,
@@ -1094,7 +1098,7 @@ private fun PaginationPill(
                     )
                 }
                 // Fixed width stops the buttons from shifting between 1- and 2-digit pages.
-                Box(modifier = Modifier.width(84.dp), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.width(84.dp).testTag("pagination_indicator"), contentAlignment = Alignment.Center) {
                     Text(
                         text = "$currentPage / $totalPages",
                         style = MaterialTheme.typography.labelLarge,
@@ -1105,6 +1109,7 @@ private fun PaginationPill(
                     onClick = onNext,
                     enabled = canGoNext,
                     colors = buttonColors,
+                    modifier = Modifier.testTag("pagination_next"),
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
