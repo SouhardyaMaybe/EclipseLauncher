@@ -347,6 +347,10 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         overlayEnabled = enabled
     }
 
+    fun updateAnimating(animating: Boolean) {
+        isAnimating = animating
+    }
+
     private fun updateAnimation() {
         val now = System.nanoTime()
         val dt = (now - lastFrameTime) / 1e9f
