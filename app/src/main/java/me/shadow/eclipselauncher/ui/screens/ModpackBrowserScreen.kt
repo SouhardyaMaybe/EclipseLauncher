@@ -99,7 +99,6 @@ import me.shadow.eclipselauncher.data.ModrinthVersion
 import me.shadow.eclipselauncher.data.ModrinthVersionFile
 import me.shadow.eclipselauncher.data.VersionRepository
 import me.shadow.eclipselauncher.ui.components.FilterOption
-import me.shadow.eclipselauncher.ui.components.LabeledCheckboxRow
 import me.shadow.eclipselauncher.ui.components.LoaderIcon
 import me.shadow.eclipselauncher.ui.components.ModpackFilter
 import me.shadow.eclipselauncher.ui.components.loaderDisplayName
@@ -284,7 +283,6 @@ private fun ModpackVersionDialog(
     var loading by remember { mutableStateOf(true) }
     var failed by remember { mutableStateOf(false) }
     var reloadToken by remember { mutableStateOf(0) }
-    var stableOnly by remember { mutableStateOf(true) }
     var expandedGroups by remember { mutableStateOf<Set<String>>(emptySet()) }
     var downloadingId by remember { mutableStateOf<String?>(null) }
     var downloadProgress by remember { mutableStateOf(0f) }
@@ -303,11 +301,6 @@ private fun ModpackVersionDialog(
         loading = false
     }
 
-    // Scroll to top when stable filter changes
-    LaunchedEffect(stableOnly) {
-        lazyListState.animateScrollToItem(0)
-    }
-
     // Group by game_versions, newest first
     val groups = remember(versions) {
         val map = mutableMapOf<String, MutableList<ModrinthVersion>>()
@@ -322,18 +315,6 @@ private fun ModpackVersionDialog(
         }
         map.values.forEach { it.sortByDescending { it.date_published } }
         map.toList().sortedByDescending { it.first }
-    }
-
-    // Filter versions within each group by stability
-    val filteredGroups = remember(groups, stableOnly) {
-        groups.map { (mcVer, versions) ->
-            val filteredVersions = if (stableOnly) {
-                versions.filter { it.version_type == "release" }
-            } else {
-                versions
-            }
-            mcVer to filteredVersions
-        }.filter { it.second.isNotEmpty() }
     }
 
     Dialog(
@@ -405,42 +386,33 @@ private fun ModpackVersionDialog(
                         }
                     }
                 } else {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        // Stable only toggle
-                        LabeledCheckboxRow(
-                            checked = stableOnly,
-                            onCheckedChange = { stableOnly = it },
-                            label = stringResource(R.string.manage_content_stable_only),
-                        )
-
-                        LazyColumn(
-                            state = lazyListState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .weight(1f),
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            items(filteredGroups, key = { it.first }) { (mcVer, versions) ->
-                                VersionGroupCard(
-                                    mcVersion = mcVer,
-                                    versions = versions,
-                                    expanded = expandedGroups.contains(mcVer),
-                                    onToggle = {
-                                        if (expandedGroups.contains(mcVer)) {
-                                            expandedGroups = expandedGroups - mcVer
-                                        } else {
-                                            expandedGroups = expandedGroups + mcVer
-                                        }
-                                    },
-                                    onInstall = { version, file ->
-                                        onInstall(version, file)
-                                    },
-                                    downloadingId = downloadingId,
-                                    downloadProgress = downloadProgress,
-                                    projectIconUrl = projectIconUrl,
-                                )
-                            }
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(1f),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        items(groups, key = { it.first }) { (mcVer, versions) ->
+                            VersionGroupCard(
+                                mcVersion = mcVer,
+                                versions = versions,
+                                expanded = expandedGroups.contains(mcVer),
+                                onToggle = {
+                                    if (expandedGroups.contains(mcVer)) {
+                                        expandedGroups = expandedGroups - mcVer
+                                    } else {
+                                        expandedGroups = expandedGroups + mcVer
+                                    }
+                                },
+                                onInstall = { version, file ->
+                                    onInstall(version, file)
+                                },
+                                downloadingId = downloadingId,
+                                downloadProgress = downloadProgress,
+                                projectIconUrl = projectIconUrl,
+                            )
                         }
                     }
                 }
