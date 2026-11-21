@@ -291,6 +291,8 @@ private fun ModpackVersionDialog(
     var installError by remember { mutableStateOf<String?>(null) }
     val busy = downloadingId != null
 
+    val lazyListState = rememberLazyListState()
+
     LaunchedEffect(projectId, projectSlug, reloadToken) {
         loading = true
         failed = false
@@ -299,6 +301,11 @@ private fun ModpackVersionDialog(
         versions = result.versions
         failed = result.failed
         loading = false
+    }
+
+    // Scroll to top when stable filter changes
+    LaunchedEffect(stableOnly) {
+        lazyListState.animateScrollToItem(0)
     }
 
     // Group by game_versions, newest first
@@ -317,8 +324,16 @@ private fun ModpackVersionDialog(
         map.toList().sortedByDescending { it.first }
     }
 
-    val visibleGroups = remember(groups, stableOnly) {
-        if (stableOnly) groups.filter { it.first != "any" } else groups
+    // Filter versions within each group by stability
+    val filteredGroups = remember(groups, stableOnly) {
+        groups.map { (mcVer, versions) ->
+            val filteredVersions = if (stableOnly) {
+                versions.filter { it.version_type == "release" }
+            } else {
+                versions
+            }
+            mcVer to filteredVersions
+        }.filter { it.second.isNotEmpty() }
     }
 
     Dialog(
@@ -399,6 +414,7 @@ private fun ModpackVersionDialog(
                         )
 
                         LazyColumn(
+                            state = lazyListState,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .weight(1f),
