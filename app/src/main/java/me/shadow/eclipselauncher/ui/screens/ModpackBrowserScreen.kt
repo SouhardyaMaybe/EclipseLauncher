@@ -115,6 +115,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -125,6 +126,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.foundation.layout.navigationBarsPadding
 
 /** Compact filter header; tapping opens a modal chooser. */
 @Composable
@@ -629,6 +631,9 @@ fun ModpackBrowserScreen(
     // Version picker dialog
     var versionDialogTarget by remember { mutableStateOf<ModrinthHit?>(null) }
 
+    // LazyListState for scroll-to-top on filter/search/page changes
+    val lazyListState = rememberLazyListState()
+
     // Minecraft versions for version filter
     var mcVersions by remember { mutableStateOf(versionRepository.getCachedVersions()) }
     LaunchedEffect(versionRepository) {
@@ -674,11 +679,20 @@ fun ModpackBrowserScreen(
         }
     }
 
-    LaunchedEffect(Unit) { runSearch("") }
+    // Auto-load on query/filter/page/reloadToken change
+    LaunchedEffect(
+        query,
+        selectedLoader,
+        selectedGameVersion,
+        page,
+        reloadToken,
+    ) {
+        runSearch(query, page)
+    }
 
-    // Reload when filters change
-    LaunchedEffect(selectedLoader, selectedGameVersion) {
-        runSearch(query, 1)
+    // Scroll to top when page changes (filter/search changes reset page to 1)
+    LaunchedEffect(page) {
+        lazyListState.animateScrollToItem(0)
     }
 
     // Filter options
@@ -759,7 +773,7 @@ fun ModpackBrowserScreen(
                 },
             )
             Spacer(modifier = Modifier.width(8.dp))
-            IconButton(onClick = { runSearch(query) }) {
+            IconButton(onClick = { page = 1; runSearch(query) }) {
                 Icon(
                     Icons.Filled.Search,
                     contentDescription = stringResource(R.string.action_search),
@@ -827,39 +841,45 @@ fun ModpackBrowserScreen(
                     )
                 }
 
-                else -> Column(modifier = Modifier.fillMaxSize()) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f),
-                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, top = 4.dp, bottom = 24.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        items(results, key = { it.project_id }) { hit ->
-                            ModpackRow(
-                                hit = hit,
-                                onClick = { versionDialogTarget = hit },
+                else -> {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            state = lazyListState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                start = 12.dp,
+                                end = 12.dp,
+                                top = 4.dp,
+                                bottom = if (totalPages > 1) 96.dp else 16.dp,
+                            ),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            items(results, key = { it.project_id }) { hit ->
+                                ModpackRow(
+                                    hit = hit,
+                                    onClick = { versionDialogTarget = hit },
+                                )
+                            }
+                        }
+
+                        // Floating pagination pill
+                        if (totalPages > 1) {
+                            PaginationPill(
+                                currentPage = page,
+                                totalPages = totalPages,
+                                loading = loading,
+                                onPrev = {
+                                    if (!loading && page > 1) {
+                                        runSearch(query, page - 1)
+                                    }
+                                },
+                                onNext = {
+                                    if (!loading && page < totalPages) {
+                                        runSearch(query, page + 1)
+                                    }
+                                },
                             )
                         }
-                    }
-
-                    // Pagination
-                    if (totalPages > 1) {
-                        PaginationPill(
-                            currentPage = page,
-                            totalPages = totalPages,
-                            loading = loading,
-                            onPrev = {
-                                if (!loading && page > 1) {
-                                    runSearch(query, page - 1)
-                                }
-                            },
-                            onNext = {
-                                if (!loading && page < totalPages) {
-                                    runSearch(query, page + 1)
-                                }
-                            },
-                        )
                     }
                 }
             }
@@ -874,6 +894,7 @@ fun ModpackBrowserScreen(
             selectedValue = selectedLoader,
             onSelect = { value ->
                 selectedLoader = value
+                page = 1
                 filterDialog = null
             },
             onDismiss = { filterDialog = null },
@@ -885,6 +906,7 @@ fun ModpackBrowserScreen(
             selectedValue = selectedGameVersion,
             onSelect = { value ->
                 selectedGameVersion = value
+                page = 1
                 filterDialog = null
             },
             onDismiss = { filterDialog = null },
@@ -899,6 +921,7 @@ fun ModpackBrowserScreen(
                     if (name == "MODRINTH") selectedProvider = 0
                     else if (name == "CURSEFORGE") selectedProvider = 1
                 }
+                page = 1
                 filterDialog = null
             },
             onDismiss = { filterDialog = null },
@@ -1037,69 +1060,58 @@ private fun PaginationPill(
     onPrev: () -> Unit,
     onNext: () -> Unit,
 ) {
-    val indicator = "$currentPage / $totalPages"
-    val indicatorWidth = (indicator.length * 8 + 16).dp
+    val canGoPrev = currentPage > 1 && !loading
+    val canGoNext = currentPage < totalPages && !loading
+    val buttonColors = IconButtonDefaults.iconButtonColors(
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
+    )
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
-        Card(
+        Surface(
             modifier = Modifier
-                .wrapContentSize()
-                .padding(horizontal = 12.dp, vertical = 8.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                .navigationBarsPadding()
+                .padding(bottom = 12.dp),
             shape = RoundedCornerShape(24.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface,
-            ),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            tonalElevation = 3.dp,
         ) {
             Row(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 IconButton(
                     onClick = onPrev,
-                    enabled = !loading && currentPage > 1,
-                    modifier = Modifier.size(36.dp),
+                    enabled = canGoPrev,
+                    colors = buttonColors,
                 ) {
                     Icon(
-                        Icons.Filled.ChevronLeft,
-                        contentDescription = stringResource(R.string.cd_prev),
-                        tint = MaterialTheme.colorScheme.onSurface,
+                        imageVector = Icons.Filled.ChevronLeft,
+                        contentDescription = stringResource(R.string.cd_nav_previous),
                     )
                 }
-                Text(
-                    text = indicator,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .width(indicatorWidth)
-                        .padding(top = 2.dp),
-                )
+                // Fixed width stops the buttons from shifting between 1- and 2-digit pages.
+                Box(modifier = Modifier.width(84.dp), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "$currentPage / $totalPages",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
                 IconButton(
                     onClick = onNext,
-                    enabled = !loading && currentPage < totalPages,
-                    modifier = Modifier.size(36.dp),
+                    enabled = canGoNext,
+                    colors = buttonColors,
                 ) {
                     Icon(
-                        Icons.Filled.ChevronRight,
-                        contentDescription = stringResource(R.string.cd_next),
-                        tint = MaterialTheme.colorScheme.onSurface,
+                        imageVector = Icons.Filled.ChevronRight,
+                        contentDescription = stringResource(R.string.cd_nav_next),
                     )
                 }
             }
-        }
-        if (loading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .padding(bottom = 4.dp)
-                    .size(24.dp),
-                color = MaterialTheme.colorScheme.secondary,
-            )
         }
     }
 }
