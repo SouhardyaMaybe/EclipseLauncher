@@ -42,11 +42,11 @@ class FakeModrinthClient : ModrinthClient(NetworkClient()) {
 
     override suspend fun searchMods(
         query: String,
-        limit: Int = 25,
-        offset: Int = 0,
-        projectType: String = "mod",
-        loader: String? = null,
-        gameVersion: String? = null,
+        limit: Int,
+        offset: Int,
+        projectType: String,
+        loader: String?,
+        gameVersion: String?,
     ): ModrinthSearchResult = withContext(Dispatchers.IO) {
         if (shouldFailSearch) {
             return ModrinthSearchResult(
