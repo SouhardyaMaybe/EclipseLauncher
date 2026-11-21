@@ -617,14 +617,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        val hatUV = mapOf(
-            "front" to (uv(40, 8) to uv(48, 16)),
-            "back" to (uv(56, 8) to uv(64, 16)),
-            "right" to (uv(32, 8) to uv(40, 16)),
-            "left" to (uv(48, 8) to uv(56, 16)),
-            "top" to (uv(40, 0) to uv(48, 8)),
-            "bottom" to (uv(48, 0) to uv(56, 8))
-        )
         val bodyUV = mapOf(
             "front" to (uv(20, 20) to uv(28, 32)),
             "back" to (uv(32, 20) to uv(40, 32)),
