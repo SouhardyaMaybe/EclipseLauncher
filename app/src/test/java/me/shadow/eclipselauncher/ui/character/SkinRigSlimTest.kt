@@ -39,13 +39,13 @@ class SkinRigSlimTest {
 
         val slimArmRight = slimRig.boxes.first { it.kind == PartKind.ARM_RIGHT && it.inflate == 0f }
 
-        // All UV faces should be 3px wide for SLIM
-        assertEquals(3f, slimArmRight.uvFront.w, 0.001f, "SLIM front UV should be 3px wide")
-        assertEquals(3f, slimArmRight.uvBack.w, 0.001f, "SLIM back UV should be 3px wide")
-        assertEquals(3f, slimArmRight.uvRight.w, 0.001f, "SLIM right UV should be 3px wide")
-        assertEquals(3f, slimArmRight.uvLeft.w, 0.001f, "SLIM left UV should be 3px wide")
-        assertEquals(3f, slimArmRight.uvTop.w, 0.001f, "SLIM top UV should be 3px wide")
-        assertEquals(3f, slimArmRight.uvBottom.w, 0.001f, "SLIM bottom UV should be 3px wide")
+        // All UV faces should be 3px wide for SLIM (Uv properties are Int)
+        assertEquals(3, slimArmRight.uvFront.w, "SLIM front UV should be 3px wide")
+        assertEquals(3, slimArmRight.uvBack.w, "SLIM back UV should be 3px wide")
+        assertEquals(3, slimArmRight.uvRight.w, "SLIM right UV should be 3px wide")
+        assertEquals(3, slimArmRight.uvLeft.w, "SLIM left UV should be 3px wide")
+        assertEquals(3, slimArmRight.uvTop.w, "SLIM top UV should be 3px wide")
+        assertEquals(3, slimArmRight.uvBottom.w, "SLIM bottom UV should be 3px wide")
     }
 
     @Test
@@ -58,25 +58,25 @@ class SkinRigSlimTest {
 
         // Verify UV coordinates match SLIM skin template
         // Front: 44,20 (3x12)
-        assertEquals(44f, slimArmRight.uvFront.u, 0.001f)
-        assertEquals(20f, slimArmRight.uvFront.v, 0.001f)
+        assertEquals(44, slimArmRight.uvFront.u)
+        assertEquals(20, slimArmRight.uvFront.v)
 
-        // Back: 51,20 (3x12) - 44+3+4=51? Actually in SLIM layout, back is at 51
-        assertEquals(51f, slimArmRight.uvBack.u, 0.001f)
+        // Back: 51,20 (3x12) - in SLIM layout, back is at 51
+        assertEquals(51, slimArmRight.uvBack.u)
 
         // Right side: 40,20 (3x12)
-        assertEquals(40f, slimArmRight.uvRight.u, 0.001f)
+        assertEquals(40, slimArmRight.uvRight.u)
 
         // Left side: 47,20 (3x12) - 44+3=47
-        assertEquals(47f, slimArmRight.uvLeft.u, 0.001f)
+        assertEquals(47, slimArmRight.uvLeft.u)
 
         // Top: 44,16 (3x4)
-        assertEquals(44f, slimArmRight.uvTop.u, 0.001f)
-        assertEquals(16f, slimArmRight.uvTop.v, 0.001f)
+        assertEquals(44, slimArmRight.uvTop.u)
+        assertEquals(16, slimArmRight.uvTop.v)
 
         // Bottom: 47,16 (3x4) - 44+3=47
-        assertEquals(47f, slimArmRight.uvBottom.u, 0.001f)
-        assertEquals(16f, slimArmRight.uvBottom.v, 0.001f)
+        assertEquals(47, slimArmRight.uvBottom.u)
+        assertEquals(16, slimArmRight.uvBottom.v)
     }
 
     @Test
@@ -87,24 +87,24 @@ class SkinRigSlimTest {
 
         // Left arm SLIM texture coordinates
         // Front: 36,52 (3x12) - different from CLASSIC
-        assertEquals(36f, slimArmLeft.uvFront.u, 0.001f)
-        assertEquals(52f, slimArmLeft.uvFront.v, 0.001f)
+        assertEquals(36, slimArmLeft.uvFront.u)
+        assertEquals(52, slimArmLeft.uvFront.v)
 
         // Back: 43,52 (3x12) - 36+3+4=43?
-        assertEquals(43f, slimArmLeft.uvBack.u, 0.001f)
+        assertEquals(43, slimArmLeft.uvBack.u)
 
         // Right side: 32,52 (3x12)
-        assertEquals(32f, slimArmLeft.uvRight.u, 0.001f)
+        assertEquals(32, slimArmLeft.uvRight.u)
 
         // Left side: 39,52 (3x12) - 36+3=39
-        assertEquals(39f, slimArmLeft.uvLeft.u, 0.001f)
+        assertEquals(39, slimArmLeft.uvLeft.u)
 
         // Top: 36,48 (3x4)
-        assertEquals(36f, slimArmLeft.uvTop.u, 0.001f)
-        assertEquals(48f, slimArmLeft.uvTop.v, 0.001f)
+        assertEquals(36, slimArmLeft.uvTop.u)
+        assertEquals(48, slimArmLeft.uvTop.v)
 
         // Bottom: 39,48 (3x4) - 36+3=39
-        assertEquals(39f, slimArmLeft.uvBottom.u, 0.001f)
-        assertEquals(48f, slimArmLeft.uvBottom.v, 0.001f)
+        assertEquals(39, slimArmLeft.uvBottom.u)
+        assertEquals(48, slimArmLeft.uvBottom.v)
     }
 }
