@@ -211,7 +211,7 @@ open class ModrinthClient @Inject constructor(
     }
 
     /** Fetches one project's display metadata; null on any failure. */
-    suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
+    open suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
         try {
             network.http.get("$PROJECT_URL/$projectId").body()
         } catch (cancelled: CancellationException) {
