@@ -14,15 +14,15 @@ import kotlin.math.PI
 /** Skin pixel to model unit conversion: 1 px = 0.2 units (64 px = 12.8 units height). */
 const val PX_TO_UNIT = 0.2f
 
-/** Degrees to radians (Float). */
-const val DEG2RAD = (PI / 180.0).toFloat()
-
 // ========================================================================
 // SkeletonConstants — pivots, sizes, joint limits (all in model units)
 // Source: Minecraft Wiki "Player model" / "Skin layout" / "Cape"
 // ========================================================================
 
 object SkeletonConstants {
+
+    /** Degrees to radians (Float). Class: (a) Minecraft math fact. */
+    const val DEG2RAD = (PI / 180.0).toFloat()
 
     // --- Part pivots (model space, origin at feet, +Y up, faces +Z) ---
     // Wiki: head 8×8×8 at y=24..32px → center y=28px = 5.6 units; neck pivot at y=24px = 4.8 units
