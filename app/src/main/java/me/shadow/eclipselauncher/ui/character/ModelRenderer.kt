@@ -617,17 +617,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        // Texture coordinates for each face of each part
-        // Vanilla Minecraft skin layout (64x64)
-
-        val headUV = mapOf(
-            "front" to (uv(8, 8) to uv(16, 16)),
-            "back" to (uv(24, 8) to uv(32, 16)),
-            "right" to (uv(0, 8) to uv(8, 16)),
-            "left" to (uv(16, 8) to uv(24, 16)),
-            "top" to (uv(8, 0) to uv(16, 8)),
-            "bottom" to (uv(16, 0) to uv(24, 8))
-        )
         val hatUV = mapOf(
             "front" to (uv(40, 8) to uv(48, 16)),
             "back" to (uv(56, 8) to uv(64, 16)),
