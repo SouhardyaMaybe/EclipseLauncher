@@ -42,32 +42,32 @@ class ModelPreviewView @JvmOverloads constructor(
     }
 
     /** Updates the skin texture from a bitmap. */
-    fun setSkin(bitmap: Bitmap?) {
-        queueEvent { renderer.setSkin(bitmap) }
+    fun updateSkin(bitmap: Bitmap?) {
+        queueEvent { renderer.updateSkin(bitmap) }
         requestRender()
     }
 
     /** Updates the overlay texture (jacket/sleeves/pants). */
-    fun setOverlay(bitmap: Bitmap?) {
-        queueEvent { renderer.setOverlay(bitmap) }
+    fun updateOverlay(bitmap: Bitmap?) {
+        queueEvent { renderer.updateOverlay(bitmap) }
         requestRender()
     }
 
     /** Sets the model variant: "CLASSIC" (Steve, 4px) or "SLIM" (Alex, 3px). */
-    fun setVariant(variant: String) {
-        queueEvent { renderer.setVariant(variant) }
+    fun updateVariant(variant: String) {
+        queueEvent { renderer.updateVariant(variant) }
         requestRender()
     }
 
     /** Enables/disables the overlay layer. */
-    fun setOverlayEnabled(enabled: Boolean) {
-        queueEvent { renderer.setOverlayEnabled(enabled) }
+    fun updateOverlayEnabled(enabled: Boolean) {
+        queueEvent { renderer.updateOverlayEnabled(enabled) }
         requestRender()
     }
 
     /** Starts/stops the idle animation loop. */
-    fun setAnimating(animating: Boolean) {
-        renderer.isAnimating = animating
+    fun updateAnimating(animating: Boolean) {
+        renderer.updateAnimating(animating)
         if (animating) requestRender()
     }
 
@@ -124,13 +124,13 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
     private var isDragging = false
 
     // Animation
-    var isAnimating = true
+    private var isAnimating = true
     private var lastFrameTime = System.nanoTime()
     private var animationTime = 0f
 
     // Model state
-    var variant = "CLASSIC"
-    var overlayEnabled = true
+    private var variant = "CLASSIC"
+    private var overlayEnabled = true
     private var isSlim = false
 
     // Animation parameters
@@ -314,7 +314,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         view.requestRender()
     }
 
-    fun setSkin(bitmap: Bitmap?) {
+    fun updateSkin(bitmap: Bitmap?) {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, skinTextureId)
         if (bitmap != null) {
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
@@ -326,7 +326,7 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         }
     }
 
-    fun setOverlay(bitmap: Bitmap?) {
+    fun updateOverlay(bitmap: Bitmap?) {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureId)
         if (bitmap != null) {
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
@@ -338,12 +338,12 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         }
     }
 
-    fun setVariant(variant: String) {
+    fun updateVariant(variant: String) {
         this.variant = variant
         view.queueEvent { updateVariant() }
     }
 
-    fun setOverlayEnabled(enabled: Boolean) {
+    fun updateOverlayEnabled(enabled: Boolean) {
         overlayEnabled = enabled
     }
 
