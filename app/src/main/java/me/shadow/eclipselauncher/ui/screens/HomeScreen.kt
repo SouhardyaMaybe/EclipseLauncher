@@ -111,6 +111,7 @@ fun HomeScreen(
     onOpenSettings: () -> Unit,
     onOpenTasks: () -> Unit,
     onOpenContentManager: () -> Unit,
+    hasActiveTasks: Boolean = false,
     pendingSelectionId: String? = null,
 ) {
     // The account gate no longer blocks launch; it opens only when play is
@@ -143,9 +144,9 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Header: app mark on the left; tasks, content manager, file manager,
-            // logs, settings on the right, placed left to right, each with
-            // a corner-push press.
+            // Header: app mark on the left; tasks (if ongoing), content manager,
+            // file manager (placeholder), logs (placeholder), settings on the
+            // right, placed left to right, each with a corner-push press.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -157,25 +158,30 @@ fun HomeScreen(
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f),
                 )
-                HeaderButton(
-                    icon = Icons.Filled.ListAlt,
-                    contentDescription = stringResource(R.string.cd_tasks),
-                    onClick = onOpenTasks,
-                )
+                // Tasks button: only visible when a task is queued or running
+                if (hasActiveTasks) {
+                    HeaderButton(
+                        icon = Icons.Filled.ListAlt,
+                        contentDescription = stringResource(R.string.cd_tasks),
+                        onClick = onOpenTasks,
+                    )
+                }
                 HeaderButton(
                     icon = Icons.Filled.Dashboard,
                     contentDescription = stringResource(R.string.utils_content_manager),
                     onClick = onOpenContentManager,
                 )
+                // File Manager: placeholder — does nothing until permissions/storage step
                 HeaderButton(
                     icon = Icons.Filled.Folder,
                     contentDescription = stringResource(R.string.utils_file_manager),
-                    onClick = { onOpenFileManager(selected?.id) },
+                    onClick = { /* TODO: wire in permissions/storage step */ },
                 )
+                // Logs: placeholder — does nothing
                 HeaderButton(
                     icon = Icons.Filled.Article,
                     contentDescription = stringResource(R.string.utils_manage_logs),
-                    onClick = onOpenManageLogs,
+                    onClick = { /* TODO: wire in logs step */ },
                 )
                 HeaderButton(
                     icon = Icons.Filled.Settings,

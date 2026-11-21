@@ -229,6 +229,7 @@ fun EclipseApp() {
                             onOpenSettings = { push(Route.Settings(initialPage = null)) },
                             onOpenTasks = { showTasks = true },
                             onOpenContentManager = { push(Route.ManageContent(null)) },
+                            hasActiveTasks = tasks.any { !it.isFinished },
                             pendingSelectionId = pendingSelectionId,
                         )
                     }
