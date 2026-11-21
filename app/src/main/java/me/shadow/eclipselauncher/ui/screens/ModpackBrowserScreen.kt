@@ -87,6 +87,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.semantics.testTag
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -408,7 +409,7 @@ private fun ModpackVersionDialog(
                                         expandedGroups = expandedGroups + mcVer
                                     }
                                 },
-                                onInstall = { version, file ->
+                                onInstall = { version: ModrinthVersion, file: ModrinthVersionFile ->
                                     onInstall(version, file)
                                 },
                                 downloadingId = downloadingId,
@@ -955,9 +956,10 @@ fun ModpackBrowserScreen(
 private fun ModpackRow(
     hit: ModrinthHit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
