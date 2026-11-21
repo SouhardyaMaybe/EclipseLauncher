@@ -49,6 +49,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Article
@@ -109,6 +110,7 @@ fun HomeScreen(
     onOpenManageLogs: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenTasks: () -> Unit,
+    onOpenContentManager: () -> Unit,
     pendingSelectionId: String? = null,
 ) {
     // The account gate no longer blocks launch; it opens only when play is
@@ -141,8 +143,9 @@ fun HomeScreen(
             modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp, vertical = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // Header: app mark on the left; utils, settings, tasks on the
-            // right, placed left to right, each with a corner-push press.
+            // Header: app mark on the left; tasks, content manager, file manager,
+            // logs, settings on the right, placed left to right, each with
+            // a corner-push press.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -155,6 +158,16 @@ fun HomeScreen(
                     modifier = Modifier.weight(1f),
                 )
                 HeaderButton(
+                    icon = Icons.Filled.ListAlt,
+                    contentDescription = stringResource(R.string.cd_tasks),
+                    onClick = onOpenTasks,
+                )
+                HeaderButton(
+                    icon = Icons.Filled.Dashboard,
+                    contentDescription = stringResource(R.string.utils_content_manager),
+                    onClick = onOpenContentManager,
+                )
+                HeaderButton(
                     icon = Icons.Filled.Folder,
                     contentDescription = stringResource(R.string.utils_file_manager),
                     onClick = { onOpenFileManager(selected?.id) },
@@ -163,11 +176,6 @@ fun HomeScreen(
                     icon = Icons.Filled.Article,
                     contentDescription = stringResource(R.string.utils_manage_logs),
                     onClick = onOpenManageLogs,
-                )
-                HeaderButton(
-                    icon = Icons.Filled.ListAlt,
-                    contentDescription = stringResource(R.string.cd_tasks),
-                    onClick = onOpenTasks,
                 )
                 HeaderButton(
                     icon = Icons.Filled.Settings,

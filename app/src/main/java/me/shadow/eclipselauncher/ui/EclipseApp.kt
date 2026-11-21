@@ -228,6 +228,7 @@ fun EclipseApp() {
                             onOpenManageLogs = { /* TODO: open manage logs */ },
                             onOpenSettings = { push(Route.Settings(initialPage = null)) },
                             onOpenTasks = { showTasks = true },
+                            onOpenContentManager = { push(Route.ManageContent(null)) },
                             pendingSelectionId = pendingSelectionId,
                         )
                     }

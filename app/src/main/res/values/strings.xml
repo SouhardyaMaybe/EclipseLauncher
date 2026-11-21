@@ -248,6 +248,7 @@
     <!-- UTILS hub -->
     <string name="utils_content_header">Tools</string>
     <string name="utils_market_summary">Browse and search mods on Modrinth</string>
+    <string name="utils_content_manager">Content manager</string>
     <string name="utils_file_manager">File manager</string>
     <string name="utils_file_manager_summary">Browse the launcher\'s private files</string>
     <string name="utils_manage_content">Manage content</string>

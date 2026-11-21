@@ -76,9 +76,6 @@ private const val ZOOM_MAX = 2.6f
 const val SKIN_MODEL_CANVAS_TAG = "skinModelCanvas"
 const val FULLSCREEN_BUTTON_TAG = "fullscreenButton"
 
-/** Debug-only, copyable cape diagnostic overlay. */
-const val CAPE_DIAGNOSTICS_TAG = "capeDiagnostics"
-
 /**
  * Renders the account's character as a live 3D model the user can turn and
  * zoom. A null [skinFileName] (or an unreadable one) uses the bundled
@@ -269,37 +266,6 @@ fun SkinModelView(
             }
         }
 
-        // Debug-only cape diagnostic: copyable text over the model in normal
-        // and full-screen dialogs. Kept until the user confirms the fix.
-        if (CAPE_DEBUG_BUILD) {
-            val diagnostic = remember(
-                rig,
-                capeFileName,
-                capeFileExists,
-                cape,
-                capeStatus,
-                yaw,
-                pitch,
-            ) {
-                capeDiagnosticText(rig, capeFileName, capeFileExists, cape, capeStatus, yaw, pitch)
-            }
-            SelectionContainer(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(8.dp),
-            ) {
-                Text(
-                    text = diagnostic,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontSize = 9.sp,
-                        lineHeight = 11.sp,
-                    ),
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f),
-                    modifier = Modifier.testTag(CAPE_DIAGNOSTICS_TAG),
-                )
-            }
-        }
-
         // Full-screen toggle at top-right. The icon is a 24dp drawable inside a
         // 48dp tonal button; no inner padding, so the glyph always has draw area.
         // In full screen the button is inset from system bars while the canvas
@@ -347,52 +313,4 @@ fun SkinModelView(
     }
 }
 
-/**
- * Builds the debug overlay text. Draw order is probed at the user's current
- * yaw/tilt with the idle choreography zeroed, so the text is stable between
- * frames; the label says so.
- */
-private fun capeDiagnosticText(
-    rig: PlayerRig,
-    capeFileName: String?,
-    fileExists: Boolean,
-    cape: Bitmap?,
-    capeStatus: String,
-    yaw: Float,
-    pitch: Float,
-): String {
-    val scale = cape?.let { CapeTextureLayout.scaleFor(it.width, it.height) } ?: 1
-    val probe = Pose(
-        yaw = yaw,
-        headYaw = 0f,
-        headPitch = 0f,
-        armSwing = 0f,
-        breath = 0f,
-        bodyPitch = pitch,
-    )
-    val faces = rig.project(probe, 0f, 0f, 1f)
-    val capeFaces = faces.filter { it.capeFace != null }
-    fun name(face: RenderFace) = face.capeFace?.name?.lowercase() ?: "?"
-    val order = capeFaces.joinToString(", ") { name(it) }.ifEmpty { "none" }
-    val front = capeFaces.filter { it.isFrontFacing() }
-        .joinToString(", ") { name(it) }
-        .ifEmpty { "none" }
-    val uvs = CapeFace.entries.joinToString(" | ") { face ->
-        val uv = CapeGeometry.uv(face, scale)
-        "${face.name.lowercase()}=${uv.u},${uv.v},${uv.w},${uv.h}"
-    }
-    val yawDegrees = (yaw * 180f / PI).toInt()
-    val tiltDegrees = (pitch * 180f / PI).toInt()
-    return buildString {
-        appendLine("CAPE DIAGNOSTICS (debug)")
-        appendLine("file: ${capeFileName ?: "none"}")
-        appendLine("exists: $fileExists")
-        appendLine("bitmap: ${cape?.let { "${it.width}x${it.height}" } ?: "not loaded"}")
-        appendLine("decode: $capeStatus")
-        appendLine("reached view: ${cape != null}")
-        appendLine("cape faces: ${rig.capeFaceCount}")
-        appendLine("uv $uvs")
-        appendLine("drawn far->near @ yaw ${yawDegrees}deg tilt ${tiltDegrees}deg: $order")
-        append("front-facing: $front")
-    }
-}
+
