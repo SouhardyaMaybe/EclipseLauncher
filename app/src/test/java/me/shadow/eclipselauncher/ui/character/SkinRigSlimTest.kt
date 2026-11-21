@@ -40,12 +40,12 @@ class SkinRigSlimTest {
         val slimArmRight = slimRig.boxes.first { it.kind == PartKind.ARM_RIGHT && it.inflate == 0f }
 
         // All UV faces should be 3px wide for SLIM (Uv properties are Int)
-        assertEquals(3, slimArmRight.uvFront.w, "SLIM front UV should be 3px wide")
-        assertEquals(3, slimArmRight.uvBack.w, "SLIM back UV should be 3px wide")
-        assertEquals(3, slimArmRight.uvRight.w, "SLIM right UV should be 3px wide")
-        assertEquals(3, slimArmRight.uvLeft.w, "SLIM left UV should be 3px wide")
-        assertEquals(3, slimArmRight.uvTop.w, "SLIM top UV should be 3px wide")
-        assertEquals(3, slimArmRight.uvBottom.w, "SLIM bottom UV should be 3px wide")
+        assertEquals(3, slimArmRight.uvFront.w)
+        assertEquals(3, slimArmRight.uvBack.w)
+        assertEquals(3, slimArmRight.uvRight.w)
+        assertEquals(3, slimArmRight.uvLeft.w)
+        assertEquals(3, slimArmRight.uvTop.w)
+        assertEquals(3, slimArmRight.uvBottom.w)
     }
 
     @Test
