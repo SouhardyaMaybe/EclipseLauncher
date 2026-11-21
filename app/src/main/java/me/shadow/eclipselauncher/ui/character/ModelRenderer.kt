@@ -617,18 +617,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        // Part dimensions
-        val headSize = 8f
-        val bodyWidth = 8f
-        val bodyHeight = 12f
-        val bodyDepth = 4f
-        val armWidth = if (isSlim) 3f else 4f
-        val armHeight = 12f
-        val armDepth = 4f
-        val legWidth = 4f
-        val legHeight = 12f
-        val legDepth = 4f
-
         // Head
         parts.add(addBox(-4f, 24f, -4f, 4f, 32f, 4f, headUV))
 
