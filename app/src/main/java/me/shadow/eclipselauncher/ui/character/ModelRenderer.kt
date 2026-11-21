@@ -614,10 +614,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        // Texture coordinates for each face of each part
-        // Vanilla Minecraft skin layout (64x64)
-        val uv = { u: Int, v: Int -> (u / 64f) to (v / 64f) }
-
         // Helper to create UV map entries with explicit parentheses
         fun e(k: String, u1: Int, v1: Int, u2: Int, v2: Int) = entry(k, entry(uv(u1, v1), uv(u2, v2)))
 
