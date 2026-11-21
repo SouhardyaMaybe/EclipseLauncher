@@ -235,19 +235,19 @@ class ForwardKinematicsTest {
         // Apply 45° swing
         val delta45 = Quaternion.fromEuler(0f, 45f * SkeletonConstants.DEG2RAD, 0f)
         pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, delta45)
-        var (_, pitch, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
+        val (_, pitch, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
         assertEquals(45f * SkeletonConstants.DEG2RAD, pitch, 0.001f)
 
         // Apply another 45° → 90° (clamped to 80°)
         pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, delta45)
-        (_, pitch, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
-        assertEquals(80f * SkeletonConstants.DEG2RAD, pitch, 0.001f)
+        val (_, pitch2, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
+        assertEquals(80f * SkeletonConstants.DEG2RAD, pitch2, 0.001f)
 
         // Apply -90° → should go to -10° (80 - 90 = -10)
         val deltaNeg90 = Quaternion.fromEuler(0f, -90f * SkeletonConstants.DEG2RAD, 0f)
         pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, deltaNeg90)
-        (_, pitch, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
-        assertEquals(-10f * SkeletonConstants.DEG2RAD, pitch, 0.001f)
+        val (_, pitch3, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
+        assertEquals(-10f * SkeletonConstants.DEG2RAD, pitch3, 0.001f)
     }
 
     @Test
