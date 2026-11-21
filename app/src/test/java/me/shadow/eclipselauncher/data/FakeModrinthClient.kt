@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 class FakeModrinthClient : ModrinthClient(NetworkClient()) {
 
     // Test data storage
-    private var searchResults: ModrinthSearchResult = ModrinthSearchResult(emptyList(), 0, 0, 25, 1, true, false)
+    private var searchResults: ModrinthSearchResult = ModrinthSearchResult(emptyList(), 0, 0, 25, 1, 1, true, false)
     private var projectVersions: ModrinthVersionsResult = ModrinthVersionsResult(emptyList(), false)
     private var projectData: ModrinthProject? = null
 
