@@ -617,39 +617,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        val legRUV = mapOf(
-            "front" to (uv(4, 20) to uv(8, 32)),
-            "back" to (uv(12, 20) to uv(16, 32)),
-            "right" to (uv(0, 20) to uv(4, 32)),
-            "left" to (uv(8, 20) to uv(12, 32)),
-            "top" to (uv(4, 16) to uv(8, 20)),
-            "bottom" to (uv(8, 16) to uv(12, 20))
-        )
-        val pantsRUV = mapOf(
-            "front" to (uv(4, 36) to uv(8, 48)),
-            "back" to (uv(12, 36) to uv(16, 48)),
-            "right" to (uv(0, 36) to uv(4, 48)),
-            "left" to (uv(8, 36) to uv(12, 48)),
-            "top" to (uv(4, 32) to uv(8, 36)),
-            "bottom" to (uv(8, 32) to uv(12, 36))
-        )
-        val legLUV = mapOf(
-            "front" to (uv(20, 52) to uv(24, 64)),
-            "back" to (uv(28, 52) to uv(32, 64)),
-            "right" to (uv(16, 52) to uv(20, 64)),
-            "left" to (uv(24, 52) to uv(28, 64)),
-            "top" to (uv(20, 48) to uv(24, 52)),
-            "bottom" to (uv(24, 48) to uv(28, 52))
-        )
-        val pantsLUV = mapOf(
-            "front" to (uv(4, 52) to uv(8, 64)),
-            "back" to (uv(12, 52) to uv(16, 64)),
-            "right" to (uv(0, 52) to uv(4, 64)),
-            "left" to (uv(8, 52) to uv(12, 64)),
-            "top" to (uv(4, 48) to uv(8, 52)),
-            "bottom" to (uv(8, 48) to uv(12, 52))
-        )
-
         // Part dimensions
         val headSize = 8f
         val bodyWidth = 8f
