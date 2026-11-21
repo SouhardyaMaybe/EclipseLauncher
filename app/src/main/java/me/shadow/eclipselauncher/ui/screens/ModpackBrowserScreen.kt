@@ -99,6 +99,7 @@ import me.shadow.eclipselauncher.data.ModrinthVersion
 import me.shadow.eclipselauncher.data.ModrinthVersionFile
 import me.shadow.eclipselauncher.data.VersionRepository
 import me.shadow.eclipselauncher.ui.components.FilterOption
+import me.shadow.eclipselauncher.ui.components.LabeledCheckboxRow
 import me.shadow.eclipselauncher.ui.components.LoaderIcon
 import me.shadow.eclipselauncher.ui.components.ModpackFilter
 import me.shadow.eclipselauncher.ui.components.loaderDisplayName
@@ -391,24 +392,11 @@ private fun ModpackVersionDialog(
                 } else {
                     Column(modifier = Modifier.fillMaxSize()) {
                         // Stable only toggle
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            androidx.compose.material3.Checkbox(
-                                checked = stableOnly,
-                                onCheckedChange = { stableOnly = it },
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = stringResource(R.string.manage_content_stable_only),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
-                        }
+                        LabeledCheckboxRow(
+                            checked = stableOnly,
+                            onCheckedChange = { stableOnly = it },
+                            label = stringResource(R.string.manage_content_stable_only),
+                        )
 
                         LazyColumn(
                             modifier = Modifier
