@@ -72,7 +72,7 @@ class AccountStore @Inject constructor(
         val accounts = dao.getAll().first()
         val microsoftAccounts = accounts.filter { it.kind == AccountKind.MICROSOFT && it.refreshToken != null }
         for (entity in microsoftAccounts) {
-            refreshSingleAccount(entity, media)
+            refreshSingleAccount(entity.id, media)
         }
     }
 
