@@ -28,8 +28,8 @@ class SkinRigSlimTest {
         val slimWidth = slimArmRight.x1 - slimArmRight.x0
         val classicWidth = classicArmRight.x1 - classicArmRight.x0
 
-        assertEquals(3f, slimWidth, 0.001f, "SLIM arm should be 3px wide")
-        assertEquals(4f, classicWidth, 0.001f, "CLASSIC arm should be 4px wide")
+        assertEquals(3f, slimWidth, 0.001f)
+        assertEquals(4f, classicWidth, 0.001f)
     }
 
     @Test
