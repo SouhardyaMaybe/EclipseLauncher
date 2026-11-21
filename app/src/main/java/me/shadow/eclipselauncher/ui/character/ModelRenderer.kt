@@ -319,7 +319,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         if (bitmap != null) {
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
         } else {
-            // Default Steve skin (placeholder)
             val placeholder = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888)
             placeholder.eraseColor(0xFF8B4513)
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, placeholder, 0)
@@ -332,7 +331,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         if (bitmap != null) {
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
         } else {
-            // Transparent placeholder
             val placeholder = Bitmap.createBitmap(64, 64, Bitmap.Config.ARGB_8888)
             placeholder.eraseColor(0x00000000)
             android.opengl.GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, placeholder, 0)
@@ -358,11 +356,9 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             animationTime += dt
         }
 
-        // Arm swing (walking motion)
         armSwing = kotlin.math.sin(animationTime * 6f) * 0.8f
         legSwing = -armSwing
 
-        // Head idle animation
         headYaw = kotlin.math.sin(animationTime * 0.7f) * 0.3f
         headPitch = kotlin.math.sin(animationTime * 1.1f) * 0.15f
     }
@@ -419,6 +415,9 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
     // UV helper - defined once at class level
     private fun uv(u: Int, v: Int): Pair<Float, Float> = (u / 64f) to (v / 64f)
 
+    // Helper to create map entries with explicit parentheses for type inference
+    private inline fun <K, V> entry(k: K, v: V): Pair<K, V> = k to v
+
     private fun buildModelParts(): List<ModelPart> {
         val parts = mutableListOf<ModelPart>()
 
@@ -426,129 +425,132 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         // Vanilla Minecraft skin layout (64x64)
         val uv = { u: Int, v: Int -> (u / 64f) to (v / 64f) }
 
+        // Helper to create UV map entries with explicit parentheses
+        fun e(k: String, u1: Int, v1: Int, u2: Int, v2: Int) = entry(k, entry(uv(u1, v1), uv(u2, v2)))
+
         val headUV = mapOf(
-            "front" to uv(8, 8) to uv(16, 16),
-            "back" to uv(24, 8) to uv(32, 16),
-            "right" to uv(0, 8) to uv(8, 16),
-            "left" to uv(16, 8) to uv(24, 16),
-            "top" to uv(8, 0) to uv(16, 8),
-            "bottom" to uv(16, 0) to uv(24, 8)
+            e("front", 8, 8, 16, 16),
+            e("back", 24, 8, 32, 16),
+            e("right", 0, 8, 8, 16),
+            e("left", 16, 8, 24, 16),
+            e("top", 8, 0, 16, 8),
+            e("bottom", 16, 0, 24, 8)
         )
         val hatUV = mapOf(
-            "front" to uv(40, 8) to uv(48, 16),
-            "back" to uv(56, 8) to uv(64, 16),
-            "right" to uv(32, 8) to uv(40, 16),
-            "left" to uv(48, 8) to uv(56, 16),
-            "top" to uv(40, 0) to uv(48, 8),
-            "bottom" to uv(48, 0) to uv(56, 8)
+            e("front", 40, 8, 48, 16),
+            e("back", 56, 8, 64, 16),
+            e("right", 32, 8, 40, 16),
+            e("left", 48, 8, 56, 16),
+            e("top", 40, 0, 48, 8),
+            e("bottom", 48, 0, 56, 8)
         )
         val bodyUV = mapOf(
-            "front" to uv(20, 20) to uv(28, 32),
-            "back" to uv(32, 20) to uv(40, 32),
-            "right" to uv(16, 20) to uv(20, 32),
-            "left" to uv(28, 20) to uv(32, 32),
-            "top" to uv(20, 16) to uv(28, 20),
-            "bottom" to uv(28, 16) to uv(36, 20)
+            e("front", 20, 20, 28, 32),
+            e("back", 32, 20, 40, 32),
+            e("right", 16, 20, 20, 32),
+            e("left", 28, 20, 32, 32),
+            e("top", 20, 16, 28, 20),
+            e("bottom", 28, 16, 36, 20)
         )
         val jacketUV = mapOf(
-            "front" to uv(20, 36) to uv(28, 48),
-            "back" to uv(32, 36) to uv(40, 48),
-            "right" to uv(16, 36) to uv(20, 48),
-            "left" to uv(28, 36) to uv(32, 48),
-            "top" to uv(20, 32) to uv(28, 36),
-            "bottom" to uv(28, 32) to uv(36, 36)
+            e("front", 20, 36, 28, 48),
+            e("back", 32, 36, 40, 48),
+            e("right", 16, 36, 20, 48),
+            e("left", 28, 36, 32, 48),
+            e("top", 20, 32, 28, 36),
+            e("bottom", 28, 32, 36, 36)
         )
         val armRUV = if (isSlim) mapOf(
-            "front" to uv(44, 20) to uv(47, 32),
-            "back" to uv(51, 20) to uv(54, 32),
-            "right" to uv(40, 20) to uv(43, 32),
-            "left" to uv(47, 20) to uv(50, 32),
-            "top" to uv(44, 16) to uv(47, 20),
-            "bottom" to uv(47, 16) to uv(50, 20)
+            e("front", 44, 20, 47, 32),
+            e("back", 51, 20, 54, 32),
+            e("right", 40, 20, 43, 32),
+            e("left", 47, 20, 50, 32),
+            e("top", 44, 16, 47, 20),
+            e("bottom", 47, 16, 50, 20)
         ) else mapOf(
-            "front" to uv(44, 20) to uv(48, 32),
-            "back" to uv(52, 20) to uv(56, 32),
-            "right" to uv(40, 20) to uv(44, 32),
-            "left" to uv(48, 20) to uv(52, 32),
-            "top" to uv(44, 16) to uv(48, 20),
-            "bottom" to uv(48, 16) to uv(52, 20)
+            e("front", 44, 20, 48, 32),
+            e("back", 52, 20, 56, 32),
+            e("right", 40, 20, 44, 32),
+            e("left", 48, 20, 52, 32),
+            e("top", 44, 16, 48, 20),
+            e("bottom", 48, 16, 52, 20)
         )
         val sleeveRUV = if (isSlim) mapOf(
-            "front" to uv(44, 36) to uv(47, 48),
-            "back" to uv(51, 36) to uv(54, 48),
-            "right" to uv(40, 36) to uv(43, 48),
-            "left" to uv(47, 36) to uv(50, 48),
-            "top" to uv(44, 32) to uv(47, 36),
-            "bottom" to uv(47, 32) to uv(50, 36)
+            e("front", 44, 36, 47, 48),
+            e("back", 51, 36, 54, 48),
+            e("right", 40, 36, 43, 48),
+            e("left", 47, 36, 50, 48),
+            e("top", 44, 32, 47, 36),
+            e("bottom", 47, 32, 50, 36)
         ) else mapOf(
-            "front" to uv(44, 36) to uv(48, 48),
-            "back" to uv(52, 36) to uv(56, 48),
-            "right" to uv(40, 36) to uv(44, 48),
-            "left" to uv(48, 36) to uv(52, 48),
-            "top" to uv(44, 32) to uv(48, 36),
-            "bottom" to uv(48, 32) to uv(52, 36)
+            e("front", 44, 36, 48, 48),
+            e("back", 52, 36, 56, 48),
+            e("right", 40, 36, 44, 48),
+            e("left", 48, 36, 52, 48),
+            e("top", 44, 32, 48, 36),
+            e("bottom", 48, 32, 52, 36)
         )
         val armLUV = if (isSlim) mapOf(
-            "front" to uv(36, 52) to uv(39, 64),
-            "back" to uv(43, 52) to uv(46, 64),
-            "right" to uv(32, 52) to uv(35, 64),
-            "left" to uv(39, 52) to uv(42, 64),
-            "top" to uv(36, 48) to uv(39, 52),
-            "bottom" to uv(39, 48) to uv(42, 52)
+            e("front", 36, 52, 39, 64),
+            e("back", 43, 52, 46, 64),
+            e("right", 32, 52, 35, 64),
+            e("left", 39, 52, 42, 64),
+            e("top", 36, 48, 39, 52),
+            e("bottom", 39, 48, 42, 52)
         ) else mapOf(
-            "front" to uv(36, 52) to uv(40, 64),
-            "back" to uv(44, 52) to uv(48, 64),
-            "right" to uv(32, 52) to uv(36, 64),
-            "left" to uv(40, 52) to uv(44, 64),
-            "top" to uv(36, 48) to uv(40, 52),
-            "bottom" to uv(40, 48) to uv(44, 52)
+            e("front", 36, 52, 40, 64),
+            e("back", 44, 52, 48, 64),
+            e("right", 32, 52, 36, 64),
+            e("left", 40, 52, 44, 64),
+            e("top", 36, 48, 40, 52),
+            e("bottom", 40, 48, 44, 52)
         )
         val sleeveLUV = if (isSlim) mapOf(
-            "front" to uv(52, 52) to uv(55, 64),
-            "back" to uv(59, 52) to uv(62, 64),
-            "right" to uv(48, 52) to uv(51, 64),
-            "left" to uv(55, 52) to uv(58, 64),
-            "top" to uv(52, 48) to uv(55, 52),
-            "bottom" to uv(55, 48) to uv(58, 52)
+            e("front", 52, 52, 55, 64),
+            e("back", 59, 52, 62, 64),
+            e("right", 48, 52, 51, 64),
+            e("left", 55, 52, 58, 64),
+            e("top", 52, 48, 55, 52),
+            e("bottom", 55, 48, 58, 52)
         ) else mapOf(
-            "front" to uv(52, 52) to uv(56, 64),
-            "back" to uv(60, 52) to uv(64, 64),
-            "right" to uv(48, 52) to uv(52, 64),
-            "left" to uv(56, 52) to uv(60, 64),
-            "top" to uv(52, 48) to uv(56, 52),
-            "bottom" to uv(56, 48) to uv(60, 52)
+            e("front", 52, 52, 56, 64),
+            e("back", 60, 52, 64, 64),
+            e("right", 48, 52, 52, 64),
+            e("left", 56, 52, 60, 64),
+            e("top", 52, 48, 56, 52),
+            e("bottom", 56, 48, 60, 52)
         )
         val legRUV = mapOf(
-            "front" to uv(4, 20) to uv(8, 32),
-            "back" to uv(12, 20) to uv(16, 32),
-            "right" to uv(0, 20) to uv(4, 32),
-            "left" to uv(8, 20) to uv(12, 32),
-            "top" to uv(4, 16) to uv(8, 20),
-            "bottom" to uv(8, 16) to uv(12, 20)
+            e("front", 4, 20, 8, 32),
+            e("back", 12, 20, 16, 32),
+            e("right", 0, 20, 4, 32),
+            e("left", 8, 20, 12, 32),
+            e("top", 4, 16, 8, 20),
+            e("bottom", 8, 16, 12, 20)
         )
         val pantsRUV = mapOf(
-            "front" to uv(4, 36) to uv(8, 48),
-            "back" to uv(12, 36) to uv(16, 48),
-            "right" to uv(0, 36) to uv(4, 48),
-            "left" to uv(8, 36) to uv(12, 48),
-            "top" to uv(4, 32) to uv(8, 36),
-            "bottom" to uv(8, 32) to uv(12, 36)
+            e("front", 4, 36, 8, 48),
+            e("back", 12, 36, 16, 48),
+            e("right", 0, 36, 4, 48),
+            e("left", 8, 36, 12, 48),
+            e("top", 4, 32, 8, 36),
+            e("bottom", 8, 32, 12, 36)
         )
         val legLUV = mapOf(
-            "front" to uv(20, 52) to uv(24, 64),
-            "back" to uv(28, 52) to uv(32, 64),
-            "right" to uv(16, 52) to uv(20, 64),
-            "left" to uv(24, 52) to uv(28, 64),
-            "top" to uv(20, 48) to uv(24, 52),
-            "bottom" to uv(24, 48) to uv(28, 52)
+            e("front", 20, 52, 24, 64),
+            e("back", 28, 52, 32, 64),
+            e("right", 16, 52, 20, 64),
+            e("left", 24, 52, 28, 64),
+            e("top", 20, 48, 24, 52),
+            e("bottom", 24, 48, 28, 52)
         )
         val pantsLUV = mapOf(
-            "front" to uv(4, 52) to uv(8, 64),
-            "back" to uv(12, 52) to uv(16, 64),
-            "right" to uv(0, 52) to uv(4, 64),
-            "left" to uv(8, 52) to uv(12, 64),
-            "top" to uv(4, 48) to uv(8, 52),
-            "bottom" to uv(8, 48) to uv(12, 52)
+            e("front", 4, 52, 8, 64),
+            e("back", 12, 52, 16, 64),
+            e("right", 0, 52, 4, 64),
+            e("left", 8, 52, 12, 64),
+            e("top", 4, 48, 8, 52),
+            e("bottom", 8, 48, 12, 52)
         )
 
         // Part dimensions
@@ -581,11 +583,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             val fy1 = y1 + inflate
             val fz1 = z1 + inflate
 
-            val verts = FloatArray(24)
-            val texs = FloatArray(16)
-            val norms = FloatArray(24)
-            val inds = shortArrayOf(0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23)
-
             // Front face (+Z)
             verts[0] = x0 - inflate; verts[1] = y1 + inflate; verts[2] = z1 + inflate
             verts[3] = x1 + inflate; verts[4] = y1 + inflate; verts[5] = z1 + inflate
@@ -617,146 +614,139 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
 
-        // Part dimensions
-        val headSize = 8f
-        val bodyWidth = 8f
-        val bodyHeight = 12f
-        val bodyDepth = 4f
-        val armWidth = if (isSlim) 3f else 4f
-        val armHeight = 12f
-        val armDepth = 4f
-        val legWidth = 4f
-        val legHeight = 12f
-        val legDepth = 4f
-
         // Texture coordinates for each face of each part
         // Vanilla Minecraft skin layout (64x64)
         val uv = { u: Int, v: Int -> (u / 64f) to (v / 64f) }
 
+        // Helper to create UV map entries with explicit parentheses
+        fun e(k: String, u1: Int, v1: Int, u2: Int, v2: Int) = entry(k, entry(uv(u1, v1), uv(u2, v2)))
+
         val headUV = mapOf(
-            "front" to uv(8, 8) to uv(16, 16),
-            "back" to uv(24, 8) to uv(32, 16),
-            "right" to uv(0, 8) to uv(8, 16),
-            "left" to uv(16, 8) to uv(24, 16),
-            "top" to uv(8, 0) to uv(16, 8),
-            "bottom" to uv(16, 0) to uv(24, 8)
+            e("front", 8, 8, 16, 16),
+            e("back", 24, 8, 32, 16),
+            e("right", 0, 8, 8, 16),
+            e("left", 16, 8, 24, 16),
+            e("top", 8, 0, 16, 8),
+            e("bottom", 16, 0, 24, 8)
         )
         val hatUV = mapOf(
-            "front" to uv(40, 8) to uv(48, 16),
-            "back" to uv(56, 8) to uv(64, 16),
-            "right" to uv(32, 8) to uv(40, 16),
-            "left" to uv(48, 8) to uv(56, 16),
-            "top" to uv(40, 0) to uv(48, 8),
-            "bottom" to uv(48, 0) to uv(56, 8)
+            e("front", 40, 8, 48, 16),
+            e("back", 56, 8, 64, 16),
+            e("right", 32, 8, 40, 16),
+            e("left", 48, 8, 56, 16),
+            e("top", 40, 0, 48, 8),
+            e("bottom", 48, 0, 56, 8)
         )
         val bodyUV = mapOf(
-            "front" to uv(20, 20) to uv(28, 32),
-            "back" to uv(32, 20) to uv(40, 32),
-            "right" to uv(16, 20) to uv(20, 32),
-            "left" to uv(28, 20) to uv(32, 32),
-            "top" to uv(20, 16) to uv(28, 20),
-            "bottom" to uv(28, 16) to uv(36, 20)
+            e("front", 20, 20, 28, 32),
+            e("back", 32, 20, 40, 32),
+            e("right", 16, 20, 20, 32),
+            e("left", 28, 20, 32, 32),
+            e("top", 20, 16, 28, 20),
+            e("bottom", 28, 16, 36, 20)
         )
         val jacketUV = mapOf(
-            "front" to uv(20, 36) to uv(28, 48),
-            "back" to uv(32, 36) to uv(40, 48),
-            "right" to uv(16, 36) to uv(20, 48),
-            "left" to uv(28, 36) to uv(32, 48),
-            "top" to uv(20, 32) to uv(28, 36),
-            "bottom" to uv(28, 32) to uv(36, 36)
+            e("front", 20, 36, 28, 48),
+            e("back", 32, 36, 40, 48),
+            e("right", 16, 36, 20, 48),
+            e("left", 28, 36, 32, 48),
+            e("top", 20, 32, 28, 36),
+            e("bottom", 28, 32, 36, 36)
         )
         val armRUV = if (isSlim) mapOf(
-            "front" to uv(44, 20) to uv(47, 32),
-            "back" to uv(51, 20) to uv(54, 32),
-            "right" to uv(40, 20) to uv(43, 32),
-            "left" to uv(47, 20) to uv(50, 32),
-            "top" to uv(44, 16) to uv(47, 20),
-            "bottom" to uv(47, 16) to uv(50, 20)
+            e("front", 44, 20, 47, 32),
+            e("back", 51, 20, 54, 32),
+            e("right", 40, 20, 43, 32),
+            e("left", 47, 20, 50, 32),
+            e("top", 44, 16, 47, 20),
+            e("bottom", 47, 16, 50, 20)
         ) else mapOf(
-            "front" to uv(44, 20) to uv(48, 32),
-            "back" to uv(52, 20) to uv(56, 32),
-            "right" to uv(40, 20) to uv(44, 32),
-            "left" to uv(48, 20) to uv(52, 32),
-            "top" to uv(44, 16) to uv(48, 20),
-            "bottom" to uv(48, 16) to uv(52, 20)
+            e("front", 44, 20, 48, 32),
+            e("back", 52, 20, 56, 32),
+            e("right", 40, 20, 44, 32),
+            e("left", 48, 20, 52, 32),
+            e("top", 44, 16, 48, 20),
+            e("bottom", 48, 16, 52, 20)
         )
         val sleeveRUV = if (isSlim) mapOf(
-            "front" to uv(44, 36) to uv(47, 48),
-            "back" to uv(51, 36) to uv(54, 48),
-            "right" to uv(40, 36) to uv(43, 48),
-            "left" to uv(47, 36) to uv(50, 48),
-            "top" to uv(44, 32) to uv(47, 36),
-            "bottom" to uv(47, 32) to uv(50, 36)
+            e("front", 44, 36, 47, 48),
+            e("back", 51, 36, 54, 48),
+            e("right", 40, 36, 43, 48),
+            e("left", 47, 36, 50, 48),
+            e("top", 44, 32, 47, 36),
+            e("bottom", 47, 32, 50, 36)
         ) else mapOf(
-            "front" to uv(44, 36) to uv(48, 48),
-            "back" to uv(52, 36) to uv(56, 48),
-            "right" to uv(40, 36) to uv(44, 48),
-            "left" to uv(48, 36) to uv(52, 48),
-            "top" to uv(44, 32) to uv(48, 36),
-            "bottom" to uv(48, 32) to uv(52, 36)
+            e("front", 44, 36, 48, 48),
+            e("back", 52, 36, 56, 48),
+            e("right", 40, 36, 44, 48),
+            e("left", 48, 36, 52, 48),
+            e("top", 44, 32, 48, 36),
+            e("bottom", 48, 32, 52, 36)
         )
         val armLUV = if (isSlim) mapOf(
-            "front" to uv(36, 52) to uv(39, 64),
-            "back" to uv(43, 52) to uv(46, 64),
-            "right" to uv(32, 52) to uv(35, 64),
-            "left" to uv(39, 52) to uv(42, 64),
-            "top" to uv(36, 48) to uv(39, 52),
-            "bottom" to uv(39, 48) to uv(42, 52)
+            e("front", 36, 52, 39, 64),
+            e("back", 43, 52, 46, 64),
+            e("right", 32, 52, 35, 64),
+            e("left", 39, 52, 42, 64),
+            e("top", 36, 48, 39, 52),
+            e("bottom", 39, 48, 42, 52)
         ) else mapOf(
-            "front" to uv(36, 52) to uv(40, 64),
-            "back" to uv(44, 52) to uv(48, 64),
-            "right" to uv(32, 52) to uv(36, 64),
-            "left" to uv(40, 52) to uv(44, 64),
-            "top" to uv(36, 48) to uv(40, 52),
-            "bottom" to uv(40, 48) to uv(44, 52)
+            e("front", 36, 52, 40, 64),
+            e("back", 44, 52, 48, 64),
+            e("right", 32, 52, 36, 64),
+            e("left", 40, 52, 44, 64),
+            e("top", 36, 48, 40, 52),
+            e("bottom", 40, 48, 44, 52)
         )
         val sleeveLUV = if (isSlim) mapOf(
-            "front" to uv(52, 52) to uv(55, 64),
-            "back" to uv(59, 52) to uv(62, 64),
-            "right" to uv(48, 52) to uv(51, 64),
-            "left" to uv(55, 52) to uv(58, 64),
-            "top" to uv(52, 48) to uv(55, 52),
-            "bottom" to uv(55, 48) to uv(58, 52)
+            e("front", 52, 52, 55, 64),
+            e("back", 59, 52, 62, 64),
+            e("right", 48, 52, 51, 64),
+            e("left", 55, 52, 58, 64),
+            e("top", 52, 48, 55, 52),
+            e("bottom", 55, 48, 58, 52)
         ) else mapOf(
-            "front" to uv(52, 52) to uv(56, 64),
-            "back" to uv(60, 52) to uv(64, 64),
-            "right" to uv(48, 52) to uv(52, 64),
-            "left" to uv(56, 52) to uv(60, 64),
-            "top" to uv(52, 48) to uv(56, 52),
-            "bottom" to uv(56, 48) to uv(60, 52)
+            e("front", 52, 52, 56, 64),
+            e("back", 60, 52, 64, 64),
+            e("right", 48, 52, 52, 64),
+            e("left", 56, 52, 60, 64),
+            e("top", 52, 48, 56, 52),
+            e("bottom", 56, 48, 60, 52)
         )
         val legRUV = mapOf(
-            "front" to uv(4, 20) to uv(8, 32),
-            "back" to uv(12, 20) to uv(16, 32),
-            "right" to uv(0, 20) to uv(4, 32),
-            "left" to uv(8, 20) to uv(12, 32),
-            "top" to uv(4, 16) to uv(8, 20),
-            "bottom" to uv(8, 16) to uv(12, 20)
+            e("front", 4, 20, 8, 32),
+            e("back", 12, 20, 16, 32),
+            e("right", 0, 20, 4, 32),
+            e("left", 8, 20, 12, 32),
+            e("top", 4, 16, 8, 20),
+            e("bottom", 8, 16, 12, 20)
         )
         val pantsRUV = mapOf(
-            "front" to uv(4, 36) to uv(8, 48),
-            "back" to uv(12, 36) to uv(16, 48),
-            "right" to uv(0, 36) to uv(4, 48),
-            "left" to uv(8, 36) to uv(12, 48),
-            "top" to uv(4, 32) to uv(8, 36),
-            "bottom" to uv(8, 32) to uv(12, 36)
+            e("front", 4, 36, 8, 48),
+            e("back", 12, 36, 16, 48),
+            e("right", 0, 36, 4, 48),
+            e("left", 8, 36, 12, 48),
+            e("top", 4, 32, 8, 36),
+            e("bottom", 8, 32, 12, 36)
         )
         val legLUV = mapOf(
-            "front" to uv(20, 52) to uv(24, 64),
-            "back" to uv(28, 52) to uv(32, 64),
-            "right" to uv(16, 52) to uv(20, 64),
-            "left" to uv(24, 52) to uv(28, 64),
-            "top" to uv(20, 48) to uv(24, 52),
-            "bottom" to uv(24, 48) to uv(28, 52)
+            e("front", 20, 52, 24, 64),
+            e("back", 28, 52, 32, 64),
+            e("right", 16, 52, 20, 64),
+            e("left", 24, 52, 28, 64),
+            e("top", 20, 48, 24, 52),
+            e("bottom", 24, 48, 28, 52)
         )
         val pantsLUV = mapOf(
-            "front" to uv(4, 52) to uv(8, 64),
-            "back" to uv(12, 52) to uv(16, 64),
-            "right" to uv(0, 52) to uv(4, 64),
-            "left" to uv(8, 52) to uv(12, 64),
-            "top" to uv(4, 48) to uv(8, 52),
-            "bottom" to uv(8, 48) to uv(12, 52)
+            e("front", 4, 52, 8, 64),
+            e("back", 12, 52, 16, 64),
+            e("right", 0, 52, 4, 64),
+            e("left", 8, 52, 12, 64),
+            e("top", 4, 48, 8, 52),
+            e("bottom", 8, 48, 12, 52)
         )
+
+        val parts = mutableListOf<ModelPart>()
 
         // Head
         parts.add(addBox(-4f, 24f, -4f, 4f, 32f, 4f, headUV))
