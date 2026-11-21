@@ -581,11 +581,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
             val fy1 = y1 + inflate
             val fz1 = z1 + inflate
 
-            val verts = FloatArray(24)
-            val texs = FloatArray(16)
-            val norms = FloatArray(24)
-            val inds = shortArrayOf(0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7, 8, 9, 10, 8, 10, 11, 12, 13, 14, 12, 14, 15, 16, 17, 18, 16, 18, 19, 20, 21, 22, 20, 22, 23)
-
             // Front face (+Z)
             verts[0] = x0 - inflate; verts[1] = y1 + inflate; verts[2] = z1 + inflate
             verts[3] = x1 + inflate; verts[4] = y1 + inflate; verts[5] = z1 + inflate
