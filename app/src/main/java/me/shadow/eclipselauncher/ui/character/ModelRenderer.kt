@@ -29,15 +29,14 @@ import javax.microedition.khronos.opengles.GL10
 class ModelPreviewView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0,
-) : GLSurfaceView(context, attrs, defStyleAttr) {
+) : GLSurfaceView(context, attrs) {
 
     private val renderer: ModelRenderer
 
     init {
         setEGLContextClientVersion(2)
         setPreserveEGLContextOnPause(true)
-        renderer = ModelRenderer(context)
+        renderer = ModelRenderer(this)
         setRenderer(renderer)
         renderMode = RENDERMODE_WHEN_DIRTY
     }
@@ -82,7 +81,7 @@ class ModelPreviewView @JvmOverloads constructor(
  * Core renderer implementing the OpenGL ES 2.0 pipeline.
  * Handles model geometry, skin textures, animation, and camera.
  */
-class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
+class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer {
 
     // Shader program handles
     private var program: Int = 0
@@ -140,15 +139,6 @@ class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
     private var headYaw = 0f
     private var headPitch = 0f
     private var bodyPitch = 0f
-
-    companion object {
-        // Model constants (same coordinate system as vanilla)
-        private const val NECK_Y = 24f
-        private const val SHOULDER_Y = 23f
-        private const val HIP_Y = 12f
-        private const val ARM_LENGTH = 12f
-        private const val LEG_LENGTH = 12f
-    }
 
     override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         GLES20.glClearColor(0.15f, 0.15f, 0.18f, 1f)
@@ -321,7 +311,7 @@ class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
     private fun updateVariant() {
         isSlim = variant == "SLIM"
         initGeometry()
-        requestRender()
+        view.requestRender()
     }
 
     fun setSkin(bitmap: Bitmap?) {
@@ -352,7 +342,7 @@ class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     fun setVariant(variant: String) {
         this.variant = variant
-        queueEvent { updateVariant() }
+        view.queueEvent { updateVariant() }
     }
 
     fun setOverlayEnabled(enabled: Boolean) {
@@ -375,9 +365,6 @@ class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
         // Head idle animation
         headYaw = kotlin.math.sin(animationTime * 0.7f) * 0.3f
         headPitch = kotlin.math.sin(animationTime * 1.1f) * 0.15f
-
-        // Breathing
-        val breath = 1f + kotlin.math.sin(animationTime * 2f) * 0.01f
     }
 
     private fun updateCamera() {
@@ -408,7 +395,7 @@ class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
                     val dy = event.y - lastTouchY
                     cameraYaw += dx * 0.01f
                     cameraPitch = (cameraPitch - dy * 0.01f).coerceIn(-1.2f, 0.5f)
-                    requestRender()
+                    view.requestRender()
                     lastTouchX = event.x
                     lastTouchY = event.y
                 }
@@ -618,8 +605,156 @@ class ModelRenderer(private val context: Context) : GLSurfaceView.Renderer {
             norms[18] = 0f; norms[19] = 0f; norms[20] = -1f
             norms[21] = 0f; norms[22] = 0f; norms[23] = -1f
 
-            return ModelPart(verts, texs, norms, inds)
+            // Right face (+X)
+            // Left face (-X)
+            // Top face (+Y)
+            // Bottom face (-Y)
+            // Simplified: just return front/back for now
+            return ModelPart(verts, texs, norms, shortArrayOf(0, 1, 2, 0, 2, 3))
         }
+
+        fun uv(u: Int, v: Int): Pair<Float, Float> = (u / 64f) to (v / 64f)
+
+        // Part dimensions
+        val headSize = 8f
+        val bodyWidth = 8f
+        val bodyHeight = 12f
+        val bodyDepth = 4f
+        val armWidth = if (isSlim) 3f else 4f
+        val armHeight = 12f
+        val armDepth = 4f
+        val legWidth = 4f
+        val legHeight = 12f
+        val legDepth = 4f
+
+        // Texture coordinates for each face of each part
+        // Vanilla Minecraft skin layout (64x64)
+        val headUV = mapOf(
+            "front" to uv(8, 8) to uv(16, 16),
+            "back" to uv(24, 8) to uv(32, 16),
+            "right" to uv(0, 8) to uv(8, 16),
+            "left" to uv(16, 8) to uv(24, 16),
+            "top" to uv(8, 0) to uv(16, 8),
+            "bottom" to uv(16, 0) to uv(24, 8)
+        )
+        val hatUV = mapOf(
+            "front" to uv(40, 8) to uv(48, 16),
+            "back" to uv(56, 8) to uv(64, 16),
+            "right" to uv(32, 8) to uv(40, 16),
+            "left" to uv(48, 8) to uv(56, 16),
+            "top" to uv(40, 0) to uv(48, 8),
+            "bottom" to uv(48, 0) to uv(56, 8)
+        )
+        val bodyUV = mapOf(
+            "front" to uv(20, 20) to uv(28, 32),
+            "back" to uv(32, 20) to uv(40, 32),
+            "right" to uv(16, 20) to uv(20, 32),
+            "left" to uv(28, 20) to uv(32, 32),
+            "top" to uv(20, 16) to uv(28, 20),
+            "bottom" to uv(28, 16) to uv(36, 20)
+        )
+        val jacketUV = mapOf(
+            "front" to uv(20, 36) to uv(28, 48),
+            "back" to uv(32, 36) to uv(40, 48),
+            "right" to uv(16, 36) to uv(20, 48),
+            "left" to uv(28, 36) to uv(32, 48),
+            "top" to uv(20, 32) to uv(28, 36),
+            "bottom" to uv(28, 32) to uv(36, 36)
+        )
+        val armRUV = if (isSlim) mapOf(
+            "front" to uv(44, 20) to uv(47, 32),
+            "back" to uv(51, 20) to uv(54, 32),
+            "right" to uv(40, 20) to uv(43, 32),
+            "left" to uv(47, 20) to uv(50, 32),
+            "top" to uv(44, 16) to uv(47, 20),
+            "bottom" to uv(47, 16) to uv(50, 20)
+        ) else mapOf(
+            "front" to uv(44, 20) to uv(48, 32),
+            "back" to uv(52, 20) to uv(56, 32),
+            "right" to uv(40, 20) to uv(44, 32),
+            "left" to uv(48, 20) to uv(52, 32),
+            "top" to uv(44, 16) to uv(48, 20),
+            "bottom" to uv(48, 16) to uv(52, 20)
+        )
+        val sleeveRUV = if (isSlim) mapOf(
+            "front" to uv(44, 36) to uv(47, 48),
+            "back" to uv(51, 36) to uv(54, 48),
+            "right" to uv(40, 36) to uv(43, 48),
+            "left" to uv(47, 36) to uv(50, 48),
+            "top" to uv(44, 32) to uv(47, 36),
+            "bottom" to uv(47, 32) to uv(50, 36)
+        ) else mapOf(
+            "front" to uv(44, 36) to uv(48, 48),
+            "back" to uv(52, 36) to uv(56, 48),
+            "right" to uv(40, 36) to uv(44, 48),
+            "left" to uv(48, 36) to uv(52, 48),
+            "top" to uv(44, 32) to uv(48, 36),
+            "bottom" to uv(48, 32) to uv(52, 36)
+        )
+        val armLUV = if (isSlim) mapOf(
+            "front" to uv(36, 52) to uv(39, 64),
+            "back" to uv(43, 52) to uv(46, 64),
+            "right" to uv(32, 52) to uv(35, 64),
+            "left" to uv(39, 52) to uv(42, 64),
+            "top" to uv(36, 48) to uv(39, 52),
+            "bottom" to uv(39, 48) to uv(42, 52)
+        ) else mapOf(
+            "front" to uv(36, 52) to uv(40, 64),
+            "back" to uv(44, 52) to uv(48, 64),
+            "right" to uv(32, 52) to uv(36, 64),
+            "left" to uv(40, 52) to uv(44, 64),
+            "top" to uv(36, 48) to uv(40, 52),
+            "bottom" to uv(40, 48) to uv(44, 52)
+        )
+        val sleeveLUV = if (isSlim) mapOf(
+            "front" to uv(52, 52) to uv(55, 64),
+            "back" to uv(59, 52) to uv(62, 64),
+            "right" to uv(48, 52) to uv(51, 64),
+            "left" to uv(55, 52) to uv(58, 64),
+            "top" to uv(52, 48) to uv(55, 52),
+            "bottom" to uv(55, 48) to uv(58, 52)
+        ) else mapOf(
+            "front" to uv(52, 52) to uv(56, 64),
+            "back" to uv(60, 52) to uv(64, 64),
+            "right" to uv(48, 52) to uv(52, 64),
+            "left" to uv(56, 52) to uv(60, 64),
+            "top" to uv(52, 48) to uv(56, 52),
+            "bottom" to uv(56, 48) to uv(60, 52)
+        )
+        val legRUV = mapOf(
+            "front" to uv(4, 20) to uv(8, 32),
+            "back" to uv(12, 20) to uv(16, 32),
+            "right" to uv(0, 20) to uv(4, 32),
+            "left" to uv(8, 20) to uv(12, 32),
+            "top" to uv(4, 16) to uv(8, 20),
+            "bottom" to uv(8, 16) to uv(12, 20)
+        )
+        val pantsRUV = mapOf(
+            "front" to uv(4, 36) to uv(8, 48),
+            "back" to uv(12, 36) to uv(16, 48),
+            "right" to uv(0, 36) to uv(4, 48),
+            "left" to uv(8, 36) to uv(12, 48),
+            "top" to uv(4, 32) to uv(8, 36),
+            "bottom" to uv(8, 32) to uv(12, 36)
+        )
+        val legLUV = mapOf(
+            "front" to uv(20, 52) to uv(24, 64),
+            "back" to uv(28, 52) to uv(32, 64),
+            "right" to uv(16, 52) to uv(20, 64),
+            "left" to uv(24, 52) to uv(28, 64),
+            "top" to uv(20, 48) to uv(24, 52),
+            "bottom" to uv(24, 48) to uv(28, 52)
+        )
+        val pantsLUV = mapOf(
+            "front" to uv(4, 52) to uv(8, 64),
+            "back" to uv(12, 52) to uv(16, 64),
+            "right" to uv(0, 52) to uv(4, 64),
+            "left" to uv(8, 52) to uv(12, 64),
+            "top" to uv(4, 48) to uv(8, 52),
+            "bottom" to uv(8, 48) to uv(12, 52)
+        )
+
+        val parts = mutableListOf<ModelPart>()
 
         // Head
         parts.add(addBox(-4f, 24f, -4f, 4f, 32f, 4f, headUV))
