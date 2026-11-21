@@ -523,25 +523,44 @@ private fun buildBoxes(
         front = Uv(20, 36, 8, 12), back = Uv(32, 36, 8, 12), right = Uv(16, 36, 4, 12),
         left = Uv(28, 36, 4, 12), top = Uv(20, 32, 8, 4), bottom = Uv(28, 32, 8, 4),
     )
+    // Right arm UVs differ between CLASSIC (4px) and SLIM (3px) layouts.
+    // CLASSIC: front=44,20 back=52,20 right=40,20 left=48,20 top=44,16 bottom=48,16 (all 4px wide)
+    // SLIM:    front=44,20 back=51,20 right=40,20 left=47,20 top=44,16 bottom=47,16 (all 3px wide)
+    val armRightUvW = if (slim) 3 else 4
+    val armRightBackU = if (slim) 51 else 52
+    val armRightLeftU = if (slim) 47 else 48
+    val armRightBottomU = if (slim) 47 else 48
     val armRight = box(
         PartKind.ARM_RIGHT, armRightX0, 12f, -2f, -4f, 24f, 2f, 0f,
-        front = Uv(44, 20, 4, 12), back = Uv(52, 20, 4, 12), right = Uv(40, 20, 4, 12),
-        left = Uv(48, 20, 4, 12), top = Uv(44, 16, 4, 4), bottom = Uv(48, 16, 4, 4),
+        front = Uv(44, 20, armRightUvW, 12), back = Uv(armRightBackU, 20, armRightUvW, 12),
+        right = Uv(40, 20, armRightUvW, 12), left = Uv(armRightLeftU, 20, armRightUvW, 12),
+        top = Uv(44, 16, armRightUvW, 4), bottom = Uv(armRightBottomU, 16, armRightUvW, 4),
     )
     val sleeveRight = box(
         PartKind.ARM_RIGHT, armRightX0, 12f, -2f, -4f, 24f, 2f, 0.25f,
-        front = Uv(44, 36, 4, 12), back = Uv(52, 36, 4, 12), right = Uv(40, 36, 4, 12),
-        left = Uv(48, 36, 4, 12), top = Uv(44, 32, 4, 4), bottom = Uv(48, 32, 4, 4),
+        front = Uv(44, 36, armRightUvW, 12), back = Uv(armRightBackU, 36, armRightUvW, 12),
+        right = Uv(40, 36, armRightUvW, 12), left = Uv(armRightLeftU, 36, armRightUvW, 12),
+        top = Uv(44, 32, armRightUvW, 4), bottom = Uv(armRightBottomU, 32, armRightUvW, 4),
     )
+
+    // Left arm UVs differ between CLASSIC (4px) and SLIM (3px) layouts.
+    // CLASSIC: front=36,52 back=44,52 right=32,52 left=40,52 top=36,48 bottom=40,48 (all 4px wide)
+    // SLIM:    front=36,52 back=43,52 right=32,52 left=39,52 top=36,48 bottom=39,48 (all 3px wide)
+    val armLeftUvW = if (slim) 3 else 4
+    val armLeftBackU = if (slim) 43 else 44
+    val armLeftLeftU = if (slim) 39 else 40
+    val armLeftBottomU = if (slim) 39 else 40
     val armLeft = box(
         PartKind.ARM_LEFT, 4f, 12f, -2f, armLeftX1, 24f, 2f, 0f,
-        front = Uv(36, 52, 4, 12), back = Uv(44, 52, 4, 12), right = Uv(32, 52, 4, 12),
-        left = Uv(40, 52, 4, 12), top = Uv(36, 48, 4, 4), bottom = Uv(40, 48, 4, 4),
+        front = Uv(36, 52, armLeftUvW, 12), back = Uv(armLeftBackU, 52, armLeftUvW, 12),
+        right = Uv(32, 52, armLeftUvW, 12), left = Uv(armLeftLeftU, 52, armLeftUvW, 12),
+        top = Uv(36, 48, armLeftUvW, 4), bottom = Uv(armLeftBottomU, 48, armLeftUvW, 4),
     )
     val sleeveLeft = box(
         PartKind.ARM_LEFT, 4f, 12f, -2f, armLeftX1, 24f, 2f, 0.25f,
-        front = Uv(52, 52, 4, 12), back = Uv(60, 52, 4, 12), right = Uv(48, 52, 4, 12),
-        left = Uv(56, 52, 4, 12), top = Uv(52, 48, 4, 4), bottom = Uv(56, 48, 4, 4),
+        front = Uv(52, 52, armLeftUvW, 12), back = Uv(armLeftBackU + 9, 52, armLeftUvW, 12),
+        right = Uv(48, 52, armLeftUvW, 12), left = Uv(armLeftLeftU + 8, 52, armLeftUvW, 12),
+        top = Uv(52, 48, armLeftUvW, 4), bottom = Uv(armLeftBottomU + 8, 48, armLeftUvW, 4),
     )
     val legRight = box(
         PartKind.LEG_RIGHT, -4f, 0f, -2f, 0f, 12f, 2f, 0f,
