@@ -1466,6 +1466,8 @@ private fun VersionInstallDialog(
     var installError by remember { mutableStateOf<String?>(null) }
     val busy = downloadingId != null || checkingDependencies
 
+    val lazyListState = rememberLazyListState()
+
     LaunchedEffect(target.projectId, target.slug, reloadToken) {
         loading = true
         failed = false
@@ -1474,6 +1476,11 @@ private fun VersionInstallDialog(
         versions = result.versions
         failed = result.failed
         loading = false
+    }
+
+    // Scroll to top when stable filter, reload, or target changes
+    LaunchedEffect(stableOnly, reloadToken, target.projectId, target.slug) {
+        lazyListState.animateScrollToItem(0)
     }
 
     // MC-version types decide which groups are stable and colour their badges.
@@ -1782,6 +1789,7 @@ private fun VersionInstallDialog(
                         }
 
                         else -> LazyColumn(
+                            state = lazyListState,
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = PaddingValues(
                                 start = 16.dp,
