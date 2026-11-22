@@ -361,23 +361,34 @@ class PlayerRig(
      * the whole-model yaw and the whole-body drag pitch around the hips. All
      * trig is precomputed per frame in [beginPose]; the result is a shared
      * scratch array, so read it before the next call.
+     *
+     * The head's neck boundary (y = NECK_Y in model space) must stay glued to
+     * the body's top. We achieve this by skipping head-local yaw/pitch for
+     * vertices exactly on the neck plane — they follow only the body transform.
+     * Vertices above the neck get the full head-local rotation.
      */
     private fun transform(x: Float, y: Float, z: Float, kind: PartKind) {
         var px = x
         var py = y
         var pz = z
+        val modelY = y // preserve model-space Y for neck detection
         when (kind) {
             PartKind.HEAD -> {
-                // Pitch around X through the neck (y = NECK_Y)...
-                val dy = py - NECK_Y
-                val ny = dy * headPitchCos - pz * headPitchSin
-                val nz = dy * headPitchSin + pz * headPitchCos
-                py = NECK_Y + ny
-                pz = nz
-                // ...then yaw around the model's vertical axis.
-                val nx = px * headYawCos + pz * headYawSin
-                pz = -px * headYawSin + pz * headYawCos
-                px = nx
+                val isNeck = modelY == NECK_Y
+                if (!isNeck) {
+                    // Pitch around X through the neck (y = NECK_Y)...
+                    val dy = py - NECK_Y
+                    val ny = dy * headPitchCos - pz * headPitchSin
+                    val nz = dy * headPitchSin + pz * headPitchCos
+                    py = NECK_Y + ny
+                    pz = nz
+                    // ...then yaw around the model's vertical axis.
+                    val nx = px * headYawCos + pz * headYawSin
+                    pz = -px * headYawSin + pz * headYawCos
+                    px = nx
+                }
+                // Neck vertices (modelY == NECK_Y) skip head-local rotation
+                // and fall through to body/global transforms only.
             }
             PartKind.ARM_RIGHT -> {
                 val dy = py - SHOULDER_Y

@@ -240,22 +240,15 @@ fun SkinModelView(
                     matrix.reset()
                     if (!matrix.setPolyToPoly(srcPts, 0, face.pts, 0, 4)) continue
 
-                    // Expand the clip past each edge so neighbouring quads
-                    // don't leave hairline seams between them, even at high zoom.
+                    // Draw without clip expansion — the orthographic projection and
+                    // painter's sort already give clean edges. Clip expansion was
+                    // causing overlapping clip regions between adjacent faces,
+                    // which appeared as thin straight lines at box boundaries.
                     path.rewind()
-                    val qx = (face.pts[0] + face.pts[2] + face.pts[4] + face.pts[6]) / 4f
-                    val qy = (face.pts[1] + face.pts[3] + face.pts[5] + face.pts[7]) / 4f
                     for (corner in 0 until 4) {
                         val px = face.pts[corner * 2]
                         val py = face.pts[corner * 2 + 1]
-                        val dx = px - qx
-                        val dy = py - qy
-                        val len = sqrt(dx * dx + dy * dy)
-                        // Grow by 2 screen pixels regardless of face size; prevents seams at any zoom.
-                        val grow = if (len > 0.001f) 2.0f / len else 0f
-                        val ex = px + dx * grow
-                        val ey = py + dy * grow
-                        if (corner == 0) path.moveTo(ex, ey) else path.lineTo(ex, ey)
+                        if (corner == 0) path.moveTo(px, py) else path.lineTo(px, py)
                     }
                     path.close()
 
