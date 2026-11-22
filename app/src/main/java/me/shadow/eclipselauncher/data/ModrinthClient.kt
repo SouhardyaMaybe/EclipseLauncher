@@ -138,7 +138,7 @@ class ModrinthClient @Inject constructor(
      * and [gameVersion] filters the `versions` facet. Modrinth is the only
      * provider available without a key.
      */
-    open suspend fun searchMods(
+    override suspend fun searchMods(
         query: String,
         limit: Int = 25,
         offset: Int = 0,
@@ -183,7 +183,7 @@ class ModrinthClient @Inject constructor(
      * Lists every published version of one project, newest first. Changelogs
      * are excluded because the install sheet only needs version metadata.
      */
-    open suspend fun projectVersions(projectId: String): ModrinthVersionsResult =
+    override suspend fun projectVersions(projectId: String): ModrinthVersionsResult =
         withContext(Dispatchers.IO) {
             try {
                 val versions: List<ModrinthVersion> = network.http
@@ -203,7 +203,7 @@ class ModrinthClient @Inject constructor(
      * Fetches one version by id; returns null for a transport error so the
      * dependency prompt can still show the project.
      */
-    suspend fun versionById(versionId: String): ModrinthVersion? = withContext(Dispatchers.IO) {
+    override suspend fun versionById(versionId: String): ModrinthVersion? = withContext(Dispatchers.IO) {
         try {
             network.http.get("$VERSION_URL/$versionId").body()
         } catch (cancelled: CancellationException) {
