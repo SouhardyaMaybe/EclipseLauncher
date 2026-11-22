@@ -2,7 +2,7 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * Fake implementation of ModrinthClient for testing.
+ * Fake implementation of ModrinthApi for testing.
  * Returns controlled test data for unit tests.
  */
 package me.shadow.eclipselauncher.data
@@ -11,11 +11,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
- * Fake ModrinthClient that returns controlled test data.
+ * Fake ModrinthApi that returns controlled test data.
  * Use [setSearchResults] to control search results.
  * Use [setProjectVersions] to control version results.
  */
-class FakeModrinthClient : ModrinthClient(NetworkClient()) {
+class FakeModrinthClient : ModrinthApi {
 
     // Test data storage
     private var searchResults: ModrinthSearchResult = ModrinthSearchResult(emptyList(), 0, 0, 25, 1, 1, true, false)
@@ -89,4 +89,19 @@ class FakeModrinthClient : ModrinthClient(NetworkClient()) {
     override suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
         if (shouldFailProject) null else projectData
     }
+
+    override suspend fun versionById(versionId: String): ModrinthVersion? = withContext(Dispatchers.IO) {
+        null // Not used in tests
+    }
+
+    override suspend fun downloadTo(
+        url: String,
+        target: File,
+        onProgress: (Float) -> Unit,
+    ): Boolean = withContext(Dispatchers.IO) {
+        false // Not used in tests
+    }
+
+    override fun projectUrl(hit: ModrinthHit): String =
+        "https://modrinth.com/mod/" + hit.slug.ifEmpty { hit.project_id }
 }
