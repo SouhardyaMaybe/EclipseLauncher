@@ -868,7 +868,7 @@ class SkinseedRenderer(private val view: SkinseedView) : GLSurfaceView.Renderer 
     // ===== QUATERNION MATH =====
 
     private fun quatFromAxisAngle(x: Float, y: Float, z: Float): FloatArray {
-        val angle = Math.sqrt(x * x + y * y + z * z).toFloat()
+        val angle = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
         if (angle == 0f) return floatArrayOf(1f, 0f, 0f, 0f)
         val half = angle * 0.5f
         val s = Math.sin(half.toDouble()).toFloat() / angle
@@ -902,7 +902,7 @@ class SkinseedRenderer(private val view: SkinseedView) : GLSurfaceView.Renderer 
             out[1] = q0[1] + (q1x - q0[1]) * t
             out[2] = q0[2] + (q1y - q0[2]) * t
             out[3] = q0[3] + (q1z - q0[3]) * t
-            val len = Math.sqrt(out[0] * out[0] + out[1] * out[1] + out[2] * out[2] + out[3] * out[3]).toFloat()
+            val len = Math.sqrt((out[0] * out[0] + out[1] * out[1] + out[2] * out[2] + out[3] * out[3]).toDouble()).toFloat()
             out[0] /= len; out[1] /= len; out[2] /= len; out[3] /= len
             return
         }

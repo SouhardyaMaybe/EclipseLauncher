@@ -9,6 +9,11 @@ package me.shadow.eclipselauncher.ui.character
 import android.content.Context
 import android.graphics.Bitmap
 import android.view.View
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.AndroidView
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
