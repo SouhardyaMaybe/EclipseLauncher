@@ -79,8 +79,8 @@ fun SkinseedViewer(
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
-                .widthIn(min = 1.dp)
-                .heightIn(min = 1.dp),
+                .minimumWidth(1.dp)
+                .minimumHeight(1.dp),
         )
 
         // Full-screen toggle at top-right
