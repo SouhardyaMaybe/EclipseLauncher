@@ -1,0 +1,41 @@
+name: Pose Math
+
+on:
+  push:
+    paths:
+      - 'pose-math/**'
+      - 'gradle/libs.versions.toml'
+      - 'gradle/wrapper/**'
+      - 'settings.gradle.kts'
+      - 'build.gradle.kts'
+      - '.github/workflows/pose-math.yml'
+  pull_request:
+    paths:
+      - 'pose-math/**'
+      - 'gradle/libs.versions.toml'
+      - 'gradle/wrapper/**'
+      - 'settings.gradle.kts'
+      - 'build.gradle.kts'
+      - '.github/workflows/pose-math.yml'
+
+jobs:
+  test:
+    name: Pose Math Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup JDK
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+
+      - name: Run pure JVM pose math tests
+        # Configure only the requested project: no Android SDK, no :app setup.
+        run: ./gradlew :pose-math:test --configure-on-demand

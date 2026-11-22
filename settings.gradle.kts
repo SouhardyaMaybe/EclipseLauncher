@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "EclipseLauncher"
 include(":app")
+include(":pose-math")
