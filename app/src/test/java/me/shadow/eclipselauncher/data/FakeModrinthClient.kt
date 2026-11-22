@@ -7,6 +7,7 @@
  */
 package me.shadow.eclipselauncher.data
 
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
