@@ -71,17 +71,17 @@ class ForwardKinematicsTest {
 
     @Test
     fun bodyYawRotatesEntireModel() {
-        // 90° yaw around Y
+        // 90° yaw around Y (around body pivot at (0, 0.4, 0))
         val pose = SkeletonPose.IDENTITY.set(Joint.BODY, JointState(Quaternion.fromEuler(PI.toFloat() / 2, 0f, 0f)))
         val transforms = skeleton.computeWorldTransforms(pose)
 
-        // Head pivot originally at (0, 1.6, 0) → after 90° yaw: (-1.6, 1.6, 0)
+        // Head pivot at (0, 1.6, 0) is on the Y-axis (x=0, z=0), so body yaw does NOT move it
         val headPivot = transforms[Joint.HEAD]!!.transformPoint(Vec3(SkeletonConstants.HEAD_PIVOT_X, SkeletonConstants.HEAD_PIVOT_Y, SkeletonConstants.HEAD_PIVIT_Z))
-        assertEquals(-SkeletonConstants.HEAD_PIVOT_Y, headPivot.x, 0.001f)
+        assertEquals(0f, headPivot.x, 0.001f)
         assertEquals(SkeletonConstants.HEAD_PIVOT_Y, headPivot.y, 0.001f)
         assertEquals(0f, headPivot.z, 0.001f)
 
-        // Left arm pivot (-1.2, 1.2, 0) → (-1.2, 1.2, 1.2) ? Wait: yaw rotates around Y
+        // Left arm pivot (-1.2, 1.2, 0) → yaw 90° around Y:
         // x' = x*cos - z*sin = -1.2*0 - 0*1 = 0
         // z' = x*sin + z*cos = -1.2*1 + 0*0 = -1.2
         val armLPivot = transforms[Joint.ARM_LEFT]!!.transformPoint(Vec3(SkeletonConstants.ARM_LEFT_PIVOT_X, SkeletonConstants.ARM_LEFT_PIVOT_Y, SkeletonConstants.ARM_LEFT_PIVOT_Z))
@@ -92,17 +92,16 @@ class ForwardKinematicsTest {
 
     @Test
     fun headYawIsRelativeToBody() {
-        // Body yaw 90°, head yaw 90° → total 180° from model forward
+        // Body yaw 90°, head yaw 90° → head rotates relative to body
         val pose = SkeletonPose.IDENTITY
             .set(Joint.BODY, JointState(Quaternion.fromEuler(PI.toFloat() / 2, 0f, 0f)))
             .set(Joint.HEAD, JointState(Quaternion.fromEuler(PI.toFloat() / 2, 0f, 0f)))
         val transforms = skeleton.computeWorldTransforms(pose)
 
-        // Head pivot should be at body-rotated position, then head-rotated
-        // Body rotates head pivot to (-1.6, 1.6, 0), then head rotates around that pivot
-        // Since head pivot is at the rotation center, it stays at (-1.6, 1.6, 0)
+        // Head pivot is on Y-axis (x=0,z=0), so body yaw doesn't move it.
+        // Then head yaw 90° rotates around its own pivot (still on Y-axis), so it stays.
         val headPivot = transforms[Joint.HEAD]!!.transformPoint(Vec3(SkeletonConstants.HEAD_PIVOT_X, SkeletonConstants.HEAD_PIVOT_Y, SkeletonConstants.HEAD_PIVIT_Z))
-        assertEquals(-SkeletonConstants.HEAD_PIVOT_Y, headPivot.x, 0.001f)
+        assertEquals(0f, headPivot.x, 0.001f)
         assertEquals(SkeletonConstants.HEAD_PIVOT_Y, headPivot.y, 0.001f)
         assertEquals(0f, headPivot.z, 0.001f)
     }
