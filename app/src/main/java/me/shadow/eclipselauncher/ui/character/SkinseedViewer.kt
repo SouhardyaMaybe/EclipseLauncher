@@ -42,9 +42,9 @@ fun SkinseedViewer(
     AndroidView(
         factory = { ctx ->
             SkinseedView(ctx).apply {
-                setSkin(skin)
-                setOverlay(overlay)
-                setCape(cape)
+                updateSkin(skin)
+                updateOverlay(overlay)
+                updateCape(cape)
                 updateVariant(variant)
                 updateOverlayEnabled(overlayEnabled)
                 setAutoRotate(autoRotate)
@@ -52,9 +52,9 @@ fun SkinseedViewer(
         },
         update = { view ->
             viewRef = view
-            view.setSkin(skin)
-            view.setOverlay(overlay)
-            view.setCape(cape)
+            view.updateSkin(skin)
+            view.updateOverlay(overlay)
+            view.updateCape(cape)
             view.updateVariant(variant)
             view.updateOverlayEnabled(overlayEnabled)
             view.setAutoRotate(autoRotate)
