@@ -191,8 +191,8 @@ class ForwardKinematicsTest {
             JointAngles(yaw = PI.toFloat() * 1.5f) // 270°
         )
         val clampedOver = skeleton.clampAngles(Joint.BODY, over.get(Joint.BODY))
-        // 270° = -90° in [-180, 180] range
-        assertEquals(-PI.toFloat() / 2, clampedOver.yaw, 0.001f)
+        // 270° > 180° max → clamps to 180° (PI), not wrap to -90°
+        assertEquals(PI.toFloat(), clampedOver.yaw, 0.001f)
     }
 
     @Test

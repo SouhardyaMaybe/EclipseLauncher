@@ -323,17 +323,18 @@ data class Matrix4(
         m30 * other.m03 + m31 * other.m13 + m32 * other.m23 + m33 * other.m33,
     )
 
-    /** Transforms a Vec3 (w=1 for points, w=0 for vectors). */
+    /** Transforms a Vec3 point (w=1) using row-vector convention: v' = v * M. */
     fun transformPoint(v: Vec3): Vec3 = Vec3(
-        m00 * v.x + m01 * v.y + m02 * v.z + m03,
-        m10 * v.x + m11 * v.y + m12 * v.z + m13,
-        m20 * v.x + m21 * v.y + m22 * v.z + m23,
+        m00 * v.x + m10 * v.y + m20 * v.z + m30,
+        m01 * v.x + m11 * v.y + m21 * v.z + m31,
+        m02 * v.x + m12 * v.y + m22 * v.z + m32,
     )
 
+    /** Transforms a Vec3 vector (w=0) using row-vector convention. */
     fun transformVector(v: Vec3): Vec3 = Vec3(
-        m00 * v.x + m01 * v.y + m02 * v.z,
-        m10 * v.x + m11 * v.y + m12 * v.z,
-        m20 * v.x + m21 * v.y + m22 * v.z,
+        m00 * v.x + m10 * v.y + m20 * v.z,
+        m01 * v.x + m11 * v.y + m21 * v.z,
+        m02 * v.x + m12 * v.y + m22 * v.z,
     )
 }
 
