@@ -47,6 +47,8 @@ fun SkinseedViewer(
     overlayEnabled: Boolean = true,
     autoRotate: Boolean = true,
     isFullscreen: Boolean = false,
+    screenWidthPx: Int = 0,
+    screenHeightPx: Int = 0,
     onFullscreenToggle: (() -> Unit)? = null,
     onPartSelected: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
@@ -58,12 +60,15 @@ fun SkinseedViewer(
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
 
     Box(modifier = modifier) {
+        val viewWidthPx = if (isFullscreen && screenWidthPx > 0) screenWidthPx else 0
+        val viewHeightPx = if (isFullscreen && screenHeightPx > 0) screenHeightPx else 0
+
         AndroidView(
             factory = { ctx ->
                 SkinseedView(ctx).apply {
                     layoutParams = ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
+                        if (viewWidthPx > 0) viewWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
+                        if (viewHeightPx > 0) viewHeightPx else ViewGroup.LayoutParams.MATCH_PARENT
                     )
                     setTag(SKIN_MODEL_CANVAS_TAG)
                     updateSkin(skin)
@@ -77,8 +82,8 @@ fun SkinseedViewer(
             update = { view ->
                 viewRef = view
                 view.layoutParams = ViewGroup.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                    if (viewWidthPx > 0) viewWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
+                    if (viewHeightPx > 0) viewHeightPx else ViewGroup.LayoutParams.MATCH_PARENT
                 )
                 view.updateSkin(skin)
                 view.updateOverlay(overlay)

@@ -16,6 +16,7 @@ package me.shadow.eclipselauncher.ui.components
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.DisplayMetrics
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -267,6 +268,10 @@ private fun SkinModelStage(
         cape = loadCape(media, capeFileName)
     }
 
+    val displayMetrics = remember { context.resources.displayMetrics }
+    val screenWidthPx = if (isFullscreen) displayMetrics.widthPixels else 0
+    val screenHeightPx = if (isFullscreen) displayMetrics.heightPixels else 0
+
     Box(
         modifier = modifier.then(
             if (isFullscreen) {
@@ -286,6 +291,9 @@ private fun SkinModelStage(
             variant = skinVariant ?: "CLASSIC",
             overlayEnabled = true,
             autoRotate = true,
+            isFullscreen = isFullscreen,
+            screenWidthPx = screenWidthPx,
+            screenHeightPx = screenHeightPx,
             modifier = Modifier.fillMaxSize(),
         )
     }
