@@ -22,6 +22,7 @@ import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.hasTestTag
 import me.shadow.eclipselauncher.data.FakeModrinthClient
 import me.shadow.eclipselauncher.data.MetaResult
+import me.shadow.eclipselauncher.data.ModrinthApi
 import me.shadow.eclipselauncher.data.ModrinthHit
 import me.shadow.eclipselauncher.data.ModrinthSearchResult
 import me.shadow.eclipselauncher.data.ModrinthVersion
@@ -40,7 +41,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
-@Ignore("Compose UI test APIs incompatible with current dependencies; re-enable after updates")
+@Ignore("Compose UI test APIs incompatible with current dependencies (performScrollTo, onNodeWithText, performTextInput); re-enable after test dependency updates")
 @RunWith(RobolectricTestRunner::class)
 @Config(
     sdk = [34],
@@ -54,7 +55,7 @@ class ModpackBrowserScreenUITest {
 
     private val context = RuntimeEnvironment.getApplication()
     private val fakeClient = FakeModrinthClient()
-    private val versionRepository = VersionRepository(RuntimeEnvironment.getApplication())
+    private val versionRepository = VersionRepository(File("/dev/null"))
 
     @Test
     fun paginationPill_floatsOverList_listReachesBottom_pillNarrowerThanScreen_noFullWidthBehind() {
@@ -179,7 +180,7 @@ class ModpackBrowserScreenUITest {
             setProjectVersions(ModrinthVersionsResult(versions = versions, failed = false))
         }
 
-        renderScreen(FakeModrinthClient()) // For the main list
+        renderScreen(fakeClient) // For the main list
         // Open the version dialog for the first pack
         // We need to find a pack and click it
         composeRule.onNodeWithTag("modpack_row_0", useUnmergedTree = true).performClick()
@@ -327,7 +328,7 @@ class ModpackBrowserScreenUITest {
         composeRule.onNodeWithTag("modpack_row_0", useUnmergedTree = true).assertIsDisplayed()
     }
 
-    private fun renderScreen(client: FakeModrinthClient) {
+    private fun renderScreen(client: ModrinthApi) {
         val testVersionRepository = TestVersionRepository()
         composeRule.setContent {
             EclipseTheme(themeMode = ThemeMode.URBAN) {
@@ -342,7 +343,7 @@ class ModpackBrowserScreenUITest {
         composeRule.waitForIdle()
     }
 
-    private class TestVersionRepository : VersionRepository(null) {
+    private class TestVersionRepository : VersionRepository(File("/dev/null")) {
         override suspend fun minecraftVersions(): MetaResult<List<me.shadow.eclipselauncher.data.McVersion>> {
             return MetaResult.Success(listOf(
                 me.shadow.eclipselauncher.data.McVersion(id = "1.20.1", type = "release"),
