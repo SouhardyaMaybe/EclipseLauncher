@@ -37,6 +37,7 @@ class BoxModel(
     val y1: Float,
     val z1: Float,
     val inflate: Float,
+    val inflateBottom: Float, // -1 means use inflate value
     val uvFront: Uv,
     val uvBack: Uv,
     val uvRight: Uv,
@@ -300,8 +301,10 @@ class PlayerRig(
 
     private fun writeBox(box: BoxModel, cx: Float, cy: Float, scale: Float, start: Int) {
         val i = box.inflate
+        val iBottom = if (box.inflateBottom >= 0) box.inflateBottom else box.inflate
         val x0 = box.x0 - i
         val y0 = box.y0 - i
+        val y0b = box.y0 - iBottom // bottom face uses separate inflation
         val z0 = box.z0 - i
         val x1 = box.x1 + i
         val y1 = box.y1 + i
@@ -318,7 +321,8 @@ class PlayerRig(
         writeFace(faces[start + 2], box.uvLeft, x1, y1, z1, x1, y1, z0, x1, y0, z0, x1, y0, z1, kind, cx, cy, scale)
         writeFace(faces[start + 3], box.uvRight, x0, y1, z0, x0, y1, z1, x0, y0, z1, x0, y0, z0, kind, cx, cy, scale)
         writeFace(faces[start + 4], box.uvTop, x0, y1, z0, x1, y1, z0, x1, y1, z1, x0, y1, z1, kind, cx, cy, scale)
-        writeFace(faces[start + 5], box.uvBottom, x1, y0, z0, x0, y0, z0, x0, y0, z1, x1, y0, z1, kind, cx, cy, scale)
+        // Bottom face uses separate inflation (e.g., hat doesn't inflate downward)
+        writeFace(faces[start + 5], box.uvBottom, x1, y0b, z0, x0, y0b, z0, x0, y0b, z1, x1, y0b, z1, kind, cx, cy, scale)
     }
 
     private val scratch = FloatArray(3)
@@ -478,6 +482,9 @@ class PlayerRig(
  * +0.25px — the same totals Zalith 2's PetLib renderer adds to a part's
  * size (1.0 for the hat, 0.5 elsewhere) — so no overlay floats twice as
  * far from its base as it should.
+ *
+ * UV coordinates are inset by 0.5 texels to prevent bilinear filtering
+ * bleeding at texture boundaries.
  */
 private fun buildBoxes(
     hasCape: Boolean,
@@ -492,8 +499,9 @@ private fun buildBoxes(
         x0: Float, y0: Float, z0: Float,
         x1: Float, y1: Float, z1: Float,
         inflate: Float,
+        inflateBottom: Float = -1f, // -1 means use inflate value
         front: Uv, back: Uv, right: Uv, left: Uv, top: Uv, bottom: Uv,
-    ) = BoxModel(kind, x0, y0, z0, x1, y1, z1, inflate, front, back, right, left, top, bottom)
+    ) = BoxModel(kind, x0, y0, z0, x1, y1, z1, inflate, inflateBottom, front, back, right, left, top, bottom)
 
     val head = box(
         PartKind.HEAD, -4f, 24f, -4f, 4f, 32f, 4f, 0f,
@@ -504,6 +512,7 @@ private fun buildBoxes(
         // Inflated 0.5px on all sides except the bottom: the hat must not dip
         // below the neck plane, where it would interpenetrate the cape top.
         PartKind.HEAD, -4f, 24.5f, -4f, 4f, 32f, 4f, 0.5f,
+        inflateBottom = 0f,
         front = Uv(40, 8, 8, 8), back = Uv(56, 8, 8, 8), right = Uv(32, 8, 8, 8),
         left = Uv(48, 8, 8, 8), top = Uv(40, 0, 8, 8), bottom = Uv(48, 0, 8, 8),
     )
