@@ -15,6 +15,7 @@ import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.util.AttributeSet
 import android.view.MotionEvent
+import kotlin.math.max
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
