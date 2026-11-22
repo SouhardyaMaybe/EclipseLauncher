@@ -216,10 +216,14 @@ class Skeleton(
             val pivot = pivots[joint]!!
             val localRot = pose.get(joint).rotation
 
-            // Local transform: translate to pivot, rotate, translate back
-            val localTransform = Matrix4.translate(pivot.x, pivot.y, pivot.z)
+            // Local transform: translate to origin, rotate, translate back.
+            // For row vectors (v' = v * M), the correct order is T(-pivot) * R * T(pivot):
+            // 1) T(-pivot): move pivot to origin
+            // 2) R: rotate around origin
+            // 3) T(pivot): move back to pivot position
+            val localTransform = Matrix4.translate(-pivot.x, -pivot.y, -pivot.z)
                 .times(localRot.toMatrix())
-                .times(Matrix4.translate(-pivot.x, -pivot.y, -pivot.z))
+                .times(Matrix4.translate(pivot.x, pivot.y, pivot.z))
 
             val worldTransform = if (parent != null) {
                 transforms[parent]!!.times(localTransform)
