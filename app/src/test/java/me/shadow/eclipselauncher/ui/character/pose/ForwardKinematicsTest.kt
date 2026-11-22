@@ -72,7 +72,7 @@ class ForwardKinematicsTest {
     @Test
     fun bodyYawRotatesEntireModel() {
         // 90° yaw around Y (around body pivot at (0, 0.4, 0))
-        val pose = SkeletonPose.IDENTITY.set(Joint.BODY, JointState(Quaternion.fromEuler(PI.toFloat() / 2, 0f, 0f)))
+        val pose = SkeletonPose.IDENTITY.set(Joint.BODY, JointAngles(yaw = PI.toFloat() / 2))
         val transforms = skeleton.computeWorldTransforms(pose)
 
         // Head pivot at (0, 1.6, 0) is on the Y-axis (x=0, z=0), so body yaw does NOT move it
@@ -94,8 +94,8 @@ class ForwardKinematicsTest {
     fun headYawIsRelativeToBody() {
         // Body yaw 90°, head yaw 90° → head rotates relative to body
         val pose = SkeletonPose.IDENTITY
-            .set(Joint.BODY, JointState(Quaternion.fromEuler(PI.toFloat() / 2, 0f, 0f)))
-            .set(Joint.HEAD, JointState(Quaternion.fromEuler(PI.toFloat() / 2, 0f, 0f)))
+            .set(Joint.BODY, JointAngles(yaw = PI.toFloat() / 2))
+            .set(Joint.HEAD, JointAngles(yaw = PI.toFloat() / 2))
         val transforms = skeleton.computeWorldTransforms(pose)
 
         // Head pivot is on Y-axis (x=0,z=0), so body yaw doesn't move it.
@@ -111,7 +111,7 @@ class ForwardKinematicsTest {
         // Left arm swing -90° (forward)
         val pose = SkeletonPose.IDENTITY.set(
             Joint.ARM_LEFT,
-            JointState(Quaternion.fromEuler(0f, -PI.toFloat() / 2, 0f))
+            JointAngles(pitch = -PI.toFloat() / 2)
         )
         val transforms = skeleton.computeWorldTransforms(pose)
 
@@ -141,7 +141,7 @@ class ForwardKinematicsTest {
         // Right leg swing 90° (forward)
         val pose = SkeletonPose.IDENTITY.set(
             Joint.LEG_RIGHT,
-            JointState(Quaternion.fromEuler(0f, -PI.toFloat() / 2, 0f))
+            JointAngles(pitch = -PI.toFloat() / 2)
         )
         val transforms = skeleton.computeWorldTransforms(pose)
 
@@ -181,20 +181,18 @@ class ForwardKinematicsTest {
     fun jointLimitsClampBodyYaw() {
         val unlimited = SkeletonPose.IDENTITY.set(
             Joint.BODY,
-            JointState(Quaternion.fromEuler(PI.toFloat(), 0f, 0f)) // 180°
+            JointAngles(yaw = PI.toFloat()) // 180°
         )
-        val clamped = skeleton.clampRotation(Joint.BODY, unlimited.get(Joint.BODY).rotation)
-        val (yaw, _, _) = clamped.toEuler()
-        assertEquals(PI.toFloat(), yaw, 0.001f) // 180° is within [-180, 180]
+        val clamped = skeleton.clampAngles(Joint.BODY, unlimited.get(Joint.BODY))
+        assertEquals(PI.toFloat(), clamped.yaw, 0.001f) // 180° is within [-180, 180]
 
         val over = SkeletonPose.IDENTITY.set(
             Joint.BODY,
-            JointState(Quaternion.fromEuler(PI.toFloat() * 1.5f, 0f, 0f)) // 270°
+            JointAngles(yaw = PI.toFloat() * 1.5f) // 270°
         )
-        val clampedOver = skeleton.clampRotation(Joint.BODY, over.get(Joint.BODY).rotation)
-        val (yaw2, _, _) = clampedOver.toEuler()
+        val clampedOver = skeleton.clampAngles(Joint.BODY, over.get(Joint.BODY))
         // 270° = -90° in [-180, 180] range
-        assertEquals(-PI.toFloat() / 2, yaw2, 0.001f)
+        assertEquals(-PI.toFloat() / 2, clampedOver.yaw, 0.001f)
     }
 
     @Test
@@ -202,29 +200,26 @@ class ForwardKinematicsTest {
         // Arm swing limit: -180° to +80°
         val forward = SkeletonPose.IDENTITY.set(
             Joint.ARM_LEFT,
-            JointState(Quaternion.fromEuler(0f, -PI.toFloat(), 0f)) // -180°
+            JointAngles(pitch = -PI.toFloat()) // -180°
         )
-        val clamped = skeleton.clampRotation(Joint.ARM_LEFT, forward.get(Joint.ARM_LEFT).rotation)
-        val (_, pitch, _) = clamped.toEuler()
-        assertEquals(-PI.toFloat(), pitch, 0.001f)
+        val clamped = skeleton.clampAngles(Joint.ARM_LEFT, forward.get(Joint.ARM_LEFT))
+        assertEquals(-PI.toFloat(), clamped.pitch, 0.001f)
 
         // Beyond limit: -200° → clamped to -180°
         val over = SkeletonPose.IDENTITY.set(
             Joint.ARM_LEFT,
-            JointState(Quaternion.fromEuler(0f, -PI.toFloat() * 1.11f, 0f)) // -200°
+            JointAngles(pitch = -PI.toFloat() * 1.11f) // -200°
         )
-        val clampedOver = skeleton.clampRotation(Joint.ARM_LEFT, over.get(Joint.ARM_LEFT).rotation)
-        val (_, pitch2, _) = clampedOver.toEuler()
-        assertEquals(-PI.toFloat(), pitch2, 0.001f)
+        val clampedOver = skeleton.clampAngles(Joint.ARM_LEFT, over.get(Joint.ARM_LEFT))
+        assertEquals(-PI.toFloat(), clampedOver.pitch, 0.001f)
 
         // Backward beyond +80°
         val back = SkeletonPose.IDENTITY.set(
             Joint.ARM_LEFT,
-            JointState(Quaternion.fromEuler(0f, 100f * SkeletonConstants.DEG2RAD, 0f))
+            JointAngles(pitch = 100f * SkeletonConstants.DEG2RAD)
         )
-        val clampedBack = skeleton.clampRotation(Joint.ARM_LEFT, back.get(Joint.ARM_LEFT).rotation)
-        val (_, pitch3, _) = clampedBack.toEuler()
-        assertEquals(80f * SkeletonConstants.DEG2RAD, pitch3, 0.001f)
+        val clampedBack = skeleton.clampAngles(Joint.ARM_LEFT, back.get(Joint.ARM_LEFT))
+        assertEquals(80f * SkeletonConstants.DEG2RAD, clampedBack.pitch, 0.001f)
     }
 
     @Test
@@ -232,42 +227,36 @@ class ForwardKinematicsTest {
         var pose = SkeletonPose.IDENTITY
 
         // Apply 45° swing
-        val delta45 = Quaternion.fromEuler(0f, 45f * SkeletonConstants.DEG2RAD, 0f)
-        pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, delta45)
-        val (_, pitch, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
-        assertEquals(45f * SkeletonConstants.DEG2RAD, pitch, 0.001f)
+        pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, 0f, 45f * SkeletonConstants.DEG2RAD, 0f)
+        assertEquals(45f * SkeletonConstants.DEG2RAD, pose.get(Joint.ARM_LEFT).pitch, 0.001f)
 
         // Apply another 45° → 90° (clamped to 80°)
-        pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, delta45)
-        val (_, pitch2, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
-        assertEquals(80f * SkeletonConstants.DEG2RAD, pitch2, 0.001f)
+        pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, 0f, 45f * SkeletonConstants.DEG2RAD, 0f)
+        assertEquals(80f * SkeletonConstants.DEG2RAD, pose.get(Joint.ARM_LEFT).pitch, 0.001f)
 
         // Apply -90° → should go to -10° (80 - 90 = -10)
-        val deltaNeg90 = Quaternion.fromEuler(0f, -90f * SkeletonConstants.DEG2RAD, 0f)
-        pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, deltaNeg90)
-        val (_, pitch3, _) = pose.get(Joint.ARM_LEFT).rotation.toEuler()
-        assertEquals(-10f * SkeletonConstants.DEG2RAD, pitch3, 0.001f)
+        pose = skeleton.applyLocalDelta(pose, Joint.ARM_LEFT, 0f, -90f * SkeletonConstants.DEG2RAD, 0f)
+        assertEquals(-10f * SkeletonConstants.DEG2RAD, pose.get(Joint.ARM_LEFT).pitch, 0.001f)
     }
 
     @Test
-    fun slerpPoseInterpolatesCorrectly() {
+    fun lerpPoseInterpolatesCorrectly() {
         val start = SkeletonPose.IDENTITY
         val end = SkeletonPose.IDENTITY.set(
             Joint.ARM_RIGHT,
-            JointState(Quaternion.fromEuler(0f, -PI.toFloat() / 2, 0f))
+            JointAngles(pitch = -PI.toFloat() / 2)
         )
 
         // t=0 → start
-        val at0 = start.slerp(end, 0f)
-        assertEquals(Quaternion.IDENTITY, at0.get(Joint.ARM_RIGHT).rotation)
+        val at0 = start.lerp(end, 0f)
+        assertEquals(JointAngles(), at0.get(Joint.ARM_RIGHT))
 
         // t=1 → end
-        val at1 = start.slerp(end, 1f)
-        assertEquals(end.get(Joint.ARM_RIGHT).rotation, at1.get(Joint.ARM_RIGHT).rotation)
+        val at1 = start.lerp(end, 1f)
+        assertEquals(end.get(Joint.ARM_RIGHT), at1.get(Joint.ARM_RIGHT))
 
-        // t=0.5 → halfway (slerp on quaternion)
-        val atHalf = start.slerp(end, 0.5f)
-        val (_, pitch, _) = atHalf.get(Joint.ARM_RIGHT).rotation.toEuler()
-        assertEquals(-PI.toFloat() / 4, pitch, 0.01f) // -45°
+        // t=0.5 → halfway (linear on angles)
+        val atHalf = start.lerp(end, 0.5f)
+        assertEquals(-PI.toFloat() / 4, atHalf.get(Joint.ARM_RIGHT).pitch, 0.01f) // -45°
     }
 }

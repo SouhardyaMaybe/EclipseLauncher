@@ -3,8 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  *
  * Forward kinematics skeleton for the Minecraft player model.
- * Each joint has a pivot, local rotation quaternion, and rotation limits.
+ * Each joint has a pivot, local rotation angles (yaw, pitch, roll), and rotation limits.
  * Pure Kotlin — no Android deps — fully JVM testable.
+ * Angles (yaw, pitch, roll) are the source of truth; quaternions are derived on demand.
+ * This avoids quaternion→Euler→quaternion round-trip issues at singularities (hypothesis c).
  */
 package me.shadow.eclipselauncher.ui.character.pose
 
@@ -24,24 +26,33 @@ enum class Joint {
     LEG_RIGHT,
 }
 
-/** Per-joint state: local rotation quaternion. */
-data class JointState(
-    val rotation: Quaternion = Quaternion.IDENTITY,
+/** Per-joint state: local rotation angles in radians (yaw, pitch, roll).
+ *  Order: yaw (Y), pitch (X), roll (Z) — YXZ Euler order.
+ *  These are the source of truth; quaternions are derived on demand. */
+data class JointAngles(
+    val yaw: Float = 0f,    // rotation around Y (vertical)
+    val pitch: Float = 0f,  // rotation around X (horizontal forward/back)
+    val roll: Float = 0f,   // rotation around Z (horizontal side)
 ) {
-    fun withRotation(q: Quaternion) = copy(rotation = q)
+    fun withYaw(y: Float) = copy(yaw = y)
+    fun withPitch(p: Float) = copy(pitch = p)
+    fun withRoll(r: Float) = copy(roll = r)
+
+    /** Returns quaternion derived from these angles (YXZ order). */
+    fun toQuaternion(): Quaternion = Quaternion.fromEuler(yaw, pitch, roll)
 }
 
-/** Complete skeleton pose: all joint rotations. */
+/** Complete skeleton pose: all joint angles (source of truth). */
 data class SkeletonPose(
-    val body: JointState = JointState(),
-    val head: JointState = JointState(),
-    val armLeft: JointState = JointState(),
-    val armRight: JointState = JointState(),
-    val legLeft: JointState = JointState(),
-    val legRight: JointState = JointState(),
+    val body: JointAngles = JointAngles(),
+    val head: JointAngles = JointAngles(),
+    val armLeft: JointAngles = JointAngles(),
+    val armRight: JointAngles = JointAngles(),
+    val legLeft: JointAngles = JointAngles(),
+    val legRight: JointAngles = JointAngles(),
 ) {
-    /** Gets joint state by enum. */
-    fun get(joint: Joint): JointState = when (joint) {
+    /** Gets joint angles by enum. */
+    fun get(joint: Joint): JointAngles = when (joint) {
         Joint.BODY -> body
         Joint.HEAD -> head
         Joint.ARM_LEFT -> armLeft
@@ -50,72 +61,82 @@ data class SkeletonPose(
         Joint.LEG_RIGHT -> legRight
     }
 
-    /** Sets joint state, returns new pose. */
-    fun set(joint: Joint, state: JointState): SkeletonPose = when (joint) {
-        Joint.BODY -> copy(body = state)
-        Joint.HEAD -> copy(head = state)
-        Joint.ARM_LEFT -> copy(armLeft = state)
-        Joint.ARM_RIGHT -> copy(armRight = state)
-        Joint.LEG_LEFT -> copy(legLeft = state)
-        Joint.LEG_RIGHT -> copy(legRight = state)
+    /** Sets joint angles, returns new pose. */
+    fun set(joint: Joint, angles: JointAngles): SkeletonPose = when (joint) {
+        Joint.BODY -> copy(body = angles)
+        Joint.HEAD -> copy(head = angles)
+        Joint.ARM_LEFT -> copy(armLeft = angles)
+        Joint.ARM_RIGHT -> copy(armRight = angles)
+        Joint.LEG_LEFT -> copy(legLeft = angles)
+        Joint.LEG_RIGHT -> copy(legRight = angles)
     }
 
-    /** Slerps toward target pose by factor t ∈ [0,1]. */
-    fun slerp(target: SkeletonPose, t: Float): SkeletonPose = SkeletonPose(
-        body = body.withRotation(body.rotation.slerp(target.body.rotation, t)),
-        head = head.withRotation(head.rotation.slerp(target.head.rotation, t)),
-        armLeft = armLeft.withRotation(armLeft.rotation.slerp(target.armLeft.rotation, t)),
-        armRight = armRight.withRotation(armRight.rotation.slerp(target.armRight.rotation, t)),
-        legLeft = legLeft.withRotation(legLeft.rotation.slerp(target.legLeft.rotation, t)),
-        legRight = legRight.withRotation(legRight.rotation.slerp(target.legRight.rotation, t)),
+    /** Returns quaternion for a joint (derived from angles). */
+    fun getQuaternion(joint: Joint): Quaternion = get(joint).toQuaternion()
+
+    /** Slerps toward target pose by factor t ∈ [0,1] (on angles, not quaternions). */
+    fun lerp(target: SkeletonPose, t: Float): SkeletonPose = SkeletonPose(
+        body = lerpAngles(body, target.body, t),
+        head = lerpAngles(head, target.head, t),
+        armLeft = lerpAngles(armLeft, target.armLeft, t),
+        armRight = lerpAngles(armRight, target.armRight, t),
+        legLeft = lerpAngles(legLeft, target.legLeft, t),
+        legRight = lerpAngles(legRight, target.legRight, t),
     )
+
+    private fun lerpAngles(a: JointAngles, b: JointAngles, t: Float): JointAngles =
+        JointAngles(
+            yaw = a.yaw + (b.yaw - a.yaw) * t,
+            pitch = a.pitch + (b.pitch - a.pitch) * t,
+            roll = a.roll + (b.roll - a.roll) * t,
+        )
 
     companion object {
         /** Standing identity pose. */
         val IDENTITY = SkeletonPose()
 
-        /** Preset poses (quaternions per joint). */
+        /** Preset poses (angles per joint). */
         val PRESETS = mapOf(
             UIConstants.POSE_STANDING to IDENTITY,
             UIConstants.POSE_WALKING to SkeletonPose(
-                body = JointState(Quaternion.fromEuler(0f, 0f, 0f)),
-                head = JointState(Quaternion.fromEuler(0.2f, 0f, 0f)), // slight yaw
-                armLeft = JointState(Quaternion.fromEuler(0f, -0.8f, 0f)), // forward
-                armRight = JointState(Quaternion.fromEuler(0f, 0.8f, 0f)), // back
-                legLeft = JointState(Quaternion.fromEuler(0f, 0.8f, 0f)), // back
-                legRight = JointState(Quaternion.fromEuler(0f, -0.8f, 0f)), // forward
+                body = JointAngles(0f, 0f, 0f),
+                head = JointAngles(0.2f, 0f, 0f),
+                armLeft = JointAngles(0f, -0.8f, 0f),
+                armRight = JointAngles(0f, 0.8f, 0f),
+                legLeft = JointAngles(0f, 0.8f, 0f),
+                legRight = JointAngles(0f, -0.8f, 0f),
             ),
             UIConstants.POSE_WAVING to SkeletonPose(
-                body = JointState(Quaternion.IDENTITY),
-                head = JointState(Quaternion.fromEuler(0f, -0.2f, 0f)),
-                armLeft = JointState(Quaternion.fromEuler(0f, -0.3f, 0f)),
-                armRight = JointState(Quaternion.fromEuler(0f, -1.5f, 0.5f)), // raised, bent
-                legLeft = JointState(Quaternion.fromEuler(0f, 0.1f, 0f)),
-                legRight = JointState(Quaternion.fromEuler(0f, -0.1f, 0f)),
+                body = JointAngles(0f, 0f, 0f),
+                head = JointAngles(0f, -0.2f, 0f),
+                armLeft = JointAngles(0f, -0.3f, 0f),
+                armRight = JointAngles(0f, -1.5f, 0.5f),
+                legLeft = JointAngles(0f, 0.1f, 0f),
+                legRight = JointAngles(0f, -0.1f, 0f),
             ),
             UIConstants.POSE_SITTING to SkeletonPose(
-                body = JointState(Quaternion.fromEuler(0f, 0f, 0f)),
-                head = JointState(Quaternion.fromEuler(0f, 0.2f, 0f)),
-                armLeft = JointState(Quaternion.fromEuler(0f, -0.5f, 0f)),
-                armRight = JointState(Quaternion.fromEuler(0f, -0.5f, 0f)),
-                legLeft = JointState(Quaternion.fromEuler(0f, PI.toFloat() / 2, 0f)), // 90°
-                legRight = JointState(Quaternion.fromEuler(0f, PI.toFloat() / 2, 0f)),
+                body = JointAngles(0f, 0f, 0f),
+                head = JointAngles(0f, 0.2f, 0f),
+                armLeft = JointAngles(0f, -0.5f, 0f),
+                armRight = JointAngles(0f, -0.5f, 0f),
+                legLeft = JointAngles(0f, PI.toFloat() / 2, 0f),
+                legRight = JointAngles(0f, PI.toFloat() / 2, 0f),
             ),
             UIConstants.POSE_ARMS_UP to SkeletonPose(
-                body = JointState(Quaternion.IDENTITY),
-                head = JointState(Quaternion.IDENTITY),
-                armLeft = JointState(Quaternion.fromEuler(0f, -PI.toFloat() / 2, 0f)),
-                armRight = JointState(Quaternion.fromEuler(0f, -PI.toFloat() / 2, 0f)),
-                legLeft = JointState(Quaternion.IDENTITY),
-                legRight = JointState(Quaternion.IDENTITY),
+                body = JointAngles(0f, 0f, 0f),
+                head = JointAngles(0f, 0f, 0f),
+                armLeft = JointAngles(0f, -PI.toFloat() / 2, 0f),
+                armRight = JointAngles(0f, -PI.toFloat() / 2, 0f),
+                legLeft = JointAngles(0f, 0f, 0f),
+                legRight = JointAngles(0f, 0f, 0f),
             ),
             UIConstants.POSE_T_POSE to SkeletonPose(
-                body = JointState(Quaternion.IDENTITY),
-                head = JointState(Quaternion.IDENTITY),
-                armLeft = JointState(Quaternion.fromEuler(0f, 0f, -PI.toFloat() / 2)),
-                armRight = JointState(Quaternion.fromEuler(0f, 0f, PI.toFloat() / 2)),
-                legLeft = JointState(Quaternion.IDENTITY),
-                legRight = JointState(Quaternion.IDENTITY),
+                body = JointAngles(0f, 0f, 0f),
+                head = JointAngles(0f, 0f, 0f),
+                armLeft = JointAngles(0f, 0f, -PI.toFloat() / 2),
+                armRight = JointAngles(0f, 0f, PI.toFloat() / 2),
+                legLeft = JointAngles(0f, 0f, 0f),
+                legRight = JointAngles(0f, 0f, 0f),
             ),
         )
     }
@@ -214,13 +235,10 @@ class Skeleton(
         for (joint in order) {
             val parent = parents[joint]
             val pivot = pivots[joint]!!
-            val localRot = pose.get(joint).rotation
+            val localRot = pose.getQuaternion(joint)
 
             // Local transform: translate to origin, rotate, translate back.
             // For row vectors (v' = v * M), the correct order is T(-pivot) * R * T(pivot):
-            // 1) T(-pivot): move pivot to origin
-            // 2) R: rotate around origin
-            // 3) T(pivot): move back to pivot position
             val localTransform = Matrix4.translate(-pivot.x, -pivot.y, -pivot.z)
                 .times(localRot.toMatrix())
                 .times(Matrix4.translate(pivot.x, pivot.y, pivot.z))
@@ -255,31 +273,34 @@ class Skeleton(
                 extent.x * abs(transform.m20) + extent.y * abs(transform.m21) + extent.z * abs(transform.m22),
             )
             // Use the joint's local rotation as OBB orientation
-            val localRot = pose.get(joint).rotation
+            val localRot = pose.getQuaternion(joint)
             obbs[joint] = OBB(worldCenter, worldExtent, localRot)
         }
 
         return obbs
     }
 
-    /** Clamps a joint's rotation to its limits. */
-    fun clampRotation(joint: Joint, rotation: Quaternion): Quaternion {
+    /** Clamps a joint's angles to its limits (angles are the source of truth). */
+    fun clampAngles(joint: Joint, angles: JointAngles): JointAngles {
         val (yawLimits, pitchLimits, rollLimits) = limits[joint]!!
-        val (yaw, pitch, roll) = rotation.toEuler()
 
-        val clampedYaw = yaw.coerceIn(yawLimits.first.toFloat(), yawLimits.second.toFloat())
-        val clampedPitch = pitch.coerceIn(pitchLimits.first.toFloat(), pitchLimits.second.toFloat())
-        val clampedRoll = roll.coerceIn(rollLimits.first.toFloat(), rollLimits.second.toFloat())
+        val clampedYaw = angles.yaw.coerceIn(yawLimits.first, yawLimits.second)
+        val clampedPitch = angles.pitch.coerceIn(pitchLimits.first, pitchLimits.second)
+        val clampedRoll = angles.roll.coerceIn(rollLimits.first, rollLimits.second)
 
-        return Quaternion.fromEuler(clampedYaw, clampedPitch, clampedRoll)
+        return JointAngles(clampedYaw, clampedPitch, clampedRoll)
     }
 
-    /** Applies a delta rotation to a joint in its local space, then clamps. */
-    fun applyLocalDelta(pose: SkeletonPose, joint: Joint, delta: Quaternion): SkeletonPose {
-        val current = pose.get(joint).rotation
-        val combined = current.times(delta) // local space: delta applied after current
-        val clamped = clampRotation(joint, combined)
-        return pose.set(joint, JointState(clamped))
+    /** Applies a delta rotation to a joint in its local space (on angles), then clamps. */
+    fun applyLocalDelta(pose: SkeletonPose, joint: Joint, deltaYaw: Float, deltaPitch: Float, deltaRoll: Float): SkeletonPose {
+        val current = pose.get(joint)
+        val newAngles = JointAngles(
+            yaw = current.yaw + deltaYaw,
+            pitch = current.pitch + deltaPitch,
+            roll = current.roll + deltaRoll,
+        )
+        val clamped = clampAngles(joint, newAngles)
+        return pose.set(joint, clamped)
     }
 
     /** Converts a world-space rotation axis to joint-local space. */
@@ -292,7 +313,7 @@ class Skeleton(
             worldAxis
         }
         // Transform by inverse of joint's current rotation to get local axis
-        val invJointRot = pose.get(joint).rotation.inverted()
+        val invJointRot = pose.getQuaternion(joint).inverted()
         return invJointRot.rotate(worldRot)
     }
 }
