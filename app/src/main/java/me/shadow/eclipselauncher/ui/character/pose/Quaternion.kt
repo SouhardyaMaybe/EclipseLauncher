@@ -42,7 +42,10 @@ data class Quaternion(
             ).normalized()
         }
 
-        /** Creates a quaternion from Euler angles (yaw, pitch, roll in radians, YXZ order). */
+        /** Creates a quaternion from Euler angles (yaw, pitch, roll in radians, YXZ order).
+     * Yaw = rotation around Y (vertical), Pitch = rotation around X (horizontal forward/back),
+     * Roll = rotation around Z (horizontal side). Order of application: Yaw → Pitch → Roll.
+     */
         fun fromEuler(yaw: Float, pitch: Float, roll: Float): Quaternion {
             val cy = cos(yaw * 0.5f)
             val sy = sin(yaw * 0.5f)
@@ -51,11 +54,16 @@ data class Quaternion(
             val cr = cos(roll * 0.5f)
             val sr = sin(roll * 0.5f)
 
+            // YXZ order: q = q_roll * q_pitch * q_yaw
+            // q_yaw (around Y) = (cy, 0, sy, 0)
+            // q_pitch (around X) = (cp, sp, 0, 0)
+            // q_roll (around Z) = (cr, 0, 0, sr)
+            // q = q_roll * q_pitch * q_yaw
             return Quaternion(
-                w = cr * cp * cy + sr * sp * sy,
-                x = sr * cp * cy - cr * sp * sy,
-                y = cr * sp * cy + sr * cp * sy,
-                z = cr * cp * sy - sr * sp * cy,
+                w = cr * cp * cy - sr * sp * sy,
+                x = cr * cy * sp - sr * cp * sy,
+                y = cr * cp * sy - sr * cy * sp,
+                z = cr * sp * sy + sr * cp * cy,
             ).normalized()
         }
 
