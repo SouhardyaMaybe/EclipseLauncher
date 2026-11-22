@@ -49,6 +49,30 @@ data class ModrinthSearchResult(
     val failed: Boolean = false,
 )
 
+/** Internal response from Modrinth search API. */
+@Serializable
+private data class ModrinthSearchResponse(
+    val hits: List<ModrinthHit> = emptyList(),
+    val total_hits: Int = 0,
+    val offset: Int = 0,
+    val limit: Int = 0,
+) {
+    fun toResult(limit: Int, offset: Int): ModrinthSearchResult {
+        val totalPages = (total_hits + limit - 1) / limit
+        val pageNumber = offset / limit + 1
+        val isLastPage = (offset + limit) >= total_hits
+        return ModrinthSearchResult(
+            hits = hits,
+            totalHits = total_hits,
+            offset = offset,
+            limit = limit,
+            totalPages = totalPages,
+            pageNumber = pageNumber,
+            isLastPage = isLastPage,
+        )
+    }
+}
+
 /** One downloadable file attached to a Modrinth project version. */
 @Serializable
 data class ModrinthVersionFile(
