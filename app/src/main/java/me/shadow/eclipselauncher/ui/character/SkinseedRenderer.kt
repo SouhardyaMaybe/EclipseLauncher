@@ -48,14 +48,32 @@ class SkinseedView @JvmOverloads constructor(
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         // Ensure we have a minimum size even when parent doesn't constrain us (e.g., in tests)
+        // Also handle EXACTLY mode properly - if parent gives us exact size, use it.
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         val width = MeasureSpec.getSize(widthMeasureSpec)
         val height = MeasureSpec.getSize(heightMeasureSpec)
-        if (width == 0 || height == 0) {
-            setMeasuredDimension(
-                max(width, 100),
-                max(height, 100)
-            )
+
+        var measuredWidth = width
+        var measuredHeight = height
+
+        if (widthMode == MeasureSpec.EXACTLY && width > 0) {
+            measuredWidth = width
+        } else if (width == 0) {
+            measuredWidth = 100
+        } else {
+            measuredWidth = max(width, 100)
         }
+
+        if (heightMode == MeasureSpec.EXACTLY && height > 0) {
+            measuredHeight = height
+        } else if (height == 0) {
+            measuredHeight = 100
+        } else {
+            measuredHeight = max(height, 100)
+        }
+
+        setMeasuredDimension(measuredWidth, measuredHeight)
     }
 
     fun updateSkin(bitmap: Bitmap?) {

@@ -55,6 +55,12 @@ fun SkinseedViewer(
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
 
     Box(modifier = modifier) {
+        // Use a Box with explicit size to ensure the GLSurfaceView gets proper constraints
+        // in test environments where Compose layout constraints might not propagate to AndroidView.
+        val density = LocalDensity.current
+        val minWidthPx = with(density) { 100.dp.toPx() }
+        val minHeightPx = with(density) { 100.dp.toPx() }
+
         AndroidView(
             factory = { ctx ->
                 SkinseedView(ctx).apply {
@@ -79,7 +85,7 @@ fun SkinseedViewer(
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
-                .sizeIn(minWidth = 100.dp, minHeight = 100.dp),
+                .requiredSize(minWidthPx, minHeightPx),
         )
 
         // Full-screen toggle at top-right
