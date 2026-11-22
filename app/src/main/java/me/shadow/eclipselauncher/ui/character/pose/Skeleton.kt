@@ -237,11 +237,28 @@ class Skeleton(
             val pivot = pivots[joint]!!
             val localRot = pose.getQuaternion(joint)
 
-            // Local transform: translate to origin, rotate, translate back.
-            // For row vectors (v' = v * M), the correct order is T(-pivot) * R * T(pivot):
-            val localTransform = Matrix4.translate(-pivot.x, -pivot.y, -pivot.z)
-                .times(localRot.toMatrix())
-                .times(Matrix4.translate(pivot.x, pivot.y, pivot.z))
+            val localTransform: Matrix4
+            if (parent == null) {
+                // Root (BODY): rotate around its absolute pivot.
+                // Local transform: T(-pivot) * R * T(pivot) = [R, 0; pivot - pivot*R, 1]
+                localTransform = Matrix4.translate(-pivot.x, -pivot.y, -pivot.z)
+                    .times(localRot.toMatrix())
+                    .times(Matrix4.translate(pivot.x, pivot.y, pivot.z))
+            } else {
+                // Child: rotate around its pivot in parent's space.
+                // Offset from parent pivot to this joint's pivot in parent's space.
+                val parentPivot = pivots[parent]!!
+                val pivot = pivots[joint]!!
+                val offset = Vec3(
+                    pivot.x - parentPivot.x,
+                    pivot.y - parentPivot.y,
+                    pivot.z - parentPivot.z,
+                )
+                // Local transform: translate by offset, then rotate.
+                // For row vectors: v' = v * R + offset = [R, 0; offset, 1]
+                localTransform = Matrix4.translate(offset.x, offset.y, offset.z)
+                    .times(localRot.toMatrix())
+            }
 
             val worldTransform = if (parent != null) {
                 // For row vectors v' = v * M, local applies BEFORE parent:
