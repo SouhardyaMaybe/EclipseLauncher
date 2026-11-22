@@ -14,6 +14,7 @@
  */
 package me.shadow.eclipselauncher.ui.components
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -63,8 +64,10 @@ import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.ImportKind
 import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.data.newId
+import me.shadow.eclipselauncher.ui.character.SkinseedViewer
+import me.shadow.eclipselauncher.ui.character.loadSkin
+import me.shadow.eclipselauncher.ui.character.loadCape
 import androidx.compose.material3.BasicAlertDialog
-import me.shadow.eclipselauncher.ui.character.SkinModelView
 import me.shadow.eclipselauncher.ui.theme.EclipseRadius
 
 /**
@@ -251,6 +254,17 @@ private fun SkinModelStage(
     onFullscreenToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    var skin by remember(skinFileName) { mutableStateOf<Bitmap?>(null) }
+    var cape by remember(capeFileName) { mutableStateOf<Bitmap?>(null) }
+
+    LaunchedEffect(skinFileName) {
+        skin = loadSkin(context, media, skinFileName)
+    }
+    LaunchedEffect(capeFileName) {
+        cape = loadCape(media, capeFileName)
+    }
+
     Box(
         modifier = modifier.then(
             if (isFullscreen) {
@@ -263,13 +277,13 @@ private fun SkinModelStage(
         ),
         contentAlignment = Alignment.Center,
     ) {
-        SkinModelView(
-            skinFileName = skinFileName,
-            capeFileName = capeFileName,
-            skinVariant = skinVariant,
-            media = media,
-            isFullscreen = isFullscreen,
-            onFullscreenToggle = onFullscreenToggle,
+        SkinseedViewer(
+            skinBitmap = skin,
+            overlayBitmap = null, // Will be loaded from skin's overlay region
+            capeBitmap = cape,
+            variant = skinVariant ?: "CLASSIC",
+            overlayEnabled = true,
+            autoRotate = true,
             modifier = Modifier.fillMaxSize(),
         )
     }
