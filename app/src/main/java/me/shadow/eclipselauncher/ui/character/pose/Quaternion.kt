@@ -196,11 +196,11 @@ data class Quaternion(
         return Triple(yaw, pitch, roll)
     }
 
-    /** Converts to a 4x4 rotation matrix (column-major, OpenGL-compatible). */
+    /** Converts to a 4x4 rotation matrix (row-major, for row-vector transformPoint). */
     fun toMatrix(): Matrix4 = Matrix4(
-        1f - 2f * (y * y + z * z), 2f * (x * y - w * z), 2f * (x * z + w * y), 0f,
-        2f * (x * y + w * z), 1f - 2f * (x * x + z * z), 2f * (y * z - w * x), 0f,
-        2f * (x * z - w * y), 2f * (y * z + w * x), 1f - 2f * (x * x + y * y), 0f,
+        1f - 2f * (y * y + z * z), 2f * (x * y + w * z), 2f * (x * z - w * y), 0f,
+        2f * (x * y - w * z), 1f - 2f * (x * x + z * z), 2f * (y * z + w * x), 0f,
+        2f * (x * z + w * y), 2f * (y * z - w * x), 1f - 2f * (x * x + y * y), 0f,
         0f, 0f, 0f, 1f
     )
 }
