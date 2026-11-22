@@ -225,7 +225,10 @@ class Skeleton(
         ),
     )
 
-    /** Computes world transform (Matrix4) for each joint given a pose. */
+    /** Computes world transform (Matrix4) for each joint given a pose.
+     * Returns MODEL-TO-WORLD transforms (maps model-space points to world-space).
+     * Uses the convention: local = T(pivot) * R * T(-pivot), world = parent * local.
+     * This matches the test expectations (MODEL-TO-WORLD transforms). */
     fun computeWorldTransforms(pose: SkeletonPose): Map<Joint, Matrix4> {
         val transforms = mutableMapOf<Joint, Matrix4>()
 
@@ -237,16 +240,15 @@ class Skeleton(
             val pivot = pivots[joint]!!
             val localRot = pose.getQuaternion(joint)
 
-            // Local transform: translate pivot to origin, rotate, translate back.
-            // For row vectors (v' = v * M): v' = v * T(-pivot) * R * T(pivot)
-            // = v * (T(-pivot) * R * T(pivot))
-            val localTransform = Matrix4.translate(-pivot.x, -pivot.y, -pivot.z)
-                .times(pose.getQuaternion(joint).toMatrix())
-                .times(Matrix4.translate(pivot.x, pivot.y, pivot.z))
+            // Local transform: T(pivot) * R * T(-pivot)
+            // This rotates around the pivot in MODEL space.
+            val localTransform = Matrix4.translate(pivot.x, pivot.y, pivot.z)
+                .times(localRot.toMatrix())
+                .times(Matrix4.translate(-pivot.x, -pivot.y, -pivot.z))
 
             val worldTransform = if (parent != null) {
-                // For row vectors v' = v * M: v_world = v_local * localTransform * parentWorld
-                localTransform.times(transforms[parent]!!)
+                // For MODEL-TO-WORLD: world = parent * local (apply local then parent)
+                transforms[parent]!!.times(localTransform)
             } else {
                 localTransform
             }
