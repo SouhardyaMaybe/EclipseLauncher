@@ -244,7 +244,9 @@ class Skeleton(
                 .times(Matrix4.translate(pivot.x, pivot.y, pivot.z))
 
             val worldTransform = if (parent != null) {
-                transforms[parent]!!.times(localTransform)
+                // For row vectors v' = v * M, local applies BEFORE parent:
+                // v_world = v_local * localTransform * parentWorld
+                localTransform.times(transforms[parent]!!)
             } else {
                 localTransform
             }
