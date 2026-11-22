@@ -26,6 +26,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.IntSize
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,8 +49,6 @@ fun SkinseedViewer(
     overlayEnabled: Boolean = true,
     autoRotate: Boolean = true,
     isFullscreen: Boolean = false,
-    screenWidthPx: Int = 0,
-    screenHeightPx: Int = 0,
     onFullscreenToggle: (() -> Unit)? = null,
     onPartSelected: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
@@ -58,18 +58,17 @@ fun SkinseedViewer(
     var overlay by remember(overlayBitmap) { mutableStateOf(overlayBitmap) }
     var cape by remember(capeBitmap) { mutableStateOf(capeBitmap) }
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
+    val viewSize by remember { mutableStateOf<IntSize?>(null) }
 
-    Box(modifier = modifier) {
-        val viewWidthPx = if (isFullscreen && screenWidthPx > 0) screenWidthPx else 0
-        val viewHeightPx = if (isFullscreen && screenHeightPx > 0) screenHeightPx else 0
-
+    Box(modifier = modifier
+        .fillMaxSize()
+        .onGloballyPositioned { coords ->
+            viewSize = coords.size
+        }
+    ) {
         AndroidView(
             factory = { ctx ->
                 SkinseedView(ctx).apply {
-                    layoutParams = ViewGroup.LayoutParams(
-                        if (viewWidthPx > 0) viewWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
-                        if (viewHeightPx > 0) viewHeightPx else ViewGroup.LayoutParams.MATCH_PARENT
-                    )
                     setTag(SKIN_MODEL_CANVAS_TAG)
                     updateSkin(skin)
                     updateOverlay(overlay)
@@ -81,10 +80,10 @@ fun SkinseedViewer(
             },
             update = { view ->
                 viewRef = view
-                view.layoutParams = ViewGroup.LayoutParams(
-                    if (viewWidthPx > 0) viewWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
-                    if (viewHeightPx > 0) viewHeightPx else ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                // Update view size from Compose layout
+                viewSize?.let { size ->
+                    view.layoutParams = ViewGroup.LayoutParams(size.width, size.height)
+                }
                 view.updateSkin(skin)
                 view.updateOverlay(overlay)
                 view.updateCape(cape)
