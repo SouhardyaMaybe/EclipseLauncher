@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [main, develop]
   pull_request:
     branches: [main, develop]
 
@@ -57,7 +56,12 @@ jobs:
           ln -sfn "$SDK_ROOT/platforms/android-37.2" "$SDK_ROOT/platforms/android-37" || true
 
       - name: Run Unit Tests
-        run: ./gradlew testDebugUnitTest
+        run: |
+          if [ -d pose-math ]; then
+            ./gradlew testDebugUnitTest :pose-math:test
+          else
+            ./gradlew testDebugUnitTest
+          fi
 
       - name: Upload Test Reports
         if: always()

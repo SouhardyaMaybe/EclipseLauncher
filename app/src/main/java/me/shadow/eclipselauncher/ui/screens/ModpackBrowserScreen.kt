@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -94,11 +95,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.MetaResult
-import me.shadow.eclipselauncher.data.ModrinthClient
+import me.shadow.eclipselauncher.data.ModrinthApi
 import me.shadow.eclipselauncher.data.ModrinthHit
 import me.shadow.eclipselauncher.data.ModrinthVersion
 import me.shadow.eclipselauncher.data.ModrinthVersionFile
-import me.shadow.eclipselauncher.data.VersionRepository
+import me.shadow.eclipselauncher.data.VersionCatalog
 import me.shadow.eclipselauncher.ui.components.FilterOption
 import me.shadow.eclipselauncher.ui.components.LoaderIcon
 import me.shadow.eclipselauncher.ui.components.ModpackFilter
@@ -275,7 +276,7 @@ private fun ModpackVersionDialog(
     projectTitle: String,
     projectAuthor: String,
     projectIconUrl: String,
-    client: ModrinthClient,
+    client: ModrinthApi,
     onDismiss: () -> Unit,
     onInstall: (ModrinthVersion, ModrinthVersionFile) -> Unit,
 ) {
@@ -454,7 +455,8 @@ private fun VersionGroupCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onToggle)
-                    .padding(all = 12.dp),
+                    .padding(all = 12.dp)
+                    .testTag("version_group_header_$mcVersion"),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -607,8 +609,8 @@ private fun VersionRow(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ModpackBrowserScreen(
-    client: ModrinthClient,
-    versionRepository: VersionRepository,
+    client: ModrinthApi,
+    versionRepository: VersionCatalog,
     onBack: () -> Unit,
     onPickModpack: (Uri) -> Unit,
 ) {
@@ -691,8 +693,10 @@ fun ModpackBrowserScreen(
         runSearch(query, page)
     }
 
-    // Scroll to top when page changes (filter/search changes reset page to 1)
-    LaunchedEffect(page) {
+    // Scroll to top whenever the result set is replaced. Page changes already
+    // reset page to 1, but a filter or search change while already on page 1
+    // would otherwise leave the list scrolled where it was.
+    LaunchedEffect(page, query, selectedLoader, selectedGameVersion, reloadToken) {
         lazyListState.animateScrollToItem(0)
     }
 
@@ -843,10 +847,10 @@ fun ModpackBrowserScreen(
                 }
 
                 else -> {
-                    Box(modifier = Modifier.fillMaxSize().testTag("modpack_list")) {
+                    Box(modifier = Modifier.fillMaxSize()) {
                         LazyColumn(
                             state = lazyListState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().testTag("modpack_list"),
                             contentPadding = PaddingValues(
                                 start = 12.dp,
                                 end = 12.dp,
@@ -855,11 +859,11 @@ fun ModpackBrowserScreen(
                             ),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(results, key = { it.project_id }) { hit ->
+                            itemsIndexed(results, key = { _, hit -> hit.project_id }) { index, hit ->
                                 ModpackRow(
                                     hit = hit,
                                     onClick = { versionDialogTarget = hit },
-                                    modifier = Modifier.testTag("modpack_row_${results.indexOf(hit)}"),
+                                    modifier = Modifier.testTag("modpack_row_$index"),
                                 )
                             }
                         }

@@ -65,11 +65,22 @@ data class GameVersionEntry(
     val version: String = "",
 )
 
+/**
+ * The read-only Minecraft-version slice screen composables need. Extracted so
+ * UI tests can supply deterministic versions without constructing a network
+ * client or touching the disk cache.
+ */
+interface VersionCatalog {
+    fun getCachedVersions(): List<McVersion>
+
+    suspend fun minecraftVersions(): MetaResult<List<McVersion>>
+}
+
 /** On-disk-cached metadata client for the version selector's lists. */
 class VersionRepository(
     private val cacheDir: File,
     private val network: NetworkClient,
-) {
+) : VersionCatalog {
     private val json = network.json
     private var manifestCache: VersionManifest? = null
 
@@ -81,7 +92,7 @@ class VersionRepository(
      * of their own, and the old EclipseLauncher stored them raw, which broke
      * installs. This repository never hands out an alias.
      */
-    suspend fun minecraftVersions(): MetaResult<List<McVersion>> = withContext(Dispatchers.IO) {
+    override suspend fun minecraftVersions(): MetaResult<List<McVersion>> = withContext(Dispatchers.IO) {
         val manifest = when (val result = fetchManifest()) {
             is MetaResult.Error -> return@withContext result
             is MetaResult.Success -> result.value
@@ -103,7 +114,7 @@ class VersionRepository(
      * Returns empty list if no cache exists.
      * Useful for instant UI display while fresh data loads.
      */
-    fun getCachedVersions(): List<McVersion> {
+    override fun getCachedVersions(): List<McVersion> {
         return manifestCache?.let { manifest ->
             manifest.versions.map { version ->
                 McVersion(

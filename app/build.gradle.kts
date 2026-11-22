@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -6,6 +8,27 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+}
+
+// Robolectric downloads its android-all jar with its own Maven fetcher on the
+// first test run. Resolve the same jar through Gradle instead and point the
+// test JVM at it, so tests never open a network connection. Pre-instrumented
+// build 7 is the one Robolectric 4.18 uses for API 34.
+val robolectricSdk by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+}
+dependencies {
+    add(robolectricSdk.name, "org.robolectric:android-all-instrumented:14-robolectric-10818077-i7")
+}
+val robolectricSdkDir = layout.buildDirectory.dir("robolectric-sdk")
+val prepareRobolectricSdk = tasks.register<Copy>("prepareRobolectricSdk") {
+    from(robolectricSdk)
+    into(robolectricSdkDir)
+}
+tasks.withType<Test>().configureEach {
+    dependsOn(prepareRobolectricSdk)
+    systemProperty("robolectric.dependency.dir", robolectricSdkDir.get().asFile.absolutePath)
 }
 
 android {
