@@ -23,6 +23,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.performTextInput
 import me.shadow.eclipselauncher.data.FakeModrinthClient
@@ -78,7 +79,8 @@ class ModpackBrowserScreenUITest {
         )
         assertTrue(
             "the pagination pill must float, not span the screen",
-            pillBounds.width.value < rootBounds.width.value,
+            (pillBounds.right - pillBounds.left).value <
+                (rootBounds.right - rootBounds.left).value,
         )
         assertTrue(
             "the pill must sit over the list, not above it",
@@ -106,8 +108,10 @@ class ModpackBrowserScreenUITest {
             }
         }
 
+        composeRule.waitForIdle()
         listOf("release", "snapshot", "beta", "alpha").forEach { type ->
             composeRule.onNodeWithTag("version_group_$type", useUnmergedTree = true)
+                .performScrollTo()
                 .assertIsDisplayed()
         }
     }
@@ -155,6 +159,9 @@ class ModpackBrowserScreenUITest {
         composeRule.waitUntil(timeoutMillis = 10_000) {
             composeRule.onAllNodesWithTag("modpack_row_0").fetchSemanticsNodes().isNotEmpty()
         }
+        // animateScrollToItem keeps the test clock busy; wait for it to settle
+        // before asserting that the row is actually inside the viewport.
+        composeRule.waitForIdle()
         composeRule.onNodeWithTag("modpack_row_0").assertIsDisplayed()
     }
 
