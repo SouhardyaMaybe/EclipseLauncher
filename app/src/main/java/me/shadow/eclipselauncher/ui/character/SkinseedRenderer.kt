@@ -44,6 +44,19 @@ class SkinseedView @JvmOverloads constructor(
         renderMode = RENDERMODE_WHEN_DIRTY
     }
 
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+        // Ensure we have a minimum size even when parent doesn't constrain us (e.g., in tests)
+        val width = MeasureSpec.getSize(widthMeasureSpec)
+        val height = MeasureSpec.getSize(heightMeasureSpec)
+        if (width == 0 || height == 0) {
+            setMeasuredDimension(
+                max(width, 100),
+                max(height, 100)
+            )
+        }
+    }
+
     fun updateSkin(bitmap: Bitmap?) {
         queueEvent { renderer.setSkin(bitmap) }
         requestRender()
