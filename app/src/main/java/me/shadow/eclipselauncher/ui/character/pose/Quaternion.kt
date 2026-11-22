@@ -198,9 +198,9 @@ data class Quaternion(
 
     /** Converts to a 4x4 rotation matrix (row-major, for row-vector transformPoint). */
     fun toMatrix(): Matrix4 = Matrix4(
-        1f - 2f * (y * y + z * z), 2f * (x * y + w * z), 2f * (x * z - w * y), 0f,
-        2f * (x * y - w * z), 1f - 2f * (x * x + z * z), 2f * (y * z + w * x), 0f,
-        2f * (x * z + w * y), 2f * (y * z - w * x), 1f - 2f * (x * x + y * y), 0f,
+        1f - 2f * (y * y + z * z), 2f * (x * y - w * z), 2f * (x * z + w * y), 0f,
+        2f * (x * y + w * z), 1f - 2f * (x * x + z * z), 2f * (y * z - w * x), 0f,
+        2f * (x * z - w * y), 2f * (y * z + w * x), 1f - 2f * (x * x + y * y), 0f,
         0f, 0f, 0f, 1f
     )
 }
@@ -226,7 +226,14 @@ data class Vec3(
     fun normalized(): Vec3 = this / length()
 }
 
-/** 4x4 matrix (column-major, 16 floats). */
+/** 4x4 matrix in row-major layout for row-vector convention (v' = v * M).
+ *  Layout (row-major):
+ *  [ m00 m01 m02 m03 ]
+ *  [ m10 m11 m12 m13 ]
+ *  [ m20 m21 m22 m23 ]
+ *  [ m30 m31 m32 m33 ]
+ *  where last row (m30,m31,m32) is translation for row vectors.
+ */
 data class Matrix4(
     val m00: Float, val m01: Float, val m02: Float, val m03: Float,
     val m10: Float, val m11: Float, val m12: Float, val m13: Float,
@@ -241,7 +248,7 @@ data class Matrix4(
             0f, 0f, 0f, 1f
         )
 
-        /** Perspective projection matrix (OpenGL style). */
+        /** Perspective projection matrix (OpenGL style, row-major). */
         fun perspective(fovYRad: Float, aspect: Float, near: Float, far: Float): Matrix4 {
             val f = 1.0f / tan(fovYRad * 0.5f)
             val rangeInv = 1.0f / (near - far)
@@ -253,7 +260,7 @@ data class Matrix4(
             )
         }
 
-        /** Look-at view matrix. */
+        /** Look-at view matrix (row-major). */
         fun lookAt(eyeX: Float, eyeY: Float, eyeZ: Float, centerX: Float, centerY: Float, centerZ: Float, upX: Float, upY: Float, upZ: Float): Matrix4 {
             val fx = centerX - eyeX
             val fy = centerY - eyeY
@@ -283,24 +290,24 @@ data class Matrix4(
             ).translate(-eyeX, -eyeY, -eyeZ)
         }
 
-        /** Translation matrix. */
+        /** Translation matrix (row-major: translation in last row). */
         fun translate(tx: Float, ty: Float, tz: Float): Matrix4 = Matrix4(
-            1f, 0f, 0f, tx,
-            0f, 1f, 0f, ty,
-            0f, 0f, 1f, tz,
-            0f, 0f, 0f, 1f
+            1f, 0f, 0f, 0f,
+            0f, 1f, 0f, 0f,
+            0f, 0f, 1f, 0f,
+            tx, ty, tz, 1f
         )
     }
 
     /** Returns a copy with translation applied (post-multiply). */
     fun translate(tx: Float, ty: Float, tz: Float): Matrix4 = this.times(Matrix4(
-        1f, 0f, 0f, tx,
-        0f, 1f, 0f, ty,
-        0f, 0f, 1f, tz,
-        0f, 0f, 0f, 1f
+        1f, 0f, 0f, 0f,
+        0f, 1f, 0f, 0f,
+        0f, 0f, 1f, 0f,
+        tx, ty, tz, 1f
     ))
 
-    /** Multiplies this * other. */
+    /** Multiplies this * other (row-major: this * other means apply other then this). */
     fun times(other: Matrix4): Matrix4 = Matrix4(
         m00 * other.m00 + m01 * other.m10 + m02 * other.m20 + m03 * other.m30,
         m00 * other.m01 + m01 * other.m11 + m02 * other.m21 + m03 * other.m31,
@@ -308,7 +315,7 @@ data class Matrix4(
         m00 * other.m03 + m01 * other.m13 + m02 * other.m23 + m03 * other.m33,
 
         m10 * other.m00 + m11 * other.m10 + m12 * other.m20 + m13 * other.m30,
-        m10 * other.m01 + m11 * other.m11 + m12 * other.m21 + m13 * other.m31,
+        m10 * other.m01 + m11 * other.m11 + m12 * other.m11 + m13 * other.m31,
         m10 * other.m02 + m11 * other.m12 + m12 * other.m22 + m13 * other.m32,
         m10 * other.m03 + m11 * other.m13 + m12 * other.m23 + m13 * other.m33,
 
@@ -320,7 +327,7 @@ data class Matrix4(
         m30 * other.m00 + m31 * other.m10 + m32 * other.m20 + m33 * other.m30,
         m30 * other.m01 + m31 * other.m11 + m32 * other.m21 + m33 * other.m31,
         m30 * other.m02 + m31 * other.m12 + m32 * other.m22 + m33 * other.m32,
-        m30 * other.m03 + m31 * other.m13 + m32 * other.m23 + m33 * other.m33,
+        m30 * other.m03 + m31 * other.m13 + m32 * other.m33 + m33 * other.m33,
     )
 
     /** Transforms a Vec3 point (w=1) using row-vector convention: v' = v * M. */
