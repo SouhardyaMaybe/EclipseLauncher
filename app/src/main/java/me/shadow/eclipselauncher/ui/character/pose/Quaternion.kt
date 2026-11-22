@@ -175,21 +175,23 @@ data class Quaternion(
         )
     }
 
-    /** Returns Euler angles (yaw, pitch, roll) in radians (YXZ order). */
+    /** Returns Euler angles (yaw, pitch, roll) in radians (YXZ order).
+     * Yaw = rotation around Y, Pitch = rotation around X, Roll = rotation around Z.
+     * Extraction from quaternion for YXZ order:
+     * yaw = atan2(2(x*z + w*y), w² - x² - y² + z²)
+     * pitch = asin(2(w*x - y*z))
+     * roll = atan2(2(x*y + w*z), w² - x² + y² - z²)
+     */
     fun toEuler(): Triple<Float, Float, Float> {
-        // Yaw (Y)
-        val siny_cosp = 2f * (w * z + x * y)
-        val cosy_cosp = 1f - 2f * (y * y + z * z)
-        val yaw = atan2(siny_cosp, cosy_cosp).toFloat()
+        // Yaw (Y) = atan2(2(x*z + w*y), w² - x² - y² + z²)
+        val yaw = atan2(2f * (x * z + w * y), w * w - x * x - y * y + z * z).toFloat()
 
-        // Pitch (X)
-        val sinp = 2f * (w * y - z * x)
+        // Pitch (X) = asin(2(w*x - y*z))
+        val sinp = 2f * (w * x - y * z)
         val pitch = if (sinp >= 1f) PI.toFloat() / 2f else if (sinp <= -1f) -PI.toFloat() / 2f else asin(sinp).toFloat()
 
-        // Roll (Z)
-        val sinr_cosp = 2f * (w * x + y * z)
-        val cosr_cosp = 1f - 2f * (x * x + y * y)
-        val roll = atan2(sinr_cosp, cosr_cosp).toFloat()
+        // Roll (Z) = atan2(2(x*y + w*z), w² - x² + y² - z²)
+        val roll = atan2(2f * (x * y + w * z), w * w - x * x + y * y - z * z).toFloat()
 
         return Triple(yaw, pitch, roll)
     }
