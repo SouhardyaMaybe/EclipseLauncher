@@ -78,7 +78,14 @@ fun MarketPage(client: ModrinthClient) {
         loading = true
         error = null
         scope.launch {
-            val result = client.searchMods(term)
+            val result = client.searchMods(
+                query = term,
+                limit = 25,
+                offset = 0,
+                projectType = "mod",
+                loader = null,
+                gameVersion = null,
+            )
             if (result.hits.isNotEmpty()) {
                 results = result.hits
                 loading = false

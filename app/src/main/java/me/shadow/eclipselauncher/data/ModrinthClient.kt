@@ -49,6 +49,30 @@ data class ModrinthSearchResult(
     val failed: Boolean = false,
 )
 
+/** Internal response from Modrinth search API. */
+@Serializable
+private data class ModrinthSearchResponse(
+    val hits: List<ModrinthHit> = emptyList(),
+    val total_hits: Int = 0,
+    val offset: Int = 0,
+    val limit: Int = 0,
+) {
+    fun toResult(limit: Int, offset: Int): ModrinthSearchResult {
+        val totalPages = (total_hits + limit - 1) / limit
+        val pageNumber = offset / limit + 1
+        val isLastPage = (offset + limit) >= total_hits
+        return ModrinthSearchResult(
+            hits = hits,
+            totalHits = total_hits,
+            offset = offset,
+            limit = limit,
+            totalPages = totalPages,
+            pageNumber = pageNumber,
+            isLastPage = isLastPage,
+        )
+    }
+}
+
 /** One downloadable file attached to a Modrinth project version. */
 @Serializable
 data class ModrinthVersionFile(
@@ -101,33 +125,36 @@ data class ModrinthVersionsResult(
     val failed: Boolean = false,
 )
 
-@Serializable
-private data class ModrinthSearchResponse(
-    val hits: List<ModrinthHit> = emptyList(),
-    val total_hits: Int = 0,
-    val offset: Int = 0,
-    val limit: Int = 0,
-) {
-    fun toResult(limit: Int, offset: Int): ModrinthSearchResult {
-        val totalPages = (total_hits + limit - 1) / limit
-        val pageNumber = offset / limit + 1
-        val isLastPage = (offset + limit) >= total_hits
-        return ModrinthSearchResult(
-            hits = hits,
-            totalHits = total_hits,
-            offset = offset,
-            limit = limit,
-            totalPages = totalPages,
-            pageNumber = pageNumber,
-            isLastPage = isLastPage,
-        )
-    }
+/** Interface for Modrinth API client to allow test fakes. */
+interface ModrinthApi {
+    suspend fun searchMods(
+        query: String,
+        limit: Int,
+        offset: Int,
+        projectType: String,
+        loader: String?,
+        gameVersion: String?,
+    ): ModrinthSearchResult
+
+    suspend fun projectVersions(projectId: String): ModrinthVersionsResult
+
+    suspend fun versionById(versionId: String): ModrinthVersion?
+
+    suspend fun projectById(projectId: String): ModrinthProject?
+
+    suspend fun downloadTo(
+        url: String,
+        target: File,
+        onProgress: (Float) -> Unit,
+    ): Boolean
+
+    fun projectUrl(hit: ModrinthHit): String
 }
 
 @Singleton
 class ModrinthClient @Inject constructor(
     private val network: NetworkClient,
-) {
+) : ModrinthApi {
     /**
      * Searches Modrinth projects; empty query returns the most relevant list.
      * [projectType] restricts the facet — "mod" for the market, "modpack" for
@@ -135,13 +162,13 @@ class ModrinthClient @Inject constructor(
      * and [gameVersion] filters the `versions` facet. Modrinth is the only
      * provider available without a key.
      */
-    suspend fun searchMods(
+    override suspend fun searchMods(
         query: String,
-        limit: Int = 25,
-        offset: Int = 0,
-        projectType: String = "mod",
-        loader: String? = null,
-        gameVersion: String? = null,
+        limit: Int,
+        offset: Int,
+        projectType: String,
+        loader: String?,
+        gameVersion: String?,
     ): ModrinthSearchResult = withContext(Dispatchers.IO) {
         try {
             val facetGroups = buildList {
@@ -180,7 +207,7 @@ class ModrinthClient @Inject constructor(
      * Lists every published version of one project, newest first. Changelogs
      * are excluded because the install sheet only needs version metadata.
      */
-    suspend fun projectVersions(projectId: String): ModrinthVersionsResult =
+    override suspend fun projectVersions(projectId: String): ModrinthVersionsResult =
         withContext(Dispatchers.IO) {
             try {
                 val versions: List<ModrinthVersion> = network.http
@@ -200,7 +227,7 @@ class ModrinthClient @Inject constructor(
      * Fetches one version by id; returns null for a transport error so the
      * dependency prompt can still show the project.
      */
-    suspend fun versionById(versionId: String): ModrinthVersion? = withContext(Dispatchers.IO) {
+    override suspend fun versionById(versionId: String): ModrinthVersion? = withContext(Dispatchers.IO) {
         try {
             network.http.get("$VERSION_URL/$versionId").body()
         } catch (cancelled: CancellationException) {
@@ -211,7 +238,7 @@ class ModrinthClient @Inject constructor(
     }
 
     /** Fetches one project's display metadata; null on any failure. */
-    suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
+    override suspend fun projectById(projectId: String): ModrinthProject? = withContext(Dispatchers.IO) {
         try {
             network.http.get("$PROJECT_URL/$projectId").body()
         } catch (cancelled: CancellationException) {
@@ -227,7 +254,7 @@ class ModrinthClient @Inject constructor(
      * for a non-2xx response or any transport/file error; the caller owns
      * cleanup of a partial file.
      */
-    suspend fun downloadTo(
+    override suspend fun downloadTo(
         url: String,
         target: File,
         onProgress: (Float) -> Unit,
@@ -261,7 +288,7 @@ class ModrinthClient @Inject constructor(
     }
 
     /** Canonical project page URL for a hit, used by the "open" action. */
-    fun projectUrl(hit: ModrinthHit): String =
+    override fun projectUrl(hit: ModrinthHit): String =
         "https://modrinth.com/mod/" + hit.slug.ifEmpty { hit.project_id }
 
     private companion object {

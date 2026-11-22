@@ -49,6 +49,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -87,17 +88,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.platform.testTag
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.MetaResult
-import me.shadow.eclipselauncher.data.ModrinthClient
+import me.shadow.eclipselauncher.data.ModrinthApi
 import me.shadow.eclipselauncher.data.ModrinthHit
 import me.shadow.eclipselauncher.data.ModrinthVersion
 import me.shadow.eclipselauncher.data.ModrinthVersionFile
-import me.shadow.eclipselauncher.data.VersionRepository
+import me.shadow.eclipselauncher.data.VersionCatalog
 import me.shadow.eclipselauncher.ui.components.FilterOption
 import me.shadow.eclipselauncher.ui.components.LoaderIcon
 import me.shadow.eclipselauncher.ui.components.ModpackFilter
@@ -274,7 +276,7 @@ private fun ModpackVersionDialog(
     projectTitle: String,
     projectAuthor: String,
     projectIconUrl: String,
-    client: ModrinthClient,
+    client: ModrinthApi,
     onDismiss: () -> Unit,
     onInstall: (ModrinthVersion, ModrinthVersionFile) -> Unit,
 ) {
@@ -408,7 +410,7 @@ private fun ModpackVersionDialog(
                                         expandedGroups = expandedGroups + mcVer
                                     }
                                 },
-                                onInstall = { version, file ->
+                                onInstall = { version: ModrinthVersion, file: ModrinthVersionFile ->
                                     onInstall(version, file)
                                 },
                                 downloadingId = downloadingId,
@@ -441,7 +443,7 @@ private fun VersionGroupCard(
     )
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("version_group_$mcVersion"),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
@@ -453,7 +455,8 @@ private fun VersionGroupCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(onClick = onToggle)
-                    .padding(all = 12.dp),
+                    .padding(all = 12.dp)
+                    .testTag("version_group_header_$mcVersion"),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -512,7 +515,7 @@ private fun VersionRow(
     val file = version.files.firstOrNull { it.primary } ?: version.files.firstOrNull()
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("version_group_${version.version_type}"),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -606,8 +609,8 @@ private fun VersionRow(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ModpackBrowserScreen(
-    client: ModrinthClient,
-    versionRepository: VersionRepository,
+    client: ModrinthApi,
+    versionRepository: VersionCatalog,
     onBack: () -> Unit,
     onPickModpack: (Uri) -> Unit,
 ) {
@@ -690,8 +693,10 @@ fun ModpackBrowserScreen(
         runSearch(query, page)
     }
 
-    // Scroll to top when page changes (filter/search changes reset page to 1)
-    LaunchedEffect(page) {
+    // Scroll to top whenever the result set is replaced. Page changes already
+    // reset page to 1, but a filter or search change while already on page 1
+    // would otherwise leave the list scrolled where it was.
+    LaunchedEffect(page, query, selectedLoader, selectedGameVersion, reloadToken) {
         lazyListState.animateScrollToItem(0)
     }
 
@@ -762,7 +767,7 @@ fun ModpackBrowserScreen(
             OutlinedTextField(
                 value = query,
                 onValueChange = { query = it },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("search_field"),
                 placeholder = { Text(stringResource(R.string.modpack_search_hint)) },
                 singleLine = true,
                 leadingIcon = {
@@ -793,19 +798,19 @@ fun ModpackBrowserScreen(
                 title = loaderFilterTitle,
                 value = loaderLabel,
                 onClick = { filterDialog = ModpackFilter.LOADER },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("loader_filter_header"),
             )
             FilterHeader(
                 title = versionFilterTitle,
                 value = versionLabel,
                 onClick = { filterDialog = ModpackFilter.VERSION },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("version_filter_header"),
             )
             FilterHeader(
                 title = platformFilterTitle,
                 value = platformLabel,
                 onClick = { filterDialog = ModpackFilter.PLATFORM },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).testTag("platform_filter_header"),
             )
         }
 
@@ -845,7 +850,7 @@ fun ModpackBrowserScreen(
                     Box(modifier = Modifier.fillMaxSize()) {
                         LazyColumn(
                             state = lazyListState,
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxSize().testTag("modpack_list"),
                             contentPadding = PaddingValues(
                                 start = 12.dp,
                                 end = 12.dp,
@@ -854,10 +859,11 @@ fun ModpackBrowserScreen(
                             ),
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            items(results, key = { it.project_id }) { hit ->
+                            itemsIndexed(results, key = { _, hit -> hit.project_id }) { index, hit ->
                                 ModpackRow(
                                     hit = hit,
                                     onClick = { versionDialogTarget = hit },
+                                    modifier = Modifier.testTag("modpack_row_$index"),
                                 )
                             }
                         }
@@ -953,9 +959,10 @@ fun ModpackBrowserScreen(
 private fun ModpackRow(
     hit: ModrinthHit,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
@@ -1074,7 +1081,8 @@ private fun PaginationPill(
         Surface(
             modifier = Modifier
                 .navigationBarsPadding()
-                .padding(bottom = 12.dp),
+                .padding(bottom = 12.dp)
+                .testTag("pagination_pill"),
             shape = RoundedCornerShape(24.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHigh,
             tonalElevation = 3.dp,
@@ -1087,6 +1095,7 @@ private fun PaginationPill(
                     onClick = onPrev,
                     enabled = canGoPrev,
                     colors = buttonColors,
+                    modifier = Modifier.testTag("pagination_prev"),
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronLeft,
@@ -1094,7 +1103,7 @@ private fun PaginationPill(
                     )
                 }
                 // Fixed width stops the buttons from shifting between 1- and 2-digit pages.
-                Box(modifier = Modifier.width(84.dp), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.width(84.dp).testTag("pagination_indicator"), contentAlignment = Alignment.Center) {
                     Text(
                         text = "$currentPage / $totalPages",
                         style = MaterialTheme.typography.labelLarge,
@@ -1105,6 +1114,7 @@ private fun PaginationPill(
                     onClick = onNext,
                     enabled = canGoNext,
                     colors = buttonColors,
+                    modifier = Modifier.testTag("pagination_next"),
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ChevronRight,
