@@ -185,7 +185,6 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, overlayTextureId)
         GLES20.glUniform1i(uOverlayTexture, 1)
 
-        GLES20.glUniform1i(uUseOverlay, if (overlayEnabled) 1 else 0)
         GLES20.glUniform1f(uAlpha, 1f)
         GLES20.glUniform1f(uOverlayAlpha, 1f)
 
@@ -202,15 +201,17 @@ class ModelRenderer(private val view: ModelPreviewView) : GLSurfaceView.Renderer
         GLES20.glEnableVertexAttribArray(aNormal)
         GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0, normalBuffer)
 
-        // Pass 1: Draw base layer (depth write enabled)
+        // Pass 1: Draw base layer (depth write enabled, NO overlay blending)
         GLES20.glDepthMask(true)
+        GLES20.glUniform1i(uUseOverlay, 0)
         if (baseIndexCount > 0) {
             GLES20.glDrawElements(GLES20.GL_TRIANGLES, baseIndexCount, GLES20.GL_UNSIGNED_SHORT, baseIndexBuffer)
         }
 
-        // Pass 2: Draw overlay layer (depth test but no depth write to prevent z-fighting)
+        // Pass 2: Draw overlay layer (depth test but no depth write, WITH overlay blending)
         if (overlayEnabled && overlayIndexCount > 0) {
             GLES20.glDepthMask(false)
+            GLES20.glUniform1i(uUseOverlay, 1)
             GLES20.glDrawElements(GLES20.GL_TRIANGLES, overlayIndexCount, GLES20.GL_UNSIGNED_SHORT, overlayIndexBuffer)
             GLES20.glDepthMask(true)
         }
