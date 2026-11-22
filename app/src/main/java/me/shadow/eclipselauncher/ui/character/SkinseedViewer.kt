@@ -55,7 +55,7 @@ fun SkinseedViewer(
         AndroidView(
             factory = { ctx ->
                 SkinseedView(ctx).apply {
-                    setTestTag(SKIN_MODEL_CANVAS_TAG)
+                    setTag(SKIN_MODEL_CANVAS_TAG)
                     updateSkin(skin)
                     updateOverlay(overlay)
                     updateCape(cape)
