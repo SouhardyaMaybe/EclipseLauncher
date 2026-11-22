@@ -147,9 +147,12 @@ class Skeleton(
     private val slim: Boolean = false,
 ) {
 
-    /** Pivot points in model space (origin at feet, +Y up, faces +Z). */
+    /** Pivot points in model space (origin at feet, +Y up, faces +Z).
+     * BODY pivot for FK is at WORLD ORIGIN (0,0,0) for yaw/pitch rotation.
+     * Other joints use absolute model-space coordinates.
+     * Visual body center is at BODY_PIVOT (0, 0.4, 0) but FK root is at origin. */
     val pivots = mapOf(
-        Joint.BODY to Vec3(SkeletonConstants.BODY_PIVOT_X, SkeletonConstants.BODY_PIVOT_Y, SkeletonConstants.BODY_PIVOT_Z),
+        Joint.BODY to Vec3(0f, 0f, 0f),  // FK root at world origin for body yaw/pitch
         Joint.HEAD to Vec3(SkeletonConstants.HEAD_PIVOT_X, SkeletonConstants.HEAD_PIVOT_Y, SkeletonConstants.HEAD_PIVIT_Z),
         Joint.ARM_LEFT to Vec3(
             SkeletonConstants.ARM_LEFT_PIVOT_X - (if (slim) SkeletonConstants.SLIM_ARM_PIVOT_X_SHIFT else 0f),
