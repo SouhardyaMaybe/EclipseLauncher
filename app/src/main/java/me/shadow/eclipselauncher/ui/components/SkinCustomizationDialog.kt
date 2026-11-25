@@ -139,8 +139,7 @@ fun SkinCustomizationDialog(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface,
             ) {
-                // Set dialog window to fill entire screen
-                SideEffect {
+                LaunchedEffect(Unit) {
                     val activity = LocalContext.current as? android.app.Activity
                     activity?.window?.setLayout(
                         WindowManager.LayoutParams.MATCH_PARENT,
