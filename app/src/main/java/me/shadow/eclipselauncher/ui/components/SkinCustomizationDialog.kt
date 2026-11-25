@@ -16,6 +16,7 @@ package me.shadow.eclipselauncher.ui.components
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -146,6 +147,11 @@ fun SkinCustomizationDialog(
                     modifier = Modifier.fillMaxSize(),
                 )
             }
+        }.apply {
+            window?.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
         }
     } else {
         BasicAlertDialog(onDismissRequest = onDismiss) {
