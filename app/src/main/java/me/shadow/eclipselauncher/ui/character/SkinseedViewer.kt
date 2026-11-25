@@ -58,7 +58,7 @@ fun SkinseedViewer(
     var overlay by remember(overlayBitmap) { mutableStateOf(overlayBitmap) }
     var cape by remember(capeBitmap) { mutableStateOf(capeBitmap) }
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
-    val viewSize by remember { mutableStateOf<Point?>(null) }
+    var viewSize by remember { mutableStateOf<Point?>(null) }
 
     Box(modifier = modifier
         .fillMaxSize()
