@@ -128,6 +128,13 @@ fun SkinCustomizationDialog(
         // A real window, not a resized card: it spans the whole screen behind
         // the system bars. Back reaches onDismissRequest, which exits full
         // screen instead of closing the whole skin dialog.
+        LaunchedEffect(Unit) {
+            val activity = LocalContext.current as? android.app.Activity
+            activity?.window?.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+        }
         Dialog(
             onDismissRequest = { isFullscreen = false },
             properties = DialogProperties(
@@ -139,13 +146,6 @@ fun SkinCustomizationDialog(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface,
             ) {
-                SideEffect {
-                    val activity = LocalContext.current as? android.app.Activity
-                    activity?.window?.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                }
                 SkinModelStage(
                     skinFileName = account.skinFileName,
                     capeFileName = account.capeFileName,
