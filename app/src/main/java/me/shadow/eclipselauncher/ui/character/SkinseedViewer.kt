@@ -8,6 +8,7 @@ package me.shadow.eclipselauncher.ui.character
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
@@ -26,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.IntSize
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -58,12 +58,12 @@ fun SkinseedViewer(
     var overlay by remember(overlayBitmap) { mutableStateOf(overlayBitmap) }
     var cape by remember(capeBitmap) { mutableStateOf(capeBitmap) }
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
-    val viewSize by remember { mutableStateOf<IntSize?>(null) }
+    val viewSize by remember { mutableStateOf<Point?>(null) }
 
     Box(modifier = modifier
         .fillMaxSize()
         .onGloballyPositioned { coords ->
-            viewSize = coords.size
+            viewSize = Point(coords.size.width, coords.size.height)
         }
     ) {
         AndroidView(
