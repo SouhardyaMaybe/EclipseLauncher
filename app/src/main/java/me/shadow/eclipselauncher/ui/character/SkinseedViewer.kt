@@ -88,7 +88,7 @@ fun SkinseedViewer(
             factory = { ctx ->
                 SkinseedView(ctx).apply {
                     layoutParams = ViewGroup.LayoutParams(
-                        effectiveSize.x, effectiveSize.y
+                        effectiveSizePx.x, effectiveSizePx.y
                     )
                     setTag(SKIN_MODEL_CANVAS_TAG)
                     updateSkin(skin)
@@ -101,7 +101,7 @@ fun SkinseedViewer(
             },
             update = { view ->
                 viewRef = view
-                view.layoutParams = ViewGroup.LayoutParams(effectiveSize.x, effectiveSize.y)
+                view.layoutParams = ViewGroup.LayoutParams(effectiveSizePx.x, effectiveSizePx.y)
                 view.updateSkin(skin)
                 view.updateOverlay(overlay)
                 view.updateCape(cape)
