@@ -137,6 +137,13 @@ fun SkinCustomizationDialog(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface,
             ) {
+                // Ensure the dialog window fills the entire screen
+                SideEffect {
+                    it.window?.setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT
+                    )
+                }
                 SkinModelStage(
                     skinFileName = account.skinFileName,
                     capeFileName = account.capeFileName,
@@ -147,11 +154,6 @@ fun SkinCustomizationDialog(
                     modifier = Modifier.fillMaxSize(),
                 )
             }
-        }.apply {
-            window?.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
         }
     } else {
         BasicAlertDialog(onDismissRequest = onDismiss) {
