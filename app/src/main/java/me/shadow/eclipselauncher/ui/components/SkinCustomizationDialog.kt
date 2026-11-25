@@ -135,17 +135,17 @@ fun SkinCustomizationDialog(
                 decorFitsSystemWindows = false,
             ),
         ) {
-            SideEffect {
-                val activity = LocalContext.current as? android.app.Activity
-                activity?.window?.setLayout(
-                    WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.MATCH_PARENT
-                )
-            }
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface,
             ) {
+                SideEffect {
+                    val activity = LocalContext.current as? android.app.Activity
+                    activity?.window?.setLayout(
+                        WindowManager.LayoutParams.MATCH_PARENT,
+                        WindowManager.LayoutParams.MATCH_PARENT
+                    )
+                }
                 SkinModelStage(
                     skinFileName = account.skinFileName,
                     capeFileName = account.capeFileName,
