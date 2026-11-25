@@ -60,6 +60,16 @@ fun SkinseedViewer(
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
     var viewSize by remember { mutableStateOf<Point?>(null) }
 
+    // Fallback: use explicit pixel dimensions for fullscreen (from dialog), 
+    // or rely on onGloballyPositioned for normal mode
+    val effectiveSize = if (isFullscreen) {
+        // Fullscreen dialog passes exact pixel dimensions
+        val displayMetrics = context.resources.displayMetrics
+        Point(displayMetrics.widthPixels, displayMetrics.heightPixels)
+    } else {
+        viewSize // will be set by onGloballyPositioned
+    }
+
     Box(modifier = modifier
         .fillMaxSize()
         .onGloballyPositioned { coords ->
@@ -69,6 +79,9 @@ fun SkinseedViewer(
         AndroidView(
             factory = { ctx ->
                 SkinseedView(ctx).apply {
+                    layoutParams = ViewGroup.LayoutParams(
+                        effectiveSize.x, effectiveSize.y
+                    )
                     setTag(SKIN_MODEL_CANVAS_TAG)
                     updateSkin(skin)
                     updateOverlay(overlay)
@@ -80,10 +93,7 @@ fun SkinseedViewer(
             },
             update = { view ->
                 viewRef = view
-                // Update view size from Compose layout
-                viewSize?.let { size ->
-                    view.layoutParams = ViewGroup.LayoutParams(size.x, size.y)
-                }
+                view.layoutParams = ViewGroup.LayoutParams(effectiveSize.x, effectiveSize.y)
                 view.updateSkin(skin)
                 view.updateOverlay(overlay)
                 view.updateCape(cape)
