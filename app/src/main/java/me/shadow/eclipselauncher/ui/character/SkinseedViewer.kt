@@ -60,14 +60,15 @@ fun SkinseedViewer(
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
     var viewSize by remember { mutableStateOf<Point?>(null) }
 
-    // Fallback: use explicit pixel dimensions for fullscreen (from dialog), 
-    // or rely on onGloballyPositioned for normal mode
+    // Compute effective size: for fullscreen use display metrics, 
+    // for normal mode use onGloballyPositioned with fallback
     val effectiveSize: Point = if (isFullscreen) {
-        // Fullscreen dialog uses exact pixel dimensions
-        val displayMetrics = context.resources.displayMetrics
-        Point(displayMetrics.widthPixels, displayMetrics.heightPixels)
+        val metrics = context.resources.displayMetrics
+        // Ensure non-zero dimensions (Robolectric may return 0)
+        val w = if (metrics.widthPixels > 0) metrics.widthPixels else 360
+        val h = if (metrics.heightPixels > 0) metrics.heightPixels else 640
+        Point(w, h)
     } else {
-        // Normal mode: use onGloballyPositioned size, fallback to minimum
         viewSize ?: Point(100, 100)
     }
 
