@@ -268,8 +268,8 @@ private fun SkinModelStage(
     }
 
     val displayMetrics = remember { context.resources.displayMetrics }
-    val screenWidthDp = if (isFullscreen) (displayMetrics.widthPixels / displayMetrics.density).roundToInt() else 0
-    val screenHeightDp = if (isFullscreen) (displayMetrics.heightPixels / displayMetrics.density).roundToInt() else 0
+    val screenWidthPx = if (isFullscreen) displayMetrics.widthPixels else 0
+    val screenHeightPx = if (isFullscreen) displayMetrics.heightPixels else 0
 
     Box(
         modifier = modifier.then(
@@ -291,8 +291,8 @@ private fun SkinModelStage(
             overlayEnabled = true,
             autoRotate = true,
             isFullscreen = isFullscreen,
-            screenWidthDp = screenWidthDp,
-            screenHeightDp = screenHeightDp,
+            screenWidthPx = screenWidthPx,
+            screenHeightPx = screenHeightPx,
             modifier = Modifier.fillMaxSize(),
         )
     }
