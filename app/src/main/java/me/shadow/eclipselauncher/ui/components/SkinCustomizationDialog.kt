@@ -135,17 +135,18 @@ fun SkinCustomizationDialog(
                 decorFitsSystemWindows = false,
             ),
         ) {
+            // Set dialog window to fill entire screen (Dialog content is @Composable context)
+            LaunchedEffect(Unit) {
+                val activity = LocalContext.current as? android.app.Activity
+                activity?.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+            }
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface,
             ) {
-                LaunchedEffect(Unit) {
-                    val activity = LocalContext.current as? android.app.Activity
-                    activity?.window?.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                }
                 SkinModelStage(
                     skinFileName = account.skinFileName,
                     capeFileName = account.capeFileName,
