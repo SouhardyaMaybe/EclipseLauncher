@@ -82,7 +82,7 @@ fun SkinseedViewer(
                 viewRef = view
                 // Update view size from Compose layout
                 viewSize?.let { size ->
-                    view.layoutParams = ViewGroup.LayoutParams(size.width, size.height)
+                    view.layoutParams = ViewGroup.LayoutParams(size.x, size.y)
                 }
                 view.updateSkin(skin)
                 view.updateOverlay(overlay)
