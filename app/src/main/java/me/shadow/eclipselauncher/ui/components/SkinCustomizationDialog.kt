@@ -135,16 +135,24 @@ fun SkinCustomizationDialog(
             ),
         ) {
             Surface(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onGloballyPositioned { layoutCoordinates ->
+                        // Find the dialog window from the view hierarchy and set MATCH_PARENT
+                        val view = layoutCoordinates.getLayoutNode().unwrapped
+                        val context = view.context
+                        val window = when {
+                            context is android.app.Activity -> context.window
+                            context is android.view.ContextThemeWrapper -> (context.baseContext as? android.app.Activity)?.window
+                            else -> null
+                        }
+                        window?.setLayout(
+                            WindowManager.LayoutParams.MATCH_PARENT,
+                            WindowManager.LayoutParams.MATCH_PARENT
+                        )
+                    },
                 color = MaterialTheme.colorScheme.surface,
             ) {
-                // Ensure the dialog window fills the entire screen
-                SideEffect {
-                    it.window?.setLayout(
-                        WindowManager.LayoutParams.MATCH_PARENT,
-                        WindowManager.LayoutParams.MATCH_PARENT
-                    )
-                }
                 SkinModelStage(
                     skinFileName = account.skinFileName,
                     capeFileName = account.capeFileName,
