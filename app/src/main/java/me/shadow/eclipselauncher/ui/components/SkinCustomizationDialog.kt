@@ -136,20 +136,25 @@ fun SkinCustomizationDialog(
             ),
         ) {
             // Set dialog window to fill entire screen (LaunchedEffect runs after composition
-            // when the Dialog window exists). Traverse context wrappers to find the Dialog
-            // which has a window (works in both real apps and Robolectric tests).
+            // when the Dialog window exists). Traverse context wrappers to find a window.
+            // In real apps this finds the Dialog; in Robolectric tests it finds the Activity.
             val context = LocalContext.current
             LaunchedEffect(Unit) {
                 var ctx: android.content.Context? = context
-                while (ctx is android.content.ContextWrapper) {
-                    if (ctx is android.app.Dialog) {
-                        ctx.window?.setLayout(
+                while (ctx != null) {
+                    val window = when (ctx) {
+                        is android.app.Activity -> ctx.window
+                        is android.app.Dialog -> ctx.window
+                        else -> null
+                    }
+                    if (window != null) {
+                        window.setLayout(
                             WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.MATCH_PARENT
                         )
                         break
                     }
-                    ctx = ctx.baseContext
+                    ctx = if (ctx is android.content.ContextWrapper) ctx.baseContext else null
                 }
             }
             Surface(
