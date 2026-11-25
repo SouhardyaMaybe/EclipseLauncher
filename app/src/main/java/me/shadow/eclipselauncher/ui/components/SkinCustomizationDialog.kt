@@ -267,6 +267,10 @@ private fun SkinModelStage(
         cape = loadCape(media, capeFileName)
     }
 
+    val displayMetrics = remember { context.resources.displayMetrics }
+    val screenWidthDp = if (isFullscreen) (displayMetrics.widthPixels / displayMetrics.density).roundToInt() else 0
+    val screenHeightDp = if (isFullscreen) (displayMetrics.heightPixels / displayMetrics.density).roundToInt() else 0
+
     Box(
         modifier = modifier.then(
             if (isFullscreen) {
@@ -287,6 +291,8 @@ private fun SkinModelStage(
             overlayEnabled = true,
             autoRotate = true,
             isFullscreen = isFullscreen,
+            screenWidthDp = screenWidthDp,
+            screenHeightDp = screenHeightDp,
             modifier = Modifier.fillMaxSize(),
         )
     }

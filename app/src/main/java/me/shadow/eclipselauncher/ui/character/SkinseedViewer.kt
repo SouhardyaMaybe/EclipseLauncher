@@ -49,6 +49,9 @@ fun SkinseedViewer(
     overlayEnabled: Boolean = true,
     autoRotate: Boolean = true,
     isFullscreen: Boolean = false,
+    // Explicit screen dimensions in dp for fullscreen mode (for test compatibility)
+    screenWidthDp: Int = 0,
+    screenHeightDp: Int = 0,
     onFullscreenToggle: (() -> Unit)? = null,
     onPartSelected: ((Int) -> Unit)? = null,
     modifier: Modifier = Modifier,
@@ -60,16 +63,23 @@ fun SkinseedViewer(
     var viewRef by remember { mutableStateOf<SkinseedView?>(null) }
     var viewSize by remember { mutableStateOf<Point?>(null) }
 
-    // Compute effective size: for fullscreen use display metrics, 
-    // for normal mode use onGloballyPositioned with fallback
-    val effectiveSize: Point = if (isFullscreen) {
+    // Compute effective size in pixels:
+    // - Fullscreen with explicit dp dims: convert dp to px using density
+    // - Fullscreen without explicit dims: use display metrics with fallback
+    // - Normal: use onGloballyPositioned with fallback
+    val effectiveSizePx: Point = if (isFullscreen && screenWidthDp > 0 && screenHeightDp > 0) {
+        val density = context.resources.displayMetrics.density
+        Point(
+            (screenWidthDp * density).roundToInt(),
+            (screenHeightDp * density).roundToInt()
+        )
+    } else if (isFullscreen) {
         val metrics = context.resources.displayMetrics
-        // Ensure non-zero dimensions (Robolectric may return 0)
         val w = if (metrics.widthPixels > 0) metrics.widthPixels else 360
         val h = if (metrics.heightPixels > 0) metrics.heightPixels else 640
         Point(w, h)
     } else {
-        viewSize ?: Point(100, 100)
+        viewSize?.let { Point(it.x, it.y) } ?: Point(100, 100)
     }
 
     Box(modifier = modifier
