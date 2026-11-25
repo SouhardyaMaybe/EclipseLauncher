@@ -135,9 +135,9 @@ fun SkinCustomizationDialog(
                 decorFitsSystemWindows = false,
             ),
         ) {
-            // Capture context in composable context, use in LaunchedEffect
+            // Set dialog window to fill entire screen (SideEffect runs synchronously in composition)
             val context = LocalContext.current
-            LaunchedEffect(Unit) {
+            SideEffect {
                 val activity = context as? android.app.Activity
                 activity?.window?.setLayout(
                     WindowManager.LayoutParams.MATCH_PARENT,
