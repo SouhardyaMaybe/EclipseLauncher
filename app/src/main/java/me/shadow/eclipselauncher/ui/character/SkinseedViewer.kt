@@ -62,12 +62,13 @@ fun SkinseedViewer(
 
     // Fallback: use explicit pixel dimensions for fullscreen (from dialog), 
     // or rely on onGloballyPositioned for normal mode
-    val effectiveSize = if (isFullscreen) {
-        // Fullscreen dialog passes exact pixel dimensions
+    val effectiveSize: Point = if (isFullscreen) {
+        // Fullscreen dialog uses exact pixel dimensions
         val displayMetrics = context.resources.displayMetrics
         Point(displayMetrics.widthPixels, displayMetrics.heightPixels)
     } else {
-        viewSize // will be set by onGloballyPositioned
+        // Normal mode: use onGloballyPositioned size, fallback to minimum
+        viewSize ?: Point(100, 100)
     }
 
     Box(modifier = modifier
