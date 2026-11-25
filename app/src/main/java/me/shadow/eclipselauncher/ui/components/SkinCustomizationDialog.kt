@@ -134,23 +134,16 @@ fun SkinCustomizationDialog(
                 decorFitsSystemWindows = false,
             ),
         ) {
+            val context = LocalContext.current
+            SideEffect {
+                val dialog = LocalContext.current.getDialog()
+                dialog?.window?.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+            }
             Surface(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onGloballyPositioned { layoutCoordinates ->
-                        // Find the dialog window from the view hierarchy and set MATCH_PARENT
-                        val view = layoutCoordinates.getLayoutNode().unwrapped
-                        val context = view.context
-                        val window = when {
-                            context is android.app.Activity -> context.window
-                            context is android.view.ContextThemeWrapper -> (context.baseContext as? android.app.Activity)?.window
-                            else -> null
-                        }
-                        window?.setLayout(
-                            WindowManager.LayoutParams.MATCH_PARENT,
-                            WindowManager.LayoutParams.MATCH_PARENT
-                        )
-                    },
+                modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.surface,
             ) {
                 SkinModelStage(
