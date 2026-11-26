@@ -65,6 +65,12 @@
     <string name="cd_expand_account">Expand</string>
     <string name="cd_collapse_account">Collapse</string>
 
+    <!-- Emotes -->
+    <string name="emotes_section">Emotes</string>
+    <string name="emotes_show">Show emotes</string>
+    <string name="emotes_hide">Hide emotes</string>
+    <string name="emotes_choose">Choose an emote</string>
+
     <!-- Microsoft sign-in -->
     <string name="ms_auth_title">Microsoft sign in</string>
     <string name="ms_stage_live">Signing in with Microsoft</string>
