@@ -1,7 +1,7 @@
 [versions]
 agp = "9.3.0"
-kotlin = "2.0.21"
-ksp = "2.0.21-1.0.14"
+kotlin = "2.0.0"
+ksp = "2.0.0-1.0.13"
 dagger = "2.60.1"
 
 targetSdk = "34"
