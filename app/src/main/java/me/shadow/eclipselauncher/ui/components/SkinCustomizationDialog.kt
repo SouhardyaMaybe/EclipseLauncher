@@ -141,11 +141,15 @@ fun SkinCustomizationDialog(
             LaunchedEffect(Unit) {
                 var ctx: android.content.Context? = context
                 while (ctx != null) {
-                    val window = if (ctx is android.app.Activity) {
-                        ctx.window
-                    } else if (ctx is android.app.Dialog) {
-                        ctx.window
-                    } else {
+                    val window = try {
+                        if (ctx is android.app.Activity) {
+                            ctx.window
+                        } else if (ctx is android.app.Dialog) {
+                            ctx.window
+                        } else {
+                            null
+                        }
+                    } catch (e: Exception) {
                         null
                     }
                     if (window != null) {
