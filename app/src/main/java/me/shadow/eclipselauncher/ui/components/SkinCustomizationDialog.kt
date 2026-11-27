@@ -413,8 +413,8 @@ fun SkinModelStage(
                         val dist = sqrt(dx * dx + dz * dz)
                         val targetYaw = atan2(dx, dz)
                         val targetPitch = if (dist > 0.001f) -atan2(dy, dist) else 0f
-                        playerMotion.setHeadYaw(playerMotion.getHeadYaw() * 0.9f + targetYaw * 0.1f)
-                        playerMotion.setHeadPitch((playerMotion.getHeadPitch() * 0.9f + targetPitch * 0.1f).coerceIn(-1.2f, 1.2f))
+                        playerMotion.headYaw = playerMotion.headYaw * 0.9f + targetYaw * 0.1f
+                        playerMotion.headPitch = (playerMotion.headPitch * 0.9f + targetPitch * 0.1f).coerceIn(-1.2f, 1.2f)
                     }
                     delay(16)
                 }

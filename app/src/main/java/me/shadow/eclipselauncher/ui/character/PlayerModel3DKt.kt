@@ -107,9 +107,9 @@ fun Minecraft3DPlayer(
             cx = cx,
             cy = cy,
             scale = scale,
-            bodyYaw = playerMotion.getBodyYaw(),
-            headYaw = playerMotion.getHeadYaw(),
-            headPitch = playerMotion.getHeadPitch(),
+            bodyYaw = playerMotion.bodyYaw,
+            headYaw = playerMotion.headYaw,
+            headPitch = playerMotion.headPitch,
         )
         drawFaces(drawContext.canvas.nativeCanvas, faces, bitmap, capeBitmap)
 
