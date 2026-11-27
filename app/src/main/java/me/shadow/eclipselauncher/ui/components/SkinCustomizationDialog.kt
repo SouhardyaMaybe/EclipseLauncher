@@ -158,8 +158,8 @@ fun SkinCustomizationDialog(
     // Look target for head tracking
     val lookTarget = remember { PlayerLookTarget() }
 
-    // Drag state for coordinating head tracking
-    var isDragging by remember { mutableStateOf(false) }
+    // Drag state for coordinating head tracking (MutableState for passing to child composable)
+    val isDragging = remember { mutableStateOf(false) }
 
     if (isFullscreen) {
         // A real window, not a resized card: it spans the whole screen behind
@@ -392,8 +392,8 @@ fun SkinModelStage(
                 .pointerInput(Unit) {
                     // Use detectDragGestures for proper start/end handling
                     detectDragGestures(
-                        onDragStart = { isDragging = true },
-                        onDragEnd = { isDragging = false },
+                        onDragStart = { isDragging.value = true },
+                        onDragEnd = { isDragging.value = false },
                     ) { change, dragAmount ->
                         // dragAmount is the per-frame delta in pixels
                         val dragYaw = Math.toRadians((dragAmount.x * 0.32f).toDouble()).toFloat()
