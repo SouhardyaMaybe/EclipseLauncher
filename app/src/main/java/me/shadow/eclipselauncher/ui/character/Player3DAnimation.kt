@@ -8,6 +8,7 @@
  */
 package me.shadow.eclipselauncher.ui.character
 
+import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 

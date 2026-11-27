@@ -13,6 +13,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.AndroidCanvas_androidKt
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.test.tagAsTestTag
 import androidx.compose.ui.unit.dp
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -59,7 +61,7 @@ fun Minecraft3DPlayer(
     Canvas(
         modifier
             .fillMaxSize()
-            .testTag("skinModelCanvas"),
+            .tagAsTestTag("skinModelCanvas"),
     ) {
         val canvasDrawScope = this as CanvasDrawScope
         val nativeCanvas = AndroidCanvas_androidKt.getNativeCanvas(canvasDrawScope.drawContext.getCanvas())

@@ -8,8 +8,7 @@
  */
 package me.shadow.eclipselauncher.ui.character
 
-import kotlin.jvm.internal.DefaultConstructorMarker
-import kotlin.jvm.internal.Intrinsics
+import kotlin.collections.buildList
 
 /**
  * A single part of the hierarchical model (root → body → head/arms, legs on root).

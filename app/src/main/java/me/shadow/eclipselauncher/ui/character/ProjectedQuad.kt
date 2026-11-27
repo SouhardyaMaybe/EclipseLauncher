@@ -8,9 +8,8 @@
 package me.shadow.eclipselauncher.ui.character
 
 import android.graphics.Canvas
-import android.graphics.LinearGradient
 import android.graphics.Paint
-import android.graphics.Shader
+import android.graphics.Path
 
 /**
  * A single quad after orthographic projection into screen space.
@@ -23,7 +22,7 @@ import android.graphics.Shader
  * @param lightColor Pre-multiplied ARGB color for this face's lighting.
  * @param shadow Optional 8-float array for the ground-projected shadow quad.
  */
-class ProjectedQuad(
+open class ProjectedQuad(
     val x0: Float, val y0: Float,
     val x1: Float, val y1: Float,
     val x2: Float, val y2: Float,
@@ -39,7 +38,7 @@ class ProjectedQuad(
     val shadow: FloatArray? = null, // 8 floats: xs0,ys0,xs1,ys1,xs2,ys2,xs3,ys3
 ) {
     /** Returns true if this quad is a cape face. */
-    fun isCape(): Boolean = false
+    open fun isCape(): Boolean = false
 
     /** Draws this quad using the given bitmap and paint. */
     fun draw(canvas: Canvas, bitmap: android.graphics.Bitmap, paint: Paint) {
@@ -60,7 +59,7 @@ class ProjectedQuad(
 
         canvas.save()
         // Clip to the quad's shape to avoid bleeding at edges
-        val path = android.graphics.Path()
+        val path = Path()
         path.moveTo(x0, y0)
         path.lineTo(x1, y1)
         path.lineTo(x2, y2)
@@ -79,7 +78,7 @@ class ProjectedQuad(
                 8,
                 s, 0,
                 null, 0,
-                intArrayOf(0x99000000, 0x99000000, 0x99000000, 0x99000000),
+                intArrayOf(0x99000000.toInt(), 0x99000000.toInt(), 0x99000000.toInt(), 0x99000000.toInt()),
                 0,
                 shortArrayOf(0, 1, 2, 0, 2, 3),
                 0,

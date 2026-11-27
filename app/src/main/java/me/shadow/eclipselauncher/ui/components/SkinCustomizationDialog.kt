@@ -51,13 +51,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.foundation.gestures.detectTransformGestures
 import kotlinx.coroutines.launch
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.Account
@@ -76,9 +81,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.sp
 
 /**
  * Skin management for one account: the draggable/zoomable 3D model
@@ -407,7 +409,7 @@ fun SkinModelStage(
                 .padding(12.dp)
                 .then(
                     if (isFullscreen) {
-                        Modifier.windowInsetsPadding(androidx.compose.foundation.layout.WindowInsets.safeDrawing)
+                        Modifier
                     } else {
                         Modifier
                     },
@@ -415,14 +417,14 @@ fun SkinModelStage(
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onFullscreenToggle,
-                modifier = Modifier.size(48.dp).testTag("fullscreenButton"),
+                modifier = Modifier.size(48.dp).tagAsTestTag("fullscreenButton"),
                 colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = MaterialTheme.colorScheme.onSurface,
                 ),
             ) {
                 androidx.compose.material3.Icon(
-                    painter = androidx.compose.ui.res.painterResource(
+                    painter = painterResource(
                         if (isFullscreen) {
                             R.drawable.ic_fullscreen_exit_24
                         } else {
@@ -452,7 +454,7 @@ fun SkinModelStage(
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onEmoteToggle,
-                modifier = Modifier.size(48.dp).testTag("emoteButton"),
+                modifier = Modifier.size(48.dp).tagAsTestTag("emoteButton"),
                 colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
                     containerColor = if (showEmotes) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = if (showEmotes) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -471,7 +473,7 @@ fun SkinModelStage(
 
 /** Loads the skin bitmap from MediaStorage or returns built-in Steve. */
 @Composable
-fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): Bitmap? {
+fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics.Bitmap? {
     val context = androidx.compose.ui.platform.LocalContext.current
     if (skinFileName == null) {
         // Return built-in Steve skin
