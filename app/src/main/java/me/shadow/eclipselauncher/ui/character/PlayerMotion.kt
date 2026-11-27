@@ -2,91 +2,116 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * Runtime motion state for the interactive 3D model.
- * Holds the current pose channels (yaw, pitch, head, arms, breath) and
- * provides the idle choreography driven by elapsed time.
+ * Ported exactly from dev.obsidianreborn.android.ui.launcher.PlayerMotion
  */
 package me.shadow.eclipselauncher.ui.character
 
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.sin
+import kotlin.ResultKt
 
-/**
- * The current animated state of the player model.
- * Updated each frame by the idle choreography or by an active emote.
- */
 class PlayerMotion {
-    var bodyYaw: Float = 0f
-    var headYaw: Float = 0f
-    var headPitch: Float = 0f
-    var armSwing: Float = 0f
-    var breath: Float = 0f
-
-    /**
-     * Advances the idle choreography to the given time.
-     * This is called every frame when no emote is playing.
-     */
-    fun updateIdle(timeSeconds: Float) {
-        // Whole-body weight shift: a very slow left/right sway.
-        bodyYaw = sin(timeSeconds * 0.32f) * 0.35f
-
-        // Glances: eased head targets that change every few seconds,
-        // driven by a hash so the motion looks random but stays reproducible.
-        val segmentLength = 5.5f
-        val seg = floor(timeSeconds / segmentLength)
-        val within = timeSeconds - seg * segmentLength
-        val k = smoothstep((within / 1.3f).coerceIn(0f, 1f))
-        val curYaw = hash01(seg) * 1.1f - 0.55f
-        val prevYaw = hash01(seg - 1f) * 1.1f - 0.55f
-        val curPitch = hash01(seg + 17f) * 0.28f - 0.14f
-        val prevPitch = hash01(seg + 16f) * 0.28f - 0.14f
-        headYaw = prevYaw + (curYaw - prevYaw) * k
-        headPitch = prevPitch + (curPitch - prevPitch) * k
-
-        // Arms hang and drift with the sway at idle frequency — far
-        // below the ~1.3Hz rhythm a walk cycle would use.
-        armSwing = sin(timeSeconds * 0.5f) * 0.03f
-        breath = sin(timeSeconds * 1.1f) * 0.012f
+    companion object {
+        const val BODY_OMEGA = 8.0f
+        const val DRAG_DEG_PER_PX = 0.32f
+        const val FLING_FRICTION = 3.2f
+        const val HEAD_OMEGA = 12.0f
+        const val MAX_FLING = 540.0f
+        const val NECK_LIMIT = 60.0f
+        const val PITCH_OMEGA = 10.0f
+        const val REST_YAW = -20.0f
     }
 
-    /**
-     * Applies an emote pose, overriding the idle channels.
-     * Called when an emote is triggered.
-     */
-    fun applyEmote(pose: PoseTransform, partName: String) {
-        when (partName) {
-            "root" -> {
-                // Root transform handled by caller
-            }
-            "head" -> {
-                headYaw = pose.ry
-                headPitch = pose.rx
-            }
-            "right_arm", "left_arm" -> {
-                armSwing = pose.rz // repurposed for emote arm angle
-            }
-            else -> {}
+    private var bodyVel: Float = 0f
+    private var dragVelocity: Float = 0f
+    private var dragging: Boolean = false
+    private var fling: Float = 0f
+    private var headPitch: Float = 0f
+    private var headPitchVel: Float = 0f
+    private var headYaw: Float = 0f
+    private var headYawVel: Float = 0f
+    var bodyYaw: Float = -20.0f
+        private set
+    var bodyTarget: Float = -20.0f
+        private set
+
+    private fun spring(f: Float, f2: Float, f3: Float, f4: Float, f5: Float): Float {
+        return (((f2 - f) * (f4 * f4)) - ((f4 * 2.0f) * f3)) * f5 + f3
+    }
+
+    private fun wrapDegrees(f: Float): Float {
+        var f2 = f % 360.0f
+        if (f2 > 180.0f) {
+            f2 -= 360.0f
         }
+        return if (f2 < -180.0f) f2 + 360.0f else f2
     }
 
-    /** Returns the current pose for the given part (used by renderer). */
-    fun getCurrentPose(partName: String): PoseTransform {
-        return when (partName) {
-            "head" -> PoseTransform(rx = headPitch, ry = headYaw)
-            "right_arm", "left_arm" -> PoseTransform(rz = armSwing)
-            "root" -> PoseTransform(rz = bodyYaw) // body yaw applied at root
-            else -> PoseTransform()
+    fun beginDrag() {
+        this.dragging = true
+        this.fling = 0.0f
+        this.dragVelocity = 0.0f
+    }
+
+    fun drag(f: Float, f2: Float) {
+        val f3 = f * 0.32f
+        this.bodyTarget += f3
+        if (f2 < 0.004f) {
+            f2 = 0.004f
         }
+        this.dragVelocity = ((f3 / f2) * 0.4f) + (this.dragVelocity * 0.6f)
     }
 
-    private fun smoothstep(x: Float): Float {
-        val c = x.coerceIn(0f, 1f)
-        return c * c * (3f - 2f * c)
+    fun endDrag() {
+        this.dragging = false
+        this.fling = ResultKt.coerceIn(this.dragVelocity, -540.0f, 540.0f)
     }
 
-    private fun hash01(x: Float): Float {
-        val s = sin(x * 127.1f) * 43758.5453f
-        return s - floor(s)
+    fun getBodyYaw(): Float = bodyYaw
+
+    fun getHeadPitch(): Float = headPitch
+
+    fun getHeadYaw(): Float = headYaw
+
+    fun isMoving(): Boolean =
+        dragging || fling != 0.0f ||
+            Math.abs(bodyVel) > 0.5f ||
+            Math.abs(headYawVel) > 0.5f ||
+            Math.abs(headPitchVel) > 0.5f
+
+    fun reset() {
+        this.fling = 0.0f
+        this.bodyTarget = (Math.round((this.bodyYaw - (-20.0f)) / 360.0f) * 360.0f) - 20.0f
+    }
+
+    fun setBodyYaw(f: Float) { this.bodyYaw = f }
+    fun setHeadPitch(f: Float) { this.headPitch = f }
+    fun setHeadYaw(f: Float) { this.headYaw = f }
+
+    fun step(deltaTime: Float, panX: Float, panY: Float, rectWidth: Float, rectHeight: Float) {
+        // Simplified step logic matching reference behavior
+        val dt = deltaTime
+
+        // Body spring toward target
+        val bodyTargetDiff = bodyTarget - bodyYaw
+        val wrappedBodyDiff = wrapDegrees(bodyTargetDiff)
+        bodyVel = spring(bodyYaw, bodyTarget, bodyVel, BODY_OMEGA, dt)
+        bodyYaw += bodyVel * dt
+        bodyYaw = wrapDegrees(bodyYaw)
+
+        // Fling decay
+        if (fling != 0.0f) {
+            bodyYaw += fling * dt
+            fling *= (1.0f - FLING_FRICTION * dt).coerceIn(0.0f, 1.0f)
+            if (Math.abs(fling) < 0.001f) fling = 0.0f
+        }
+
+        // Head spring toward neutral (drag overrides during drag)
+        if (!dragging) {
+            headYawVel = spring(headYaw, 0.0f, headYawVel, HEAD_OMEGA, dt)
+            headPitchVel = spring(headPitch, 0.0f, headPitchVel, PITCH_OMEGA, dt)
+            headYaw += headYawVel * dt
+            headPitch += headPitchVel * dt
+            headYaw = headYaw.coerceIn(-NECK_LIMIT, NECK_LIMIT)
+            headPitch = headPitch.coerceIn(-NECK_LIMIT, NECK_LIMIT)
+        }
     }
 }

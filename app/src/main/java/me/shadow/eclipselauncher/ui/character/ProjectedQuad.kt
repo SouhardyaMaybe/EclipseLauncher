@@ -2,8 +2,7 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * A single quad after projection into screen space.
- * All coordinates are in pixels (Compose Canvas space, y-down).
+ * Ported exactly from dev.obsidianreborn.android.ui.launcher.ProjectedQuad
  */
 package me.shadow.eclipselauncher.ui.character
 
@@ -11,17 +10,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 
-/**
- * A single quad after orthographic projection into screen space.
- * Vertices are ordered counter-clockwise in screen space.
- * @param x0..y3 Projected screen coordinates (8 floats: x0,y0,x1,y1,x2,y2,x3,y3).
- * @param u0..v3 Texture UVs in 0..1 range (mapped from 0..64 skin pixels).
- * @param depth Average Z of the four corners (larger = nearer camera).
- * @param frontFacing True if quad winds counter-clockwise in screen space.
- * @param overlay True for hat/jacket/sleeve/pants overlay layer.
- * @param lightColor Pre-multiplied ARGB color for this face's lighting.
- * @param shadow Optional 8-float array for the ground-projected shadow quad.
- */
 open class ProjectedQuad(
     val x0: Float, val y0: Float,
     val x1: Float, val y1: Float,
@@ -32,17 +20,16 @@ open class ProjectedQuad(
     val u2: Float, val v2: Float,
     val u3: Float, val v3: Float,
     val depth: Float,
-    val frontFacing: Boolean,
-    val overlay: Boolean,
-    val lightColor: Int,
-    val shadow: FloatArray? = null, // 8 floats: xs0,ys0,xs1,ys1,xs2,ys2,xs3,ys3
+    val isFrontFacing: Boolean,
+    val isOverlay: Boolean,
+    val lightingColor: Int,
+    val shadow: FloatArray? = null
 ) {
-    /** Returns true if this quad is a cape face. */
+
     open fun isCape(): Boolean = false
 
-    /** Draws this quad using the given bitmap and paint. */
     fun draw(canvas: Canvas, bitmap: android.graphics.Bitmap, paint: Paint) {
-        if (!frontFacing) return
+        if (!isFrontFacing) return
         if (bitmap == null) return
         val width = bitmap.width.toFloat()
         val height = bitmap.height.toFloat()
@@ -52,13 +39,12 @@ open class ProjectedQuad(
             u0 * width, v0 * height,
             u1 * width, v1 * height,
             u2 * width, v2 * height,
-            u3 * width, v3 * height,
+            u3 * width, v3 * height
         )
         val dst = floatArrayOf(x0, y0, x1, y1, x2, y2, x3, y3)
         if (!matrix.setPolyToPoly(src, 0, dst, 0, 4)) return
 
         canvas.save()
-        // Clip to the quad's shape to avoid bleeding at edges
         val path = Path()
         path.moveTo(x0, y0)
         path.lineTo(x1, y1)
@@ -70,7 +56,6 @@ open class ProjectedQuad(
         canvas.restore()
     }
 
-    /** Draws the ground shadow for this quad. */
     fun drawShadow(canvas: Canvas, paint: Paint) {
         shadow?.let { s ->
             canvas.drawVertices(
@@ -89,7 +74,6 @@ open class ProjectedQuad(
     }
 }
 
-/** Specialized ProjectedQuad for cape faces (drawn with cape bitmap). */
 class CapeProjectedQuad(
     x0: Float, y0: Float,
     x1: Float, y1: Float,
@@ -100,35 +84,31 @@ class CapeProjectedQuad(
     u2: Float, v2: Float,
     u3: Float, v3: Float,
     depth: Float,
-    frontFacing: Boolean,
-    lightColor: Int,
-    shadow: FloatArray? = null,
-) : ProjectedQuad(x0, y0, x1, y1, x2, y2, x3, y3, u0, v0, u1, v1, u2, v2, u3, v3, depth, frontFacing, false, lightColor, shadow) {
+    isFrontFacing: Boolean,
+    lightingColor: Int,
+    shadow: FloatArray? = null
+) : ProjectedQuad(
+    x0, y0, x1, y1, x2, y2, x3, y3,
+    u0, v0, u1, v1, u2, v2, u3, v3,
+    depth, isFrontFacing, false, lightingColor, shadow
+) {
     override fun isCape(): Boolean = true
 }
 
-/** Off-screen buffers for self-shadow rendering (reused each frame). */
 class ShadowBuffers {
     private var verts = FloatArray(0)
     private var colors = IntArray(0)
-    private val layerPaint = Paint().apply {
-        isAntiAlias = false
-        isFilterBitmap = false
-    }
-    private val vertexPaint = Paint().apply {
-        isAntiAlias = false
-        isFilterBitmap = false
-    }
+    private val layerPaint = Paint().apply { isAntiAlias = true }
+    private val vertexPaint = Paint().apply { isAntiAlias = true }
     private val fadePaint = Paint().apply {
-        isAntiAlias = false
-        isFilterBitmap = false
+        xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_IN)
     }
 
     fun getVerts(): FloatArray = verts
-    fun setVerts(newVerts: FloatArray) { verts = newVerts }
     fun getColors(): IntArray = colors
-    fun setColors(newColors: IntArray) { colors = newColors }
     fun getLayerPaint(): Paint = layerPaint
     fun getVertexPaint(): Paint = vertexPaint
     fun getFadePaint(): Paint = fadePaint
+    fun setVerts(fArr: FloatArray) { fArr.getClass(); verts = fArr }
+    fun setColors(iArr: IntArray) { iArr.getClass(); colors = iArr }
 }

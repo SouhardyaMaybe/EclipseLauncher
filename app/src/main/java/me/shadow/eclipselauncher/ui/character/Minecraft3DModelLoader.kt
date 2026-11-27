@@ -2,10 +2,7 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * Loads the hierarchical player model from the JSON asset (models/player_models.json).
- * The JSON contains two variants: "player" (Steve, 4px arms) and "player_slim" (Alex, 3px arms).
- * Each variant is a recursive tree of parts with local pose, polygons (quads), and children.
- * Pure Kotlin — no Android types — so it stays unit-testable.
+ * Ported exactly from dev.obsidianreborn.android.ui.launcher.Minecraft3DModelLoader
  */
 package me.shadow.eclipselauncher.ui.character
 
@@ -16,31 +13,21 @@ import org.json.JSONObject
 import java.io.InputStream
 import java.io.InputStreamReader
 
-/**
- * Singleton loader for the Minecraft player model.
- * Caches the parsed Steve and Alex models.
- */
 object Minecraft3DModelLoader {
     private const val ASSET_PATH = "models/player_models.json"
 
-    /** Parts that use the second (overlay) skin layer. */
     private val OVERLAY_PART_NAMES = setOf(
         "hat",
         "jacket",
         "right_sleeve",
         "left_sleeve",
         "right_pants",
-        "left_pants",
+        "left_pants"
     )
 
     private var cachedSteve: ModelPart3D? = null
     private var cachedAlex: ModelPart3D? = null
 
-    /**
-     * Returns the player model for the given variant.
-     * @param context Android context for asset access.
-     * @param slim True for Alex (3px arms), false for Steve (4px arms).
-     */
     fun getPlayerModel(context: Context, slim: Boolean): ModelPart3D {
         return if (slim) {
             cachedAlex ?: loadModel(context, true).also { cachedAlex = it }
@@ -62,19 +49,16 @@ object Minecraft3DModelLoader {
                 parsePart("root", variantObj, false)
             }
         } catch (e: Exception) {
-            // Fallback: minimal single-box model
             buildFallbackModel()
         }
     }
 
     private fun parsePart(name: String, json: JSONObject, isOverlay: Boolean): ModelPart3D {
-        // Local pose (translation in model-space units)
         val poseArray = json.optJSONArray("pose")
         val px = poseArray?.optDouble(0, 0.0)?.toFloat() ?: 0f
         val py = poseArray?.optDouble(1, 0.0)?.toFloat() ?: 0f
         val pz = poseArray?.optDouble(2, 0.0)?.toFloat() ?: 0f
 
-        // Quads (polygons)
         val quads = mutableListOf<Quad3D>()
         val polysArray = json.optJSONArray("polygons")
         if (polysArray != null) {
@@ -90,7 +74,6 @@ object Minecraft3DModelLoader {
             }
         }
 
-        // Children
         val children = mutableListOf<ModelPart3D>()
         val childrenObj = json.optJSONObject("children")
         if (childrenObj != null) {
@@ -98,7 +81,6 @@ object Minecraft3DModelLoader {
             while (keys.hasNext()) {
                 val childName = keys.next()
                 val childJson = childrenObj.getJSONObject(childName)
-                // Overlay parts are identified by their own key, exactly as the reference does.
                 val childOverlay = childName in OVERLAY_PART_NAMES
                 children.add(parsePart(childName, childJson, childOverlay))
             }
@@ -107,17 +89,16 @@ object Minecraft3DModelLoader {
         return ModelPart3D(name, px, py, pz, quads, children, isOverlay)
     }
 
-    private fun parseVertex(arr: JSONArray): Vertex3D {
+    private fun parseVertex(arr: org.json.JSONArray): Vertex3D {
         return Vertex3D(
             x = arr.optDouble(0, 0.0).toFloat(),
             y = arr.optDouble(1, 0.0).toFloat(),
             z = arr.optDouble(2, 0.0).toFloat(),
             u = arr.optDouble(3, 0.0).toFloat(),
-            v = arr.optDouble(4, 0.0).toFloat(),
+            v = arr.optDouble(4, 0.0).toFloat()
         )
     }
 
-    /** Minimal fallback model (single front quad) if the asset fails. */
     private fun buildFallbackModel(): ModelPart3D {
         val box = Quad3D(
             Vertex3D(-4f, -8f, -4f, 0f, 0f),

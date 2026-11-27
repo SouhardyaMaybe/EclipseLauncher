@@ -2,8 +2,6 @@
  * Copyright 2026 Shadow
  * SPDX-License-Identifier: Apache-2.0
  *
- * 4x4 matrix in row-major order (float[16]): M[row * 4 + col].
- * Used for the Compose Canvas 2D player renderer.
  * Ported exactly from dev.obsidianreborn.android.ui.launcher.Mat4
  */
 package me.shadow.eclipselauncher.ui.character
@@ -11,93 +9,96 @@ package me.shadow.eclipselauncher.ui.character
 import kotlin.math.cos
 import kotlin.math.sin
 
-/**
- * 4x4 matrix in row-major order (float[16]): M[row * 4 + col].
- * Used for the Compose Canvas 2D player renderer.
- */
 class Mat4 {
-    val m = FloatArray(16)
+    private val m = FloatArray(16)
 
-    /** Identity matrix. */
     init {
         identity()
     }
 
-    /** Returns a deep copy of this matrix. */
     fun clone(): Mat4 {
-        val c = Mat4()
-        c.m[0] = m[0]; c.m[1] = m[1]; c.m[2] = m[2]; c.m[3] = m[3]
-        c.m[4] = m[4]; c.m[5] = m[5]; c.m[6] = m[6]; c.m[7] = m[7]
-        c.m[8] = m[8]; c.m[9] = m[9]; c.m[10] = m[10]; c.m[11] = m[11]
-        c.m[12] = m[12]; c.m[13] = m[13]; c.m[14] = m[14]; c.m[15] = m[15]
-        return c
+        return Mat4().copyFrom(this)
     }
 
-    /** Post-multiplies by a translation. */
-    fun translate(tx: Float, ty: Float, tz: Float) {
-        m[12] += m[0] * tx + m[4] * ty + m[8] * tz
-        m[13] += m[1] * tx + m[5] * ty + m[9] * tz
-        m[14] += m[2] * tx + m[6] * ty + m[10] * tz
-        m[15] += m[3] * tx + m[7] * ty + m[11] * tz
+    fun copyFrom(mat4: Mat4): Mat4 {
+        System.arraycopy(mat4.m, 0, this.m, 0, 16)
+        return this
     }
 
-    /**
-     * Post-multiplies by a rotation Rz(rz) * Ry(ry) * Rx(rx).
-     * Parameters match the reference: rotateEulerZYX(rz, ry, rx).
-     * This matches the reference's call convention: rotateEulerZYX(rz, ry, rx).
-     */
-    fun rotateEulerZYX(rz: Float, ry: Float, rx: Float) {
-        val cosRz = cos(rz); val sinRz = sin(rz)
-        val cosRy = cos(ry); val sinRy = sin(ry)
-        val cosRx = cos(rx); val sinRx = sin(rx)
+    fun getM(): FloatArray {
+        return m
+    }
 
-        // Reference rotation matrix for Rz(rz) * Ry(ry) * Rx(rx) (row-major).
-        // Computed from reference: f=rz, f2=ry, f3=rx
-        val r00 = cosRz * cosRy
-        val r01 = sinRz * cosRy
-        val r02 = -sinRy
-
-        val cosRzSinRy = cosRz * sinRy
-        val r10 = cosRzSinRy * sinRx - sinRz * cosRx
-        val r11 = cosRz * cosRx + sinRy * sinRz * sinRx
-        val r12 = cosRy * sinRx
-
-        val r20 = sinRz * sinRx + cosRzSinRy * cosRx
-        val r21 = sinRy * sinRz * cosRx - cosRz * sinRx
-        val r22 = cosRy * cosRx
-
-        // Multiply current matrix by R on the right: M' = M * R
-        for (row in 0..3) {
-            val m0 = m[row * 4 + 0]
-            val m1 = m[row * 4 + 1]
-            val m2 = m[row * 4 + 2]
-            m[row * 4 + 0] = m0 * r00 + m1 * r10 + m2 * r20
-            m[row * 4 + 1] = m0 * r01 + m1 * r11 + m2 * r21
-            m[row * 4 + 2] = m0 * r02 + m1 * r12 + m2 * r22
-            // m[row*4+3] unchanged (always 0 except m[15]=1)
+    fun identity(): Mat4 {
+        for (i in 0 until 16) {
+            m[i] = 0.0f
         }
+        m[0] = 1.0f
+        m[5] = 1.0f
+        m[10] = 1.0f
+        m[15] = 1.0f
+        return this
     }
 
-    /** Transforms a point (x,y,z,1) by this matrix; writes into out[0..2]. */
-    fun transformPoint(x: Float, y: Float, z: Float, out: FloatArray, outOffset: Int = 0) {
-        out[outOffset] = m[0] * x + m[4] * y + m[8] * z + m[12]
-        out[outOffset + 1] = m[1] * x + m[5] * y + m[9] * z + m[13]
-        out[outOffset + 2] = m[2] * x + m[6] * y + m[10] * z + m[14]
-        // w = m[3]*x + m[7]*y + m[11]*z + m[15] — always 1 for affine
+    fun multiply(mat4: Mat4): Mat4 {
+        val fArr = FloatArray(16)
+        for (i in 0 until 4) {
+            for (i2 in 0 until 4) {
+                var f = 0.0f
+                for (i3 in 0 until 4) {
+                    f += this.m[(i3 * 4) + i2] * mat4.m[(i * 4) + i3]
+                }
+                fArr[(i * 4) + i2] = f
+            }
+        }
+        System.arraycopy(fArr, 0, this.m, 0, 16)
+        return this
     }
 
-    /** In-place transform of a point (x,y,z,1) by this matrix. */
-    fun transformPointInPlace(v: FloatArray) {
-        val x = v[0]; val y = v[1]; val z = v[2]
-        v[0] = m[0] * x + m[4] * y + m[8] * z + m[12]
-        v[1] = m[1] * x + m[5] * y + m[9] * z + m[13]
-        v[2] = m[2] * x + m[6] * y + m[10] * z + m[14]
+    fun rotateEulerZYX(f: Float, f2: Float, f3: Float): Mat4 {
+        val fCos = kotlin.math.cos(f.toDouble()).toFloat()
+        val fSin = kotlin.math.sin(f.toDouble()).toFloat()
+        val fCos2 = kotlin.math.cos(f2.toDouble()).toFloat()
+        val fSin2 = kotlin.math.sin(f2.toDouble()).toFloat()
+        val fCos3 = kotlin.math.cos(f3.toDouble()).toFloat()
+        val fSin3 = kotlin.math.sin(f3.toDouble()).toFloat()
+        val mat4 = Mat4()
+        val fArr = mat4.m
+        fArr[0] = fCos * fCos2
+        fArr[1] = fSin * fCos2
+        fArr[2] = -fSin2
+        fArr[3] = 0.0f
+        val f4 = fCos * fSin2
+        fArr[4] = (f4 * fSin3) - (fSin * fCos3)
+        val f5 = fSin2 * fSin
+        fArr[5] = (fCos * fCos3) + (f5 * fSin3)
+        fArr[6] = fCos2 * fSin3
+        fArr[7] = 0.0f
+        fArr[8] = (fSin * fSin3) + (f4 * fCos3)
+        fArr[9] = (f5 * fCos3) - (fCos * fSin3)
+        fArr[10] = fCos2 * fCos3
+        fArr[11] = 0.0f
+        fArr[12] = 0.0f
+        fArr[13] = 0.0f
+        fArr[14] = 0.0f
+        fArr[15] = 1.0f
+        return multiply(mat4)
     }
 
-    private fun identity() {
-        m[0] = 1f; m[1] = 0f; m[2] = 0f; m[3] = 0f
-        m[4] = 0f; m[5] = 1f; m[6] = 0f; m[7] = 0f
-        m[8] = 0f; m[9] = 0f; m[10] = 1f; m[11] = 0f
-        m[12] = 0f; m[13] = 0f; m[14] = 0f; m[15] = 1f
+    fun transformPoint(f: Float, f2: Float, f3: Float, fArr: FloatArray, i: Int) {
+        fArr.getClass()
+        val fArr2 = this.m
+        fArr[i] = (fArr2[8] * f3) + (fArr2[4] * f2) + (fArr2[0] * f) + fArr2[12]
+        fArr[i + 1] = (fArr2[9] * f3) + (fArr2[5] * f2) + (fArr2[1] * f) + fArr2[13]
+        fArr[i + 2] = (fArr2[10] * f3) + (fArr2[6] * f2) + (fArr2[2] * f) + fArr2[14]
+    }
+
+    fun translate(f: Float, f2: Float, f3: Float): Mat4 {
+        val mat4 = Mat4()
+        val fArr = mat4.m
+        fArr[12] = f
+        fArr[13] = f2
+        fArr[14] = f3
+        return multiply(mat4)
     }
 }

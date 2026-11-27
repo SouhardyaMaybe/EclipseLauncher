@@ -46,7 +46,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -64,8 +63,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTransformGestures
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
@@ -93,11 +90,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 
-/**
- * Skin management for one account: the draggable/zoomable 3D model
- * plus pick/clear actions for skin. Emote picker for 8 poses.
- * For Microsoft accounts, the model is shown but pick/clear actions are hidden.
- */
 @Composable
 fun SkinCustomizationDialog(
     account: Account,
@@ -110,7 +102,6 @@ fun SkinCustomizationDialog(
     val scope = rememberCoroutineScope()
     val skinError = stringResource(R.string.error_skin_size)
     val capeError = stringResource(R.string.error_cape_size)
-    // Saveable so rotating while full screen keeps the full-screen dialog.
     var isFullscreen by rememberSaveable { mutableStateOf(false) }
 
     val pickSkin = rememberLauncherForActivityResult(
@@ -142,7 +133,6 @@ fun SkinCustomizationDialog(
         }
     }
 
-    // Animation state
     val animationTime by animateFloatAsState(
         targetValue = 0f,
         animationSpec = infiniteRepeatable(
@@ -152,20 +142,14 @@ fun SkinCustomizationDialog(
         label = "skinDialogAnimTime",
     )
 
-    // Emote picker state
     var showEmotes by remember { mutableStateOf(false) }
     var selectedEmote by remember { mutableStateOf(Player3DAnimation.IDLE) }
 
-    // Look target for head tracking
     val lookTarget = remember { PlayerLookTarget() }
-
-    // Drag state for coordinating head tracking (MutableState for passing to child composable)
-    val isDragging = remember { mutableStateOf(false) }
+    val playerMotion = remember { PlayerMotion() }
+    var isDragging by remember { mutableStateOf(false) }
 
     if (isFullscreen) {
-        // A real window, not a resized card: it spans the whole screen behind
-        // the system bars. Back reaches onDismissRequest, which exits full
-        // screen instead of closing the whole skin dialog.
         Dialog(
             onDismissRequest = { isFullscreen = false },
             properties = DialogProperties(
@@ -173,8 +157,6 @@ fun SkinCustomizationDialog(
                 decorFitsSystemWindows = false,
             ),
         ) {
-            // Set dialog window to fill entire screen (LaunchedEffect runs after composition
-            // when the Dialog window exists). Traverse context wrappers to find a window.
             val context = LocalContext.current
             LaunchedEffect(Unit) {
                 var ctx: android.content.Context? = context
@@ -209,6 +191,7 @@ fun SkinCustomizationDialog(
                     selectedEmote = selectedEmote,
                     onEmoteSelect = { selectedEmote = it },
                     lookTarget = lookTarget,
+                    playerMotion = playerMotion,
                     isDragging = isDragging,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -248,7 +231,6 @@ fun SkinCustomizationDialog(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // The model stage: drag to turn.
                     SkinModelStage(
                         skinFileName = account.skinFileName,
                         skinVariant = account.skinVariant,
@@ -260,13 +242,13 @@ fun SkinCustomizationDialog(
                         selectedEmote = selectedEmote,
                         onEmoteSelect = { selectedEmote = it },
                         lookTarget = lookTarget,
+                        playerMotion = playerMotion,
                         isDragging = isDragging,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
                     )
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    // Emote toggle button
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -300,7 +282,6 @@ fun SkinCustomizationDialog(
                         }
                     }
 
-                    // Pick and clear skin
                     if (canCustomize) {
                         Spacer(modifier = Modifier.height(14.dp))
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -322,7 +303,6 @@ fun SkinCustomizationDialog(
                         }
                     }
 
-                    // Emote picker grid
                     if (showEmotes) {
                         Spacer(modifier = Modifier.height(14.dp))
                         Column(
@@ -348,9 +328,6 @@ fun SkinCustomizationDialog(
     }
 }
 
-/**
- * The model stage shared by the normal card and the full-screen window.
- */
 @Composable
 fun SkinModelStage(
     skinFileName: String?,
@@ -363,6 +340,7 @@ fun SkinModelStage(
     selectedEmote: Player3DAnimation,
     onEmoteSelect: (Player3DAnimation) -> Unit,
     lookTarget: PlayerLookTarget,
+    playerMotion: PlayerMotion,
     isDragging: MutableState<Boolean>,
     modifier: Modifier = Modifier,
 ) {
@@ -381,81 +359,66 @@ fun SkinModelStage(
 
         val skinBitmap = loadSkinBitmap(media, skinFileName)
 
-        // Shared pose state (single source of truth for body/head pose)
-        // Updated by idle choreography in renderer, and by drag gesture here
-        val playerMotion = remember { PlayerMotion() }
-
-        // Track last drag time for gesture end detection (shared with LaunchedEffect)
-        val lastDragTime = remember { mutableStateOf(0L) }
-
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    // Use detectDragGestures for drag (works well for rotation)
-                    detectDragGestures { change, dragAmount ->
-                        // dragAmount is the per-frame delta in pixels
-                        val dragYaw = Math.toRadians((dragAmount.x * 0.32f).toDouble()).toFloat()
-                        val dragPitch = Math.toRadians((dragAmount.y * 0.32f).toDouble()).toFloat()
-                        // Body yaw: drag rotates the entire model
-                        playerMotion.bodyYaw += dragYaw
-                        // Head pitch: drag tilts head up/down (clamped)
-                        playerMotion.headPitch = (playerMotion.headPitch + dragPitch).coerceIn(-1.2f, 1.2f)
-                        // Head yaw: drag also rotates head relative to body (for natural feel)
-                        playerMotion.headYaw += dragYaw * 0.3f
-                        // Mark as dragging
-                        isDragging.value = true
-                        lastDragTime.value = System.currentTimeMillis()
-                        change.consume()
+                    var prevPanX = 0f
+                    var prevPanY = 0f
+                    var gestureStarted = false
+                    detectDragGestures(
+                        onDragStart = {
+                            prevPanX = 0f
+                            prevPanY = 0f
+                            gestureStarted = true
+                            isDragging.value = true
+                        },
+                        onDragEnd = {
+                            gestureStarted = false
+                            isDragging.value = false
+                        },
+                    ) { _, dragAmount ->
+                        if (!gestureStarted) {
+                            prevPanX = dragAmount.x
+                            prevPanY = dragAmount.y
+                            gestureStarted = true
+                        }
+                        val deltaX = dragAmount.x - prevPanX
+                        val deltaY = dragAmount.y - prevPanY
+                        prevPanX = dragAmount.x
+                        prevPanY = dragAmount.y
+                        playerMotion.drag(deltaX, deltaY)
                     }
                 },
             slim = isSlim,
             animation = selectedEmote,
             lookTarget = lookTarget,
-            capeBitmap = null, // Cape disabled for now
+            capeBitmap = null,
             onDraw = {},
             playerMotion = playerMotion,
             dragZoom = 1f,
         )
 
-        // Detect gesture end: if no drag for 100ms, mark as not dragging
         LaunchedEffect(Unit) {
             launch {
                 while (true) {
-                    if (isDragging.value && System.currentTimeMillis() - lastDragTime.value > 100) {
-                        isDragging.value = false
+                    if (!isDragging.value) {
+                        val dx = lookTarget.rootPosition?.x ?: 0f
+                        val dz = lookTarget.rootPosition?.y ?: 0f
+                        val dy = -12f
+                        val dist = sqrt(dx * dx + dz * dz)
+                        val targetYaw = atan2(dx, dz)
+                        val targetPitch = if (dist > 0.001f) -atan2(dy, dist) else 0f
+                        playerMotion.setHeadYaw(playerMotion.getHeadYaw() * 0.9f + targetYaw * 0.1f)
+                        playerMotion.setHeadPitch((playerMotion.getHeadPitch() * 0.9f + targetPitch * 0.1f).coerceIn(-1.2f, 1.2f))
                     }
                     delay(16)
                 }
             }
         }
 
-        // Head look-target tracking: smoothly rotate head towards lookTarget when not dragging.
-        // Runs at frame rate to match renderer's timing.
-        LaunchedEffect(Unit) {
-            launch {
-                while (true) {
-                    if (!isDragging.value) {
-                        // Compute desired head orientation from lookTarget (model space, head center at y=-12)
-                        val dx = lookTarget.x
-                        val dz = lookTarget.z
-                        val dy = lookTarget.y - (-12f)
-                        val dist = sqrt(dx * dx + dz * dz)
-                        val targetYaw = atan2(dx, dz)
-                        val targetPitch = if (dist > 0.001f) -atan2(dy, dist) else 0f
-
-                        // Smooth blend towards target (matches reference's direct assignment feel with interpolation)
-                        playerMotion.headYaw = playerMotion.headYaw * 0.9f + targetYaw * 0.1f
-                        playerMotion.headPitch = (playerMotion.headPitch * 0.9f + targetPitch * 0.1f).coerceIn(-1.2f, 1.2f)
-                    }
-                    delay(16) // ~60fps
-                }
-            }
-        }
-
-        // Full-screen toggle at top-right
         Box(
             modifier = Modifier
                 .align(Alignment.TopEnd)
@@ -490,18 +453,14 @@ fun SkinModelStage(
             }
         }
     }
-
 }
 
-/** Loads the skin bitmap from MediaStorage or returns built-in Steve. */
 @Composable
 fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics.Bitmap {
     val context = androidx.compose.ui.platform.LocalContext.current
     if (skinFileName == null) {
-        // Return the owner-supplied built-in Steve skin.
         return SkinManager.ensureModernSkin(defaultSkin(context))
     }
-    // Try to load from MediaStorage
     val file = media.resolve(skinFileName)
     if (file != null && file.exists()) {
         val inputStream = FileInputStream(file)
@@ -509,11 +468,9 @@ fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics
         inputStream.close()
         return SkinManager.ensureModernSkin(bitmap)
     }
-    // Fallback to the owner-supplied built-in Steve skin.
     return SkinManager.ensureModernSkin(defaultSkin(context))
 }
 
-/** Grid of 8 emote pose icons. */
 @Composable
 fun EmotePickerGrid(
     selectedEmote: Player3DAnimation,
@@ -540,7 +497,6 @@ fun EmotePickerGrid(
     }
 }
 
-/** One icon+text action inside the skin dialog. */
 @Composable
 private fun DialogActionButton(
     icon: ImageVector,
