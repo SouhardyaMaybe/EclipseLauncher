@@ -29,9 +29,7 @@ class PlayerMotion {
     private var headYaw: Float = 0f
     private var headYawVel: Float = 0f
     var bodyYaw: Float = -20.0f
-        private set
     var bodyTarget: Float = -20.0f
-        private set
 
     private fun spring(f: Float, f2: Float, f3: Float, f4: Float, f5: Float): Float {
         return (((f2 - f) * (f4 * f4)) - ((f4 * 2.0f) * f3)) * f5 + f3
@@ -87,24 +85,20 @@ class PlayerMotion {
     fun setHeadYaw(f: Float) { this.headYaw = f }
 
     fun step(deltaTime: Float, panX: Float, panY: Float, rectWidth: Float, rectHeight: Float) {
-        // Simplified step logic matching reference behavior
         val dt = deltaTime
 
-        // Body spring toward target
         val bodyTargetDiff = bodyTarget - bodyYaw
         val wrappedBodyDiff = wrapDegrees(bodyTargetDiff)
         bodyVel = spring(bodyYaw, bodyTarget, bodyVel, BODY_OMEGA, dt)
         bodyYaw += bodyVel * dt
         bodyYaw = wrapDegrees(bodyYaw)
 
-        // Fling decay
         if (fling != 0.0f) {
             bodyYaw += fling * dt
             fling *= (1.0f - FLING_FRICTION * dt).coerceIn(0.0f, 1.0f)
             if (Math.abs(fling) < 0.001f) fling = 0.0f
         }
 
-        // Head spring toward neutral (drag overrides during drag)
         if (!dragging) {
             headYawVel = spring(headYaw, 0.0f, headYawVel, HEAD_OMEGA, dt)
             headPitchVel = spring(headPitch, 0.0f, headPitchVel, PITCH_OMEGA, dt)

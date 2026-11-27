@@ -21,7 +21,7 @@ class Mat4 {
     }
 
     fun copyFrom(mat4: Mat4): Mat4 {
-        System.arraycopy(mat4.m, 0, this.m, 0, 16)
+        java.lang.System.arraycopy(mat4.m, 0, this.m, 0, 16)
         return this
     }
 
@@ -51,7 +51,7 @@ class Mat4 {
                 fArr[(i * 4) + i2] = f
             }
         }
-        System.arraycopy(fArr, 0, this.m, 0, 16)
+        java.lang.System.arraycopy(fArr, 0, this.m, 0, 16)
         return this
     }
 
@@ -85,8 +85,7 @@ class Mat4 {
         return multiply(mat4)
     }
 
-    fun transformPoint(f: Float, f2: Float, f3: Float, fArr: FloatArray, i: Int) {
-        fArr.getClass()
+    fun transformPoint(f: Float, f2: Float, f3: Float, fArr: FloatArray, i: Int = 0) {
         val fArr2 = this.m
         fArr[i] = (fArr2[8] * f3) + (fArr2[4] * f2) + (fArr2[0] * f) + fArr2[12]
         fArr[i + 1] = (fArr2[9] * f3) + (fArr2[5] * f2) + (fArr2[1] * f) + fArr2[13]

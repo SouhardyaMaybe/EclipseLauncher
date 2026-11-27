@@ -31,9 +31,9 @@ class ModelPart3D(
         if (this === other) return true
         if (other !is ModelPart3D) return false
         return Intrinsics.areEqual(name, other.name) &&
-            Float.compare(pivotX, other.pivotX) == 0 &&
-            Float.compare(pivotY, other.pivotY) == 0 &&
-            Float.compare(pivotZ, other.pivotZ) == 0 &&
+            java.lang.Float.floatToIntBits(pivotX) == java.lang.Float.floatToIntBits(other.pivotX) &&
+            java.lang.Float.floatToIntBits(pivotY) == java.lang.Float.floatToIntBits(other.pivotY) &&
+            java.lang.Float.floatToIntBits(pivotZ) == java.lang.Float.floatToIntBits(other.pivotZ) &&
             Intrinsics.areEqual(quads, other.quads) &&
             Intrinsics.areEqual(children, other.children) &&
             isOverlay == other.isOverlay
@@ -41,9 +41,9 @@ class ModelPart3D(
 
     override fun hashCode(): Int {
         var result = name.hashCode()
-        result = result * 31 + Float.floatToIntBits(pivotX)
-        result = result * 31 + Float.floatToIntBits(pivotY)
-        result = result * 31 + Float.floatToIntBits(pivotZ)
+        result = result * 31 + java.lang.Float.floatToIntBits(pivotX)
+        result = result * 31 + java.lang.Float.floatToIntBits(pivotY)
+        result = result * 31 + java.lang.Float.floatToIntBits(pivotZ)
         result = result * 31 + quads.hashCode()
         result = result * 31 + children.hashCode()
         result = result * 31 + if (isOverlay) 1 else 0

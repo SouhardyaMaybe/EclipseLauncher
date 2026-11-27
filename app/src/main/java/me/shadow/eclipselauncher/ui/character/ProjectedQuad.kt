@@ -109,6 +109,6 @@ class ShadowBuffers {
     fun getLayerPaint(): Paint = layerPaint
     fun getVertexPaint(): Paint = vertexPaint
     fun getFadePaint(): Paint = fadePaint
-    fun setVerts(fArr: FloatArray) { fArr.getClass(); verts = fArr }
-    fun setColors(iArr: IntArray) { iArr.getClass(); colors = iArr }
+    fun setVerts(fArr: FloatArray) { verts = fArr }
+    fun setColors(iArr: IntArray) { colors = iArr }
 }
