@@ -138,7 +138,7 @@ enum class Player3DAnimation {
             SNEAK -> when (partName) {
                 "right_arm" -> PoseTransform(rx = 0.4f, ty = 2.0f)
                 "right_leg" -> PoseTransform(rx = -0.05f, tz = 2.5f)
-                "body" -> PoseTransform(rx = 0.5f, ty = 2.0f)
+                "body" -> PoseTransform(rx = 0.3f, ty = 2.0f)
                 "head" -> PoseTransform(ty = 2.6f)
                 "left_arm" -> PoseTransform(rx = 0.4f, ty = 2.0f)
                 "left_leg" -> PoseTransform(rx = -0.05f, tz = 2.5f)

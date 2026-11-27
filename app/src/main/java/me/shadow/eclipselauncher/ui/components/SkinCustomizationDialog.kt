@@ -173,6 +173,7 @@ fun SkinCustomizationDialog(
                             WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.MATCH_PARENT
                         )
+                        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
                         break
                     }
                     ctx = if (ctx is android.content.ContextWrapper) ctx.baseContext else null
