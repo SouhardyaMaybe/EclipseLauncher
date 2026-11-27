@@ -46,6 +46,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -63,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.gestures.detectDragGestures
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
@@ -417,8 +419,7 @@ fun SkinModelStage(
         // Head look-target tracking: smoothly rotate head towards lookTarget when not dragging.
         // Runs at frame rate to match renderer's timing.
         LaunchedEffect(Unit) {
-            val scope = coroutineScope
-            scope.launch {
+            launch {
                 while (true) {
                     if (!isDragging.value) {
                         // Compute desired head orientation from lookTarget (model space, head center at y=-12)
