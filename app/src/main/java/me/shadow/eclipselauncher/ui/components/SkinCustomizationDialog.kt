@@ -383,15 +383,9 @@ fun SkinModelStage(
                         },
                     ) { _, dragAmount ->
                         if (!gestureStarted) {
-                            prevPanX = dragAmount.x
-                            prevPanY = dragAmount.y
                             gestureStarted = true
                         }
-                        val deltaX = dragAmount.x - prevPanX
-                        val deltaY = dragAmount.y - prevPanY
-                        prevPanX = dragAmount.x
-                        prevPanY = dragAmount.y
-                        playerMotion.drag(deltaX, deltaY)
+                        playerMotion.drag(dragAmount.x, dragAmount.y)
                     }
                 },
             slim = isSlim,

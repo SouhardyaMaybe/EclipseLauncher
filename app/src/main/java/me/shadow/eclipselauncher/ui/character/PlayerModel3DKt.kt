@@ -91,10 +91,8 @@ fun Minecraft3DPlayer(
         val timeSeconds = animTime
         animTime = (timeSeconds + (1f / 60f)) % 10000f
 
-        // Only advance idle choreography for IDLE animation
-        if (animation == Player3DAnimation.IDLE) {
-            playerMotion.step(1f / 60f, 0f, 0f, width, height)
-        }
+        // Always advance player motion (drag rotation, spring to target)
+        playerMotion.step(1f / 60f, 0f, 0f, width, height)
 
         val scale = (height * MODEL_FRAME_FRACTION / MODEL_HEIGHT_UNITS) * dragZoom
         val cx = width / 2f
