@@ -32,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.EmojiEmotions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -276,8 +275,8 @@ fun SkinCustomizationDialog(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.Center,
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.EmojiEmotions,
+                                androidx.compose.material3.Icon(
+                                    painter = painterResource(R.drawable.ic_emoji_24),
                                     contentDescription = stringResource(R.string.emotes_section),
                                     tint = if (showEmotes) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(17.dp),
@@ -441,7 +440,7 @@ fun SkinModelStage(
                 ),
             ) {
                 androidx.compose.material3.Icon(
-                    imageVector = EmojiEmotions,
+                    painter = painterResource(R.drawable.ic_emoji_24),
                     contentDescription = stringResource(R.string.emotes_section),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
