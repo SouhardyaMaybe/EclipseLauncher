@@ -279,26 +279,6 @@ fun SkinCustomizationDialog(
                             )
                         }
                     }
-
-                    if (showEmotes) {
-                        Spacer(modifier = Modifier.height(14.dp))
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.emotes_choose),
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            EmotePickerGrid(
-                                selectedEmote = selectedEmote,
-                                onEmoteSelect = { selectedEmote = it },
-                                animationTime = animationTime,
-                            )
-                        }
-                    }
                 }
             }
         }
@@ -408,7 +388,7 @@ fun SkinModelStage(
                 ),
             ) {
                 androidx.compose.material3.Icon(
-                    painter = painterResource(R.drawable.ic_emoji_24),
+                    painter = painterResource(if (showEmotePicker) R.drawable.ic_close_24 else R.drawable.ic_emoji_24),
                     contentDescription = stringResource(R.string.emotes_section),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
@@ -416,7 +396,7 @@ fun SkinModelStage(
             }
         }
 
-        // Emote picker grid at bottom
+        // Emote picker pill panel at bottom
         if (showEmotePicker) {
             Box(
                 modifier = Modifier
@@ -425,26 +405,37 @@ fun SkinModelStage(
             ) {
                 androidx.compose.foundation.lazy.LazyRow(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(4.dp),
                 ) {
                     items(Player3DAnimation.values().size) { index ->
                         val emote = Player3DAnimation.values()[index]
-                        androidx.compose.material3.FilledTonalIconButton(
+                        androidx.compose.material3.IconButton(
                             onClick = {
                                 onEmoteSelect(emote)
                                 showEmotePicker = false
                             },
-                            modifier = Modifier.size(48.dp),
+                            modifier = Modifier.size(56.dp),
                             colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = if (selectedEmote == emote) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
                                 contentColor = if (selectedEmote == emote) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                             ),
                         ) {
-                            Text(
-                                text = emoteName(emote),
-                                style = MaterialTheme.typography.labelSmall,
-                                modifier = Modifier.align(Alignment.Center),
+                            val emoteDrawable = when (emote) {
+                                Player3DAnimation.IDLE -> R.drawable.ic_emote_idle_24
+                                Player3DAnimation.WAVE -> R.drawable.ic_emote_wave_24
+                                Player3DAnimation.CLAP -> R.drawable.ic_emote_clap_24
+                                Player3DAnimation.CHEER -> R.drawable.ic_emote_cheer_24
+                                Player3DAnimation.DANCE -> R.drawable.ic_emote_dance_24
+                                Player3DAnimation.ZOMBIE -> R.drawable.ic_emote_zombie_24
+                                Player3DAnimation.SNEAK -> R.drawable.ic_emote_sneak_24
+                                Player3DAnimation.WALK -> R.drawable.ic_emote_walk_24
+                            }
+                            androidx.compose.material3.Icon(
+                                painter = painterResource(emoteDrawable),
+                                contentDescription = stringResource(R.string.emotes_section),
+                                tint = if (selectedEmote == emote) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(32.dp),
                             )
                         }
                     }
