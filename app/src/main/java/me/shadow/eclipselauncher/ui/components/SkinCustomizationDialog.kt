@@ -145,10 +145,9 @@ fun SkinCustomizationDialog(
         label = "skinDialogAnimTime",
     )
 
-    // Drag/pinch state
+    // Drag state (no zoom)
     var yaw by remember { mutableStateOf(0f) }
     var pitch by remember { mutableStateOf(0f) }
-    var zoom by remember { mutableStateOf(1f) }
 
     // Emote picker state
     var showEmotes by remember { mutableStateOf(false) }
@@ -203,14 +202,12 @@ fun SkinCustomizationDialog(
                     showEmotes = showEmotes,
                     selectedEmote = selectedEmote,
                     onEmoteSelect = { selectedEmote = it },
-                    yaw = yaw, pitch = pitch, zoom = zoom,
+                    yaw = yaw,
                     onDrag = { dy, dz ->
                         // The gesture reports degrees; the renderer expects radians.
+                        // Only yaw (horizontal drag) rotates the model.
                         yaw += Math.toRadians(dy.toDouble()).toFloat()
-                        pitch = (pitch + Math.toRadians(dz.toDouble()).toFloat())
-                            .coerceIn(-1.2f, 1.2f)
                     },
-                    onZoom = { z -> zoom = z.coerceIn(0.65f, 2.6f) },
                     lookTarget = lookTarget,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -250,7 +247,7 @@ fun SkinCustomizationDialog(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    // The model stage: drag to turn, pinch to zoom.
+                    // The model stage: drag to turn.
                     SkinModelStage(
                         skinFileName = account.skinFileName,
                         skinVariant = account.skinVariant,
@@ -261,14 +258,12 @@ fun SkinCustomizationDialog(
                         showEmotes = showEmotes,
                         selectedEmote = selectedEmote,
                         onEmoteSelect = { selectedEmote = it },
-                        yaw = yaw, pitch = pitch, zoom = zoom,
+                        yaw = yaw,
                         onDrag = { dy, dz ->
                             // The gesture reports degrees; the renderer expects radians.
+                            // Only yaw (horizontal drag) rotates the model.
                             yaw += Math.toRadians(dy.toDouble()).toFloat()
-                            pitch = (pitch + Math.toRadians(dz.toDouble()).toFloat())
-                                .coerceIn(-1.2f, 1.2f)
                         },
-                        onZoom = { z -> zoom = z.coerceIn(0.65f, 2.6f) },
                         lookTarget = lookTarget,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
                     )
@@ -372,10 +367,7 @@ fun SkinModelStage(
     selectedEmote: Player3DAnimation,
     onEmoteSelect: (Player3DAnimation) -> Unit,
     yaw: Float,
-    pitch: Float,
-    zoom: Float,
     onDrag: (Float, Float) -> Unit,
-    onZoom: (Float) -> Unit,
     lookTarget: PlayerLookTarget,
     modifier: Modifier = Modifier,
 ) {
@@ -394,24 +386,15 @@ fun SkinModelStage(
 
         val skinBitmap = loadSkinBitmap(media, skinFileName)
 
-        // Track zoom base for pinch gesture (zoomChange is relative to gesture start)
-        var zoomBase by remember { mutableStateOf(1f) }
-
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    // Track zoom base for pinch gesture (first event has zoomChange == 1.0f)
-                    var zoomBase = 1f
-                    detectTransformGestures { _, pan, zoomChange, _ ->
+                    detectTransformGestures { _, pan, _, _ ->
                         // Horizontal: drag right = rotate model right (yaw increases)
                         onDrag(pan.x * 0.32f, pan.y * 0.32f)
-                        // Pinch zoom: zoomChange is scale factor relative to gesture start.
-                        // First event of gesture has zoomChange == 1.0f, capture current zoom as base.
-                        if (zoomChange == 1.0f) zoomBase = zoom
-                        onZoom((zoomBase * zoomChange).coerceIn(0.65f, 2.6f))
                     }
                 },
             slim = isSlim,
@@ -420,8 +403,8 @@ fun SkinModelStage(
             capeBitmap = null, // Cape disabled for now
             onDraw = {},
             dragYaw = yaw,
-            dragPitch = pitch,
-            dragZoom = zoom,
+            dragPitch = 0f,
+            dragZoom = 1f,
         )
 
         // Full-screen toggle at top-right

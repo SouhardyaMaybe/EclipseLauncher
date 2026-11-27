@@ -214,10 +214,10 @@ fun projectModel(
     val faces = mutableListOf<ProjectedQuad>()
     val mat = Mat4()
 
-    // Overall model rotation: yaw around Y, pitch around X for 360° drag rotation.
+    // Overall model rotation: ONLY yaw around Y (reference applies pitch only to head look).
     // Parameter order for rotateEulerZYX is (rz, ry, rx) to match reference convention.
-    // We want Ry(yaw) * Rx(pitch), so call with (rz=0, ry=yaw, rx=pitch).
-    mat.rotateEulerZYX(0f, pose.yaw, pose.bodyPitch)
+    // We want Ry(yaw), so call with (rz=0, ry=yaw, rx=0).
+    mat.rotateEulerZYX(0f, pose.yaw, 0f)
 
     renderPartRecursive(root, mat, pose, timeSeconds, animation, scale, cx, cy, faces)
 
