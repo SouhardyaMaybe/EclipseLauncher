@@ -5,7 +5,7 @@
  * The Compose Canvas 2D renderer for the 3D player model.
  * Uses a custom Mat4, painter's algorithm, orthographic projection, and procedural animations.
  * No OpenGL — all CPU-side vertex transform, depth sort, per-face lighting, and ground shadow.
- * Ported from the reference Obsidian implementation (dev.obsidianreborn.android.ui.launcher).
+ * Ported exactly from dev.obsidianreborn.android.ui.launcher.PlayerModel3DKt
  */
 package me.shadow.eclipselauncher.ui.character
 
@@ -157,8 +157,7 @@ fun projectModel(
     val mat = Mat4()
 
     // Overall model rotation: body yaw around Y (applied at root level).
-    // Parameter order for rotateEulerZYX is (rz, ry, rx) to match reference convention.
-    // We want Ry(bodyYaw), so call with (rz=0, ry=bodyYaw, rx=0).
+    // Reference calls rotateEulerZYX(rz, ry, rx) = (0, bodyYaw, 0).
     mat.rotateEulerZYX(0f, bodyYaw, 0f)
 
     renderPartRecursive(root, mat, timeSeconds, animation, scale, cx, cy, faces, headYaw, headPitch)
@@ -186,6 +185,7 @@ private fun renderPartRecursive(
 
     // Translate to pivot + animation translation (reference order: translate then rotate).
     // The reference applies animation translation (tx,ty,tz) ALONG WITH pivot, BEFORE rotation.
+    // Root gets additional -8 Y offset to center the 32-unit model.
     val rootOffsetY = if (part.name == "root") -8f else 0f
     mat.translate(
         part.pivotX + animTransform.tx,
@@ -202,8 +202,6 @@ private fun renderPartRecursive(
     val rz = animTransform.rz
 
     // Apply rotation. IMPORTANT: Reference calls rotateEulerZYX(rz, ry, rx) parameter order.
-    // Our Mat4.rotateEulerZYX(rx, ry, rz) builds Rz(rz)*Ry(ry)*Rx(rx).
-    // To match reference's rotateEulerZYX(rz, ry, rx), we must call rotateEulerZYX(rz, ry, rx).
     if (rx != 0f || ry != 0f || rz != 0f) {
         if (part.name in ARM_PARTS) {
             // Move the arm rotation centre up to the shoulder (y=-2 from pivot).

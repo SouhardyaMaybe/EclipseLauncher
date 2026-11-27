@@ -4,6 +4,7 @@
  *
  * 4x4 matrix in row-major order (float[16]): M[row * 4 + col].
  * Used for the Compose Canvas 2D player renderer.
+ * Ported exactly from dev.obsidianreborn.android.ui.launcher.Mat4
  */
 package me.shadow.eclipselauncher.ui.character
 
@@ -41,25 +42,29 @@ class Mat4 {
     }
 
     /**
-     * Post-multiplies by a rotation around X, then Y, then Z (Euler ZYX).
-     * The resulting rotation is R = Rz(rz) * Ry(ry) * Rx(rx), matching the
-     * reference renderer's rotateEulerZYX(rz, ry, rx) call convention.
+     * Post-multiplies by a rotation Rz(rz) * Ry(ry) * Rx(rx).
+     * Parameters match the reference: rotateEulerZYX(rz, ry, rx).
+     * This matches the reference's call convention: rotateEulerZYX(rz, ry, rx).
      */
-    fun rotateEulerZYX(rx: Float, ry: Float, rz: Float) {
-        val cx = cos(rx); val sx = sin(rx)
-        val cy = cos(ry); val sy = sin(ry)
-        val cz = cos(rz); val sz = sin(rz)
+    fun rotateEulerZYX(rz: Float, ry: Float, rx: Float) {
+        val cosRz = cos(rz); val sinRz = sin(rz)
+        val cosRy = cos(ry); val sinRy = sin(ry)
+        val cosRx = cos(rx); val sinRx = sin(rx)
 
-        // R = Rz * Ry * Rx (row-major).
-        val r00 = cz * cy
-        val r01 = cz * sy * sx - sz * cx
-        val r02 = cz * sy * cx + sz * sx
-        val r10 = sz * cy
-        val r11 = sz * sy * sx + cz * cx
-        val r12 = sz * sy * cx - cz * sx
-        val r20 = -sy
-        val r21 = cy * sx
-        val r22 = cy * cx
+        // Reference rotation matrix for Rz(rz) * Ry(ry) * Rx(rx) (row-major).
+        // Computed from reference: f=rz, f2=ry, f3=rx
+        val r00 = cosRz * cosRy
+        val r01 = sinRz * cosRy
+        val r02 = -sinRy
+
+        val cosRzSinRy = cosRz * sinRy
+        val r10 = cosRzSinRy * sinRx - sinRz * cosRx
+        val r11 = cosRz * cosRx + sinRy * sinRz * sinRx
+        val r12 = cosRy * sinRx
+
+        val r20 = sinRz * sinRx + cosRzSinRy * cosRx
+        val r21 = sinRy * sinRz * cosRx - cosRz * sinRx
+        val r22 = cosRy * cosRx
 
         // Multiply current matrix by R on the right: M' = M * R
         for (row in 0..3) {
