@@ -78,6 +78,7 @@ import me.shadow.eclipselauncher.data.ImportKind
 import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.data.newId
 import me.shadow.eclipselauncher.ui.character.FULLSCREEN_BUTTON_TAG
+import me.shadow.eclipselauncher.ui.character.EMOTE_BUTTON_TAG
 import me.shadow.eclipselauncher.ui.character.SKIN_MODEL_CANVAS_TAG
 import me.shadow.eclipselauncher.ui.character.EmotePoseIcon
 import me.shadow.eclipselauncher.ui.character.Minecraft3DPlayer
@@ -370,8 +371,7 @@ fun SkinModelStage(
 
         val dragZoom = if (isFullscreen) 0.85f else 1f
 
-        val showEmotePicker by remember { mutableStateOf(false) }
-
+        var showEmotePicker by remember { mutableStateOf(false) }
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
@@ -441,7 +441,7 @@ fun SkinModelStage(
                 ),
             ) {
                 androidx.compose.material3.Icon(
-                    painter = painterResource(R.drawable.ic_emoji_emotions_24),
+                    imageVector = androidx.compose.material.icons.filled.EmojiEmotions,
                     contentDescription = stringResource(R.string.emotes_section),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
