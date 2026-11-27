@@ -6,8 +6,6 @@
  */
 package me.shadow.eclipselauncher.ui.character
 
-import kotlin.ResultKt
-
 class PlayerMotion {
     companion object {
         const val BODY_OMEGA = 8.0f
@@ -60,7 +58,7 @@ class PlayerMotion {
 
     fun endDrag() {
         this.dragging = false
-        this.fling = ResultKt.coerceIn(this.dragVelocity, -540.0f, 540.0f)
+        this.fling = this.dragVelocity.coerceIn(-540.0f, 540.0f)
     }
 
     fun getBodyYaw(): Float = bodyYaw
