@@ -394,18 +394,24 @@ fun SkinModelStage(
 
         val skinBitmap = loadSkinBitmap(media, skinFileName)
 
+        // Track zoom base for pinch gesture (zoomChange is relative to gesture start)
+        var zoomBase by remember { mutableStateOf(1f) }
+
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoomChange, _ ->
-                        // Horizontal: drag right = rotate model right (yaw increases)
-                        onDrag(pan.x * 0.32f, pan.y * 0.32f)
-                        // Pinch zoom
-                        onZoom((zoom * zoomChange).coerceIn(0.65f, 2.6f))
-                    }
+                    detectTransformGestures(
+                        onGestureStart = { zoomBase = zoom },
+                        onGesture = { _, pan, zoomChange, _ ->
+                            // Horizontal: drag right = rotate model right (yaw increases)
+                            onDrag(pan.x * 0.32f, pan.y * 0.32f)
+                            // Pinch zoom: zoomChange is scale factor relative to gesture start
+                            onZoom((zoomBase * zoomChange).coerceIn(0.65f, 2.6f))
+                        }
+                    )
                 },
             slim = isSlim,
             animation = selectedEmote,

@@ -214,8 +214,10 @@ fun projectModel(
     val faces = mutableListOf<ProjectedQuad>()
     val mat = Mat4()
 
-    // Overall model rotation: pitch around X, yaw around Y.
-    mat.rotateEulerZYX(pose.bodyPitch, pose.yaw, 0f)
+    // Overall model rotation: yaw around Y, pitch around X for 360° drag rotation.
+    // Parameter order for rotateEulerZYX is (rz, ry, rx) to match reference convention.
+    // We want Ry(yaw) * Rx(pitch), so call with (rz=0, ry=yaw, rx=pitch).
+    mat.rotateEulerZYX(0f, pose.yaw, pose.bodyPitch)
 
     renderPartRecursive(root, mat, pose, timeSeconds, animation, scale, cx, cy, faces)
 
@@ -239,7 +241,8 @@ private fun renderPartRecursive(
     // Get animation transform for this part
     val animTransform = getPartAnimationTransform(part.name, timeSeconds, animation)
 
-    // Translate to pivot. The reference translates the root by -8 to centre the 32-unit model.
+    // Translate to pivot + animation translation (reference order: translate then rotate).
+    // The reference applies animation translation (tx,ty,tz) ALONG WITH pivot, BEFORE rotation.
     val rootOffsetY = if (part.name == "root") -8f else 0f
     mat.translate(
         part.pivotX + animTransform.tx,
@@ -253,15 +256,17 @@ private fun renderPartRecursive(
     val ry = animTransform.ry + if (isHead) pose.headYaw else 0f
     val rz = animTransform.rz
 
-    // Apply rotation
+    // Apply rotation. IMPORTANT: Reference calls rotateEulerZYX(rz, ry, rx) parameter order.
+    // Our Mat4.rotateEulerZYX(rx, ry, rz) builds Rz(rz)*Ry(ry)*Rx(rx).
+    // To match reference's rotateEulerZYX(rz, ry, rx), we must call rotateEulerZYX(rz, ry, rx).
     if (rx != 0f || ry != 0f || rz != 0f) {
         if (part.name in ARM_PARTS) {
             // Move the arm rotation centre up to the shoulder.
             mat.translate(0f, -2f, 0f)
-            mat.rotateEulerZYX(rx, ry, rz)
+            mat.rotateEulerZYX(rz, ry, rx)
             mat.translate(0f, 2f, 0f)
         } else {
-            mat.rotateEulerZYX(rx, ry, rz)
+            mat.rotateEulerZYX(rz, ry, rx)
         }
     }
 
