@@ -62,9 +62,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.detectDragGestures
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
+import kotlin.math.atan2
+import kotlin.math.sqrt
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.ImportKind
@@ -152,6 +155,9 @@ fun SkinCustomizationDialog(
 
     // Look target for head tracking
     val lookTarget = remember { PlayerLookTarget() }
+
+    // Drag state for coordinating head tracking
+    var isDragging by remember { mutableStateOf(false) }
 
     if (isFullscreen) {
         // A real window, not a resized card: it spans the whole screen behind
@@ -379,30 +385,21 @@ fun SkinModelStage(
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    // Track previous pan to compute per-frame delta
-                    var prevPanX = 0f
-                    var prevPanY = 0f
-                    var gestureStarted = false
-                    detectTransformGestures { _, pan, _, _ ->
-                        // Gesture reports cumulative pan; compute per-frame delta in pixels
-                        if (!gestureStarted) {
-                            prevPanX = pan.x
-                            prevPanY = pan.y
-                            gestureStarted = true
-                        }
-                        val deltaX = pan.x - prevPanX
-                        val deltaY = pan.y - prevPanY
-                        prevPanX = pan.x
-                        prevPanY = pan.y
-                        // Convert pixel delta to radians and apply directly to shared pose
-                        val dragYaw = Math.toRadians((deltaX * 0.32f).toDouble()).toFloat()
-                        val dragPitch = Math.toRadians((deltaY * 0.32f).toDouble()).toFloat()
+                    // Use detectDragGestures for proper start/end handling
+                    detectDragGestures(
+                        onDragStart = { isDragging = true },
+                        onDragEnd = { isDragging = false },
+                    ) { change, dragAmount ->
+                        // dragAmount is the per-frame delta in pixels
+                        val dragYaw = Math.toRadians((dragAmount.x * 0.32f).toDouble()).toFloat()
+                        val dragPitch = Math.toRadians((dragAmount.y * 0.32f).toDouble()).toFloat()
                         // Body yaw: drag rotates the entire model
                         playerMotion.bodyYaw += dragYaw
                         // Head pitch: drag tilts head up/down (clamped)
                         playerMotion.headPitch = (playerMotion.headPitch + dragPitch).coerceIn(-1.2f, 1.2f)
                         // Head yaw: drag also rotates head relative to body (for natural feel)
                         playerMotion.headYaw += dragYaw * 0.3f
+                        change.consume()
                     }
                 },
             slim = isSlim,
@@ -413,6 +410,30 @@ fun SkinModelStage(
             playerMotion = playerMotion,
             dragZoom = 1f,
         )
+
+        // Head look-target tracking: smoothly rotate head towards lookTarget when not dragging.
+        // Runs at frame rate to match renderer's timing.
+        LaunchedEffect(Unit) {
+            val scope = coroutineScope
+            scope.launch {
+                while (true) {
+                    if (!isDragging) {
+                        // Compute desired head orientation from lookTarget (model space, head center at y=-12)
+                        val dx = lookTarget.x
+                        val dz = lookTarget.z
+                        val dy = lookTarget.y - (-12f)
+                        val dist = sqrt(dx * dx + dz * dz)
+                        val targetYaw = atan2(dx, dz)
+                        val targetPitch = if (dist > 0.001f) -atan2(dy, dist) else 0f
+
+                        // Smooth blend towards target (matches reference's direct assignment feel with interpolation)
+                        playerMotion.headYaw = playerMotion.headYaw * 0.9f + targetYaw * 0.1f
+                        playerMotion.headPitch = (playerMotion.headPitch * 0.9f + targetPitch * 0.1f).coerceIn(-1.2f, 1.2f)
+                    }
+                    delay(16) // ~60fps
+                }
+            }
+        }
 
         // Full-screen toggle at top-right
         Box(

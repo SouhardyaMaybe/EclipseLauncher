@@ -110,26 +110,14 @@ fun Minecraft3DPlayer(
         // Advance idle choreography (body sway, head glances, arm swing, breath)
         playerMotion.updateIdle(timeSeconds)
 
-        // Compute head look-at target (in model space, relative to head center at y=-12)
-        // This makes the head track the lookTarget point
-        val headYawToTarget = atan2(lookTarget.x, lookTarget.z)
-        val dx = lookTarget.x
-        val dz = lookTarget.z
-        val dy = lookTarget.y - (-12f)
-        val dist = sqrt(dx * dx + dz * dz)
-        val headPitchToTarget = if (dist > 0.001f) -atan2(dy, dist) else 0f
-
-        // Blend look-at with current head pose (smooth tracking)
-        // Reference uses direct assignment in step(); we blend for smoothness
-        playerMotion.headYaw = playerMotion.headYaw * 0.9f + headYawToTarget * 0.1f
-        playerMotion.headPitch = playerMotion.headPitch * 0.9f + headPitchToTarget * 0.1f
-
         // Reference framing: 72% of the node height, centered on the node.
         val scale = (height * MODEL_FRAME_FRACTION / MODEL_HEIGHT_UNITS) * dragZoom
         val cx = width / 2f
         val cy = height / 2f
 
         // Project all parts and draw.
+        // PlayerMotion holds the complete pose (idle + drag + look target via gesture handler).
+        // Renderer uses it directly — no additional blending here.
         val faces = projectModel(
             root = model,
             timeSeconds = timeSeconds,
