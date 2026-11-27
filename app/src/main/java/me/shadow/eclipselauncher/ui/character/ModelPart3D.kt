@@ -8,8 +8,6 @@
  */
 package me.shadow.eclipselauncher.ui.character
 
-import kotlin.collections.buildList
-
 /**
  * A single part of the hierarchical model (root → body → head/arms, legs on root).
  * Each part has a local pivot, a list of quads, and child parts.
@@ -40,11 +38,11 @@ class ModelPart3D(
 
     /** Returns all parts in this subtree (including this one) for flat iteration. */
     fun allParts(): List<ModelPart3D> {
-        return buildList {
-            add(this)
-            for (child in children) {
-                addAll(child.allParts())
-            }
+        val result = mutableListOf<ModelPart3D>()
+        result.add(this)
+        for (child in children) {
+            result.addAll(child.allParts())
         }
+        return result
     }
 }

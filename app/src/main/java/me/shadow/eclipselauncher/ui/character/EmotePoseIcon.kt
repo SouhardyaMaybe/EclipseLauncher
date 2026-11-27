@@ -8,11 +8,11 @@
 package me.shadow.eclipselauncher.ui.character
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.text.overflow.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.shadow.eclipselauncher.ui.theme.EclipseRadius
@@ -57,7 +58,7 @@ fun EmotePoseIcon(
             .border(if (selected) 2.dp else 0.dp, borderColor, RoundedCornerShape(EclipseRadius.tile))
             .pointerInput(Unit) {
                 onClick?.let { click ->
-                    detectTapGestures(onClick = click)
+                    detectTapGestures(onTap = click)
                 }
             },
         contentAlignment = Alignment.Center,
@@ -69,7 +70,7 @@ fun EmotePoseIcon(
                 text = emoteLabel,
                 fontSize = 10.sp,
                 maxLines = 1,
-                overflow = androidx.compose.ui.text.overflow.TextOverflow.Ellipsis,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

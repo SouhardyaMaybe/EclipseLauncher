@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.floor
-import kotlin.math.minOf
+import kotlin.math.min
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -64,7 +64,7 @@ fun Minecraft3DPlayer(
             .tagAsTestTag("skinModelCanvas"),
     ) {
         val canvasDrawScope = this as CanvasDrawScope
-        val nativeCanvas = AndroidCanvas_androidKt.getNativeCanvas(canvasDrawScope.drawContext.getCanvas())
+        val nativeCanvas = AndroidCanvas_androidKt.getNativeCanvas(canvasDrawScope.drawContext.canvas)
 
         val width = canvasDrawScope.size.width
         val height = canvasDrawScope.size.height
@@ -92,7 +92,7 @@ fun Minecraft3DPlayer(
         val finalPose = combinePose(pose, animation, timeSeconds, headYaw, headPitch)
 
         // Scale: fit model into canvas with some margin
-        val scale = minOf(height / 46f, width / 30f)
+        val scale = min(height / 46f, width / 30f)
         val cx = width / 2f
         val cy = height * 0.46f
 
@@ -274,7 +274,7 @@ private class InternalFace(
     val frontFacing: Boolean,
     val overlay: Boolean,
 ) {
-    val shadow: FloatArray? = null
+    var shadow: FloatArray? = null
 }
 
 /** Draws all faces to the native canvas. */

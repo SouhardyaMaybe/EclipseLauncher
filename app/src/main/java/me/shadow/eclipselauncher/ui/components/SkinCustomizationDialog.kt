@@ -58,12 +58,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.test.tagAsTestTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.gestures.detectTransformGestures
 import kotlinx.coroutines.launch
+import java.io.FileInputStream
 import me.shadow.eclipselauncher.R
 import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.ImportKind
@@ -383,8 +385,10 @@ fun SkinModelStage(
         val isSlim = (skinVariant == "SLIM")
         val lookTarget = remember { PlayerLookTarget() }
 
+        val skinBitmap = loadSkinBitmap(media, skinFileName)
+
         Minecraft3DPlayer(
-            bitmap = loadSkinBitmap(media, skinFileName),
+            bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(Unit) {
@@ -473,7 +477,7 @@ fun SkinModelStage(
 
 /** Loads the skin bitmap from MediaStorage or returns built-in Steve. */
 @Composable
-fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics.Bitmap? {
+fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics.Bitmap {
     val context = androidx.compose.ui.platform.LocalContext.current
     if (skinFileName == null) {
         // Return built-in Steve skin
@@ -483,14 +487,12 @@ fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics
         return SkinManager.ensureModernSkin(bitmap)
     }
     // Try to load from MediaStorage
-    val uri = media.resolve(skinFileName)
-    if (uri != null) {
-        val inputStream = context.contentResolver.openInputStream(uri)
-        if (inputStream != null) {
-            val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
-            inputStream.close()
-            return SkinManager.ensureModernSkin(bitmap)
-        }
+    val file = media.resolve(skinFileName)
+    if (file != null && file.exists()) {
+        val inputStream = FileInputStream(file)
+        val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
+        inputStream.close()
+        return SkinManager.ensureModernSkin(bitmap)
     }
     // Fallback to built-in Steve
     val inputStream = context.assets.open("skins/steve.png")
@@ -513,7 +515,8 @@ fun EmotePickerGrid(
         horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
         contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp),
     ) {
-        items(emotes) { emote ->
+        items(emotes.size) { index ->
+            val emote = emotes[index]
             EmotePoseIcon(
                 animation = emote,
                 timeSeconds = animationTime,
