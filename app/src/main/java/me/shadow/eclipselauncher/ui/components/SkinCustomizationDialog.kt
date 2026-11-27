@@ -70,6 +70,8 @@ import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.ImportKind
 import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.data.newId
+import me.shadow.eclipselauncher.ui.character.CharacterTestTags.FULLSCREEN_BUTTON_TAG
+import me.shadow.eclipselauncher.ui.character.CharacterTestTags.SKIN_MODEL_CANVAS_TAG
 import me.shadow.eclipselauncher.ui.character.EmotePoseIcon
 import me.shadow.eclipselauncher.ui.character.Minecraft3DPlayer
 import me.shadow.eclipselauncher.ui.character.Player3DAnimation
@@ -390,6 +392,7 @@ fun SkinModelStage(
             bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
+                .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
                     detectTransformGestures { _, pan, zoomChange, _ ->
                         // Horizontal: drag right = rotate model right (yaw increases)
@@ -412,7 +415,7 @@ fun SkinModelStage(
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onFullscreenToggle,
-                modifier = Modifier.size(48.dp).testTag("fullscreenButton"),
+                modifier = Modifier.size(48.dp).testTag(FULLSCREEN_BUTTON_TAG),
                 colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = MaterialTheme.colorScheme.onSurface,
