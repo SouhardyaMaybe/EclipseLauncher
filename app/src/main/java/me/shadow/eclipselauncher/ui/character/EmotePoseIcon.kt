@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.ui.text.overflow.TextOverflow
+import androidx.compose.ui.text.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import me.shadow.eclipselauncher.ui.theme.EclipseRadius
@@ -58,7 +58,7 @@ fun EmotePoseIcon(
             .border(if (selected) 2.dp else 0.dp, borderColor, RoundedCornerShape(EclipseRadius.tile))
             .pointerInput(Unit) {
                 onClick?.let { click ->
-                    detectTapGestures(onTap = click)
+                    detectTapGestures(onTap = { click() })
                 }
             },
         contentAlignment = Alignment.Center,
