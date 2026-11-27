@@ -381,7 +381,6 @@ fun SkinModelStage(
                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))
             },
         ),
-        contentAlignment = Alignment.Center,
     ) {
         val isSlim = (skinVariant == "SLIM")
         val lookTarget = remember { PlayerLookTarget() }
@@ -406,12 +405,16 @@ fun SkinModelStage(
             lookTarget = lookTarget,
             capeBitmap = null, // Cape disabled for now
             onDraw = {},
+            dragYaw = yaw,
+            dragPitch = pitch,
+            dragZoom = zoom,
         )
 
         // Full-screen toggle at top-right
         Box(
-            modifier = Modifier.padding(12.dp),
-            contentAlignment = Alignment.TopEnd,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(12.dp),
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onFullscreenToggle,

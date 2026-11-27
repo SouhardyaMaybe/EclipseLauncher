@@ -44,6 +44,9 @@ import kotlin.math.sqrt
  * @param lookTarget Point in model space for the head to look at.
  * @param capeBitmap Optional cape bitmap.
  * @param onDraw Callback invoked after the model is drawn (for nametag anchor).
+ * @param dragYaw User drag rotation around Y axis (radians).
+ * @param dragPitch User drag tilt around X axis (radians).
+ * @param dragZoom User pinch zoom factor.
  */
 @Composable
 fun Minecraft3DPlayer(
@@ -54,6 +57,9 @@ fun Minecraft3DPlayer(
     lookTarget: PlayerLookTarget,
     capeBitmap: Bitmap? = null,
     onDraw: () -> Unit = {},
+    dragYaw: Float = 0f,
+    dragPitch: Float = 0f,
+    dragZoom: Float = 1f,
 ) {
     // Animation time state (drives idle choreography)
     var animTime by mutableFloatStateOf(0f)
@@ -86,11 +92,11 @@ fun Minecraft3DPlayer(
         val headYaw = computeHeadYaw(lookTarget)
         val headPitch = computeHeadPitch(lookTarget)
 
-        // Combine: idle pose + animation overrides + look target
-        val finalPose = combinePose(pose, animation, timeSeconds, headYaw, headPitch)
+        // Combine: idle pose + animation overrides + look target + user drag
+        val finalPose = combinePose(pose, animation, timeSeconds, headYaw, headPitch, dragYaw, dragPitch)
 
-        // Scale: fit model into canvas with some margin
-        val scale = min(height / 46f, width / 30f)
+        // Scale: fit model into canvas with some margin, apply user zoom
+        val scale = min(height / 46f, width / 30f) * dragZoom
         val cx = width / 2f
         val cy = height * 0.46f
 
@@ -131,31 +137,35 @@ private fun buildPose(t: Float, animation: Player3DAnimation): PoseTransform {
     )
 }
 
-/** Combines idle pose with animation overrides and look target. */
+/** Combines idle pose with animation overrides, look target, and user drag. */
 private fun combinePose(
     base: PoseTransform,
     animation: Player3DAnimation,
     t: Float,
     lookYaw: Float,
     lookPitch: Float,
+    dragYaw: Float = 0f,
+    dragPitch: Float = 0f,
 ): PoseTransform {
     if (animation == Player3DAnimation.IDLE) {
         return PoseTransform(
-            yaw = base.yaw,
+            yaw = base.yaw + dragYaw,
             headYaw = lookYaw,
             headPitch = lookPitch,
             armSwing = base.armSwing,
             breath = base.breath,
+            bodyPitch = dragPitch,
         )
     }
 
     // For emotes, use the emote's fixed pose for arms/legs, but keep look target for head
     return PoseTransform(
-        yaw = base.yaw,
+        yaw = base.yaw + dragYaw,
         headYaw = lookYaw,
         headPitch = lookPitch,
         armSwing = getPartAnimationTransform("right_arm", 0f, animation).rz,
         breath = base.breath,
+        bodyPitch = dragPitch,
     )
 }
 
@@ -195,6 +205,11 @@ private fun projectModel(
 ): List<ProjectedQuad> {
     val faces = mutableListOf<ProjectedQuad>()
     val mat = Mat4()
+
+    // Apply overall model rotation (yaw around Y, pitch around X)
+    if (pose.yaw != 0f || pose.bodyPitch != 0f) {
+        mat.rotateEulerZYX(0f, pose.yaw, pose.bodyPitch)
+    }
 
     renderPartRecursive(root, mat, pose, 0f, Player3DAnimation.IDLE, faces)
 
