@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.align
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -408,16 +407,8 @@ fun SkinModelStage(
 
         // Full-screen toggle at top-right
         Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(12.dp)
-                .then(
-                    if (isFullscreen) {
-                        Modifier
-                    } else {
-                        Modifier
-                    },
-                ),
+            modifier = Modifier.padding(12.dp),
+            contentAlignment = Alignment.TopEnd,
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onFullscreenToggle,
@@ -452,9 +443,8 @@ fun SkinModelStage(
     // Emote toggle button
     if (!isFullscreen) {
         Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(12.dp),
+            modifier = Modifier.padding(12.dp),
+            contentAlignment = Alignment.TopEnd,
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onEmoteToggle,

@@ -18,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +58,12 @@ fun Minecraft3DPlayer(
     // Animation time state (drives idle choreography)
     var animTime by mutableFloatStateOf(0f)
 
+    // Load model once (cached by loader) - in Composable context
+    val context = LocalContext.current
+    val model by remember(slim) {
+        mutableStateOf(Minecraft3DModelLoader.getPlayerModel(context, slim))
+    }
+
     // The actual drawing happens in a Canvas
     Canvas(
         modifier
@@ -66,12 +74,6 @@ fun Minecraft3DPlayer(
         val height = size.height
 
         if (width <= 0f || height <= 0f) return@Canvas
-
-        // Load model once (cached by loader)
-        val model = Minecraft3DModelLoader.getPlayerModel(
-            LocalContext.current,
-            slim
-        )
 
         // Animation time: advance by ~1/60s per frame
         val timeSeconds = animTime
@@ -93,7 +95,7 @@ fun Minecraft3DPlayer(
         val cy = height * 0.46f
 
         // Project all parts
-        val faces = projectModel(model, finalPose, cx, cy, scale)
+        val faces = projectModel(model.value, finalPose, cx, cy, scale)
 
         // Draw: sort by depth (painter's algorithm) and draw
         val nativeCanvas = drawContext.nativeCanvas
