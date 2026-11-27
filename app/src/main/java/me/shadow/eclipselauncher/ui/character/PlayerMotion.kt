@@ -87,8 +87,6 @@ class PlayerMotion {
     fun step(deltaTime: Float, panX: Float, panY: Float, rectWidth: Float, rectHeight: Float) {
         val dt = deltaTime
 
-        val bodyTargetDiff = bodyTarget - bodyYaw
-        val wrappedBodyDiff = wrapDegrees(bodyTargetDiff)
         bodyVel = spring(bodyYaw, bodyTarget, bodyVel, BODY_OMEGA, dt)
         bodyYaw += bodyVel * dt
         bodyYaw = wrapDegrees(bodyYaw)

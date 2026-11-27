@@ -105,6 +105,7 @@ object Minecraft3DModelLoader {
             Vertex3D(-4f, 24f, -4f, 0f, 64f),
             Vertex3D(4f, 24f, -4f, 64f, 64f),
             Vertex3D(4f, -8f, -4f, 64f, 0f),
+            false
         )
         return ModelPart3D("root", 0f, 0f, 0f, listOf(box), emptyList(), false)
     }

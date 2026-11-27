@@ -148,7 +148,8 @@ fun SkinCustomizationDialog(
 
     val lookTarget = remember { PlayerLookTarget() }
     val playerMotion = remember { PlayerMotion() }
-    var isDragging by remember { mutableStateOf(false) }
+    val isDraggingState = remember { mutableStateOf(false) }
+    val isDragging by isDraggingState
 
     if (isFullscreen) {
         Dialog(
@@ -193,7 +194,7 @@ fun SkinCustomizationDialog(
                     onEmoteSelect = { selectedEmote = it },
                     lookTarget = lookTarget,
                     playerMotion = playerMotion,
-                    isDragging = isDragging,
+                    isDragging = isDraggingState,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -244,7 +245,7 @@ fun SkinCustomizationDialog(
                         onEmoteSelect = { selectedEmote = it },
                         lookTarget = lookTarget,
                         playerMotion = playerMotion,
-                        isDragging = isDragging,
+                        isDragging = isDraggingState,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
                     )
 
