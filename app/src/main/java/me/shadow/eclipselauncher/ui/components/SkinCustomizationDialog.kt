@@ -443,29 +443,6 @@ fun SkinModelStage(
         }
     }
 
-    // Emote toggle button
-    if (!isFullscreen) {
-        Box(
-            modifier = Modifier.padding(12.dp),
-            contentAlignment = Alignment.TopEnd,
-        ) {
-            androidx.compose.material3.FilledTonalIconButton(
-                onClick = onEmoteToggle,
-                modifier = Modifier.size(48.dp).testTag("emoteButton"),
-                colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
-                    containerColor = if (showEmotes) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
-                    contentColor = if (showEmotes) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                ),
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.EmojiEmotions,
-                    contentDescription = stringResource(if (showEmotes) R.string.emotes_hide else R.string.emotes_show),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-        }
-    }
 }
 
 /** Loads the skin bitmap from MediaStorage or returns built-in Steve. */
