@@ -12,3 +12,6 @@ const val SKIN_MODEL_CANVAS_TAG = "skinModelCanvas"
 
 /** Test hook: the real dialog tests use this to find the full-screen toggle button. */
 const val FULLSCREEN_BUTTON_TAG = "fullscreenButton"
+
+/** Test hook: the real dialog tests use this to find the emote toggle button. */
+const val EMOTE_BUTTON_TAG = "emoteButton"

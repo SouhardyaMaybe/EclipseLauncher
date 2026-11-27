@@ -61,6 +61,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -173,7 +176,10 @@ fun SkinCustomizationDialog(
                             WindowManager.LayoutParams.MATCH_PARENT,
                             WindowManager.LayoutParams.MATCH_PARENT
                         )
-                        window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                        WindowCompat.setDecorFitsSystemWindows(window, false)
+                        WindowInsetsControllerCompat(window, window.decorView).hide(
+                            WindowInsetsCompat.Type.systemBars()
+                        )
                         break
                     }
                     ctx = if (ctx is android.content.ContextWrapper) ctx.baseContext else null
@@ -362,6 +368,10 @@ fun SkinModelStage(
 
         val skinBitmap = loadSkinBitmap(media, skinFileName)
 
+        val dragZoom = if (isFullscreen) 0.85f else 1f
+
+        val showEmotePicker by remember { mutableStateOf(false) }
+
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
@@ -395,7 +405,7 @@ fun SkinModelStage(
             capeBitmap = null,
             onDraw = {},
             playerMotion = playerMotion,
-            dragZoom = 1f,
+            dragZoom = dragZoom,
         )
 
         LaunchedEffect(Unit) {
@@ -412,6 +422,65 @@ fun SkinModelStage(
                         playerMotion.headPitch = (playerMotion.headPitch * 0.9f + targetPitch * 0.1f).coerceIn(-1.2f, 1.2f)
                     }
                     delay(16)
+                }
+            }
+        }
+
+        // Emote button bottom-left
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(12.dp),
+        ) {
+            androidx.compose.material3.FilledTonalIconButton(
+                onClick = { showEmotePicker = true },
+                modifier = Modifier.size(48.dp).testTag(EMOTE_BUTTON_TAG),
+                colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                ),
+            ) {
+                androidx.compose.material3.Icon(
+                    painter = painterResource(R.drawable.ic_emoji_emotions_24),
+                    contentDescription = stringResource(R.string.emotes_section),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
+        }
+
+        // Emote picker grid at bottom
+        if (showEmotePicker) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(8.dp),
+            ) {
+                androidx.compose.foundation.lazy.LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(8.dp),
+                ) {
+                    items(Player3DAnimation.values().size) { index ->
+                        val emote = Player3DAnimation.values()[index]
+                        androidx.compose.material3.FilledTonalIconButton(
+                            onClick = {
+                                onEmoteSelect(emote)
+                                showEmotePicker = false
+                            },
+                            modifier = Modifier.size(48.dp),
+                            colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = if (selectedEmote == emote) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
+                                contentColor = if (selectedEmote == emote) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                            ),
+                        ) {
+                            Text(
+                                text = emoteName(emote),
+                                style = MaterialTheme.typography.labelSmall,
+                                modifier = Modifier.align(Alignment.Center),
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -540,5 +609,18 @@ private fun DialogActionButton(
                 maxLines = 1,
             )
         }
+    }
+}
+
+private fun emoteName(animation: Player3DAnimation): String {
+    return when (animation) {
+        Player3DAnimation.IDLE -> "Idle"
+        Player3DAnimation.WAVE -> "Wave"
+        Player3DAnimation.CLAP -> "Clap"
+        Player3DAnimation.CHEER -> "Cheer"
+        Player3DAnimation.DANCE -> "Dance"
+        Player3DAnimation.ZOMBIE -> "Zombie"
+        Player3DAnimation.SNEAK -> "Sneak"
+        Player3DAnimation.WALK -> "Walk"
     }
 }
