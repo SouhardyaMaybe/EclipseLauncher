@@ -34,12 +34,14 @@ class PlayerModelProjectionTest {
         val height = 420f
         val faces = projectModel(
             root = model,
-            pose = PoseTransform(),
             timeSeconds = 0f,
             animation = Player3DAnimation.IDLE,
             cx = width / 2f,
             cy = height / 2f,
             scale = (height * 0.72f) / 32f,
+            bodyYaw = 0f,
+            headYaw = 0f,
+            headPitch = 0f,
         )
 
         assertTrue("model produced no visible faces", faces.size >= 18)
