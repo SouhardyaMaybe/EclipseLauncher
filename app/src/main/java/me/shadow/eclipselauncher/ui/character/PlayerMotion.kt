@@ -22,10 +22,10 @@ class PlayerMotion {
     private var dragVelocity: Float = 0f
     private var dragging: Boolean = false
     private var fling: Float = 0f
-    private var headPitch: Float = 0f
-    private var headPitchVel: Float = 0f
-    private var headYaw: Float = 0f
-    private var headYawVel: Float = 0f
+    var headPitch: Float = 0f
+    var headPitchVel: Float = 0f
+    var headYaw: Float = 0f
+    var headYawVel: Float = 0f
     var bodyYaw: Float = -20.0f
     var bodyTarget: Float = -20.0f
 
@@ -62,12 +62,6 @@ class PlayerMotion {
         this.fling = this.dragVelocity.coerceIn(-540.0f, 540.0f)
     }
 
-    fun getBodyYaw(): Float = bodyYaw
-
-    fun getHeadPitch(): Float = headPitch
-
-    fun getHeadYaw(): Float = headYaw
-
     fun isMoving(): Boolean =
         dragging || fling != 0.0f ||
             Math.abs(bodyVel) > 0.5f ||
@@ -78,10 +72,6 @@ class PlayerMotion {
         this.fling = 0.0f
         this.bodyTarget = (Math.round((this.bodyYaw - (-20.0f)) / 360.0f) * 360.0f) - 20.0f
     }
-
-    fun setBodyYaw(f: Float) { this.bodyYaw = f }
-    fun setHeadPitch(f: Float) { this.headPitch = f }
-    fun setHeadYaw(f: Float) { this.headYaw = f }
 
     fun step(deltaTime: Float, panX: Float, panY: Float, rectWidth: Float, rectHeight: Float) {
         val dt = deltaTime
