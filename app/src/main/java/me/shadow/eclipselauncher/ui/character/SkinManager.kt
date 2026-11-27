@@ -24,9 +24,9 @@ object SkinManager {
                 isAntiAlias = false
             }
             canvas.drawBitmap(bitmap, 0f, 0f, paint)
-            // Mirror right arm (40,16,16,16) -> (32,48)
+            // Mirror right arm (40,16,16,16) -> left arm (32,48)
             mirrorSkinRect(bitmap, result, 40, 16, 16, 16, 32, 48)
-            // Mirror left arm (0,16,16,16) -> (16,48)
+            // Mirror right leg (0,16,16,16) -> left leg (16,48)
             mirrorSkinRect(bitmap, result, 0, 16, 16, 16, 16, 48)
         } else {
             result = bitmap.copy(Bitmap.Config.ARGB_8888, true)

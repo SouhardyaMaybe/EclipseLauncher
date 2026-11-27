@@ -10,29 +10,52 @@
 package me.shadow.eclipselauncher.ui.character
 
 import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.Canvas as NativeCanvas
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.PorterDuffColorFilter
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.unit.dp
-import me.shadow.eclipselauncher.ui.character.SKIN_MODEL_CANVAS_TAG
 import kotlin.math.atan2
-import kotlin.math.cos
 import kotlin.math.floor
-import kotlin.math.min
+import kotlin.math.max
 import kotlin.math.sin
 import kotlin.math.sqrt
+
+/** Parts whose rotation pivots at the shoulder rather than the part origin. */
+private val ARM_PARTS = setOf("right_arm", "left_arm", "right_sleeve", "left_sleeve")
+
+/** Model is 32 units tall; the reference frames it at 72% of the draw node. */
+private const val MODEL_HEIGHT_UNITS = 32f
+private const val MODEL_FRAME_FRACTION = 0.72f
+
+/** Reference perspective divisor and clamp. */
+private const val PERSPECTIVE_DISTANCE = 80f
+private const val PERSPECTIVE_MIN = 0.5f
+private const val PERSPECTIVE_MAX = 2.0f
+
+/** Reference lighting constants. */
+private const val SUN_TO_X = -0.62f
+private const val SUN_TO_Y = -0.38f
+private const val SUN_TO_Z = 0.69f
+private const val SHADOW_DIR_X = 0.45f
+private const val LIGHT_R = 1.2f
+private const val LIGHT_G = 0.75f
+private const val LIGHT_B = 0.38f
+private const val SKY_G = 0.58f
+private const val SKY_B = 0.92f
+private const val AMBIENT_R = 0.35f
+private const val AMBIENT_G = 0.28f
+private const val AMBIENT_B = 0.2f
 
 /**
  * The main 3D player model Composable.
@@ -61,7 +84,7 @@ fun Minecraft3DPlayer(
     dragPitch: Float = 0f,
     dragZoom: Float = 1f,
 ) {
-    // Animation time state (drives idle choreography)
+    // Animation time state (drives idle choreography and emote motion)
     var animTime by mutableFloatStateOf(0f)
 
     // Load model once (cached by loader) - in Composable context
@@ -85,27 +108,24 @@ fun Minecraft3DPlayer(
         val timeSeconds = animTime
         animTime = (timeSeconds + (1f / 60f)) % 10000f
 
-        // Build pose from idle choreography + active animation
-        val pose = buildPose(timeSeconds, animation)
+        // Build the idle base pose (body sway + head glances).
+        val basePose = buildPose(timeSeconds)
 
-        // Head look target: compute head yaw/pitch to look at target
+        // Head look target: compute head yaw/pitch to look at target.
         val headYaw = computeHeadYaw(lookTarget)
         val headPitch = computeHeadPitch(lookTarget)
 
-        // Combine: idle pose + animation overrides + look target + user drag
-        val finalPose = combinePose(pose, animation, timeSeconds, headYaw, headPitch, dragYaw, dragPitch)
+        // Combine the idle base pose with the look target and user drag.
+        val finalPose = combinePose(basePose, headYaw, headPitch, dragYaw, dragPitch)
 
-        // Scale: fit model into canvas with some margin, apply user zoom
-        val scale = min(height / 46f, width / 30f) * dragZoom
+        // Reference framing: 72% of the node height, centered on the node.
+        val scale = (height * MODEL_FRAME_FRACTION / MODEL_HEIGHT_UNITS) * dragZoom
         val cx = width / 2f
-        val cy = height * 0.46f
+        val cy = height / 2f
 
-        // Project all parts
-        val faces = projectModel(model, finalPose, cx, cy, scale)
-
-        // Draw: sort by depth (painter's algorithm) and draw
-        val nativeCanvas = drawContext.canvas.nativeCanvas
-        drawFaces(nativeCanvas, faces, bitmap, capeBitmap)
+        // Project all parts and draw.
+        val faces = projectModel(model, finalPose, timeSeconds, animation, cx, cy, scale)
+        drawFaces(drawContext.canvas.nativeCanvas, faces, bitmap, capeBitmap)
 
         // Call onDraw callback for nametag anchor
         onDraw()
@@ -113,10 +133,11 @@ fun Minecraft3DPlayer(
 }
 
 /** Builds the base idle pose at the given time. */
-private fun buildPose(t: Float, animation: Player3DAnimation): PoseTransform {
-    // Idle choreography
+private fun buildPose(t: Float): PoseTransform {
+    // Idle choreography: a very slow whole-body weight shift.
     val bodyYaw = sin(t * 0.32f) * 0.35f
 
+    // Glances: eased head targets that change every few seconds.
     val segmentLength = 5.5f
     val seg = floor(t / segmentLength)
     val within = t - seg * segmentLength
@@ -132,53 +153,35 @@ private fun buildPose(t: Float, animation: Player3DAnimation): PoseTransform {
         yaw = bodyYaw,
         headYaw = headYaw,
         headPitch = headPitch,
-        armSwing = sin(t * 0.5f) * 0.03f,
-        breath = sin(t * 1.1f) * 0.012f,
     )
 }
 
-/** Combines idle pose with animation overrides, look target, and user drag. */
+/** Combines the idle pose with the look target and the user's drag. */
 private fun combinePose(
     base: PoseTransform,
-    animation: Player3DAnimation,
-    t: Float,
     lookYaw: Float,
     lookPitch: Float,
-    dragYaw: Float = 0f,
-    dragPitch: Float = 0f,
+    dragYaw: Float,
+    dragPitch: Float,
 ): PoseTransform {
-    if (animation == Player3DAnimation.IDLE) {
-        return PoseTransform(
-            yaw = base.yaw + dragYaw,
-            headYaw = lookYaw,
-            headPitch = lookPitch,
-            armSwing = base.armSwing,
-            breath = base.breath,
-            bodyPitch = dragPitch,
-        )
-    }
-
-    // For emotes, use the emote's fixed pose for arms/legs, but keep look target for head
-    return PoseTransform(
+    return base.copy(
         yaw = base.yaw + dragYaw,
-        headYaw = lookYaw,
-        headPitch = lookPitch,
-        armSwing = getPartAnimationTransform("right_arm", 0f, animation).rz,
-        breath = base.breath,
+        headYaw = base.headYaw + lookYaw,
+        headPitch = base.headPitch + lookPitch,
         bodyPitch = dragPitch,
     )
 }
 
-/** Computes head yaw to look at the target point. */
+/** Computes head yaw to look at the target point (final model space, head centre at y=-12). */
 private fun computeHeadYaw(target: PlayerLookTarget): Float {
     return atan2(target.x, target.z)
 }
 
-/** Computes head pitch to look at the target point. */
+/** Computes head pitch to look at the target point (final model space, head centre at y=-12). */
 private fun computeHeadPitch(target: PlayerLookTarget): Float {
     val dx = target.x
     val dz = target.z
-    val dy = target.y - 24f // eye level at y=24
+    val dy = target.y - (-12f)
     val dist = sqrt(dx * dx + dz * dz)
     return if (dist > 0.001f) -atan2(dy, dist) else 0f
 }
@@ -195,10 +198,15 @@ private fun hash01(x: Float): Float {
     return s - floor(s)
 }
 
-/** Projects the entire model hierarchy into screen space. */
-private fun projectModel(
+/**
+ * Projects the entire model hierarchy into screen space.
+ * [cx]/[cy] are the screen centre and [scale] converts model units to pixels.
+ */
+fun projectModel(
     root: ModelPart3D,
     pose: PoseTransform,
+    timeSeconds: Float,
+    animation: Player3DAnimation,
     cx: Float,
     cy: Float,
     scale: Float,
@@ -206,12 +214,10 @@ private fun projectModel(
     val faces = mutableListOf<ProjectedQuad>()
     val mat = Mat4()
 
-    // Apply overall model rotation (yaw around Y, pitch around X)
-    if (pose.yaw != 0f || pose.bodyPitch != 0f) {
-        mat.rotateEulerZYX(0f, pose.yaw, pose.bodyPitch)
-    }
+    // Overall model rotation: pitch around X, yaw around Y.
+    mat.rotateEulerZYX(pose.bodyPitch, pose.yaw, 0f)
 
-    renderPartRecursive(root, mat, pose, 0f, Player3DAnimation.IDLE, faces)
+    renderPartRecursive(root, mat, pose, timeSeconds, animation, scale, cx, cy, faces)
 
     // Sort by depth (far to near) for painter's algorithm
     return faces.sortedByDescending { it.depth }
@@ -223,6 +229,9 @@ private fun renderPartRecursive(
     pose: PoseTransform,
     timeSeconds: Float,
     animation: Player3DAnimation,
+    scale: Float,
+    cx: Float,
+    cy: Float,
     faces: MutableList<ProjectedQuad>,
 ) {
     val mat = parentMat.clone()
@@ -230,108 +239,79 @@ private fun renderPartRecursive(
     // Get animation transform for this part
     val animTransform = getPartAnimationTransform(part.name, timeSeconds, animation)
 
-    // Translate to pivot
-    mat.translate(part.pivotX + animTransform.tx, part.pivotY + animTransform.ty, part.pivotZ + animTransform.tz)
+    // Translate to pivot. The reference translates the root by -8 to centre the 32-unit model.
+    val rootOffsetY = if (part.name == "root") -8f else 0f
+    mat.translate(
+        part.pivotX + animTransform.tx,
+        part.pivotY + animTransform.ty + rootOffsetY,
+        part.pivotZ + animTransform.tz,
+    )
+
+    // Head look is added directly to the head's Euler angles.
+    val isHead = part.name == "head"
+    val rx = animTransform.rx + if (isHead) pose.headPitch else 0f
+    val ry = animTransform.ry + if (isHead) pose.headYaw else 0f
+    val rz = animTransform.rz
 
     // Apply rotation
-    if (animTransform.rx != 0f || animTransform.ry != 0f || animTransform.rz != 0f) {
-        mat.rotateEulerZYX(animTransform.rz, animTransform.ry, animTransform.rx)
+    if (rx != 0f || ry != 0f || rz != 0f) {
+        if (part.name in ARM_PARTS) {
+            // Move the arm rotation centre up to the shoulder.
+            mat.translate(0f, -2f, 0f)
+            mat.rotateEulerZYX(rx, ry, rz)
+            mat.translate(0f, 2f, 0f)
+        } else {
+            mat.rotateEulerZYX(rx, ry, rz)
+        }
     }
 
     // Render this part's quads
     for (quad in part.quads) {
-        val face = projectQuad(quad, mat, faces.size)
+        val face = projectQuad(quad, mat, scale, cx, cy)
         if (face.frontFacing) {
-            // Lighting
-            val lightColor = computeLighting(face)
-            val projected = ProjectedQuad(
-                face.x0, face.y0, face.x1, face.y1, face.x2, face.y2, face.x3, face.y3,
-                face.u0, face.v0, face.u1, face.v1, face.u2, face.v2, face.u3, face.v3,
-                face.depth, face.frontFacing, face.overlay, lightColor, face.shadow
-            )
-            faces.add(projected)
+            faces.add(face)
         }
     }
 
     // Recurse into children
     for (child in part.children) {
-        renderPartRecursive(child, mat, pose, timeSeconds, animation, faces)
+        renderPartRecursive(child, mat, pose, timeSeconds, animation, scale, cx, cy, faces)
     }
 }
 
-/** Computes per-face lighting color. */
-private fun computeLighting(face: InternalFace): Int {
-    // Simplified lighting: ambient + directional sun
-    val ambient = 0.35f
-    val sunDir = floatArrayOf(-0.62f, -0.38f, 0.69f)
-    // Normal from face vertices (simplified)
-    val nx = 0f; val ny = 0f; val nz = 1f // placeholder
-    val dot = (sunDir[0] * nx + sunDir[1] * ny + sunDir[2] * nz).coerceIn(0f, 1f)
-    val intensity = (ambient + dot * 0.65f).coerceIn(0f, 1f)
-    val r = (intensity * 255).toInt()
-    val g = (intensity * 255).toInt()
-    val b = (intensity * 255).toInt()
-    return (0xFF shl 24) or (r shl 16) or (g shl 8) or b
-}
-
-/** Internal face representation during projection. */
-private class InternalFace(
-    val x0: Float, val y0: Float,
-    val x1: Float, val y1: Float,
-    val x2: Float, val y2: Float,
-    val x3: Float, val y3: Float,
-    val u0: Float, val v0: Float,
-    val u1: Float, val v1: Float,
-    val u2: Float, val v2: Float,
-    val u3: Float, val v3: Float,
-    val depth: Float,
-    val frontFacing: Boolean,
-    val overlay: Boolean,
-) {
-    var shadow: FloatArray? = null
-}
-
-/** Draws all faces to the native canvas. */
-private fun drawFaces(
-    canvas: Canvas,
-    faces: List<ProjectedQuad>,
-    skinBitmap: Bitmap,
-    capeBitmap: Bitmap?,
-) {
-    val paint = Paint().apply {
-        isFilterBitmap = false
-        isDither = false
-    }
-    for (face in faces) {
-        val bmp = if (face.isCape()) capeBitmap else skinBitmap
-        if (bmp == null) continue
-        face.draw(canvas, bmp, paint)
-    }
-}
-
-/** Projects a single quad using the given matrix. */
-private fun projectQuad(quad: Quad3D, mat: Mat4, faceId: Int): InternalFace {
+/** Projects a single quad into screen space, using the reference's perspective and winding rules. */
+private fun projectQuad(quad: Quad3D, mat: Mat4, scale: Float, cx: Float, cy: Float): ProjectedQuad {
     val scratch = FloatArray(3)
     val vertices = quad.vertices()
+    val world = Array(4) { FloatArray(3) }
     val pts = FloatArray(8)
     var depth = 0f
 
     for (i in 0 until 4) {
         val v = vertices[i]
         mat.transformPoint(v.x, v.y, v.z, scratch)
-        pts[i * 2] = scratch[0]
-        pts[i * 2 + 1] = scratch[1]
+        world[i][0] = scratch[0]
+        world[i][1] = scratch[1]
+        world[i][2] = scratch[2]
+
+        // Reference perspective: nearer vertices scale up, far vertices scale down.
+        val perspective = (PERSPECTIVE_DISTANCE / (scratch[2] + PERSPECTIVE_DISTANCE))
+            .coerceIn(PERSPECTIVE_MIN, PERSPECTIVE_MAX)
+        pts[i * 2] = scratch[0] * scale * perspective + cx
+        pts[i * 2 + 1] = scratch[1] * scale * perspective + cy
         depth += scratch[2]
     }
     depth /= 4f
 
-    // Screen-space winding test (y-down)
-    var area = 0f
-    for (i in 0 until 4) {
-        val j = (i + 1) % 4
-        area += pts[i * 2] * pts[j * 2 + 1] - pts[j * 2] * pts[i * 2 + 1]
-    }
-    val frontFacing = area > 0f
+    // Overlay layers are nudged toward the camera to avoid z-fighting.
+    if (quad.overlay) depth -= 0.08f
+
+    // Screen-space winding test (y-down). Matches the reference exactly.
+    val x0 = pts[0]; val y0 = pts[1]
+    val x1 = pts[2]; val y1 = pts[3]
+    val x2 = pts[4]; val y2 = pts[5]
+    val x3 = pts[6]; val y3 = pts[7]
+    val frontFacing = ((y2 - y0) * (x1 - x0) - (x2 - x0) * (y1 - y0)) < 0f
 
     // UVs in 0..1 range
     val u0 = quad.v0.u / 64f; val v0 = quad.v0.v / 64f
@@ -339,19 +319,63 @@ private fun projectQuad(quad: Quad3D, mat: Mat4, faceId: Int): InternalFace {
     val u2 = quad.v2.u / 64f; val v2 = quad.v2.v / 64f
     val u3 = quad.v3.u / 64f; val v3 = quad.v3.v / 64f
 
-    // Shadow projection (ground plane at y=16)
-    val shadow = computeShadow(quad, mat)
-
-    return InternalFace(
-        pts[0], pts[1], pts[2], pts[3], pts[4], pts[5], pts[6], pts[7],
+    return ProjectedQuad(
+        x0, y0, x1, y1, x2, y2, x3, y3,
         u0, v0, u1, v1, u2, v2, u3, v3,
-        depth, frontFacing, quad.overlay,
-    ).also { it.shadow = shadow }
+        depth, frontFacing, quad.overlay, computeLighting(world),
+    )
 }
 
-/** Computes the ground-projected shadow quad. */
-private fun computeShadow(quad: Quad3D, mat: Mat4): FloatArray? {
-    // Project each vertex to ground plane (y=16 in model space)
-    // This is a simplified version - the reference does proper shadow projection
-    return null
+/** Computes per-face lighting from the transformed 3D normal, matching the reference constants. */
+private fun computeLighting(world: Array<FloatArray>): Int {
+    val ax = world[1][0] - world[0][0]
+    val ay = world[1][1] - world[0][1]
+    val az = world[1][2] - world[0][2]
+    val bx = world[2][0] - world[0][0]
+    val by = world[2][1] - world[0][1]
+    val bz = world[2][2] - world[0][2]
+
+    var nx = ay * bz - az * by
+    var ny = az * bx - ax * bz
+    var nz = ax * by - ay * bx
+    val len = sqrt(nx * nx + ny * ny + nz * nz)
+    if (len > 1.0e-4f) {
+        nx /= len
+        ny /= len
+        nz /= len
+    }
+
+    val sun = max(0f, SUN_TO_X * nx + SUN_TO_Y * ny + SUN_TO_Z * nz)
+    val sky = max(0f, nx * 0.18f - ny * 0.55f - nz * 0.82f) * SHADOW_DIR_X + 0.25f
+    val r = (LIGHT_R * sun * 0.8f + 0.62f * sky + AMBIENT_R).coerceIn(0f, 1f)
+    val g = (LIGHT_G * sun * 0.8f + SKY_G * sky + AMBIENT_G).coerceIn(0f, 1f)
+    val b = (LIGHT_B * sun * 0.8f + SKY_B * sky + AMBIENT_B).coerceIn(0f, 1f)
+    return (0xFF shl 24) or
+        ((r * 255f).toInt() shl 16) or
+        ((g * 255f).toInt() shl 8) or
+        (b * 255f).toInt()
+}
+
+/** Draws all faces to the native canvas. */
+private fun drawFaces(
+    canvas: NativeCanvas,
+    faces: List<ProjectedQuad>,
+    skinBitmap: Bitmap,
+    capeBitmap: Bitmap?,
+) {
+    val paint = Paint().apply {
+        isFilterBitmap = false
+        isDither = false
+        isAntiAlias = false
+    }
+    val filters = HashMap<Int, PorterDuffColorFilter>()
+
+    for (face in faces) {
+        val bmp = if (face.isCape()) capeBitmap else skinBitmap
+        if (bmp == null) continue
+        paint.colorFilter = filters.getOrPut(face.lightColor) {
+            PorterDuffColorFilter(it, PorterDuff.Mode.MULTIPLY)
+        }
+        face.draw(canvas, bmp, paint)
+    }
 }

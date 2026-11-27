@@ -22,6 +22,17 @@ import java.io.InputStreamReader
  */
 object Minecraft3DModelLoader {
     private const val ASSET_PATH = "models/player_models.json"
+
+    /** Parts that use the second (overlay) skin layer. */
+    private val OVERLAY_PART_NAMES = setOf(
+        "hat",
+        "jacket",
+        "right_sleeve",
+        "left_sleeve",
+        "right_pants",
+        "left_pants",
+    )
+
     private var cachedSteve: ModelPart3D? = null
     private var cachedAlex: ModelPart3D? = null
 
@@ -87,8 +98,8 @@ object Minecraft3DModelLoader {
             while (keys.hasNext()) {
                 val childName = keys.next()
                 val childJson = childrenObj.getJSONObject(childName)
-                // Overlay parts (hat, jacket, sleeves, pants) have isOverlay=true
-                val childOverlay = name == "body" || name == "head" || name == "right_arm" || name == "left_arm" || name == "right_leg" || name == "left_leg"
+                // Overlay parts are identified by their own key, exactly as the reference does.
+                val childOverlay = childName in OVERLAY_PART_NAMES
                 children.add(parsePart(childName, childJson, childOverlay))
             }
         }
@@ -106,13 +117,13 @@ object Minecraft3DModelLoader {
         )
     }
 
-    /** Minimal fallback model (single box) if asset fails. */
+    /** Minimal fallback model (single front quad) if the asset fails. */
     private fun buildFallbackModel(): ModelPart3D {
         val box = Quad3D(
-            Vertex3D(-4f, 0f, -4f, 0f, 0f),
-            Vertex3D(4f, 0f, -4f, 1f, 0f),
-            Vertex3D(4f, 32f, -4f, 1f, 1f),
-            Vertex3D(-4f, 32f, -4f, 0f, 1f),
+            Vertex3D(-4f, -8f, -4f, 0f, 0f),
+            Vertex3D(-4f, 24f, -4f, 0f, 64f),
+            Vertex3D(4f, 24f, -4f, 64f, 64f),
+            Vertex3D(4f, -8f, -4f, 64f, 0f),
         )
         return ModelPart3D("root", 0f, 0f, 0f, listOf(box), emptyList())
     }

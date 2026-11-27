@@ -77,6 +77,7 @@ import me.shadow.eclipselauncher.ui.character.Minecraft3DPlayer
 import me.shadow.eclipselauncher.ui.character.Player3DAnimation
 import me.shadow.eclipselauncher.ui.character.PlayerLookTarget
 import me.shadow.eclipselauncher.ui.character.SkinManager
+import me.shadow.eclipselauncher.ui.character.defaultSkin
 import androidx.compose.material3.BasicAlertDialog
 import me.shadow.eclipselauncher.ui.theme.EclipseRadius
 import androidx.compose.animation.core.animateFloatAsState
@@ -203,9 +204,13 @@ fun SkinCustomizationDialog(
                     selectedEmote = selectedEmote,
                     onEmoteSelect = { selectedEmote = it },
                     yaw = yaw, pitch = pitch, zoom = zoom,
-                    onDrag = { dy, dz -> yaw += dy; pitch += dz },
+                    onDrag = { dy, dz ->
+                        // The gesture reports degrees; the renderer expects radians.
+                        yaw += Math.toRadians(dy.toDouble()).toFloat()
+                        pitch = (pitch + Math.toRadians(dz.toDouble()).toFloat())
+                            .coerceIn(-1.2f, 1.2f)
+                    },
                     onZoom = { z -> zoom = z.coerceIn(0.65f, 2.6f) },
-                    animationTime = animationTime,
                     lookTarget = lookTarget,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -257,9 +262,13 @@ fun SkinCustomizationDialog(
                         selectedEmote = selectedEmote,
                         onEmoteSelect = { selectedEmote = it },
                         yaw = yaw, pitch = pitch, zoom = zoom,
-                        onDrag = { dy, dz -> yaw += dy; pitch += dz },
+                        onDrag = { dy, dz ->
+                            // The gesture reports degrees; the renderer expects radians.
+                            yaw += Math.toRadians(dy.toDouble()).toFloat()
+                            pitch = (pitch + Math.toRadians(dz.toDouble()).toFloat())
+                                .coerceIn(-1.2f, 1.2f)
+                        },
                         onZoom = { z -> zoom = z.coerceIn(0.65f, 2.6f) },
-                        animationTime = animationTime,
                         lookTarget = lookTarget,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
                     )
@@ -367,7 +376,6 @@ fun SkinModelStage(
     zoom: Float,
     onDrag: (Float, Float) -> Unit,
     onZoom: (Float) -> Unit,
-    animationTime: Float,
     lookTarget: PlayerLookTarget,
     modifier: Modifier = Modifier,
 ) {
@@ -383,7 +391,6 @@ fun SkinModelStage(
         ),
     ) {
         val isSlim = (skinVariant == "SLIM")
-        val lookTarget = remember { PlayerLookTarget() }
 
         val skinBitmap = loadSkinBitmap(media, skinFileName)
 
@@ -453,11 +460,8 @@ fun SkinModelStage(
 fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics.Bitmap {
     val context = androidx.compose.ui.platform.LocalContext.current
     if (skinFileName == null) {
-        // Return built-in Steve skin
-        val inputStream = context.assets.open("skins/steve.png")
-        val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
-        inputStream.close()
-        return SkinManager.ensureModernSkin(bitmap)
+        // Return the owner-supplied built-in Steve skin.
+        return SkinManager.ensureModernSkin(defaultSkin(context))
     }
     // Try to load from MediaStorage
     val file = media.resolve(skinFileName)
@@ -467,11 +471,8 @@ fun loadSkinBitmap(media: MediaStorage, skinFileName: String?): android.graphics
         inputStream.close()
         return SkinManager.ensureModernSkin(bitmap)
     }
-    // Fallback to built-in Steve
-    val inputStream = context.assets.open("skins/steve.png")
-    val bitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
-    inputStream.close()
-    return SkinManager.ensureModernSkin(bitmap)
+    // Fallback to the owner-supplied built-in Steve skin.
+    return SkinManager.ensureModernSkin(defaultSkin(context))
 }
 
 /** Grid of 8 emote pose icons. */

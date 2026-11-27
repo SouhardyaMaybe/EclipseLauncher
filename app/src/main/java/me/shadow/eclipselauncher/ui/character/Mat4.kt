@@ -40,22 +40,26 @@ class Mat4 {
         m[15] += m[3] * tx + m[7] * ty + m[11] * tz
     }
 
-    /** Post-multiplies by a rotation around X, then Y, then Z (Euler ZYX). */
+    /**
+     * Post-multiplies by a rotation around X, then Y, then Z (Euler ZYX).
+     * The resulting rotation is R = Rz(rz) * Ry(ry) * Rx(rx), matching the
+     * reference renderer's rotateEulerZYX(rz, ry, rx) call convention.
+     */
     fun rotateEulerZYX(rx: Float, ry: Float, rz: Float) {
         val cx = cos(rx); val sx = sin(rx)
         val cy = cos(ry); val sy = sin(ry)
         val cz = cos(rz); val sz = sin(rz)
 
-        // R = Rz * Ry * Rx
-        val r00 = cy * cz
-        val r01 = -cy * sz
-        val r02 = sy
-        val r10 = sx * sy * cz + cx * sz
-        val r11 = -sx * sy * sz + cx * cz
-        val r12 = -sx * cy
-        val r20 = -cx * sy * cz + sx * sz
-        val r21 = cx * sy * sz + sx * cz
-        val r22 = cx * cy
+        // R = Rz * Ry * Rx (row-major).
+        val r00 = cz * cy
+        val r01 = cz * sy * sx - sz * cx
+        val r02 = cz * sy * cx + sz * sx
+        val r10 = sz * cy
+        val r11 = sz * sy * sx + cz * cx
+        val r12 = sz * sy * cx - cz * sx
+        val r20 = -sy
+        val r21 = cy * sx
+        val r22 = cy * cx
 
         // Multiply current matrix by R on the right: M' = M * R
         for (row in 0..3) {
