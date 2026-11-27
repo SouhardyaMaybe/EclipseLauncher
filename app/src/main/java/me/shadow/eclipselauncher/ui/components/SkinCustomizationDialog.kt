@@ -403,15 +403,16 @@ fun SkinModelStage(
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    detectTransformGestures(
-                        onGestureStart = { zoomBase = zoom },
-                        onGesture = { _, pan, zoomChange, _ ->
-                            // Horizontal: drag right = rotate model right (yaw increases)
-                            onDrag(pan.x * 0.32f, pan.y * 0.32f)
-                            // Pinch zoom: zoomChange is scale factor relative to gesture start
-                            onZoom((zoomBase * zoomChange).coerceIn(0.65f, 2.6f))
-                        }
-                    )
+                    // Track zoom base for pinch gesture (first event has zoomChange == 1.0f)
+                    var zoomBase = 1f
+                    detectTransformGestures { _, pan, zoomChange, _ ->
+                        // Horizontal: drag right = rotate model right (yaw increases)
+                        onDrag(pan.x * 0.32f, pan.y * 0.32f)
+                        // Pinch zoom: zoomChange is scale factor relative to gesture start.
+                        // First event of gesture has zoomChange == 1.0f, capture current zoom as base.
+                        if (zoomChange == 1.0f) zoomBase = zoom
+                        onZoom((zoomBase * zoomChange).coerceIn(0.65f, 2.6f))
+                    }
                 },
             slim = isSlim,
             animation = selectedEmote,
