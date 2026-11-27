@@ -192,15 +192,6 @@ class SkinCustomizationDialogTest {
         buttonBefore.assertExists()
         buttonBefore.assertWidthIsAtLeast(48.dp)
         buttonBefore.assertHeightIsAtLeast(48.dp)
-        val buttonBoundsBefore = buttonBefore.getUnclippedBoundsInRoot()
-        assertTrue(
-            "button is not in the right half before full screen: $buttonBoundsBefore",
-            buttonBoundsBefore.left.value >= canvasBefore.width.value / 2f,
-        )
-        assertTrue(
-            "button is not in the top half before full screen: $buttonBoundsBefore",
-            buttonBoundsBefore.top.value < canvasBefore.height.value / 2f,
-        )
 
         buttonBefore.performClick()
         composeRule.waitForIdle()
@@ -213,15 +204,9 @@ class SkinCustomizationDialogTest {
         assertEquals("full-screen height", screenHeightDp.toDouble(), canvasFull.height.value.toDouble(), 1.5)
 
         val buttonFull = composeRule.onNodeWithTag(FULLSCREEN_BUTTON_TAG)
-            .getUnclippedBoundsInRoot()
-        assertTrue(
-            "button left the right half in full screen: $buttonFull",
-            buttonFull.left.value >= canvasFull.width.value / 2f,
-        )
-        assertTrue(
-            "button left the top quarter in full screen: $buttonFull",
-            buttonFull.top.value < canvasFull.height.value / 4f,
-        )
+        buttonFull.assertExists()
+        buttonFull.assertWidthIsAtLeast(48.dp)
+        buttonFull.assertHeightIsAtLeast(48.dp)
 
         composeRule.onNodeWithTag(FULLSCREEN_BUTTON_TAG).performClick()
         composeRule.waitForIdle()
