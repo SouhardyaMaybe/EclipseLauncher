@@ -382,10 +382,14 @@ fun SkinModelStage(
                     // Track previous pan to compute per-frame delta
                     var prevPanX = 0f
                     var prevPanY = 0f
-                    detectTransformGestures(
-                        onGestureStart = { prevPanX = 0f; prevPanY = 0f },
-                    ) { _, pan, _, _ ->
+                    var gestureStarted = false
+                    detectTransformGestures { _, pan, _, _ ->
                         // Gesture reports cumulative pan; compute per-frame delta in pixels
+                        if (!gestureStarted) {
+                            prevPanX = pan.x
+                            prevPanY = pan.y
+                            gestureStarted = true
+                        }
                         val deltaX = pan.x - prevPanX
                         val deltaY = pan.y - prevPanY
                         prevPanX = pan.x
