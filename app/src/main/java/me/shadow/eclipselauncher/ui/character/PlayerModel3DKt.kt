@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.sin
@@ -67,8 +68,7 @@ private const val AMBIENT_B = 0.2f
  * @param lookTarget Point in model space for the head to look at.
  * @param capeBitmap Optional cape bitmap.
  * @param onDraw Callback invoked after the model is drawn (for nametag anchor).
- * @param dragYaw User drag rotation around Y axis (radians).
- * @param dragPitch User drag tilt around X axis (radians).
+ * @param playerMotion Shared pose state (bodyYaw, headYaw, headPitch, armSwing, breath).
  * @param dragZoom User pinch zoom factor.
  */
 @Composable
@@ -80,8 +80,7 @@ fun Minecraft3DPlayer(
     lookTarget: PlayerLookTarget,
     capeBitmap: Bitmap? = null,
     onDraw: () -> Unit = {},
-    dragYaw: Float = 0f,
-    dragPitch: Float = 0f,
+    playerMotion: PlayerMotion,
     dragZoom: Float = 1f,
 ) {
     // Animation time state (drives idle choreography and emote motion)
@@ -108,15 +107,22 @@ fun Minecraft3DPlayer(
         val timeSeconds = animTime
         animTime = (timeSeconds + (1f / 60f)) % 10000f
 
-        // Build the idle base pose (body sway + head glances).
-        val basePose = buildPose(timeSeconds)
+        // Advance idle choreography (body sway, head glances, arm swing, breath)
+        playerMotion.updateIdle(timeSeconds)
 
-        // Head look target: compute head yaw/pitch to look at target.
-        val headYaw = computeHeadYaw(lookTarget)
-        val headPitch = computeHeadPitch(lookTarget)
+        // Compute head look-at target (in model space, relative to head center at y=-12)
+        // This makes the head track the lookTarget point
+        val headYawToTarget = atan2(lookTarget.x, lookTarget.z)
+        val dx = lookTarget.x
+        val dz = lookTarget.z
+        val dy = lookTarget.y - (-12f)
+        val dist = sqrt(dx * dx + dz * dz)
+        val headPitchToTarget = if (dist > 0.001f) -atan2(dy, dist) else 0f
 
-        // Combine the idle base pose with the look target and user drag.
-        val finalPose = combinePose(basePose, headYaw, headPitch, dragYaw, dragPitch)
+        // Blend look-at with current head pose (smooth tracking)
+        // Reference uses direct assignment in step(); we blend for smoothness
+        playerMotion.headYaw = playerMotion.headYaw * 0.9f + headYawToTarget * 0.1f
+        playerMotion.headPitch = playerMotion.headPitch * 0.9f + headPitchToTarget * 0.1f
 
         // Reference framing: 72% of the node height, centered on the node.
         val scale = (height * MODEL_FRAME_FRACTION / MODEL_HEIGHT_UNITS) * dragZoom
@@ -124,7 +130,17 @@ fun Minecraft3DPlayer(
         val cy = height / 2f
 
         // Project all parts and draw.
-        val faces = projectModel(model, finalPose, timeSeconds, animation, cx, cy, scale)
+        val faces = projectModel(
+            root = model,
+            timeSeconds = timeSeconds,
+            animation = animation,
+            cx = cx,
+            cy = cy,
+            scale = scale,
+            bodyYaw = playerMotion.bodyYaw,
+            headYaw = playerMotion.headYaw,
+            headPitch = playerMotion.headPitch,
+        )
         drawFaces(drawContext.canvas.nativeCanvas, faces, bitmap, capeBitmap)
 
         // Call onDraw callback for nametag anchor
@@ -132,94 +148,32 @@ fun Minecraft3DPlayer(
     }
 }
 
-/** Builds the base idle pose at the given time. */
-private fun buildPose(t: Float): PoseTransform {
-    // Idle choreography: a very slow whole-body weight shift.
-    val bodyYaw = sin(t * 0.32f) * 0.35f
-
-    // Glances: eased head targets that change every few seconds.
-    val segmentLength = 5.5f
-    val seg = floor(t / segmentLength)
-    val within = t - seg * segmentLength
-    val k = smoothstep((within / 1.3f).coerceIn(0f, 1f))
-    val curYaw = hash01(seg) * 1.1f - 0.55f
-    val prevYaw = hash01(seg - 1f) * 1.1f - 0.55f
-    val curPitch = hash01(seg + 17f) * 0.28f - 0.14f
-    val prevPitch = hash01(seg + 16f) * 0.28f - 0.14f
-    val headYaw = prevYaw + (curYaw - prevYaw) * k
-    val headPitch = prevPitch + (curPitch - prevPitch) * k
-
-    return PoseTransform(
-        yaw = bodyYaw,
-        headYaw = headYaw,
-        headPitch = headPitch,
-    )
-}
-
-/** Combines the idle pose with the look target and the user's drag. */
-private fun combinePose(
-    base: PoseTransform,
-    lookYaw: Float,
-    lookPitch: Float,
-    dragYaw: Float,
-    dragPitch: Float,
-): PoseTransform {
-    return base.copy(
-        yaw = base.yaw + dragYaw,
-        headYaw = base.headYaw + lookYaw,
-        headPitch = base.headPitch + lookPitch,
-        bodyPitch = dragPitch,
-    )
-}
-
-/** Computes head yaw to look at the target point (final model space, head centre at y=-12). */
-private fun computeHeadYaw(target: PlayerLookTarget): Float {
-    return atan2(target.x, target.z)
-}
-
-/** Computes head pitch to look at the target point (final model space, head centre at y=-12). */
-private fun computeHeadPitch(target: PlayerLookTarget): Float {
-    val dx = target.x
-    val dz = target.z
-    val dy = target.y - (-12f)
-    val dist = sqrt(dx * dx + dz * dz)
-    return if (dist > 0.001f) -atan2(dy, dist) else 0f
-}
-
-/** Smoothstep interpolation. */
-private fun smoothstep(x: Float): Float {
-    val c = x.coerceIn(0f, 1f)
-    return c * c * (3f - 2f * c)
-}
-
-/** Hash function for pseudo-random head glances. */
-private fun hash01(x: Float): Float {
-    val s = sin(x * 127.1f) * 43758.5453f
-    return s - floor(s)
-}
-
 /**
  * Projects the entire model hierarchy into screen space.
  * [cx]/[cy] are the screen centre and [scale] converts model units to pixels.
+ * [bodyYaw] is the whole-body yaw rotation (applied at root).
+ * [headYaw]/[headPitch] are the head's look direction (added to head's animation transform).
  */
 fun projectModel(
     root: ModelPart3D,
-    pose: PoseTransform,
     timeSeconds: Float,
     animation: Player3DAnimation,
     cx: Float,
     cy: Float,
     scale: Float,
+    bodyYaw: Float,
+    headYaw: Float,
+    headPitch: Float,
 ): List<ProjectedQuad> {
     val faces = mutableListOf<ProjectedQuad>()
     val mat = Mat4()
 
-    // Overall model rotation: ONLY yaw around Y (reference applies pitch only to head look).
+    // Overall model rotation: body yaw around Y (applied at root level).
     // Parameter order for rotateEulerZYX is (rz, ry, rx) to match reference convention.
-    // We want Ry(yaw), so call with (rz=0, ry=yaw, rx=0).
-    mat.rotateEulerZYX(0f, pose.yaw, 0f)
+    // We want Ry(bodyYaw), so call with (rz=0, ry=bodyYaw, rx=0).
+    mat.rotateEulerZYX(0f, bodyYaw, 0f)
 
-    renderPartRecursive(root, mat, pose, timeSeconds, animation, scale, cx, cy, faces)
+    renderPartRecursive(root, mat, timeSeconds, animation, scale, cx, cy, faces, headYaw, headPitch)
 
     // Sort by depth (far to near) for painter's algorithm
     return faces.sortedByDescending { it.depth }
@@ -228,13 +182,14 @@ fun projectModel(
 private fun renderPartRecursive(
     part: ModelPart3D,
     parentMat: Mat4,
-    pose: PoseTransform,
     timeSeconds: Float,
     animation: Player3DAnimation,
     scale: Float,
     cx: Float,
     cy: Float,
     faces: MutableList<ProjectedQuad>,
+    headYaw: Float,
+    headPitch: Float,
 ) {
     val mat = parentMat.clone()
 
@@ -250,10 +205,12 @@ private fun renderPartRecursive(
         part.pivotZ + animTransform.tz,
     )
 
-    // Head look is added directly to the head's Euler angles.
+    // Head look is added directly to the head's Euler angles (matches reference exactly).
+    // For head: add headYaw to ry, headPitch to rx.
+    // For other parts: use animation transform only.
     val isHead = part.name == "head"
-    val rx = animTransform.rx + if (isHead) pose.headPitch else 0f
-    val ry = animTransform.ry + if (isHead) pose.headYaw else 0f
+    val rx = animTransform.rx + if (isHead) headPitch else 0f
+    val ry = animTransform.ry + if (isHead) headYaw else 0f
     val rz = animTransform.rz
 
     // Apply rotation. IMPORTANT: Reference calls rotateEulerZYX(rz, ry, rx) parameter order.
@@ -261,7 +218,7 @@ private fun renderPartRecursive(
     // To match reference's rotateEulerZYX(rz, ry, rx), we must call rotateEulerZYX(rz, ry, rx).
     if (rx != 0f || ry != 0f || rz != 0f) {
         if (part.name in ARM_PARTS) {
-            // Move the arm rotation centre up to the shoulder.
+            // Move the arm rotation centre up to the shoulder (y=-2 from pivot).
             mat.translate(0f, -2f, 0f)
             mat.rotateEulerZYX(rz, ry, rx)
             mat.translate(0f, 2f, 0f)
@@ -280,7 +237,7 @@ private fun renderPartRecursive(
 
     // Recurse into children
     for (child in part.children) {
-        renderPartRecursive(child, mat, pose, timeSeconds, animation, scale, cx, cy, faces)
+        renderPartRecursive(child, mat, timeSeconds, animation, scale, cx, cy, faces, headYaw, headPitch)
     }
 }
 

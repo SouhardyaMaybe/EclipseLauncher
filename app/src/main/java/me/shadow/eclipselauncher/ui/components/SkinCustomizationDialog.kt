@@ -76,6 +76,7 @@ import me.shadow.eclipselauncher.ui.character.EmotePoseIcon
 import me.shadow.eclipselauncher.ui.character.Minecraft3DPlayer
 import me.shadow.eclipselauncher.ui.character.Player3DAnimation
 import me.shadow.eclipselauncher.ui.character.PlayerLookTarget
+import me.shadow.eclipselauncher.ui.character.PlayerMotion
 import me.shadow.eclipselauncher.ui.character.SkinManager
 import me.shadow.eclipselauncher.ui.character.defaultSkin
 import androidx.compose.material3.BasicAlertDialog
@@ -145,10 +146,6 @@ fun SkinCustomizationDialog(
         label = "skinDialogAnimTime",
     )
 
-    // Drag state (no zoom)
-    var yaw by remember { mutableStateOf(0f) }
-    var pitch by remember { mutableStateOf(0f) }
-
     // Emote picker state
     var showEmotes by remember { mutableStateOf(false) }
     var selectedEmote by remember { mutableStateOf(Player3DAnimation.IDLE) }
@@ -202,12 +199,6 @@ fun SkinCustomizationDialog(
                     showEmotes = showEmotes,
                     selectedEmote = selectedEmote,
                     onEmoteSelect = { selectedEmote = it },
-                    yaw = yaw,
-                    onDrag = { dy, dz ->
-                        // The gesture reports degrees; the renderer expects radians.
-                        // Only yaw (horizontal drag) rotates the model.
-                        yaw += Math.toRadians(dy.toDouble()).toFloat()
-                    },
                     lookTarget = lookTarget,
                     modifier = Modifier.fillMaxSize(),
                 )
@@ -258,12 +249,6 @@ fun SkinCustomizationDialog(
                         showEmotes = showEmotes,
                         selectedEmote = selectedEmote,
                         onEmoteSelect = { selectedEmote = it },
-                        yaw = yaw,
-                        onDrag = { dy, dz ->
-                            // The gesture reports degrees; the renderer expects radians.
-                            // Only yaw (horizontal drag) rotates the model.
-                            yaw += Math.toRadians(dy.toDouble()).toFloat()
-                        },
                         lookTarget = lookTarget,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
                     )
@@ -366,8 +351,6 @@ fun SkinModelStage(
     showEmotes: Boolean,
     selectedEmote: Player3DAnimation,
     onEmoteSelect: (Player3DAnimation) -> Unit,
-    yaw: Float,
-    onDrag: (Float, Float) -> Unit,
     lookTarget: PlayerLookTarget,
     modifier: Modifier = Modifier,
 ) {
@@ -386,15 +369,36 @@ fun SkinModelStage(
 
         val skinBitmap = loadSkinBitmap(media, skinFileName)
 
+        // Shared pose state (single source of truth for body/head pose)
+        // Updated by idle choreography in renderer, and by drag gesture here
+        val playerMotion = remember { PlayerMotion() }
+
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, _, _ ->
-                        // Horizontal: drag right = rotate model right (yaw increases)
-                        onDrag(pan.x * 0.32f, pan.y * 0.32f)
+                    // Track previous pan to compute per-frame delta
+                    var prevPanX = 0f
+                    var prevPanY = 0f
+                    detectTransformGestures(
+                        onGestureStart = { prevPanX = 0f; prevPanY = 0f },
+                    ) { _, pan, _, _ ->
+                        // Gesture reports cumulative pan; compute per-frame delta in pixels
+                        val deltaX = pan.x - prevPanX
+                        val deltaY = pan.y - prevPanY
+                        prevPanX = pan.x
+                        prevPanY = pan.y
+                        // Convert pixel delta to radians and apply directly to shared pose
+                        val dragYaw = Math.toRadians((deltaX * 0.32f).toDouble()).toFloat()
+                        val dragPitch = Math.toRadians((deltaY * 0.32f).toDouble()).toFloat()
+                        // Body yaw: drag rotates the entire model
+                        playerMotion.bodyYaw += dragYaw
+                        // Head pitch: drag tilts head up/down (clamped)
+                        playerMotion.headPitch = (playerMotion.headPitch + dragPitch).coerceIn(-1.2f, 1.2f)
+                        // Head yaw: drag also rotates head relative to body (for natural feel)
+                        playerMotion.headYaw += dragYaw * 0.3f
                     }
                 },
             slim = isSlim,
@@ -402,8 +406,7 @@ fun SkinModelStage(
             lookTarget = lookTarget,
             capeBitmap = null, // Cape disabled for now
             onDraw = {},
-            dragYaw = yaw,
-            dragPitch = 0f,
+            playerMotion = playerMotion,
             dragZoom = 1f,
         )
 
