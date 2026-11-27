@@ -441,7 +441,7 @@ fun SkinModelStage(
                 ),
             ) {
                 androidx.compose.material3.Icon(
-                    imageVector = androidx.compose.material.icons.filled.EmojiEmotions,
+                    imageVector = EmojiEmotions,
                     contentDescription = stringResource(R.string.emotes_section),
                     tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp),
