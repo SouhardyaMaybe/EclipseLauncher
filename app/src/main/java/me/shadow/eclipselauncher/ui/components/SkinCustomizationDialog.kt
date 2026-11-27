@@ -258,38 +258,6 @@ fun SkinCustomizationDialog(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        Button(
-                            onClick = { showEmotes = !showEmotes },
-                            modifier = Modifier.weight(1f).height(46.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (showEmotes) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
-                                contentColor = if (showEmotes) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                            ),
-                            shape = RoundedCornerShape(EclipseRadius.tile),
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                androidx.compose.material3.Icon(
-                                    painter = painterResource(R.drawable.ic_emoji_24),
-                                    contentDescription = stringResource(R.string.emotes_section),
-                                    tint = if (showEmotes) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(17.dp),
-                                )
-                                Spacer(modifier = Modifier.size(7.dp))
-                                Text(
-                                    text = stringResource(if (showEmotes) R.string.emotes_hide else R.string.emotes_show),
-                                    style = MaterialTheme.typography.labelLarge,
-                                    maxLines = 1,
-                                )
-                            }
-                        }
-                    }
 
                     if (canCustomize) {
                         Spacer(modifier = Modifier.height(14.dp))
