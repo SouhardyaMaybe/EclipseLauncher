@@ -374,7 +374,7 @@ private fun drawFaces(
         val bmp = if (face.isCape()) capeBitmap else skinBitmap
         if (bmp == null) continue
         paint.colorFilter = filters.getOrPut(face.lightColor) {
-            PorterDuffColorFilter(it, PorterDuff.Mode.MULTIPLY)
+            PorterDuffColorFilter(face.lightColor, PorterDuff.Mode.MULTIPLY)
         }
         face.draw(canvas, bmp, paint)
     }
