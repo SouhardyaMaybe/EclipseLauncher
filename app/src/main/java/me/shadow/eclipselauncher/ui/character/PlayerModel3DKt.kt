@@ -107,8 +107,11 @@ fun Minecraft3DPlayer(
         val timeSeconds = animTime
         animTime = (timeSeconds + (1f / 60f)) % 10000f
 
-        // Advance idle choreography (body sway, head glances, arm swing, breath)
-        playerMotion.updateIdle(timeSeconds)
+        // Advance idle choreography ONLY for IDLE animation.
+        // For emotes, the animation transforms provide the complete pose.
+        if (animation == Player3DAnimation.IDLE) {
+            playerMotion.updateIdle(timeSeconds)
+        }
 
         // Reference framing: 72% of the node height, centered on the node.
         val scale = (height * MODEL_FRAME_FRACTION / MODEL_HEIGHT_UNITS) * dragZoom

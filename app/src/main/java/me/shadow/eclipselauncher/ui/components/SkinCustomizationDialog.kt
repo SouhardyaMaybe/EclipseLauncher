@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -390,21 +391,38 @@ fun SkinModelStage(
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    // Use detectDragGestures for proper start/end handling
-                    detectDragGestures(
-                        onDragStart = { isDragging.value = true },
-                        onDragEnd = { isDragging.value = false },
-                    ) { change, dragAmount ->
-                        // dragAmount is the per-frame delta in pixels
-                        val dragYaw = Math.toRadians((dragAmount.x * 0.32f).toDouble()).toFloat()
-                        val dragPitch = Math.toRadians((dragAmount.y * 0.32f).toDouble()).toFloat()
+                    // Use detectTransformGestures for smooth drag without touch slop
+                    // Track previous pan to compute per-frame delta
+                    var prevPanX = 0f
+                    var prevPanY = 0f
+                    var gestureActive = false
+                    detectTransformGestures(
+                        onGestureStart = {
+                            prevPanX = 0f
+                            prevPanY = 0f
+                            gestureActive = true
+                            isDragging.value = true
+                        },
+                        onGestureEnd = {
+                            gestureActive = false
+                            isDragging.value = false
+                        }
+                    ) { _, pan, _, _ ->
+                        if (!gestureActive) return@detectTransformGestures
+                        // Gesture reports cumulative pan; compute per-frame delta in pixels
+                        val deltaX = pan.x - prevPanX
+                        val deltaY = pan.y - prevPanY
+                        prevPanX = pan.x
+                        prevPanY = pan.y
+                        // Convert pixel delta to radians and apply directly to shared pose
+                        val dragYaw = Math.toRadians((deltaX * 0.32f).toDouble()).toFloat()
+                        val dragPitch = Math.toRadians((deltaY * 0.32f).toDouble()).toFloat()
                         // Body yaw: drag rotates the entire model
                         playerMotion.bodyYaw += dragYaw
                         // Head pitch: drag tilts head up/down (clamped)
                         playerMotion.headPitch = (playerMotion.headPitch + dragPitch).coerceIn(-1.2f, 1.2f)
                         // Head yaw: drag also rotates head relative to body (for natural feel)
                         playerMotion.headYaw += dragYaw * 0.3f
-                        change.consume()
                     }
                 },
             slim = isSlim,
