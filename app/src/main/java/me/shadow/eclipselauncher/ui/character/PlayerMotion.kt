@@ -50,10 +50,11 @@ class PlayerMotion {
     fun drag(f: Float, f2: Float) {
         val f3 = f * 0.32f
         this.bodyTarget += f3
-        if (f2 < 0.004f) {
-            f2 = 0.004f
+        var f2Local = f2
+        if (f2Local < 0.004f) {
+            f2Local = 0.004f
         }
-        this.dragVelocity = ((f3 / f2) * 0.4f) + (this.dragVelocity * 0.6f)
+        this.dragVelocity = ((f3 / f2Local) * 0.4f) + (this.dragVelocity * 0.6f)
     }
 
     fun endDrag() {
