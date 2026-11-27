@@ -63,7 +63,7 @@ fun Minecraft3DPlayer(
             .testTag("skinModelCanvas"),
     ) {
         val canvasDrawScope = this as CanvasDrawScope
-        val nativeCanvas = canvasDrawScope.drawContext.nativeCanvas
+        val nativeCanvas = canvasDrawScope.drawContext.canvas.nativeCanvas
 
         val width = canvasDrawScope.size.width
         val height = canvasDrawScope.size.height
