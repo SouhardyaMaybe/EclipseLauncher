@@ -59,7 +59,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.test.tagAsTestTag
+import androidx.compose.ui.test.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -422,7 +422,7 @@ fun SkinModelStage(
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onFullscreenToggle,
-                modifier = Modifier.size(48.dp).tagAsTestTag("fullscreenButton"),
+                modifier = Modifier.size(48.dp).testTag("fullscreenButton"),
                 colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = MaterialTheme.colorScheme.onSurface,
@@ -459,7 +459,7 @@ fun SkinModelStage(
         ) {
             androidx.compose.material3.FilledTonalIconButton(
                 onClick = onEmoteToggle,
-                modifier = Modifier.size(48.dp).tagAsTestTag("emoteButton"),
+                modifier = Modifier.size(48.dp).testTag("emoteButton"),
                 colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
                     containerColor = if (showEmotes) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
                     contentColor = if (showEmotes) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,

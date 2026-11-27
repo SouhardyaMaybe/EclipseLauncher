@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.test.tagAsTestTag
+import androidx.compose.ui.test.testTag
 import androidx.compose.ui.unit.dp
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -60,10 +60,10 @@ fun Minecraft3DPlayer(
     Canvas(
         modifier
             .fillMaxSize()
-            .tagAsTestTag("skinModelCanvas"),
+            .testTag("skinModelCanvas"),
     ) {
         val canvasDrawScope = this as CanvasDrawScope
-        val nativeCanvas = canvasDrawScope.drawContext.canvas.nativeCanvas
+        val nativeCanvas = canvasDrawScope.drawContext.nativeCanvas
 
         val width = canvasDrawScope.size.width
         val height = canvasDrawScope.size.height
