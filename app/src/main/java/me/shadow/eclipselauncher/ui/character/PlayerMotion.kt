@@ -9,7 +9,7 @@ package me.shadow.eclipselauncher.ui.character
 class PlayerMotion {
     companion object {
         const val BODY_OMEGA = 8.0f
-        const val DRAG_DEG_PER_PX = 0.32f
+        const val DRAG_DEG_PER_PX = 0.1f
         const val FLING_FRICTION = 3.2f
         const val HEAD_OMEGA = 12.0f
         const val MAX_FLING = 540.0f
@@ -48,7 +48,7 @@ class PlayerMotion {
     }
 
     fun drag(f: Float, f2: Float) {
-        val f3 = f * 0.32f
+        val f3 = f * DRAG_DEG_PER_PX
         this.bodyTarget += f3
         var f2Local = f2
         if (f2Local < 0.004f) {
