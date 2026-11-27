@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
-import me.shadow.eclipselauncher.ui.character.CharacterTestTags.SKIN_MODEL_CANVAS_TAG
+import me.shadow.eclipselauncher.ui.character.SKIN_MODEL_CANVAS_TAG
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.floor

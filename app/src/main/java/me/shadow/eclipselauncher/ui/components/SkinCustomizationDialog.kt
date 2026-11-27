@@ -70,8 +70,8 @@ import me.shadow.eclipselauncher.data.Account
 import me.shadow.eclipselauncher.data.ImportKind
 import me.shadow.eclipselauncher.data.MediaStorage
 import me.shadow.eclipselauncher.data.newId
-import me.shadow.eclipselauncher.ui.character.CharacterTestTags.FULLSCREEN_BUTTON_TAG
-import me.shadow.eclipselauncher.ui.character.CharacterTestTags.SKIN_MODEL_CANVAS_TAG
+import me.shadow.eclipselauncher.ui.character.FULLSCREEN_BUTTON_TAG
+import me.shadow.eclipselauncher.ui.character.SKIN_MODEL_CANVAS_TAG
 import me.shadow.eclipselauncher.ui.character.EmotePoseIcon
 import me.shadow.eclipselauncher.ui.character.Minecraft3DPlayer
 import me.shadow.eclipselauncher.ui.character.Player3DAnimation
