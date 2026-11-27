@@ -206,6 +206,7 @@ fun SkinCustomizationDialog(
                     selectedEmote = selectedEmote,
                     onEmoteSelect = { selectedEmote = it },
                     lookTarget = lookTarget,
+                    isDragging = isDragging,
                     modifier = Modifier.fillMaxSize(),
                 )
             }
@@ -256,6 +257,7 @@ fun SkinCustomizationDialog(
                         selectedEmote = selectedEmote,
                         onEmoteSelect = { selectedEmote = it },
                         lookTarget = lookTarget,
+                        isDragging = isDragging,
                         modifier = Modifier.fillMaxWidth().height(240.dp),
                     )
 
@@ -358,6 +360,7 @@ fun SkinModelStage(
     selectedEmote: Player3DAnimation,
     onEmoteSelect: (Player3DAnimation) -> Unit,
     lookTarget: PlayerLookTarget,
+    isDragging: MutableState<Boolean>,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -417,7 +420,7 @@ fun SkinModelStage(
             val scope = coroutineScope
             scope.launch {
                 while (true) {
-                    if (!isDragging) {
+                    if (!isDragging.value) {
                         // Compute desired head orientation from lookTarget (model space, head center at y=-12)
                         val dx = lookTarget.x
                         val dz = lookTarget.z
