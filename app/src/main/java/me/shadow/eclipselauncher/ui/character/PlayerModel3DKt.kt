@@ -21,9 +21,9 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.test.testTag
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -62,11 +62,8 @@ fun Minecraft3DPlayer(
             .fillMaxSize()
             .testTag("skinModelCanvas"),
     ) {
-        val canvasDrawScope = this as CanvasDrawScope
-        val nativeCanvas = canvasDrawScope.drawContext.nativeCanvas
-
-        val width = canvasDrawScope.size.width
-        val height = canvasDrawScope.size.height
+        val width = size.width
+        val height = size.height
 
         if (width <= 0f || height <= 0f) return@Canvas
 
@@ -99,6 +96,7 @@ fun Minecraft3DPlayer(
         val faces = projectModel(model, finalPose, cx, cy, scale)
 
         // Draw: sort by depth (painter's algorithm) and draw
+        val nativeCanvas = drawContext.nativeCanvas
         drawFaces(nativeCanvas, faces, bitmap, capeBitmap)
 
         // Call onDraw callback for nametag anchor
