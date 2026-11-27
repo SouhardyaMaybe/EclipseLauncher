@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -60,8 +59,8 @@ fun Minecraft3DPlayer(
 
     // Load model once (cached by loader) - in Composable context
     val context = LocalContext.current
-    val model by remember(slim) {
-        mutableStateOf(Minecraft3DModelLoader.getPlayerModel(context, slim))
+    val model = remember(slim) {
+        Minecraft3DModelLoader.getPlayerModel(context, slim)
     }
 
     // The actual drawing happens in a Canvas
@@ -95,10 +94,10 @@ fun Minecraft3DPlayer(
         val cy = height * 0.46f
 
         // Project all parts
-        val faces = projectModel(model.value, finalPose, cx, cy, scale)
+        val faces = projectModel(model, finalPose, cx, cy, scale)
 
         // Draw: sort by depth (painter's algorithm) and draw
-        val nativeCanvas = drawContext.nativeCanvas
+        val nativeCanvas = drawContext.canvas.nativeCanvas
         drawFaces(nativeCanvas, faces, bitmap, capeBitmap)
 
         // Call onDraw callback for nametag anchor
