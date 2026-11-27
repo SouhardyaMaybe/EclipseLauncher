@@ -385,44 +385,30 @@ fun SkinModelStage(
         // Updated by idle choreography in renderer, and by drag gesture here
         val playerMotion = remember { PlayerMotion() }
 
+        // Track last drag time for gesture end detection (shared with LaunchedEffect)
+        val lastDragTime = remember { mutableStateOf(0L) }
+
         Minecraft3DPlayer(
             bitmap = skinBitmap,
             modifier = Modifier
                 .fillMaxSize()
                 .testTag(SKIN_MODEL_CANVAS_TAG)
                 .pointerInput(Unit) {
-                    // Use detectTransformGestures for smooth drag without touch slop
-                    // Track previous pan to compute per-frame delta
-                    var prevPanX = 0f
-                    var prevPanY = 0f
-                    var gestureActive = false
-                    detectTransformGestures(
-                        onGestureStart = {
-                            prevPanX = 0f
-                            prevPanY = 0f
-                            gestureActive = true
-                            isDragging.value = true
-                        },
-                        onGestureEnd = {
-                            gestureActive = false
-                            isDragging.value = false
-                        }
-                    ) { _, pan, _, _ ->
-                        if (!gestureActive) return@detectTransformGestures
-                        // Gesture reports cumulative pan; compute per-frame delta in pixels
-                        val deltaX = pan.x - prevPanX
-                        val deltaY = pan.y - prevPanY
-                        prevPanX = pan.x
-                        prevPanY = pan.y
-                        // Convert pixel delta to radians and apply directly to shared pose
-                        val dragYaw = Math.toRadians((deltaX * 0.32f).toDouble()).toFloat()
-                        val dragPitch = Math.toRadians((deltaY * 0.32f).toDouble()).toFloat()
+                    // Use detectDragGestures for drag (works well for rotation)
+                    detectDragGestures { change, dragAmount ->
+                        // dragAmount is the per-frame delta in pixels
+                        val dragYaw = Math.toRadians((dragAmount.x * 0.32f).toDouble()).toFloat()
+                        val dragPitch = Math.toRadians((dragAmount.y * 0.32f).toDouble()).toFloat()
                         // Body yaw: drag rotates the entire model
                         playerMotion.bodyYaw += dragYaw
                         // Head pitch: drag tilts head up/down (clamped)
                         playerMotion.headPitch = (playerMotion.headPitch + dragPitch).coerceIn(-1.2f, 1.2f)
                         // Head yaw: drag also rotates head relative to body (for natural feel)
                         playerMotion.headYaw += dragYaw * 0.3f
+                        // Mark as dragging
+                        isDragging.value = true
+                        lastDragTime.value = System.currentTimeMillis()
+                        change.consume()
                     }
                 },
             slim = isSlim,
@@ -433,6 +419,18 @@ fun SkinModelStage(
             playerMotion = playerMotion,
             dragZoom = 1f,
         )
+
+        // Detect gesture end: if no drag for 100ms, mark as not dragging
+        LaunchedEffect(Unit) {
+            launch {
+                while (true) {
+                    if (isDragging.value && System.currentTimeMillis() - lastDragTime.value > 100) {
+                        isDragging.value = false
+                    }
+                    delay(16)
+                }
+            }
+        }
 
         // Head look-target tracking: smoothly rotate head towards lookTarget when not dragging.
         // Runs at frame rate to match renderer's timing.
