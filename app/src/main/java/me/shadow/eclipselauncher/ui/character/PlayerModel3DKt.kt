@@ -176,7 +176,6 @@ private fun renderPartRecursive(
     }
 
     val scratch = FloatArray(3)
-    val vertices = listOf(part.quads[0].v0, part.quads[0].v1, part.quads[0].v2, part.quads[0].v3)
 
     for (quad in part.quads) {
         val world = Array(4) { FloatArray(3) }
