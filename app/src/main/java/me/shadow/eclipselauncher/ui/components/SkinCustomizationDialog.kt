@@ -93,7 +93,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateContentSize
+import androidx.compose.material3.IconButtonDefaults
 
 @Composable
 fun SkinCustomizationDialog(
@@ -384,27 +388,28 @@ fun SkinModelStage(
             val emotePickerHeight = 56.dp
             val cornerRadius = 28.dp
 
-            Surface(
+            Box(
                 modifier = Modifier
                     .width(emotePickerWidth)
                     .height(emotePickerHeight)
-                    .animateContentSize(animationSpec = androidx.compose.animation.core.spring(dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy, stiffness = androidx.compose.animation.core.Spring.StiffnessMedium))
-                    .clip(androidx.compose.ui.graphics.RoundedCornerShape(cornerRadius))
-                    .testTag(EMOTE_BUTTON_TAG),
-                color = MaterialTheme.colorScheme.surfaceContainerHighest,
-                elevation = 4.dp,
+                    .animateContentSize(animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessMedium))
+                    .clip(RoundedCornerShape(cornerRadius))
+                    .testTag(EMOTE_BUTTON_TAG)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                    .shadow(elevation = 4.dp),
             ) {
                 if (showEmotePicker) {
                     // Expanded picker: scrollable horizontal list of emote icons
-                    androidx.compose.foundation.layout.Row(
+                    Row(
                         modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                        androidx.compose.foundation.lazy.LazyRow(
+                        LazyRow(
                             modifier = Modifier.weight(1f),
-                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
                             contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             userScrollEnabled = true,
                         ) {
@@ -421,17 +426,15 @@ fun SkinModelStage(
                                     Player3DAnimation.SNEAK -> R.drawable.ic_emote_sneak_24
                                     Player3DAnimation.WALK -> R.drawable.ic_emote_walk_24
                                 }
-                                Surface(
+                                Box(
                                     modifier = Modifier
                                         .size(48.dp)
-                                        .clip(androidx.compose.ui.graphics.RoundedCornerShape(20.dp)),
-                                    color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-                                    onClick = {
-                                        onEmoteSelect(emote)
-                                        showEmotePicker = false
-                                    },
+                                        .clip(RoundedCornerShape(20.dp))
+                                        .background(if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent)
+                                        .fillMaxSize()
+                                        .clickable { onEmoteSelect(emote); showEmotePicker = false },
                                 ) {
-                                    androidx.compose.material3.Icon(
+                                    Icon(
                                         painter = painterResource(emoteDrawable),
                                         contentDescription = emoteName(emote),
                                         tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
@@ -442,15 +445,15 @@ fun SkinModelStage(
                         }
 
                         // Close button (× icon) at the end
-                        androidx.compose.material3.IconButton(
+                        IconButton(
                             onClick = { showEmotePicker = false },
                             modifier = Modifier.size(48.dp),
-                            colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
                                 containerColor = Color.Transparent,
                                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             ),
                         ) {
-                            androidx.compose.material3.Icon(
+                            Icon(
                                 painter = painterResource(R.drawable.ic_close_24),
                                 contentDescription = stringResource(R.string.action_close),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -460,15 +463,15 @@ fun SkinModelStage(
                     }
                 } else {
                     // Collapsed: single pill with emoji icon that toggles picker
-                    androidx.compose.material3.IconButton(
+                    IconButton(
                         onClick = { showEmotePicker = true },
                         modifier = Modifier.fillMaxSize(),
-                        colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
                             containerColor = Color.Transparent,
                             contentColor = MaterialTheme.colorScheme.onSurface,
                         ),
                     ) {
-                        androidx.compose.material3.Icon(
+                        Icon(
                             painter = painterResource(R.drawable.ic_emoji_24),
                             contentDescription = stringResource(R.string.emotes_section),
                             tint = MaterialTheme.colorScheme.onSurface,
