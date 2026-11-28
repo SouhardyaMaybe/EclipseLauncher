@@ -51,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -373,71 +374,106 @@ fun SkinModelStage(
             }
         }
 
-        // Emote button bottom-left
+        // Emote picker: pill-shaped toggle button at bottom-center
         Box(
             modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(12.dp),
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp),
         ) {
-            androidx.compose.material3.FilledTonalIconButton(
-                onClick = { showEmotePicker = true },
-                modifier = Modifier.size(48.dp).testTag(EMOTE_BUTTON_TAG),
-                colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                ),
-            ) {
-                androidx.compose.material3.Icon(
-                    painter = painterResource(if (showEmotePicker) R.drawable.ic_close_24 else R.drawable.ic_emoji_24),
-                    contentDescription = stringResource(R.string.emotes_section),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
-        }
+            val emotePickerWidth = if (showEmotePicker) 320.dp else 56.dp
+            val emotePickerHeight = 56.dp
+            val cornerRadius = 28.dp
 
-        // Emote picker pill panel at bottom
-        if (showEmotePicker) {
-            Box(
+            Surface(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(8.dp),
+                    .width(emotePickerWidth)
+                    .height(emotePickerHeight)
+                    .animateContentSize(animationSpec = androidx.compose.animation.core.spring(dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy, stiffness = androidx.compose.animation.core.Spring.StiffnessMedium))
+                    .clip(androidx.compose.ui.graphics.RoundedCornerShape(cornerRadius))
+                    .testTag(EMOTE_BUTTON_TAG),
+                color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                elevation = 4.dp,
             ) {
-                androidx.compose.foundation.lazy.LazyRow(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
-                    contentPadding = androidx.compose.foundation.layout.PaddingValues(4.dp),
-                ) {
-                    items(Player3DAnimation.values().size) { index ->
-                        val emote = Player3DAnimation.values()[index]
+                if (showEmotePicker) {
+                    // Expanded picker: scrollable horizontal list of emote icons
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+                    ) {
+                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.width(8.dp))
+
+                        androidx.compose.foundation.lazy.LazyRow(
+                            modifier = Modifier.weight(1f),
+                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
+                            userScrollEnabled = true,
+                        ) {
+                            items(Player3DAnimation.values().size) { index ->
+                                val emote = Player3DAnimation.values()[index]
+                                val isSelected = (selectedEmote == emote)
+                                val emoteDrawable = when (emote) {
+                                    Player3DAnimation.IDLE -> R.drawable.ic_emote_idle_24
+                                    Player3DAnimation.WAVE -> R.drawable.ic_emote_wave_24
+                                    Player3DAnimation.CLAP -> R.drawable.ic_emote_clap_24
+                                    Player3DAnimation.CHEER -> R.drawable.ic_emote_cheer_24
+                                    Player3DAnimation.DANCE -> R.drawable.ic_emote_dance_24
+                                    Player3DAnimation.ZOMBIE -> R.drawable.ic_emote_zombie_24
+                                    Player3DAnimation.SNEAK -> R.drawable.ic_emote_sneak_24
+                                    Player3DAnimation.WALK -> R.drawable.ic_emote_walk_24
+                                }
+                                Surface(
+                                    modifier = Modifier
+                                        .size(48.dp)
+                                        .clip(androidx.compose.ui.graphics.RoundedCornerShape(20.dp)),
+                                    color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
+                                    onClick = {
+                                        onEmoteSelect(emote)
+                                        showEmotePicker = false
+                                    },
+                                ) {
+                                    androidx.compose.material3.Icon(
+                                        painter = painterResource(emoteDrawable),
+                                        contentDescription = emoteName(emote),
+                                        tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(28.dp).align(Alignment.Center),
+                                    )
+                                }
+                            }
+                        }
+
+                        // Close button (× icon) at the end
                         androidx.compose.material3.IconButton(
-                            onClick = {
-                                onEmoteSelect(emote)
-                                showEmotePicker = false
-                            },
-                            modifier = Modifier.size(56.dp),
+                            onClick = { showEmotePicker = false },
+                            modifier = Modifier.size(48.dp),
                             colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = if (selectedEmote == emote) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceContainerHighest,
-                                contentColor = if (selectedEmote == emote) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                                containerColor = Color.Transparent,
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                             ),
                         ) {
-                            val emoteDrawable = when (emote) {
-                                Player3DAnimation.IDLE -> R.drawable.ic_emote_idle_24
-                                Player3DAnimation.WAVE -> R.drawable.ic_emote_wave_24
-                                Player3DAnimation.CLAP -> R.drawable.ic_emote_clap_24
-                                Player3DAnimation.CHEER -> R.drawable.ic_emote_cheer_24
-                                Player3DAnimation.DANCE -> R.drawable.ic_emote_dance_24
-                                Player3DAnimation.ZOMBIE -> R.drawable.ic_emote_zombie_24
-                                Player3DAnimation.SNEAK -> R.drawable.ic_emote_sneak_24
-                                Player3DAnimation.WALK -> R.drawable.ic_emote_walk_24
-                            }
                             androidx.compose.material3.Icon(
-                                painter = painterResource(emoteDrawable),
-                                contentDescription = stringResource(R.string.emotes_section),
-                                tint = if (selectedEmote == emote) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(32.dp),
+                                painter = painterResource(R.drawable.ic_close_24),
+                                contentDescription = stringResource(R.string.action_close),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp),
                             )
                         }
+                    }
+                } else {
+                    // Collapsed: single pill with emoji icon that toggles picker
+                    androidx.compose.material3.IconButton(
+                        onClick = { showEmotePicker = true },
+                        modifier = Modifier.fillMaxSize(),
+                        colors = androidx.compose.material3.IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = Color.Transparent,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                        ),
+                    ) {
+                        androidx.compose.material3.Icon(
+                            painter = painterResource(R.drawable.ic_emoji_24),
+                            contentDescription = stringResource(R.string.emotes_section),
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(24.dp),
+                        )
                     }
                 }
             }
